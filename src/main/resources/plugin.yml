@@ -69,3 +69,31 @@ commands:
     permission:
       gamemode.survival.change
     permission-message: You don't have permission to change your gamemode!
+
+  day:
+    usage: /day
+    description: Change the world time to day!
+    permission:
+      day.set
+    permission-message: You don't have permission to change the time!
+
+  evening:
+    usage: /evening
+    description: Change the world time to evening!
+    permission:
+      evening.set
+    permission-message: You don't have permission to change the time!
+
+  midnight:
+    usage: /midnight
+    description: Change the world time to midnight!
+    permission:
+      midnight.set
+    permission-message: You don't have permission to change the time!
+
+  night:
+    usage: /night
+    description: Change the world time to night!
+    permission:
+      night.set
+    permission-message: You don't have permission to change the time!
