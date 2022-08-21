@@ -5,6 +5,10 @@ import dev.slne.surf.essentials.commands.gamemode.AdventureCommand;
 import dev.slne.surf.essentials.commands.gamemode.CreativeCommand;
 import dev.slne.surf.essentials.commands.gamemode.SpectatorCommand;
 import dev.slne.surf.essentials.commands.gamemode.SurvivalCommand;
+import dev.slne.surf.essentials.commands.time.DayCommand;
+import dev.slne.surf.essentials.commands.time.EveningCommand;
+import dev.slne.surf.essentials.commands.time.MidnightCommand;
+import dev.slne.surf.essentials.commands.time.NightCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -48,8 +52,16 @@ public final class SurfEssentials extends JavaPlugin {
         new CreativeCommand(getCommand("creative"));
         //Spectator
         new SpectatorCommand(getCommand("spectator"));
-        //Survuval
+        //Survival
         new SurvivalCommand(getCommand("survival"));
+        //Day
+        new DayCommand(getCommand("day"));
+        //Evening
+        new EveningCommand(getCommand("evening"));
+        //Midnight
+        new MidnightCommand(getCommand("midnight"));
+        //night
+        new NightCommand(getCommand("night"));
 
 
 
