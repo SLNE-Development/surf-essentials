@@ -1,0 +1,71 @@
+name: SurfEssentials
+version: '${project.version}'
+main: dev.slne.surf.essentials.SurfEssentials
+api-version: 1.19
+depend: [SurfAPI]
+author:
+
+commands:
+  fly:
+    usage: /fly
+    description: Allow you to fly!
+    permission:
+      fly.use:
+    permission-message: You don´t have permission to fly!
+
+  heal:
+    usage: /heal
+    description: Heals you instantly!
+    permission:
+      heal.use:
+    permission-message: You don´t have permission to heal yourself!
+
+  godmode:
+    usage: /godmode
+    description: Makes you god!
+    permission:
+      godmode.use:
+    permission-message: You don´t have permission to make yourself god!
+    aliases: [gommemode]
+
+  feed:
+    usage: /feed
+    description: Feeds you instantly!
+    permission:
+      feed.use:
+    permission-message: You don't have permission to feed yourself!
+
+  repair:
+    usage: /repair
+    description: Repairs everything in your main hand!
+    permission:
+      repair.use:
+    permission-message: You don't have permission to repair!
+
+  adventure:
+    usage: /adventure <Player name>
+    description: Change your gamemode or from another online player to creative!
+    permission:
+      gamemode.adventure.change
+    permission-message: You don't have permission to change your gamemode!
+
+  creative:
+    usage: /creative <Player name>
+    description: Change your gamemode or from another online player to creative!
+    permission:
+      gamemode.creative.change
+    permission-message: You don't have permission to change your gamemode!
+
+  spectator:
+    usage: /spectator <Player name>
+    description: Change your gamemode or from another online player to creative!
+    permission:
+      gamemode.spectator.change
+    permission-message: You don't have permission to change your gamemode!
+
+  survival:
+    usage: /survival <Player name>
+    description: Change your gamemode or from another online player to creative!
+    permission:
+      gamemode.survival.change
+    permission-message: You don't have permission to change your gamemode!
