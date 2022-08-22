@@ -97,3 +97,10 @@ commands:
     permission:
       night.set
     permission-message: You don't have permission to change the time!
+
+  tptop:
+    usage: /tptop
+    description: Teleports you to the highest block at your location!
+    permission:
+      tp.top.use
+    permission-message: You don't have permission to teleport!
