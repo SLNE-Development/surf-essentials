@@ -9,6 +9,7 @@ import dev.slne.surf.essentials.commands.time.DayCommand;
 import dev.slne.surf.essentials.commands.time.EveningCommand;
 import dev.slne.surf.essentials.commands.time.MidnightCommand;
 import dev.slne.surf.essentials.commands.time.NightCommand;
+import dev.slne.surf.essentials.commands.tp.TeleportToTop;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -62,6 +63,8 @@ public final class SurfEssentials extends JavaPlugin {
         new MidnightCommand(getCommand("midnight"));
         //night
         new NightCommand(getCommand("night"));
+        //Teleport to highest Block
+        new TeleportToTop(getCommand("tptop"));
 
 
 
