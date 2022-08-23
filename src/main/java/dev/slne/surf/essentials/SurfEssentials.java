@@ -9,6 +9,7 @@ import dev.slne.surf.essentials.commands.time.DayCommand;
 import dev.slne.surf.essentials.commands.time.EveningCommand;
 import dev.slne.surf.essentials.commands.time.MidnightCommand;
 import dev.slne.surf.essentials.commands.time.NightCommand;
+import dev.slne.surf.essentials.commands.tp.TeleportAll;
 import dev.slne.surf.essentials.commands.tp.TeleportToTop;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -34,7 +35,7 @@ public final class SurfEssentials extends JavaPlugin {
     @Override
     public void onEnable() {
         //Start message
-        System.out.println("The plugin is starting...");
+        getLogger().info("The plugin is starting...");
         //Plugin Manager shortcut
         PluginManager pluginManager = Bukkit.getPluginManager();
         //fly Command
@@ -65,13 +66,14 @@ public final class SurfEssentials extends JavaPlugin {
         new NightCommand(getCommand("night"));
         //Teleport to highest Block
         new TeleportToTop(getCommand("tptop"));
-
+        //Teleport all players to sender
+        new TeleportAll(getCommand("tpall"));
 
 
 
 
         //Success start message
-        System.out.println("The plugin has started successfully!");
+        getLogger().info("The plugin has started successfully!");
     }
     // Plugin shutdown logic
     @Override
