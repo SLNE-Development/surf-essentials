@@ -5,6 +5,7 @@ import dev.slne.surf.essentials.commands.gamemode.AdventureCommand;
 import dev.slne.surf.essentials.commands.gamemode.CreativeCommand;
 import dev.slne.surf.essentials.commands.gamemode.SpectatorCommand;
 import dev.slne.surf.essentials.commands.gamemode.SurvivalCommand;
+import dev.slne.surf.essentials.commands.general.InfoCommand;
 import dev.slne.surf.essentials.commands.time.DayCommand;
 import dev.slne.surf.essentials.commands.time.EveningCommand;
 import dev.slne.surf.essentials.commands.time.MidnightCommand;
@@ -68,6 +69,8 @@ public final class SurfEssentials extends JavaPlugin {
         new TeleportToTop(getCommand("tptop"));
         //Teleport all players to sender
         new TeleportAll(getCommand("tpall"));
+        //Information
+        new InfoCommand(getCommand("info"));
 
 
 
