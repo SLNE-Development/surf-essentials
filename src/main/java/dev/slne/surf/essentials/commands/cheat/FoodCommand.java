@@ -32,7 +32,7 @@ public class FoodCommand extends EssentialsCommand {
 
         SurfApi.getUser(player).thenAcceptAsync((user) -> {
             if (user == null) return;
-            user.playSound(Sound.ENTITY_PLAYER_LEVELUP, 10f, 1);
+            user.playSound(Sound.BLOCK_AMETHYST_CLUSTER_BREAK, 1f, 1);
         });
 
         //Success Message

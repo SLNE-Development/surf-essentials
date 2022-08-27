@@ -3,17 +3,13 @@ package dev.slne.surf.essentials.commands.cheat;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
-import dev.slne.surf.independent.user.User;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +35,7 @@ public class HealCommand extends EssentialsCommand {
 
         SurfApi.getUser(player).thenAcceptAsync((user) -> {
             if (user == null) return;
-            user.playSound(Sound.ENTITY_WANDERING_TRADER_DRINK_MILK, 0.25f, 1);
+            user.playSound(Sound.BLOCK_AMETHYST_CLUSTER_PLACE, 0.25f, 1);
         });
 
         //Success Message
