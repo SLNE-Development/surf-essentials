@@ -113,3 +113,11 @@ commands:
       tp.all.use
     permission-message: You don't have permission to teleport others!
 
+  info:
+    usage: /info <player>
+    description: Display information about a player!
+    aliases: [information]
+    permission:
+      info.use
+    permission-message: You don't have permission to view information about other players!
+
