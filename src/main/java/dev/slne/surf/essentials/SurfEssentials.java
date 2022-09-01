@@ -77,6 +77,8 @@ public final class SurfEssentials extends JavaPlugin {
         new TeleportAll(getCommand("tpall"));
         //Information
         new InfoCommand(getCommand("info"));
+        //RainCommand
+        new RainCommand(getCommand("rain"));
 
 
 
