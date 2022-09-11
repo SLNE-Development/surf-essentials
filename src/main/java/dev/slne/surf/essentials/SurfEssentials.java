@@ -7,6 +7,7 @@ import dev.slne.surf.essentials.commands.gamemode.CreativeCommand;
 import dev.slne.surf.essentials.commands.gamemode.SpectatorCommand;
 import dev.slne.surf.essentials.commands.gamemode.SurvivalCommand;
 import dev.slne.surf.essentials.commands.general.InfoCommand;
+import dev.slne.surf.essentials.commands.general.RuleCommand;
 import dev.slne.surf.essentials.commands.time.DayCommand;
 import dev.slne.surf.essentials.commands.time.EveningCommand;
 import dev.slne.surf.essentials.commands.time.MidnightCommand;
@@ -79,6 +80,8 @@ public final class SurfEssentials extends JavaPlugin {
         new InfoCommand(getCommand("info"));
         //RainCommand
         new RainCommand(getCommand("rain"));
+        //Rule Command
+        new RuleCommand(getCommand("rule"));
 
 
 

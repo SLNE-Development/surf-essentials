@@ -128,3 +128,11 @@ commands:
     permission:
       rain.weather.change
     permission-message: You don't have permission to change the weather!
+
+  rule:
+    usage: /rule <player>
+    description: Displays the rules of the server to a player.
+    aliases: [rules, serverrule, serverrules]
+    permission:
+      rule.use
+    permission-message: You don't have permission to display the rules!
