@@ -8,10 +8,7 @@ import dev.slne.surf.essentials.commands.gamemode.SpectatorCommand;
 import dev.slne.surf.essentials.commands.gamemode.SurvivalCommand;
 import dev.slne.surf.essentials.commands.general.InfoCommand;
 import dev.slne.surf.essentials.commands.general.RuleCommand;
-import dev.slne.surf.essentials.commands.time.DayCommand;
-import dev.slne.surf.essentials.commands.time.EveningCommand;
-import dev.slne.surf.essentials.commands.time.MidnightCommand;
-import dev.slne.surf.essentials.commands.time.NightCommand;
+import dev.slne.surf.essentials.commands.general.TimeCommand;
 import dev.slne.surf.essentials.commands.tp.TeleportAll;
 import dev.slne.surf.essentials.commands.tp.TeleportToTop;
 import dev.slne.surf.essentials.commands.weather.RainCommand;
@@ -64,14 +61,6 @@ public final class SurfEssentials extends JavaPlugin {
         new SpectatorCommand(getCommand("spectator"));
         //Survival
         new SurvivalCommand(getCommand("survival"));
-        //Day
-        new DayCommand(getCommand("day"));
-        //Evening
-        new EveningCommand(getCommand("evening"));
-        //Midnight
-        new MidnightCommand(getCommand("midnight"));
-        //night
-        new NightCommand(getCommand("night"));
         //Teleport to highest Block
         new TeleportToTop(getCommand("tptop"));
         //Teleport all players to sender
@@ -82,6 +71,8 @@ public final class SurfEssentials extends JavaPlugin {
         new RainCommand(getCommand("rain"));
         //Rule Command
         new RuleCommand(getCommand("rule"));
+        //Time Command
+        new TimeCommand(getCommand("time"));
 
 
 

@@ -70,34 +70,6 @@ commands:
       gamemode.survival.change
     permission-message: You don't have permission to change your gamemode!
 
-  day:
-    usage: /day
-    description: Change the world time to day.
-    permission:
-      day.set
-    permission-message: You don't have permission to change the time!
-
-  evening:
-    usage: /evening
-    description: Change the world time to evening.
-    permission:
-      evening.set
-    permission-message: You don't have permission to change the time!
-
-  midnight:
-    usage: /midnight
-    description: Change the world time to midnight.
-    permission:
-      midnight.set
-    permission-message: You don't have permission to change the time!
-
-  night:
-    usage: /night
-    description: Change the world time to night.
-    permission:
-      night.set
-    permission-message: You don't have permission to change the time!
-
   tptop:
     usage: /tptop
     description: Teleports you to the highest block at your location.
@@ -136,3 +108,10 @@ commands:
     permission:
       rule.use
     permission-message: You don't have permission to display the rules!
+
+  time:
+    usage: /time <time>
+    description: Sets the time to day/evening/night/midnight
+    permission:
+      time.use:
+    permission-message: You don't have permission to change the time!
