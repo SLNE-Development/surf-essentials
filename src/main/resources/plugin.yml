@@ -115,3 +115,10 @@ commands:
     permission:
       time.use:
     permission-message: You don't have permission to change the time!
+
+  gamemode:
+    usage: /gamemode <gamemode>
+    description: Change your gamemode
+    permission:
+      gamemode.change:
+    permission-message: You don't have permission to change your gamemode!
