@@ -6,10 +6,7 @@ import dev.slne.surf.essentials.commands.gamemode.AdventureCommand;
 import dev.slne.surf.essentials.commands.gamemode.CreativeCommand;
 import dev.slne.surf.essentials.commands.gamemode.SpectatorCommand;
 import dev.slne.surf.essentials.commands.gamemode.SurvivalCommand;
-import dev.slne.surf.essentials.commands.general.GamemodeCommand;
-import dev.slne.surf.essentials.commands.general.InfoCommand;
-import dev.slne.surf.essentials.commands.general.RuleCommand;
-import dev.slne.surf.essentials.commands.general.TimeCommand;
+import dev.slne.surf.essentials.commands.general.*;
 import dev.slne.surf.essentials.commands.tp.TeleportAll;
 import dev.slne.surf.essentials.commands.tp.TeleportToTop;
 import dev.slne.surf.essentials.commands.weather.RainCommand;
@@ -76,6 +73,8 @@ public final class SurfEssentials extends JavaPlugin {
         new TimeCommand(getCommand("time"));
         //Gamemode Command
         new GamemodeCommand(getCommand("gamemode"));
+        //Alert Command
+        new AlertCommand(getCommand("alert"));
 
 
 

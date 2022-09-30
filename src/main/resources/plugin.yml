@@ -122,3 +122,11 @@ commands:
     permission:
       gamemode.change:
     permission-message: You don't have permission to change your gamemode!
+
+  alert:
+    usage: /alert <alert-message>
+    description: Sends an alert message to online players
+    aliases: [al]
+    permission:
+      alert.use
+    permission-message: You don't have permission to send alerts!
