@@ -7,6 +7,7 @@ import dev.slne.surf.essentials.commands.gamemode.CreativeCommand;
 import dev.slne.surf.essentials.commands.gamemode.SpectatorCommand;
 import dev.slne.surf.essentials.commands.gamemode.SurvivalCommand;
 import dev.slne.surf.essentials.commands.general.*;
+import dev.slne.surf.essentials.commands.general.sign.EditSignListener;
 import dev.slne.surf.essentials.commands.tp.TeleportAll;
 import dev.slne.surf.essentials.commands.tp.TeleportToTop;
 import dev.slne.surf.essentials.commands.weather.RainCommand;
@@ -75,6 +76,9 @@ public final class SurfEssentials extends JavaPlugin {
         new GamemodeCommand(getCommand("gamemode"));
         //Alert Command
         new AlertCommand(getCommand("alert"));
+        //SignEditListener
+        //TODO: Make it switchable via command (somethink like /signedit <true|false>)
+        pluginManager.registerEvents(new EditSignListener(), this);
 
 
 
