@@ -220,7 +220,7 @@ public class TimeCommand extends EssentialsCommand {
         @Override
         public @Nullable List<String> onTabComplete (@NotNull CommandSender sender, @NotNull Command
         command, @NotNull String label, @NotNull String[]args){
-            //Returns a list of online players
+            //Returns a list of available times
             List<String> list = new ArrayList<>();
             if (!(args.length == 1)) {
                 return list;
