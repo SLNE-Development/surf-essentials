@@ -74,7 +74,9 @@ public class RuleCommand extends EssentialsCommand {
                     sendrules(targetPlayer);
                     //Success message
                     player.sendMessage(SurfApi.getPrefix()
-                            .append(Component.text("Es wurden erfolgreich die Reglen und Informationen an %s gesendet!".formatted(targetPlayer.getName())).color(SurfColors.SUCCESS)));
+                            .append(Component.text("Es wurden erfolgreich die Reglen und Informationen an ", SurfColors.SUCCESS))
+                            .append(targetPlayer.teamDisplayName())
+                            .append(Component.text(" gesendet!", SurfColors.SUCCESS)));
                     return true;
                 }
                 //If specified argument isn´t a valid online player

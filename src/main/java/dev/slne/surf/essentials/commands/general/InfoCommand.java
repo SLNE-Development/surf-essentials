@@ -49,7 +49,7 @@ public class InfoCommand extends EssentialsCommand {
         Player targetPlayer = Bukkit.getPlayerExact(args[0]);
         //Info message
         player.sendMessage(SurfApi.getPrefix()
-                .append(Component.text("Informationen über: ", SurfColors.INFO)).append(targetPlayer.displayName().color(SurfColors.GOLD))
+                .append(Component.text("Informationen über: ", SurfColors.INFO)).append(targetPlayer.teamDisplayName())
                 .append(Component.newline())
                 .append(SurfApi.getPrefix())
                 .append(Component.newline())
