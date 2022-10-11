@@ -4,8 +4,9 @@ import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
+import dev.slne.surf.independent.logger.LogLevel;
+import dev.slne.surf.independent.logger.Logger;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
@@ -108,12 +109,12 @@ public class GamemodeCommand extends EssentialsCommand {
             //sender instance of Console
         } else if (sender instanceof ConsoleCommandSender console) {
             //logger of the Console
-            ComponentLogger logger = SurfEssentials.getInstance().getComponentLogger();
+            Logger logger = SurfApi.getLogger(SurfEssentials.class);
 
             //If sender provided too few arguments
             if (args.length < 2) {
-                logger.error(Component.text("You must specify a valid player and a valid gamemode!", SurfColors.ERROR));
-                logger.info(Component.text("Valid gamemodes are: ", SurfColors.DARK_GREEN)
+                logger.error(LogLevel.ERROR, Component.text("You must specify a valid player and a valid gamemode!", SurfColors.ERROR));
+                logger.info(LogLevel.INFO, Component.text("Valid gamemodes are: ", SurfColors.DARK_GREEN)
                         .append(Component.text("adventure | creative | spectator | survival", SurfColors.TERTIARY)));
                 return true;
             }
@@ -134,12 +135,12 @@ public class GamemodeCommand extends EssentialsCommand {
                             changeAllGamemodes(GameMode.SPECTATOR);
                             break;
                         default:
-                            logger.error(Component.text("You must specify a valid gamemode!", SurfColors.ERROR));
+                            logger.error(LogLevel.ERROR, Component.text("You must specify a valid gamemode!", SurfColors.ERROR));
                             break;
                     }
                     return true;
                 //No valid player specified
-                }else logger.error(Component.text("You must specify a valid player!", SurfColors.ERROR)); return true;
+                }else logger.error(LogLevel.ERROR, Component.text("You must specify a valid player!", SurfColors.ERROR)); return true;
             }
             //target Player
             Player targetPlayer = Bukkit.getPlayerExact(args[1]);
@@ -158,7 +159,7 @@ public class GamemodeCommand extends EssentialsCommand {
                     changeGamemode(targetPlayer, GameMode.SPECTATOR);
                     break;
                 default:
-                    logger.error(Component.text("You must specify a valid gamemode!", SurfColors.ERROR));
+                    logger.error(LogLevel.ERROR, Component.text("You must specify a valid gamemode!", SurfColors.ERROR));
                     break;
             }
         }
@@ -216,16 +217,16 @@ public class GamemodeCommand extends EssentialsCommand {
 
         //message for moderators
         final Component gamemodeChange = SurfApi.getPrefix()
-                .append(Component.text(player.getName(), SurfColors.AQUA))
+                .append(player.teamDisplayName())
                 .append(Component.text(" hat in den Gamemode ", SurfColors.DARK_AQUA))
                 .append(Component.text(player.getGameMode().toString(), SurfColors.AQUA))
                 .append(Component.text(" gewechselt!", SurfColors.DARK_AQUA));
 
         Bukkit.broadcast(gamemodeChange, "surf.gamemode.announce");
         //log gamemode change
-        SurfEssentials.getInstance().getComponentLogger().info(Component.text("Set ", SurfColors.SUCCESS)
-                .append(Component.text(player.getName(), SurfColors.GOLD)
-                        .append(Component.text("´s ",SurfColors.GOLD)))
+        SurfApi.getLogger(SurfEssentials.class).info(LogLevel.INFO, Component.text("Set ", SurfColors.SUCCESS)
+                .append(player.teamDisplayName())
+                        .append(Component.text("´s ",SurfColors.GOLD))
                 .append(Component.text("game mode to ", SurfColors.SUCCESS))
                 .append(Component.text(gameMode.toString().toLowerCase(), SurfColors.GOLD))
                 .append(Component.text("!", SurfColors.SUCCESS)));
@@ -260,7 +261,7 @@ public class GamemodeCommand extends EssentialsCommand {
 
         Bukkit.broadcast(gamemodeChangeAll_de, "surf.gamemode.announce");
 
-        SurfEssentials.getInstance().getComponentLogger().info(gamemodeChangeAll_en);
+        SurfApi.getLogger(SurfEssentials.class).info(LogLevel.INFO, gamemodeChangeAll_en);
     }
 
 }
