@@ -53,7 +53,7 @@ public class EditSignListener implements Listener {
             //Check if place event is canceled
             if (!placeEvent.isCancelled()){
                 Sign sign = (Sign) block.getState();
-                //Makes the sign editable and obens the sign gui for the player
+                //Makes the sign editable and opens the sign gui for the player
                 sign.setEditable(true);
                 player.openSign(sign);
                 //updates the sign for changes
