@@ -130,3 +130,10 @@ commands:
     permission:
       surf.msg.send
     permission-message: You don't have permission to send a private message!
+
+  weather:
+    usage: /weather <weather type> <duration>
+    description: Changes the weather in the world.
+    permission:
+      surf.weather.change
+    permission-message: You don't have permission to change the weather!

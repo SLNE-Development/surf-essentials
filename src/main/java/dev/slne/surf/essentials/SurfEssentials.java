@@ -78,6 +78,8 @@ public final class SurfEssentials extends JavaPlugin {
         pluginManager.registerEvents(new EditSignListener(), this);
         //CustomMsgCommand
         new MsgCommand(getCommand("msg"));
+        //WeatherCommand
+        new WeatherCommand(getCommand("weather"));
 
 
 
