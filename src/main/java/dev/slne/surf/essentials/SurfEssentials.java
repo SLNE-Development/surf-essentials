@@ -10,7 +10,6 @@ import dev.slne.surf.essentials.commands.general.*;
 import dev.slne.surf.essentials.commands.general.sign.EditSignListener;
 import dev.slne.surf.essentials.commands.tp.TeleportAll;
 import dev.slne.surf.essentials.commands.tp.TeleportToTop;
-import dev.slne.surf.essentials.commands.weather.RainCommand;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
@@ -66,8 +65,6 @@ public final class SurfEssentials extends JavaPlugin {
         new TeleportAll(getCommand("tpall"));
         //Information
         new InfoCommand(getCommand("info"));
-        //RainCommand
-        new RainCommand(getCommand("rain"));
         //Rule Command
         new RuleCommand(getCommand("rule"));
         //Time Command

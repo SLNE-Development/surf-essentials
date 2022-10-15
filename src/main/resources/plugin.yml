@@ -93,14 +93,6 @@ commands:
       info.use
     permission-message: You don't have permission to view information about other players!
 
-  rain:
-    usage: /rain
-    description: Sets the weather to rain.
-    aliases: [wrain, weatherrain, essentialsrain, erain]
-    permission:
-      rain.weather.change
-    permission-message: You don't have permission to change the weather!
-
   rule:
     usage: /rule <player>
     description: Displays the rules of the server to a player.
