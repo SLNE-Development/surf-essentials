@@ -130,3 +130,11 @@ commands:
     permission:
       alert.use
     permission-message: You don't have permission to send alerts!
+
+  msg:
+    usage: /msg <player> <msg-message>
+    description: Sends a private message to the specified player
+    aliases: [tell, whisper]
+    permission:
+      surf.msg.send
+    permission-message: You don't have permission to send a private message!

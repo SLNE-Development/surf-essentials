@@ -79,6 +79,8 @@ public final class SurfEssentials extends JavaPlugin {
         //SignEditListener
         //TODO: Make it switchable via command (somethink like /signedit <true|false>)
         pluginManager.registerEvents(new EditSignListener(), this);
+        //CustomMsgCommand
+        new MsgCommand(getCommand("msg"));
 
 
 
