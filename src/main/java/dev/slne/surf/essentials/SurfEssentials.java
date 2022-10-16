@@ -1,22 +1,17 @@
 package dev.slne.surf.essentials;
 
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.commands.cheat.*;
-import dev.slne.surf.essentials.commands.gamemode.AdventureCommand;
-import dev.slne.surf.essentials.commands.gamemode.CreativeCommand;
-import dev.slne.surf.essentials.commands.gamemode.SpectatorCommand;
-import dev.slne.surf.essentials.commands.gamemode.SurvivalCommand;
-import dev.slne.surf.essentials.commands.general.*;
+import dev.slne.surf.essentials.commands.Commands;
 import dev.slne.surf.essentials.commands.general.sign.EditSignListener;
-import dev.slne.surf.essentials.commands.tp.TeleportAll;
-import dev.slne.surf.essentials.commands.tp.TeleportToTop;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class SurfEssentials extends JavaPlugin {
+public final class SurfEssentials extends JavaPlugin implements Listener {
 
     private static SurfEssentials instance;
     //Check if the Plugin is already initialized
@@ -35,51 +30,21 @@ public final class SurfEssentials extends JavaPlugin {
     // Plugin startup logic
     @Override
     public void onEnable() {
+        Commands commands = new Commands();
         //Start message
         getLogger().info("The plugin is starting...");
-        //fancy Message
+        //logo if the plugin
         loadMessage();
         //Plugin Manager shortcut
         PluginManager pluginManager = Bukkit.getPluginManager();
-        //fly Command
-        new FlyCommand(getCommand("fly"));
-        //Heal
-        new HealCommand(getCommand("heal"));
-        //Godmode
-        new GodmodeCommand(getCommand("godmode"));
-        //Food
-        new FoodCommand(getCommand("feed"));
-        //Repair
-        new RepairCommand(getCommand("repair"));
-        //Adventure
-        new AdventureCommand(getCommand("adventure"));
-        //Creative
-        new CreativeCommand(getCommand("creative"));
-        //Spectator
-        new SpectatorCommand(getCommand("spectator"));
-        //Survival
-        new SurvivalCommand(getCommand("survival"));
-        //Teleport to highest Block
-        new TeleportToTop(getCommand("tptop"));
-        //Teleport all players to sender
-        new TeleportAll(getCommand("tpall"));
-        //Information
-        new InfoCommand(getCommand("info"));
-        //Rule Command
-        new RuleCommand(getCommand("rule"));
-        //Time Command
-        new TimeCommand(getCommand("time"));
-        //Gamemode Command
-        new GamemodeCommand(getCommand("gamemode"));
-        //Alert Command
-        new AlertCommand(getCommand("alert"));
         //SignEditListener
         //TODO: Make it switchable via command (somethink like /signedit <true|false>)
         pluginManager.registerEvents(new EditSignListener(), this);
-        //CustomMsgCommand
-        new MsgCommand(getCommand("msg"));
-        //WeatherCommand
-        new WeatherCommand(getCommand("weather"));
+
+        //Register Commands
+        commands.initializeCheatCommands();
+        commands.initializeGeneralCommands();
+        commands.initializeTpCommands();
 
 
 
@@ -87,13 +52,15 @@ public final class SurfEssentials extends JavaPlugin {
         //Success start message
         getLogger().info("The plugin has started successfully!");
     }
+
     // Plugin shutdown logic
     @Override
     public void onDisable() {
-
+        instance = null;
         //Stop message
-        System.out.println("The plugin has stopped!");
+        getLogger().info("The plugin has stopped!");
     }
+
 
     /**
      * A message that prints  a logo of the plugin to the console
@@ -117,4 +84,33 @@ public final class SurfEssentials extends JavaPlugin {
                 .append(Component.newline())
                 .append(Component.text("       v", SurfColors.AQUA)));
     }
+
+    /**
+     * Component Logger
+     */
+    public static ComponentLogger logger(){
+        return SurfEssentials.getInstance().getComponentLogger();
+    }
+
+    /**
+     *
+     * Check if arg is int.
+     *
+     * @param s  the string to be checked for an int
+     */
+    public boolean isInt(String s) {
+        int i;
+        try {
+            i = Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException ex) {
+            //string is not an integer
+            return false;
+        }
+    }
+
+    public static Component NO_PERMISSION(){
+        return Component.text("Dafür hast du keine Berechtigung!", SurfColors.ERROR);
+    }
+
 }
