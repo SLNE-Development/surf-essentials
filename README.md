@@ -24,6 +24,7 @@ Makes the server commands better and more peronalized.
 - `/weather` _Displays the current weather and duration_
 - `/weather <weather>` _Changes the weather with default length of 5 minutes_
 - `/weather <weather> <duration>` _Changes the weather with duration_
+- `/speed <speed>` _Changes the walk/fly speed of the player_
 ## Authors
 
 - [@twisti](https://git.slne.dev/twisti)
