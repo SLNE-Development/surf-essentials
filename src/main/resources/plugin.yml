@@ -3,7 +3,7 @@ version: '${project.version}'
 main: dev.slne.surf.essentials.SurfEssentials
 api-version: 1.19
 depend: [SurfAPI]
-author:
+authors: [Twisti_twixi]
 
 commands:
   fly:
@@ -41,34 +41,6 @@ commands:
     permission:
       repair.use:
     permission-message: You don't have permission to repair!
-
-  adventure:
-    usage: /adventure <Player name>
-    description: Change your gamemode or from another online player to creative!
-    permission:
-      gamemode.adventure.change
-    permission-message: You don't have permission to change your gamemode!
-
-  creative:
-    usage: /creative <Player name>
-    description: Change your gamemode or from another online player to creative!
-    permission:
-      gamemode.creative.change
-    permission-message: You don't have permission to change your gamemode!
-
-  spectator:
-    usage: /spectator <Player name>
-    description: Change your gamemode or from another online player to creative!
-    permission:
-      gamemode.spectator.change
-    permission-message: You don't have permission to change your gamemode!
-
-  survival:
-    usage: /survival <Player name>
-    description: Change your gamemode or from another online player to creative!
-    permission:
-      gamemode.survival.change
-    permission-message: You don't have permission to change your gamemode!
 
   tptop:
     usage: /tptop
@@ -137,3 +109,10 @@ commands:
     permission:
       surf.weather.change
     permission-message: You don't have permission to change the weather!
+
+  speed:
+    usage: /speed <speed>
+    description: Changes your fly/walk speed.
+    permission:
+      surf.speed.change
+    permission-message: You don't have permission to change your speed!
