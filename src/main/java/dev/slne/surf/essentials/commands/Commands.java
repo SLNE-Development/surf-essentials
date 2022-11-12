@@ -4,6 +4,7 @@ import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.commands.cheat.*;
 import dev.slne.surf.essentials.commands.general.*;
 import dev.slne.surf.essentials.commands.tp.TeleportAll;
+import dev.slne.surf.essentials.commands.tp.TeleportCommand;
 import dev.slne.surf.essentials.commands.tp.TeleportToTop;
 
 import java.util.ArrayList;
@@ -39,6 +40,8 @@ public class Commands {
         this.commands.add(new HealCommand(this.surf.getCommand("heal")));
         //repairCommand
         this.commands.add(new RepairCommand(this.surf.getCommand("repair")));
+        //fillStackCommand
+        this.commands.add(new FillStackCommand(this.surf.getCommand("more")));
     }
 
     /**
@@ -69,6 +72,8 @@ public class Commands {
         this.commands.add(new TeleportAll(this.surf.getCommand("tpall")));
         //TeleportToTopCommand
         this.commands.add(new TeleportToTop(this.surf.getCommand("tptop")));
+        //TeleportCommand
+        this.commands.add(new TeleportCommand(this.surf.getCommand("teleport")));
     }
 
 

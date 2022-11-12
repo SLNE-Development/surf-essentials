@@ -18,7 +18,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MsgCommand extends EssentialsCommand {
@@ -121,19 +120,6 @@ public class MsgCommand extends EssentialsCommand {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        //Returns a list of online players
-        List<String> list = new ArrayList<>();
-        if (!(args.length == 1)) return list;
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            list.add(player.getName());
-        }
-        List<String> onlinePlayers = new ArrayList<>();
-        String currentarg = args[args.length - 1];
-        for (String s : list) {
-            if (s.startsWith(currentarg)) {
-                onlinePlayers.add(s);
-            }
-        }
-        return onlinePlayers;
+        return null;
     }
 }

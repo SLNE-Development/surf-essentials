@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TimeCommand extends EssentialsCommand {
@@ -220,24 +219,7 @@ public class TimeCommand extends EssentialsCommand {
         @Override
         public @Nullable List<String> onTabComplete (@NotNull CommandSender sender, @NotNull Command
         command, @NotNull String label, @NotNull String[]args){
-            //Returns a list of available times
-            List<String> list = new ArrayList<>();
-            if (!(args.length == 1)) {
-                return list;
-            }
-            list.add("day");
-            list.add("evening");
-            list.add("night");
-            list.add("midnight");
-            list.add("set");
-            List<String> allowedTime = new ArrayList<>();
-            String currentarg = args[args.length - 1];
-            for (String s : list) {
-                if (s.startsWith(currentarg)) {
-                    allowedTime.add(s);
-                }
-            }
-            return allowedTime;
+            return null;
         }
 
         //Check if arg is int

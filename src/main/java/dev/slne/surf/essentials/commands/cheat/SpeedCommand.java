@@ -11,11 +11,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SpeedCommand extends EssentialsCommand {
@@ -44,7 +42,7 @@ public class SpeedCommand extends EssentialsCommand {
                             .append(Component.text(player.getWalkSpeed(), SurfColors.GOLD)));
                 });
             } else if (args[0].equalsIgnoreCase("default")) {
-                player.setFlySpeed((float) 0.2);
+                player.setFlySpeed((float) 0.1);
                 player.setWalkSpeed((float) 0.2);
                 SurfApi.getUser(player).thenAcceptAsync(user -> {
                     user.sendMessage(SurfApi.getPrefix()
@@ -70,22 +68,7 @@ public class SpeedCommand extends EssentialsCommand {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        final String[] COMMON_VALUES = {
-                "default",
-                "0",
-                "0.2",
-                "0.4",
-                "0.6",
-                "0.8",
-                "1"
-        };
-        //create new array
-        final List < String > completions = new ArrayList< >();
-        //copy matches of arguments from list
-        if (args.length == 1) {
-            StringUtil.copyPartialMatches(args[0], List.of(COMMON_VALUES), completions);
-        }
-        return completions;
+        return null;
     }
 
     public boolean isFloat(String input) {

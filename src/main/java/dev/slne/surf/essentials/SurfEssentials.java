@@ -1,9 +1,17 @@
 package dev.slne.surf.essentials;
 
 import dev.slne.surf.api.utils.message.SurfColors;
+import dev.slne.surf.essentials.brigadier.CheatTabComplete;
+import dev.slne.surf.essentials.brigadier.GeneralTabComplete;
+import dev.slne.surf.essentials.brigadier.TpTabComplete;
 import dev.slne.surf.essentials.commands.Commands;
 import dev.slne.surf.essentials.commands.general.sign.EditSignListener;
+import me.lucko.commodore.Commodore;
+import me.lucko.commodore.CommodoreProvider;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
@@ -27,9 +35,12 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
         return instance;
     }
 
+
+
     // Plugin startup logic
     @Override
     public void onEnable() {
+        instance = this;
         Commands commands = new Commands();
         //Start message
         getLogger().info("The plugin is starting...");
@@ -38,7 +49,7 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
         //Plugin Manager shortcut
         PluginManager pluginManager = Bukkit.getPluginManager();
         //SignEditListener
-        //TODO: Make it switchable via command (somethink like /signedit <true|false>)
+        //TODO: Make it switchable via command (something like /signedit <true|false>)
         pluginManager.registerEvents(new EditSignListener(), this);
 
         //Register Commands
@@ -46,8 +57,22 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
         commands.initializeGeneralCommands();
         commands.initializeTpCommands();
 
+        /**
+         * This section deals with brigadier TabCompletion that uses {@link Commodore}
+         */
+        //check if brigadier is supported
+        if (!CommodoreProvider.isSupported()) {
+            throw new IllegalStateException("Brigadier is not supported! Most commands will not work properly.");
+        }
+        // get a commodore instance
+        Commodore commodore = CommodoreProvider.getCommodore(this);
 
-
+        //Brigadier tab Complete for cheat commands
+        new CheatTabComplete().register(commodore);
+        //Brigadier tab Complete for general commands
+        new GeneralTabComplete().register(commodore);
+        //Brigadier tab Complete for tp commands
+        new TpTabComplete().register(commodore);
 
         //Success start message
         getLogger().info("The plugin has started successfully!");
@@ -62,27 +87,30 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
     }
 
 
+
+
     /**
      * A message that prints  a logo of the plugin to the console
      */
     public void loadMessage() {
         ConsoleCommandSender console = instance.getServer().getConsoleSender();
+        String version = "v" + getDescription().getVersion();
         console.sendMessage(Component.newline()
-                .append(Component.text(" ___   ^", SurfColors.AQUA))
+                .append(Component.text("  _____ _____ ", SurfColors.AQUA))
                 .append(Component.newline())
-                .append(Component.text("|     / \\", SurfColors.AQUA))
+                .append(Component.text("|  ___/  ___|", SurfColors.AQUA))
                 .append(Component.newline())
-                .append(Component.text("|___  \\\\/", SurfColors.AQUA)
-                        .append(Component.text("  SurfEssentials ", SurfColors.DARK_GREEN))
-                        .append(Component.text("v0.0.1", SurfColors.DARK_AQUA)))
+                .append(Component.text("| |__ \\ `--. ", SurfColors.AQUA))
+                        .append(gradientify("  SurfEssentials ", "#009245", "#FCEE21"))
+                        .append(gradientify(version, "#FC4A1A", "#F7B733"))
                 .append(Component.newline())
-                .append(Component.text("|     /\\\\", SurfColors.AQUA)
-                        .append(Component.text("  Running on %s".formatted(instance.getServer().getName()))
-                                .color(SurfColors.GRAY)))
+                .append(Component.text("|  __| `--. \\", SurfColors.AQUA)
+                        .append(gradientify("  Running on %s ".formatted(instance.getServer().getName()), "#fdfcfb", "#e2d1c3")))
+                        .append(gradientify(instance.getServer().getVersion(), "#93a5cf", "#e4efe9").decorate(TextDecoration.ITALIC))
                 .append(Component.newline())
-                .append(Component.text("|___  \\ /", SurfColors.AQUA))
+                .append(Component.text("| |___/\\__/ /", SurfColors.AQUA))
                 .append(Component.newline())
-                .append(Component.text("       v", SurfColors.AQUA)));
+                .append(Component.text("\\____/\\____/ ", SurfColors.AQUA)));
     }
 
     /**
@@ -109,8 +137,40 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
         }
     }
 
+    /**
+     *
+     * Simple "No permission" message.
+     *
+     */
     public static Component NO_PERMISSION(){
         return Component.text("Dafür hast du keine Berechtigung!", SurfColors.ERROR);
     }
 
+    /**
+     *
+     * Converts the color from the input string to a gradient.
+     *
+     * @param input  the string to convert the color from
+     * @param firstHex  the first hex color
+     * @param secondHex  the second hex color
+     */
+    public Component gradientify(String input, String firstHex, String secondHex) {
+
+        TextColor gradientFirst = TextColor.fromHexString(firstHex);
+        TextColor gradientSecond = TextColor.fromHexString(secondHex);
+
+        if (gradientFirst == null || gradientSecond == null) {
+            return Component.text(input);
+        }
+
+        TextComponent.Builder builder = Component.text();
+        float step = 1.0f / (input.length() - 1);
+        float current = 0.0f;
+        for (char c : input.toCharArray()) {
+            builder.append(Component.text(c, TextColor.lerp(current, gradientFirst, gradientSecond)));
+            current += step;
+        }
+
+        return builder.build();
+    }
 }

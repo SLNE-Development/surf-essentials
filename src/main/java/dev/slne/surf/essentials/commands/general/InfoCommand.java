@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class InfoCommand extends EssentialsCommand {
@@ -25,22 +24,25 @@ public class InfoCommand extends EssentialsCommand {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         //Check if sender is player
-        if (!(sender instanceof Player player)){sender.sendMessage(SurfApi.getPrefix()
-                .append(Component.text("You must be a player to execute this command!", SurfColors.ERROR)));
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(SurfApi.getPrefix()
+                    .append(Component.text("You must be a player to execute this command!", SurfColors.ERROR)));
             return true;
         }
         //Check args length
-        if (args.length > 1){player.sendMessage(SurfApi.getPrefix()
-                .append(Component.text("Du darfst nur einen Spieler angeben!", SurfColors.ERROR)));
+        if (args.length > 1) {
+            player.sendMessage(SurfApi.getPrefix()
+                    .append(Component.text("Du darfst nur einen Spieler angeben!", SurfColors.ERROR)));
             return true;
         }
         //Check if sender provided player
-        if (args.length == 0){player.sendMessage(SurfApi.getPrefix()
-                .append(Component.text("Du musst einen Spieler angeben!", SurfColors.ERROR)));
-        return true;
+        if (args.length == 0) {
+            player.sendMessage(SurfApi.getPrefix()
+                    .append(Component.text("Du musst einen Spieler angeben!", SurfColors.ERROR)));
+            return true;
         }
         //check if arg[0] is valid Player
-        if (Bukkit.getPlayerExact(args[0]) == null){
+        if (Bukkit.getPlayerExact(args[0]) == null) {
             player.sendMessage(SurfApi.getPrefix()
                     .append(Component.text("Der Spieler existiert nicht!", SurfColors.ERROR)));
             return true;
@@ -58,7 +60,7 @@ public class InfoCommand extends EssentialsCommand {
                 .append(Component.text("UUID: ", SurfColors.AQUA)
                         .append(Component.text(targetPlayer.getUniqueId().toString(), SurfColors.GOLD)
                                 .clickEvent(ClickEvent.copyToClipboard(targetPlayer.getUniqueId().toString()))
-                        .hoverEvent(Component.text("Klicke um die UUID zu kopieren!", SurfColors.INFO))))
+                                .hoverEvent(Component.text("Klicke um die UUID zu kopieren!", SurfColors.INFO))))
                 .append(Component.newline())
                 .append(SurfApi.getPrefix())
                 .append(Component.newline())
@@ -80,7 +82,7 @@ public class InfoCommand extends EssentialsCommand {
                 .append(SurfApi.getPrefix())
                 //Shows the health and saturation of the target player
                 .append(Component.text("Health: ", SurfColors.AQUA)
-                        .append(Component.text("%s".formatted(Math.round(targetPlayer.getHealth()*10/10)), SurfColors.GOLD))
+                        .append(Component.text("%s".formatted(Math.round(targetPlayer.getHealth() * 10 / 10)), SurfColors.GOLD))
                         .append(Component.text("/%s".formatted(targetPlayer.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue())).color(SurfColors.GOLD)))
                 .append(Component.newline())
                 .append(SurfApi.getPrefix())
@@ -92,19 +94,6 @@ public class InfoCommand extends EssentialsCommand {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        //Returns a list of online players
-        List<String> list = new ArrayList<>();
-        if (!(args.length == 1)){return list;}
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            list.add(player.getName());
-        }
-        List<String> onlinePlayers = new ArrayList<>();
-        String currentarg = args[args.length-1];
-        for (String s : list){
-            if (s.startsWith(currentarg)){
-                onlinePlayers.add(s);
-            }
-        }
-        return onlinePlayers;
+        return null;
     }
 }

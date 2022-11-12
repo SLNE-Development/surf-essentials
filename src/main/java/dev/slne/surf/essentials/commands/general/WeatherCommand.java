@@ -34,10 +34,10 @@ public class WeatherCommand extends EssentialsCommand {
         if (sender instanceof Player player) {
             //Check if the player provided a weather
             if (args.length == 0) {
-                //Error message
+                //current weather
                 SurfApi.getUser(player).thenAcceptAsync(user -> {
                     if (world.isClearWeather()){
-                        currentWeather_DE("Klar", world.getWeatherDuration(), user);
+                        currentWeather_DE("Klar", world.getClearWeatherDuration(), user);
                     }else if (world.hasStorm() && !world.isThundering()){
                         currentWeather_DE("Regen", world.getWeatherDuration(), user);
                     }else {
@@ -69,7 +69,7 @@ public class WeatherCommand extends EssentialsCommand {
             //Displays the current weather and duration
             if (args.length == 0) {
                 if (world.isClearWeather()){
-                    currentWeather_EN("clear", world.getWeatherDuration(), logger);
+                    currentWeather_EN("clear", world.getClearWeatherDuration(), logger);
                 }else if (world.hasStorm() && !world.isThundering()){
                     currentWeather_EN("rain", world.getWeatherDuration(), logger);
                 }else {

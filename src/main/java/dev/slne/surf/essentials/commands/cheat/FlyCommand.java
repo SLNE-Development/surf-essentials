@@ -11,9 +11,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class FlyCommand extends EssentialsCommand {
     public FlyCommand(PluginCommand command) {
@@ -28,35 +26,23 @@ public class FlyCommand extends EssentialsCommand {
         Player player = (Player) sender;
         //if player provided to many args
         if (args.length > 0){player.sendMessage(SurfApi.getPrefix().append(Component.text("Du darfst keine Argumente angeben!" )).color(SurfColors.ERROR)); return true;}
-        //Check if player is in fly
-        if (players_in_fly_mode.contains(player.getUniqueId())){
-            //Disable fly mode
-            player.setAllowFlight(false);
-            //Remove player from list
-            players_in_fly_mode.remove(player.getUniqueId());
-            //Send Success Message
-            player.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Du hast den Fly mode" ))
-                    .color(SurfColors.SUCCESS)
-                    .append(Component.text(" verlassen!"))
-                    .color(SurfColors.GOLD));
-        //Set player to fly mode
-        }else if (!(players_in_fly_mode.contains(player.getUniqueId()))){
-            //Allow Flight
-            player.setAllowFlight(true);
-            //Add player to list
-            players_in_fly_mode.add(player.getUniqueId());
-            //Send Success Message
-            player.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Du hast den Fly mode" ))
-                    .color(SurfColors.SUCCESS)
-                    .append(Component.text(" betreten!"))
-                    .color(SurfColors.GOLD));
 
-            return true;
+        //Set fly mode
+        boolean allowFlight = player.getAllowFlight();
+        player.setAllowFlight(!allowFlight);
+
+        //messages
+        if (allowFlight){
+            player.sendMessage(SurfApi.getPrefix()
+                    .append(Component.text("Du hast den Fly mode", SurfColors.SUCCESS))
+                    .append(Component.text(" verlassen!", SurfColors.GOLD)));
+        }else{
+            player.sendMessage(SurfApi.getPrefix()
+                    .append(Component.text("Du hast den Fly mode", SurfColors.SUCCESS))
+                    .append(Component.text(" betreten!", SurfColors.GOLD)));
         }
         return true;
-    } private List<UUID> players_in_fly_mode = new ArrayList<>();
+    }
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {

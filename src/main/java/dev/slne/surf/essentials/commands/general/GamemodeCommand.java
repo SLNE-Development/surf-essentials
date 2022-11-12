@@ -5,8 +5,8 @@ import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.independent.logger.LogLevel;
-import dev.slne.surf.independent.logger.Logger;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
@@ -17,7 +17,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GamemodeCommand extends EssentialsCommand {
@@ -109,12 +108,12 @@ public class GamemodeCommand extends EssentialsCommand {
             //sender instance of Console
         } else if (sender instanceof ConsoleCommandSender console) {
             //logger of the Console
-            Logger logger = SurfApi.getLogger(SurfEssentials.class);
+            ComponentLogger logger = SurfEssentials.logger();
 
             //If sender provided too few arguments
             if (args.length < 2) {
-                logger.error(LogLevel.ERROR, Component.text("You must specify a valid player and a valid gamemode!", SurfColors.ERROR));
-                logger.info(LogLevel.INFO, Component.text("Valid gamemodes are: ", SurfColors.DARK_GREEN)
+                logger.warn(Component.text("You must specify a valid player and a valid gamemode!", SurfColors.ERROR));
+                logger.info(Component.text("Valid gamemodes are: ", SurfColors.DARK_GREEN)
                         .append(Component.text("adventure | creative | spectator | survival", SurfColors.TERTIARY)));
                 return true;
             }
@@ -135,12 +134,12 @@ public class GamemodeCommand extends EssentialsCommand {
                             changeAllGamemodes(GameMode.SPECTATOR);
                             break;
                         default:
-                            logger.error(LogLevel.ERROR, Component.text("You must specify a valid gamemode!", SurfColors.ERROR));
+                            logger.warn(Component.text("You must specify a valid gamemode!", SurfColors.ERROR));
                             break;
                     }
                     return true;
                 //No valid player specified
-                }else logger.error(LogLevel.ERROR, Component.text("You must specify a valid player!", SurfColors.ERROR)); return true;
+                }else logger.warn(Component.text("You must specify a valid player!", SurfColors.ERROR)); return true;
             }
             //target Player
             Player targetPlayer = Bukkit.getPlayerExact(args[1]);
@@ -159,7 +158,7 @@ public class GamemodeCommand extends EssentialsCommand {
                     changeGamemode(targetPlayer, GameMode.SPECTATOR);
                     break;
                 default:
-                    logger.error(LogLevel.ERROR, Component.text("You must specify a valid gamemode!", SurfColors.ERROR));
+                    logger.warn(Component.text("You must specify a valid gamemode!", SurfColors.ERROR));
                     break;
             }
         }
@@ -168,35 +167,6 @@ public class GamemodeCommand extends EssentialsCommand {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (args.length == 1) {
-            List<String> list = new ArrayList<>();
-            list.add("survival");
-            list.add("creative");
-            list.add("spectator");
-            list.add("adventure");
-            List<String> availableGamemodes = new ArrayList<>();
-            String currentarg = args[args.length - 1];
-            for (String s : list) {
-                if (s.startsWith(currentarg)) {
-                    availableGamemodes.add(s);
-                }
-            }
-            return availableGamemodes;
-        }else if (args.length == 2){
-            List<String> list = new ArrayList<>();
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                list.add(onlinePlayer.getName());
-            }
-            list.add("@a");
-            List<String> onlinePlayer = new ArrayList<>();
-            String currentarg = args[args.length - 1];
-            for (String s : list) {
-                if (s.startsWith(currentarg)) {
-                    onlinePlayer.add(s);
-                }
-            }
-            return onlinePlayer;
-        }
         return null;
     }
 

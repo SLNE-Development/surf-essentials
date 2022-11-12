@@ -4,27 +4,30 @@ main: dev.slne.surf.essentials.SurfEssentials
 api-version: 1.19
 depend: [SurfAPI]
 authors: [Twisti_twixi]
+load: POSTWORLD
+database: false
+website: https://git.slne.dev/surf/surf-essentials
 
 commands:
   fly:
     usage: /fly
     description: Allow you to fly!
     permission:
-      fly.use:
+      surf.command.fly
     permission-message: You don´t have permission to fly!
 
   heal:
     usage: /heal
     description: Heals you instantly!
     permission:
-      heal.use:
+      surf.command.heal
     permission-message: You don´t have permission to heal yourself!
 
   godmode:
     usage: /godmode
     description: Makes you god!
     permission:
-      godmode.use:
+      surf.command.godmode
     permission-message: You don´t have permission to make yourself god!
     aliases: [gommemode]
 
@@ -32,21 +35,21 @@ commands:
     usage: /feed
     description: Feeds you instantly!
     permission:
-      feed.use:
+      surf.command.feed
     permission-message: You don't have permission to feed yourself!
 
   repair:
     usage: /repair
     description: Repairs everything in your main hand!
     permission:
-      repair.use:
+      surf.command.repair
     permission-message: You don't have permission to repair!
 
   tptop:
     usage: /tptop
     description: Teleports you to the highest block at your location.
     permission:
-      tp.top.use
+      surf.command.tptop
     permission-message: You don't have permission to teleport!
     aliases: [teleporttop, teletop]
 
@@ -54,7 +57,7 @@ commands:
     usage: /tpall
     description: Teleports all online players to you.
     permission:
-      tp.all.use
+      surf.command.tpall
     permission-message: You don't have permission to teleport others!
 
   info:
@@ -62,7 +65,7 @@ commands:
     description: Display information about a player!
     aliases: [information]
     permission:
-      info.use
+      surf.command.info
     permission-message: You don't have permission to view information about other players!
 
   rule:
@@ -70,29 +73,37 @@ commands:
     description: Displays the rules of the server to a player.
     aliases: [rules, serverrule, serverrules]
     permission:
-      rule.use
+      surf.command.rule
     permission-message: You don't have permission to display the rules!
 
   time:
     usage: /time <time>
     description: Sets the time to day/evening/night/midnight
     permission:
-      time.use:
+      surf.command.time
     permission-message: You don't have permission to change the time!
 
   gamemode:
     usage: /gamemode <gamemode>
     description: Change your gamemode
     permission:
-      gamemode.change:
+      surf.command.gamemode
     permission-message: You don't have permission to change your gamemode!
+
+  signEdit:
+    usage: /signedit <true|false>
+    description: Toggles whether signs can be edited by right-clicking or not.
+    aliases: [editsign, signtoggle, togglesign]
+    permission:
+      sign.toggle
+    permission-message: You don't have permission to toggle the sign edit!
 
   alert:
     usage: /alert <alert-message>
     description: Sends an alert message to online players
     aliases: [al]
     permission:
-      alert.use
+      surf.command.alert
     permission-message: You don't have permission to send alerts!
 
   msg:
@@ -100,19 +111,43 @@ commands:
     description: Sends a private message to the specified player
     aliases: [tell, whisper]
     permission:
-      surf.msg.send
+      surf.command.msg
     permission-message: You don't have permission to send a private message!
 
   weather:
     usage: /weather <weather type> <duration>
     description: Changes the weather in the world.
     permission:
-      surf.weather.change
+      surf.command.weather
     permission-message: You don't have permission to change the weather!
 
   speed:
     usage: /speed <speed>
     description: Changes your fly/walk speed.
     permission:
-      surf.speed.change
+      surf.command.speed
     permission-message: You don't have permission to change your speed!
+
+  more:
+    usage: /more
+    description: Fills the item stack in hand to maximum size.
+    permission:
+      surf.command.more
+    permission-message: You don't have permission to fill the item stack!
+
+  teleport:
+    usage: /teleport <location>
+    description: Teleports you to the given location
+    permission:
+      surf.command.teleport
+    permission-message: You don´t have permission to teleport
+
+permissions:
+  surf.essentials:
+    children:
+      surf.essentials.commands.suicide:
+        description: Allows you to suicide
+      surf.essentials.commands.suicide.others:
+        description: Allows you to suicide other players
+  surf.teleport.announce:
+    description: Anounce to you if someone has teleported
