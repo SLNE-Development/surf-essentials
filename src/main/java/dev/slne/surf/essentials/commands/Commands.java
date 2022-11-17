@@ -62,6 +62,8 @@ public class Commands {
         this.commands.add(new TimeCommand(this.surf.getCommand("time")));
         //WeatherCommand
         this.commands.add(new WeatherCommand(this.surf.getCommand("weather")));
+        //SpawnerCommand
+        this.commands.add(new SpawnerChangeCommand(this.surf.getCommand("spawner")));
     }
 
     /**

@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials;
 
+import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.brigadier.CheatTabComplete;
 import dev.slne.surf.essentials.brigadier.GeneralTabComplete;
@@ -126,7 +127,7 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
      *
      * @param s  the string to be checked for an int
      */
-    public boolean isInt(String s) {
+    public static boolean isInt(String s) {
         int i;
         try {
             i = Integer.parseInt(s);
@@ -143,7 +144,8 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
      *
      */
     public static Component NO_PERMISSION(){
-        return Component.text("Dafür hast du keine Berechtigung!", SurfColors.ERROR);
+        return SurfApi.getPrefix()
+                .append(Component.text("You do not have permission to execute this command!", SurfColors.ERROR));
     }
 
     /**
@@ -154,7 +156,7 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
      * @param firstHex  the first hex color
      * @param secondHex  the second hex color
      */
-    public Component gradientify(String input, String firstHex, String secondHex) {
+    public static Component gradientify(String input, String firstHex, String secondHex) {
 
         TextColor gradientFirst = TextColor.fromHexString(firstHex);
         TextColor gradientSecond = TextColor.fromHexString(secondHex);
@@ -173,4 +175,21 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
 
         return builder.build();
     }
+
+    /**
+     *
+     * converts ticks in a time format.
+     *
+     * @param ticks  the ticks to convert
+     * @return Time format in string
+     */
+    public static String ticksToString(int ticks){
+        int totalSeconds = ticks/20;
+        int hours, minutes, seconds;
+        hours = totalSeconds / 3600;
+        minutes = (totalSeconds % 3600) / 60;
+        seconds = totalSeconds % 60;
+        return String.format("%02dh %02dm %02ds", hours, minutes, seconds);
+    }
+
 }

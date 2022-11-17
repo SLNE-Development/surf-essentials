@@ -23,6 +23,8 @@ public class GeneralTabComplete {
         builder(commodore, "rule", new RuleBuilder().ruleBuilder());
         //weather command completions
         builder(commodore, "weather", new WeatherBuilder().weatherBuilder());
+        //spawner command completions
+        commodore.register(new SpawnerBuilder().spawnerBuilder());
 
     }
 
