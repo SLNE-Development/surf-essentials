@@ -1,11 +1,11 @@
-package dev.slne.surf.essentials.commands.tp;
+package dev.slne.surf.essentials.main.commands.tp;
 
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
-import dev.slne.surf.essentials.commands.EssentialsCommand;
-import dev.slne.surf.essentials.commands.tp.messages.Messages_DE;
-import dev.slne.surf.essentials.utils.nbt.NBTLocationReader;
+import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.main.commands.tp.messages.Messages_DE;
+import dev.slne.surf.essentials.main.utils.nbt.NBTLocationReader;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -21,9 +21,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
-
-import static dev.slne.surf.essentials.commands.tp.messages.Messages_DE.failedOfflineTeleportMessage_DE;
-import static dev.slne.surf.essentials.commands.tp.messages.Messages_DE.playerWasNeverOnlineMessage_DE;
 
 public class TeleportCommand extends EssentialsCommand {
     public TeleportCommand(PluginCommand command) {
@@ -218,7 +215,7 @@ public class TeleportCommand extends EssentialsCommand {
             public void onFail(Component message) {
                 player.sendMessage(message);
             }
-        }, playerWasNeverOnlineMessage_DE(target), failedOfflineTeleportMessage_DE());
+        }, Messages_DE.playerWasNeverOnlineMessage_DE(target), Messages_DE.failedOfflineTeleportMessage_DE());
     }
 
     /**
@@ -248,7 +245,7 @@ public class TeleportCommand extends EssentialsCommand {
             public void onFail(Component message) {
                 sender.sendMessage(message);
             }
-        }, failedOfflineTeleportMessage_DE());
+        }, Messages_DE.failedOfflineTeleportMessage_DE());
     }
 
     /**

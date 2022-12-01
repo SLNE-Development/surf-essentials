@@ -5,8 +5,8 @@ import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.brigadier.CheatTabComplete;
 import dev.slne.surf.essentials.brigadier.GeneralTabComplete;
 import dev.slne.surf.essentials.brigadier.TpTabComplete;
-import dev.slne.surf.essentials.commands.Commands;
-import dev.slne.surf.essentials.commands.general.sign.EditSignListener;
+import dev.slne.surf.essentials.main.commands.Commands;
+import dev.slne.surf.essentials.main.commands.general.sign.EditSignListener;
 import me.lucko.commodore.Commodore;
 import me.lucko.commodore.CommodoreProvider;
 import net.kyori.adventure.text.Component;
@@ -16,6 +16,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -190,6 +191,21 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
         minutes = (totalSeconds % 3600) / 60;
         seconds = totalSeconds % 60;
         return String.format("%02dh %02dm %02ds", hours, minutes, seconds);
+    }
+
+    /**
+     *
+     * Sends an error message to the sender.
+     *
+     * @param sender  the sender
+     * @param error  the error
+     */
+    public static void somethingWentWrongAsync_DE(Player sender, String error){
+        SurfApi.getUser(sender).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                .append(gradientify("Es ist ein Fehler aufgetreten:", "#eb3349", "#f45c43"))
+                .append(Component.newline())
+                .append(SurfApi.getPrefix())
+                .append(gradientify(error, "#EA98DA", "#5B6CF9"))));
     }
 
 }

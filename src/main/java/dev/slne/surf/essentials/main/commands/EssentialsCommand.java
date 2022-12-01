@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.commands;
+package dev.slne.surf.essentials.main.commands;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;

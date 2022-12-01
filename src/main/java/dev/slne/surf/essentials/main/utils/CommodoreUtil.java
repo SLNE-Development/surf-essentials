@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.utils;
+package dev.slne.surf.essentials.main.utils;
 
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.slne.surf.essentials.SurfEssentials;

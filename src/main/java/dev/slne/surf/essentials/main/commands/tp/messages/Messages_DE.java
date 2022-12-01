@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.commands.tp.messages;
+package dev.slne.surf.essentials.main.commands.tp.messages;
 
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;

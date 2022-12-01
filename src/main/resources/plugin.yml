@@ -143,6 +143,9 @@ commands:
     permission-message: You don´t have permission to teleport
 
   spawner:
+  suicide:
+  world:
+  createworld:
 
 permissions:
   surf.essentials:

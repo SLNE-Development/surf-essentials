@@ -23,6 +23,8 @@ public class CheatTabComplete {
         builder(commodore, "heal", new HealBuilder().healBuilder());
         //repair command completions
         builder(commodore, "repair", new RepairBuilder().repairBuilder());
+        //suicide command completions
+        builder(commodore, "suicide", new SuicideBuilder().suicideBuilder());
     }
 
 

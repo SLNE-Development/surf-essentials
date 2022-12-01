@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.utils.nbt;
+package dev.slne.surf.essentials.main.utils.nbt;
 
 import dev.slne.surf.essentials.SurfEssentials;
 import net.kyori.adventure.nbt.*;

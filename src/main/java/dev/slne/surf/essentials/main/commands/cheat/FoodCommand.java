@@ -1,8 +1,8 @@
-package dev.slne.surf.essentials.commands.cheat;
+package dev.slne.surf.essentials.main.commands.cheat;
 
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.commands.EssentialsCommand;
+import dev.slne.surf.essentials.main.commands.EssentialsCommand;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;

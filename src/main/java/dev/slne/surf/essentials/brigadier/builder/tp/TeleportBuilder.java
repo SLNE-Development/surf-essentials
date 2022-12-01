@@ -39,31 +39,29 @@ public class TeleportBuilder {
     }
     public LiteralCommandNode<?> teleport(){
         return LiteralArgumentBuilder.literal("teleport")
-                .then(RequiredArgumentBuilder.argument("location", DoubleArgumentType.doubleArg(-30000000, 30000000))
-                        .suggests((context, builder) -> builder.suggest("~").buildFuture())
-                        .then(RequiredArgumentBuilder.argument("location", DoubleArgumentType.doubleArg(-30000000, 30000000))
-                                .suggests((context, builder) -> builder.suggest("~").buildFuture())
-                                .then(RequiredArgumentBuilder.argument("location", DoubleArgumentType.doubleArg(-30000000, 30000000))
-                                        .suggests((context, builder) -> builder.suggest("~").buildFuture()))))
+                .then(LiteralArgumentBuilder.literal("~")
+                        .then(RequiredArgumentBuilder.argument("location", StringArgumentType.string()))
+                        .then(LiteralArgumentBuilder.literal("~")
+                                .then(RequiredArgumentBuilder.argument("location", StringArgumentType.string()))
+                                .then(LiteralArgumentBuilder.literal("~")
+                                        .then(RequiredArgumentBuilder.argument("location", StringArgumentType.string())))))
 
-
-                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word())
+                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.string())
                         .suggests((context, builder) -> {
                             Bukkit.getOnlinePlayers().forEach(player -> builder.suggest(player.getName()));
                             return builder.buildFuture();
                         })
+                        .then(LiteralArgumentBuilder.literal("~")
+                                .then(LiteralArgumentBuilder.literal("~")
+                                        .then(LiteralArgumentBuilder.literal("~"))))
 
-                        .then(RequiredArgumentBuilder.argument("location", DoubleArgumentType.doubleArg(-30000000, 30000000))
-                                .suggests((context, builder) -> builder.suggest("~").buildFuture())
-                                .then(RequiredArgumentBuilder.argument("location", DoubleArgumentType.doubleArg(-30000000, 30000000))
-                                        .suggests((context, builder) -> builder.suggest("~").buildFuture())
-                                        .then(RequiredArgumentBuilder.argument("location", DoubleArgumentType.doubleArg(-30000000, 30000000))
-                                                .suggests((context, builder) -> builder.suggest("~").buildFuture()))))
 
-                        .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word())
+                        .then(RequiredArgumentBuilder.argument("player", StringArgumentType.string())
                                 .suggests((context, builder) -> {
                                     Bukkit.getOnlinePlayers().forEach(player -> builder.suggest(player.getName()));
                                     return builder.buildFuture();
-                                }))).build();
+                                }))
+
+                ).build();
     }
 }

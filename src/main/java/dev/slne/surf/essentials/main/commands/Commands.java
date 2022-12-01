@@ -42,6 +42,9 @@ public class Commands {
         this.commands.add(new RepairCommand(this.surf.getCommand("repair")));
         //fillStackCommand
         this.commands.add(new FillStackCommand(this.surf.getCommand("more")));
+        //suicideCommand
+        this.commands.add(new SuicideCommand(this.surf.getCommand("suicide")));
+
     }
 
     /**

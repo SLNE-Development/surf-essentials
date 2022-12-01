@@ -1,9 +1,9 @@
-package dev.slne.surf.essentials.commands.general;
+package dev.slne.surf.essentials.main.commands.general;
 
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
-import dev.slne.surf.essentials.commands.EssentialsCommand;
+import dev.slne.surf.essentials.main.commands.EssentialsCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
