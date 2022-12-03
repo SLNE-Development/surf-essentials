@@ -146,6 +146,7 @@ commands:
   suicide:
   world:
   createworld:
+  poll:
 
 permissions:
   surf.essentials:

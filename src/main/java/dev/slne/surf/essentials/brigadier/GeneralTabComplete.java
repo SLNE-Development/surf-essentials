@@ -25,6 +25,8 @@ public class GeneralTabComplete {
         builder(commodore, "weather", new WeatherBuilder().weatherBuilder());
         //spawner command completions
         commodore.register(new SpawnerBuilder().spawnerBuilder());
+        //worldChange command completions
+        builder(commodore, "world", new WorldBuilder().worldChangeBuilder());
 
     }
 

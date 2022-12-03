@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.commands.general.sign;
+package dev.slne.surf.essentials.main.commands.general.sign;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

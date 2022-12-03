@@ -1,11 +1,13 @@
-package dev.slne.surf.essentials.commands;
+package dev.slne.surf.essentials.main.commands;
 
 import dev.slne.surf.essentials.SurfEssentials;
-import dev.slne.surf.essentials.commands.cheat.*;
-import dev.slne.surf.essentials.commands.general.*;
-import dev.slne.surf.essentials.commands.tp.TeleportAll;
-import dev.slne.surf.essentials.commands.tp.TeleportCommand;
-import dev.slne.surf.essentials.commands.tp.TeleportToTop;
+import dev.slne.surf.essentials.main.commands.cheat.*;
+import dev.slne.surf.essentials.main.commands.general.*;
+import dev.slne.surf.essentials.main.commands.general.other.poll.PollManager;
+import dev.slne.surf.essentials.main.commands.general.other.world.WorldCommand;
+import dev.slne.surf.essentials.main.commands.tp.TeleportAll;
+import dev.slne.surf.essentials.main.commands.tp.TeleportCommand;
+import dev.slne.surf.essentials.main.commands.tp.TeleportToTop;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +69,12 @@ public class Commands {
         this.commands.add(new WeatherCommand(this.surf.getCommand("weather")));
         //SpawnerCommand
         this.commands.add(new SpawnerChangeCommand(this.surf.getCommand("spawner")));
+        //WorldCommand
+        this.commands.add(new WorldCommand(this.surf.getCommand("world")));
+        //Poll Command
+        this.commands.add(new PollManager(this.surf.getCommand("poll")));
+
+
     }
 
     /**
