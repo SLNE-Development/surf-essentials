@@ -4,6 +4,7 @@ import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -23,11 +24,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static dev.slne.surf.essentials.main.utils.EssentialsUtil.sortedSuggestions;
+
 public class WorldCommand extends EssentialsCommand implements Listener {
     public WorldCommand(PluginCommand command) {
         super(command);
         command.setPermission("surf.essentials.command.world.create");
-        command.permissionMessage(SurfEssentials.NO_PERMISSION());
+        command.permissionMessage(EssentialsUtil.NO_PERMISSION());
         command.setUsage("/createworld <name> <environment> [<type>] [<generateStructures>]");
         command.setAliases(List.of("newworld", "addworld", "cworld"));
     }
@@ -222,20 +225,6 @@ public class WorldCommand extends EssentialsCommand implements Listener {
                 .append(Component.text("...!", SurfColors.INFO))));
     }
 
-    /**
-     *
-     * sorts the tab completion suggestion
-     *
-     * @param list  the list
-     * @param currentarg  the currentarg
-     * @param completions  the completions
-     */
-    public static void sortedSuggestions(List<String> list, String currentarg, List<String> completions){
-        for (String s : list) {
-            if (s.toLowerCase().startsWith(currentarg)) {
-                completions.add(s);
-            }
-        }
-    }
+
 
 }

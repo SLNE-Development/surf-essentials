@@ -3,6 +3,7 @@ package dev.slne.surf.essentials.main.commands.general.other.world;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -20,21 +21,21 @@ import static dev.slne.surf.essentials.main.commands.general.other.world.WorldCo
 public class WorldCreate {
     public static void createFromArguments(Player player, String[] args) {
         if (args.length == 1) {//no world name specified
-            SurfEssentials.somethingWentWrongAsync_DE(player, "Du musst einen Namen angeben!");
+            EssentialsUtil.somethingWentWrongAsync_DE(player, "Du musst einen Namen angeben!");
             return;
         }
 
         WorldCreator wc = new WorldCreator(args[1]);
 
         if (args.length == 2) {//No environment specified
-            SurfEssentials.somethingWentWrongAsync_DE(player, "Du musst ein environment angeben!");
+            EssentialsUtil.somethingWentWrongAsync_DE(player, "Du musst ein environment angeben!");
             return;
         }
         //checks if the environment is valid
         try {
             World.Environment.valueOf(args[2].toUpperCase());
         } catch (IllegalArgumentException exception) {
-            SurfEssentials.somethingWentWrongAsync_DE(player, "Du musst ein gültiges environment angeben! \nZum Beispiel: NORMAL, NETHER, THE_END");
+            EssentialsUtil.somethingWentWrongAsync_DE(player, "Du musst ein gültiges environment angeben! \nZum Beispiel: NORMAL, NETHER, THE_END");
             return;
         }
 
@@ -73,7 +74,7 @@ public class WorldCreate {
         try {
             type = WorldType.getByName(args[3]);
         } catch (NullPointerException e) {
-            SurfEssentials.somethingWentWrongAsync_DE(player, "Du musst einen gültigen WorldType angeben!");
+            EssentialsUtil.somethingWentWrongAsync_DE(player, "Du musst einen gültigen WorldType angeben!");
             return;
         }
         if (args.length == 5) {//creates a world with environment and WorldType
@@ -87,7 +88,7 @@ public class WorldCreate {
             return;
         }
         if (!isBoolean(args[4])) {//check if the arg is a boolean
-            SurfEssentials.somethingWentWrongAsync_DE(player, "Du musst einen Boolean angeben!");
+            EssentialsUtil.somethingWentWrongAsync_DE(player, "Du musst einen Boolean angeben!");
             return;
         }
         creatingWorld(player, wc);

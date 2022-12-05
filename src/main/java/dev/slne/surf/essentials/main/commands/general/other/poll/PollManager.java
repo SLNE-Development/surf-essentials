@@ -2,8 +2,8 @@ package dev.slne.surf.essentials.main.commands.general.other.poll;
 
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -12,13 +12,16 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static dev.slne.surf.essentials.main.utils.EssentialsUtil.sortedSuggestions;
 
 public class PollManager extends EssentialsCommand {
     public PollManager(PluginCommand command) {
         super(command);
-        command.setPermission("surf.essentials.commands.poll.make");
-        command.permissionMessage(SurfEssentials.NO_PERMISSION());
+        command.setPermission("surf.essentials.commands.poll.create");
+        command.permissionMessage(EssentialsUtil.NO_PERMISSION());
         command.setDescription("create a poll");
         command.setUsage("/poll create|delete|quick|analyze");
     }
@@ -37,8 +40,8 @@ public class PollManager extends EssentialsCommand {
                 return true;
             }
 
-            if (args[0].equalsIgnoreCase("quick")){
-
+            if (args[0].equalsIgnoreCase("create")){
+                PollCreateCommand.create(player, args);
             }
 
         }
@@ -47,7 +50,18 @@ public class PollManager extends EssentialsCommand {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return null;
+        List<String> list = new ArrayList<>();//all completion are added to the list
+        List<String> completions = new ArrayList<>();//the final completion list
+        String currentarg = args[args.length - 1];//the current argument
+
+        if (args.length > 1){
+            if (args[0].equalsIgnoreCase("quick")){
+                list.add("15");
+                list.add("900");
+                sortedSuggestions(list, currentarg, completions);
+            }
+        }
+        return completions;
     }
 
 }

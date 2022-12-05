@@ -147,6 +147,7 @@ commands:
   world:
   createworld:
   poll:
+  vote:
 
 permissions:
   surf.essentials:

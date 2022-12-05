@@ -2,7 +2,7 @@ package dev.slne.surf.essentials.main.commands.general.other.world;
 
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -18,7 +18,7 @@ import static org.bukkit.Bukkit.getServer;
 public class WorldLoad {
     public static void load(Player player, String[] args) {
         if (args.length == 1) {//no world given
-            SurfEssentials.somethingWentWrongAsync_DE(player, "Du musst eine Welt angeben!");
+            EssentialsUtil.somethingWentWrongAsync_DE(player, "Du musst eine Welt angeben!");
             return;
         }
         File file = new File(getServer().getWorldContainer(), args[1]);//gets the directory from the arg

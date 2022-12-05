@@ -2,7 +2,7 @@ package dev.slne.surf.essentials.main.commands.tp.messages;
 
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import java.util.Objects;
 
 public class Messages_DE {
-    SurfEssentials surf = SurfEssentials.getInstance();
 
     /**
      *
@@ -59,10 +58,10 @@ public class Messages_DE {
      */
     public void somethingWentWrongAsync_DE(Player sender, String error){
         SurfApi.getUser(sender).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                .append(surf.gradientify("Es ist ein Fehler aufgetreten:", "#eb3349", "#f45c43"))
+                .append(EssentialsUtil.gradientify("Es ist ein Fehler aufgetreten:", "#eb3349", "#f45c43"))
                 .append(Component.newline())
                 .append(SurfApi.getPrefix())
-                .append(surf.gradientify(error, "#EA98DA", "#5B6CF9"))));
+                .append(EssentialsUtil.gradientify(error, "#EA98DA", "#5B6CF9"))));
     }
 
     /**

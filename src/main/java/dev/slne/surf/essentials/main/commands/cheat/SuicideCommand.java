@@ -3,6 +3,7 @@ package dev.slne.surf.essentials.main.commands.cheat;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -23,7 +24,7 @@ public class SuicideCommand extends EssentialsCommand {
         command.setUsage("/suicide");
         command.setDescription("Makes you commit suicide.");
         command.setPermission("surf.essentials.commands.suicide");
-        command.permissionMessage(SurfEssentials.NO_PERMISSION());
+        command.permissionMessage(EssentialsUtil.NO_PERMISSION());
     }
 
     @Override

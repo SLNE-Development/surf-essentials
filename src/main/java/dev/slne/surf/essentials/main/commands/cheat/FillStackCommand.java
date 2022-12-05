@@ -4,6 +4,7 @@ import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
@@ -32,7 +33,7 @@ public class FillStackCommand extends EssentialsCommand {
             if (args.length == 0){
                 fillStack(player, true, null);
                 return true;
-            }else if (!SurfEssentials.getInstance().isInt(args[0])){
+            }else if (!EssentialsUtil.isInt(args[0])){
                 SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                         .append(Component.text("Du musst eine gültige Zahl angeben!", SurfColors.ERROR))));
                 return true;
@@ -51,7 +52,7 @@ public class FillStackCommand extends EssentialsCommand {
             if (args.length == 1) {
                 fillStack(Bukkit.getPlayerExact(args[0]), false, null );
             }
-            if (args.length > 2 && !SurfEssentials.getInstance().isInt(args[1])){
+            if (args.length > 2 && !EssentialsUtil.isInt(args[1])){
                 logger.warn(Component.text("You must enter a valid number!"));
                 return true;
             }

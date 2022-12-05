@@ -5,6 +5,7 @@ import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.commands.EssentialsCommand;
 import dev.slne.surf.essentials.main.commands.tp.messages.Messages_DE;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import dev.slne.surf.essentials.main.utils.nbt.NBTLocationReader;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -27,7 +28,6 @@ public class TeleportCommand extends EssentialsCommand {
         super(command);
     }
 
-    SurfEssentials surf = SurfEssentials.getInstance();
     Messages_DE messages_DE = new Messages_DE();
 
     @Override
@@ -91,7 +91,7 @@ public class TeleportCommand extends EssentialsCommand {
                         break;
                     } catch (Exception e) {
                         /* no location given */
-                        if (!surf.isInt(args[0]) || !surf.isInt(args[1]) || !surf.isInt(args[2])) {
+                        if (!EssentialsUtil.isInt(args[0]) || !EssentialsUtil.isInt(args[1]) || !EssentialsUtil.isInt(args[2])) {
                             /* message to sender */
                             messages_DE.somethingWentWrongAsync_DE(player, "Du musst einen gültigen Ort angeben!");
                             break;
@@ -116,7 +116,7 @@ public class TeleportCommand extends EssentialsCommand {
                             break;
                         } catch (Exception e) {
                             /* wrong input */
-                            if (surf.isInt(args[0]) || !surf.isInt(args[1]) || !surf.isInt(args[2]) || !surf.isInt(args[3])) {
+                            if (EssentialsUtil.isInt(args[0]) || !EssentialsUtil.isInt(args[1]) || !EssentialsUtil.isInt(args[2]) || !EssentialsUtil.isInt(args[3])) {
                                 /* message to sender */
                                 messages_DE.somethingWentWrongAsync_DE(player, "/tp <Spieler> <x> <y> <z>");
                                 break;
@@ -129,7 +129,7 @@ public class TeleportCommand extends EssentialsCommand {
                     }
 
                     /* wrong input */
-                    if (surf.isInt(args[0]) || !surf.isInt(args[1]) || !surf.isInt(args[2]) || !surf.isInt(args[3])) {
+                    if (EssentialsUtil.isInt(args[0]) || !EssentialsUtil.isInt(args[1]) || !EssentialsUtil.isInt(args[2]) || !EssentialsUtil.isInt(args[3])) {
                         /* message to sender */
                         messages_DE.somethingWentWrongAsync_DE(player, "/tp <Spieler> <x> <y> <z>");
                         break;
@@ -193,7 +193,7 @@ public class TeleportCommand extends EssentialsCommand {
             public void onSuccess(Location data) {
                 Bukkit.getScheduler().runTaskAsynchronously(SurfEssentials.getInstance(), () -> {
                     player.sendMessage(SurfApi.getPrefix()
-                            .append(surf.gradientify("Teleportiere...", "#F9655B", "#EE821A")));
+                            .append(EssentialsUtil.gradientify("Teleportiere...", "#F9655B", "#EE821A")));
 
                     player.teleportAsync(data);
 

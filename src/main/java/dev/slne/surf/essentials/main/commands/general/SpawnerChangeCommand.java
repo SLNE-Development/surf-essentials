@@ -2,8 +2,8 @@ package dev.slne.surf.essentials.main.commands.general;
 
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -31,9 +31,8 @@ public class SpawnerChangeCommand extends EssentialsCommand {
         command.setDescription("Allows you to change the type, speed and radius of a spawner.");
         command.setUsage("/spawner [<entity>] [<minSpawnDelay>] [<maxSpawnDelay>] [<spawnRange>] [<requiredPlayerRange>]");
         command.setPermission("surf.essentials.command.spawner");
-        command.permissionMessage(SurfEssentials.NO_PERMISSION());
+        command.permissionMessage(EssentialsUtil.NO_PERMISSION());
     }
-    SurfEssentials surf = SurfEssentials.getInstance();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -65,10 +64,10 @@ public class SpawnerChangeCommand extends EssentialsCommand {
                         .append(Component.text(spawner.getSpawnedType().toString().toLowerCase(), SurfColors.GOLD))
                         .append(Component.text(" alle ", SUCCESS))
                         .append(Component.text(spawner.getMinSpawnDelay(), SurfColors.GOLD)
-                                .hoverEvent(HoverEvent.showText(Component.text(surf.ticksToString(spawner.getMinSpawnDelay()), SurfColors.GRAY))))
+                                .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(spawner.getMinSpawnDelay()), SurfColors.GRAY))))
                         .append(Component.text(" - ", SUCCESS))
                         .append(Component.text(spawner.getMaxSpawnDelay(), SurfColors.GOLD)
-                                .hoverEvent(HoverEvent.showText(Component.text(surf.ticksToString(spawner.getMaxSpawnDelay()), SurfColors.GRAY))))
+                                .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(spawner.getMaxSpawnDelay()), SurfColors.GRAY))))
                         .append(Component.text(" ticks!", SUCCESS))));
                 return true;
             }
@@ -95,7 +94,7 @@ public class SpawnerChangeCommand extends EssentialsCommand {
                 //an entity and minimum-spawn-delay is given
                 case 2 -> {
                     //check if arg[1] is valid int
-                    if (!surf.isInt(args[1])) {
+                    if (!EssentialsUtil.isInt(args[1])) {
                         somethingWentWrongAsync_DE(player, "Du musst eine gültige Zahl angeben!");
                         break;
                     }
@@ -113,7 +112,7 @@ public class SpawnerChangeCommand extends EssentialsCommand {
                 //an entity, minimum-spawn-delay and maximum-spawn-delay is given
                 case 3 -> {
                     //check if arg[1] & arg[2] are valid integers
-                    if (!surf.isInt(args[1]) || !surf.isInt(args[2])) {
+                    if (!EssentialsUtil.isInt(args[1]) || !EssentialsUtil.isInt(args[2])) {
                         somethingWentWrongAsync_DE(player, "Du musst eine gültige Zahl angeben!");
                         break;
                     }
@@ -131,7 +130,7 @@ public class SpawnerChangeCommand extends EssentialsCommand {
                 }
                 //an entity, minimum-spawn-delay, maximum-spawn-delay and spawn-range is given
                 case 4 -> {
-                    if (!surf.isInt(args[1]) || !surf.isInt(args[2]) || !surf.isInt(args[3])) {
+                    if (!EssentialsUtil.isInt(args[1]) || !EssentialsUtil.isInt(args[2]) || !EssentialsUtil.isInt(args[3])) {
                         somethingWentWrongAsync_DE(player, "Du musst eine gültige Zahl angeben!");
                         break;
                     }
@@ -150,7 +149,7 @@ public class SpawnerChangeCommand extends EssentialsCommand {
                 }
                 //an entity, minimum-spawn-delay, maximum-spawn-delay, spawn-range and required-player-range is given
                 default -> {
-                    if (!surf.isInt(args[1]) || !surf.isInt(args[2]) || !surf.isInt(args[3]) || !surf.isInt(args[4])) {
+                    if (!EssentialsUtil.isInt(args[1]) || !EssentialsUtil.isInt(args[2]) || !EssentialsUtil.isInt(args[3]) || !EssentialsUtil.isInt(args[4])) {
                         somethingWentWrongAsync_DE(player, "Du musst eine gültige Zahl angeben!");
                         break;
                     }
@@ -200,10 +199,10 @@ public class SpawnerChangeCommand extends EssentialsCommand {
      */
     public void somethingWentWrongAsync_DE(Player sender, String error){
         SurfApi.getUser(sender).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                .append(surf.gradientify("Es ist ein Fehler aufgetreten:", "#eb3349", "#f45c43"))
+                .append(EssentialsUtil.gradientify("Es ist ein Fehler aufgetreten:", "#eb3349", "#f45c43"))
                 .append(Component.newline())
                 .append(SurfApi.getPrefix())
-                .append(surf.gradientify(error, "#EA98DA", "#5B6CF9"))));
+                .append(EssentialsUtil.gradientify(error, "#EA98DA", "#5B6CF9"))));
     }
 
     /**
@@ -221,10 +220,10 @@ public class SpawnerChangeCommand extends EssentialsCommand {
                 .append(Component.text(spawner.getSpawnedType().toString().toLowerCase(), SurfColors.GOLD))
                 .append(Component.text(" alle ", SUCCESS))
                 .append(Component.text(spawner.getMinSpawnDelay(), SurfColors.GOLD)
-                        .hoverEvent(HoverEvent.showText(Component.text(surf.ticksToString(spawner.getMinSpawnDelay()), SurfColors.GRAY))))
+                        .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(spawner.getMinSpawnDelay()), SurfColors.GRAY))))
                 .append(Component.text(" - ", SUCCESS))
                 .append(Component.text(spawner.getMaxSpawnDelay(), SurfColors.GOLD)
-                        .hoverEvent(HoverEvent.showText(Component.text(surf.ticksToString(spawner.getMaxSpawnDelay()), SurfColors.GRAY))))
+                        .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(spawner.getMaxSpawnDelay()), SurfColors.GRAY))))
                 .append(Component.text(" ticks, in einem Radius von ", SUCCESS))
                 .append(Component.text(spawner.getSpawnRange(), SurfColors.GOLD))
                 .append(Component.text(" Blöcken!", SUCCESS)));
