@@ -181,7 +181,7 @@ public class GamemodeCommand extends EssentialsCommand {
         player.setGameMode(gameMode);
         //Succes message to player
         player.sendMessage(SurfApi.getPrefix()
-                .append(Component.text("Deine Gamemode wurde auf ", SurfColors.SUCCESS))
+                .append(Component.text("Dein Gamemode wurde auf ", SurfColors.SUCCESS))
                 .append(Component.text(player.getGameMode().toString(), SurfColors.AQUA))
                 .append(Component.text(" gesetzt!", SurfColors.SUCCESS)));
 

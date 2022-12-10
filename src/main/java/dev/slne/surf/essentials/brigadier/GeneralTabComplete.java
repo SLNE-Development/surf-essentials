@@ -27,6 +27,10 @@ public class GeneralTabComplete {
         commodore.register(new SpawnerBuilder().spawnerBuilder());
         //worldChange command completions
         builder(commodore, "world", new WorldBuilder().worldChangeBuilder());
+        //poll command completions
+        builder(commodore, "poll", new PollBuilder().pollBuilder());
+        //vote command completions
+        builder(commodore, "vote", new VoteBuilder().voteBuilder());
 
     }
 

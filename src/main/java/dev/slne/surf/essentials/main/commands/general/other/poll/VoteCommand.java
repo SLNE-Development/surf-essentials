@@ -12,8 +12,11 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static dev.slne.surf.essentials.main.commands.general.other.poll.PollUtil.*;
 
 public class VoteCommand extends EssentialsCommand {
     public VoteCommand(PluginCommand command) {
@@ -27,47 +30,55 @@ public class VoteCommand extends EssentialsCommand {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (sender instanceof Player player) {
+            // Check if there are enough arguments
             if (args.length < 2){
+                // Not enough arguments, send a message with the current polls
                 SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Vote jetzt für eine umfrage!", SurfColors.INFO))
+                        .append(Component.text("Vote jetzt für eine Umfrage!", SurfColors.GREEN))
                         .append(Component.newline()
                                 .append(SurfApi.getPrefix()))
                         .append(Component.newline()
                                 .append(SurfApi.getPrefix()))
                         .append(Component.text("Aktuelle Umfragen: ", SurfColors.INFO))
-                        .append(Component.text(Arrays.toString(PollUtil.polls.toArray()), SurfColors.TERTIARY))));
+                        .append(Component.text(Arrays.toString(polls.toArray()), SurfColors.TERTIARY))));
                 return true;
             }
 
-            if(!PollUtil.polls.contains(args[0])){
+            // Check if the specified poll exists
+            if(!polls.contains(args[0])){
+                // Poll does not exist, send an error message
                 SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                         .append(Component.text("Aktuell läuft keine Umfrage mit dem Namen ", SurfColors.ERROR))
                         .append(Component.text(args[0], SurfColors.TERTIARY))
                         .append(Component.text("!", SurfColors.ERROR))));
                 return true;
             }
+
+            // Check if the second argument is "yes" or "no"
             if (!isYesNo(args[1])){
+                // Second argument is not "yes" or "no", send an error message
                 SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                         .append(Component.text("Du musst ", SurfColors.ERROR))
                         .append(Component.text("yes/no", SurfColors.TERTIARY))
                         .append(Component.text(" angeben!", SurfColors.ERROR))));
                 return true;
             }
-            if (PollUtil.hasVoted(player, args[0])){
+
+            // Check if the player has already voted in the specified poll
+            if (hasVoted(player, args[0])){
+                // Player has already voted, send an error message
                 SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                         .append(Component.text("Du kannst nur einmal voten!", SurfColors.ERROR))));
                 return true;
             }
-            if (args[1].equalsIgnoreCase("yes")){
-                PollUtil.addYesCount(args[0]);
-                PollUtil.addVoted(player, args[0]);
-                PollUtil.successVote(player);
-            }
-            if (args[1].equalsIgnoreCase("no")){
-                PollUtil.addNoCount(1);
-                PollUtil.addVoted(player, args[0]);
-                PollUtil.successVote(player);
-            }
+
+            // Add the player's vote to the poll
+            if (args[1].equalsIgnoreCase("yes")) addYesCount(args[0]);
+            else if (args[1].equalsIgnoreCase("no")) addNoCount(args[0]);
+            // Mark the player as having voted in the poll
+            addVoted(player, args[0]);
+            // Send a success message
+            successVote(player);
 
         }
         return true;
@@ -75,7 +86,16 @@ public class VoteCommand extends EssentialsCommand {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return null;
+        List<String> completions = new ArrayList<>(); // the final completion list
+        String currentarg = args[args.length - 1]; // the current argument
+
+        switch (args.length) {
+            case 1 -> completions.addAll(polls);
+            case 2 -> completions.addAll(Arrays.asList("yes", "no"));
+        }
+
+        completions.removeIf(s -> !s.startsWith(currentarg.toLowerCase()));
+        return completions;
     }
 
     private Boolean isYesNo(String check){

@@ -64,7 +64,7 @@ public class WorldRemove {
         World world = Bukkit.getWorld(args[1]);//the world to unload
 
         if (world != null) {//check if the world is loaded
-            SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+            SurfApi.getUser(player).thenAccept(user -> user.sendMessage(SurfApi.getPrefix()
                     .append(Component.text("Entlade Welt ", SurfColors.INFO))
                     .append(Component.text(args[1], SurfColors.TERTIARY))
                     .append(Component.text("...", SurfColors.INFO))));
@@ -84,7 +84,7 @@ public class WorldRemove {
             Bukkit.unloadWorld(world, false);//unloads the world
         }
         //message to the sender
-        SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+        SurfApi.getUser(player).thenAccept(user -> user.sendMessage(SurfApi.getPrefix()
                 .append(Component.text("Lösche Welt Dateien von ", SurfColors.INFO))
                 .append(Component.text(args[1], SurfColors.TERTIARY))
                 .append(Component.text("...", SurfColors.INFO))));

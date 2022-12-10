@@ -9,167 +9,77 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PollCreateCommand {
     public static void create(Player player, String[] args) {
+        // Check if there are enough arguments
         if (args.length < 3) {
+            // Not enough arguments, send an error message
             SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Benutzung: ", SurfColors.WARNING))
-                    .append(Component.text("/poll create <name> <time> <question>", SurfColors.INFO))));
+                    .append(Component.text("Korrekte Benutzung: ", SurfColors.RED))
+                    .append(Component.text("/poll create <name> <time> <question>", SurfColors.TERTIARY))));
             return;
         }
 
+        // Check if the time argument is an integer
         if (!EssentialsUtil.isInt(args[2])) {
+            // Time argument is not an integer, send an error message
             SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                     .append(Component.text("Du musst eine gültige Zeit angeben!", SurfColors.ERROR))));
             return;
         }
 
+        // Get the poll name from the arguments
         String pollName = args[1];
-        AtomicReference<Integer> timeInSeconds = new AtomicReference<>(Integer.parseInt(args[2]));
-        String question = "";
-        for (int i = 3; i < args.length; i++) question += args[i] + " ";
-        final String finalQuestion = question;
 
-        PollUtil.addPollName(pollName);
-        PollUtil.isPoll(true);
+        // Check if the poll already exists
+        if (PollUtil.polls.contains(pollName)) {
+            // Poll already exists, send an error message
+            SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                    .append(Component.text("Die Umfrage existiert schon!", SurfColors.ERROR))));
+            return;
+        }
+
+        // Get the time for the poll in seconds from the arguments
+        AtomicReference<Integer> timeInSeconds = new AtomicReference<>(Integer.parseInt(args[2]));
+
+        // Get the poll question from the arguments
+        String question = String.join(" ", Arrays.copyOfRange(args, 3, args.length));
+
+        // Start the poll
         PollUtil.startPoll(pollName, timeInSeconds.get(), question);
+
+        // Create a new task to run asynchronously
         new BukkitRunnable() {
             @Override
             public void run() {
+                // Get the time remaining for the poll
                 int time = timeInSeconds.get();
-                if (time == 0) cancel();
+
+                // Check if the poll time has elapsed
+                if (time == 0) cancel(); // Cancel the task
+
+                // Decrement the time remaining for the poll
                 time -= 1;
-                if (time == 30*60){
-                    PollUtil.reminder(pollName, finalQuestion, time);
+
+                // Check if a reminder should be sent
+                if (time == 30 * 60 || time == 15 * 60 || time == 10 * 60 || time == 5 * 60 || time == 60) {
+                    // Send a reminder message
+                    PollUtil.reminder(pollName, time);
                 }
-                if (time == 15*60){
-                    PollUtil.reminder(pollName, finalQuestion, time);
-                }
-                if (time == 10*60){
-                    PollUtil.reminder(pollName, finalQuestion, time);
-                }
-                if (time == 5*60){
-                    PollUtil.reminder(pollName, finalQuestion, time);
-                }
-                if (time == 60){
-                    PollUtil.reminder(pollName, finalQuestion, time);
-                }
+
+                // Update the time remaining for the poll
                 timeInSeconds.set(time);
             }
         }.runTaskTimerAsynchronously(SurfEssentials.getInstance(), 0, 20);
 
+        // Schedule a task to end the poll when the time elapses
         Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), () -> {
-            PollUtil.endPoll(pollName, finalQuestion);
+            // End the poll
+            PollUtil.endPoll(pollName, false);
         }, timeInSeconds.get() * 20);
     }
 
-
-
-
-
-
-/**
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        String allArgs = "";
-        for (int i = 2; i < args.length; i++) allArgs += args[i] + " ";//adds all arguments to the string
-        final String finalAllArgs = allArgs;
-        int timeSeconds;
-
-        if (!EssentialsUtil.isInt(args[1])) timeSeconds = 900;
-        else timeSeconds = Integer.parseInt(args[1]);
-
-        if (args.length == 2){
-            SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Bitte gib eine Frage an", SurfColors.INFO))));
-            return;
-        }
-
-        PollUtil.isPoll(true);
-        Bukkit.broadcast(SurfApi.getPrefix()
-                .append(Component.newline())
-                .append(SurfApi.getPrefix()
-                        .append(Component.text("----------------------------------------", SurfColors.DARK_GRAY)))
-                .append(Component.newline())
-                .append(SurfApi.getPrefix())
-                .append(Component.text(finalAllArgs, TextColor.fromHexString("#eea990")))
-                .append(Component.newline())
-                .append(SurfApi.getPrefix())
-                .append(Component.newline())
-                .append(SurfApi.getPrefix()
-                        .append(Component.text("Zeit: ", TextColor.fromHexString("#E5E1D6")))
-                        .append(Component.text(time(timeSeconds), TextColor.fromHexString("#c0dad4"))))
-                .append(Component.newline())
-                .append(SurfApi.getPrefix())
-                .append(Component.newline())
-                .append(SurfApi.getPrefix())
-                .append(Component.text("Ja ", SurfColors.GREEN)
-                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Abstimmen", SurfColors.DARK_GRAY)))
-                        .clickEvent(ClickEvent.runCommand("/vote yes")))
-                .append(Component.text("|", SurfColors.GRAY))
-                .append(Component.text(" Nein", SurfColors.RED)
-                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Abstimmen", SurfColors.DARK_GRAY)))
-                        .clickEvent(ClickEvent.runCommand("/vote no")))
-                .append(Component.newline())
-                .append(SurfApi.getPrefix()
-                        .append(Component.text("----------------------------------------", SurfColors.DARK_GRAY)))
-                .append(Component.newline())
-                .append(SurfApi.getPrefix()));
-
-
-        SurfEssentials.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), () -> {
-            Bukkit.broadcast(SurfApi.getPrefix()
-                    .append(Component.newline())
-                    .append(SurfApi.getPrefix()
-                            .append(Component.text("----------------------------------------", SurfColors.DARK_GRAY)))
-                    .append(Component.newline())
-                    .append(SurfApi.getPrefix())
-                    .append(Component.text(finalAllArgs, TextColor.fromHexString("#eea990")))
-                    .append(Component.newline())
-                    .append(SurfApi.getPrefix())
-                    .append(Component.newline())
-                    .append(SurfApi.getPrefix()
-                            .append(Component.text("Zeit: ", TextColor.fromHexString("#E5E1D6")))
-                            .append(Component.text("Beendet", TextColor.fromHexString("#c0dad4"))))
-                    .append(Component.newline())
-                    .append(SurfApi.getPrefix())
-                    .append(Component.newline())
-                    .append(SurfApi.getPrefix())
-                    .append(Component.text("Ja ", SurfColors.GREEN)
-                            .append(Component.text("%d%x".formatted(PollUtil.yesCount))))
-                    .append(Component.text(" | ", SurfColors.GRAY))
-                    .append(Component.text("Nein ", SurfColors.RED)
-                            .append(Component.text("%d%%x".formatted(PollUtil.noCount), SurfColors.RED)))
-                    .append(Component.newline())
-                    .append(SurfApi.getPrefix()
-                            .append(Component.text("----------------------------------------", SurfColors.DARK_GRAY)))
-                    .append(Component.newline())
-                    .append(SurfApi.getPrefix()));
-            PollUtil.isPoll(false);
-        }, timeSeconds* 20);
-    }
-
-    private static String time(int totalSeconds){
-        int hours, minutes, seconds;
-        hours = totalSeconds / 3600;
-        minutes = (totalSeconds % 3600) / 60;
-        seconds = totalSeconds % 60;
-
-        return String.format("%02dh:%02dm:%02ds", hours, minutes, seconds);
-    }
- */
 }

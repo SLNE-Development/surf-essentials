@@ -219,7 +219,7 @@ public class WorldCommand extends EssentialsCommand implements Listener {
      * @param world  the WorldCreator
      */
     public static void creatingWorld(Player target, WorldCreator world){
-        SurfApi.getUser(target).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+        SurfApi.getUser(target).thenAccept(user -> user.sendMessage(SurfApi.getPrefix()
                 .append(Component.text("Erstelle Welt ", SurfColors.INFO))
                 .append(Component.text(world.name(), SurfColors.TERTIARY))
                 .append(Component.text("...!", SurfColors.INFO))));

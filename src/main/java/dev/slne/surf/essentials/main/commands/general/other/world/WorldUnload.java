@@ -52,7 +52,7 @@ public class WorldUnload {
             return;
         }
         //message to the sender
-        SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+        SurfApi.getUser(player).thenAccept(user -> user.sendMessage(SurfApi.getPrefix()
                 .append(Component.text("Entlade Welt ", SurfColors.INFO))
                 .append(Component.text(args[1], SurfColors.TERTIARY))
                 .append(Component.text("...", SurfColors.INFO))));

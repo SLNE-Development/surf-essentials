@@ -13,9 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import static dev.slne.surf.essentials.main.utils.EssentialsUtil.sortedSuggestions;
+import java.util.stream.Collectors;
 
 public class PollManager extends EssentialsCommand {
     public PollManager(PluginCommand command) {
@@ -23,45 +23,83 @@ public class PollManager extends EssentialsCommand {
         command.setPermission("surf.essentials.commands.poll.create");
         command.permissionMessage(EssentialsUtil.NO_PERMISSION());
         command.setDescription("create a poll");
-        command.setUsage("/poll create|delete|quick|analyze");
+        command.setUsage("/poll create|delete|end");
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (sender instanceof Player player){
-            if (args.length == 0){
-                if (!PollUtil.isPoll()) {
-                    SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                            .append(Component.text("Aktuell läuft keine Abstimmung!", SurfColors.INFO))));
-                } else {
-                    SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                            .append(Component.text("Aktuell läuft eine Abstimmung!", SurfColors.INFO))));
-                }
+        if (sender instanceof Player player) {
+            if (args.length == 0) {
+                SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                        .append(Component.text("Korrekte Benutzung: ", SurfColors.RED))
+                        .append(Component.text("/poll <create | end | delete | list>", SurfColors.TERTIARY))
+                        .append(Component.newline()
+                                .append(SurfApi.getPrefix()))
+                        .append(Component.newline()
+                                .append(SurfApi.getPrefix()))
+                        .append(Component.text("Aktuelle Umfragen: ", SurfColors.INFO)
+                                .append(Component.text(String.join(", ", PollUtil.polls), SurfColors.TERTIARY)))));
                 return true;
             }
 
-            if (args[0].equalsIgnoreCase("create")){
-                PollCreateCommand.create(player, args);
+            String subCommand = args[0].toLowerCase();
+            switch (subCommand) {
+                case "create" -> PollCreateCommand.create(player, args);
+                case "end" -> PollEndCommand.end(player, args);
+                case "delete" -> PollDeleteCommand.deletePoll(player, args);
+                case "list" -> PollListCommand.list(player, args);
+                default ->
+                        // Send an error message if the command is not recognized
+                        SurfApi.getUser(player).thenAccept(user -> user.sendMessage(SurfApi.getPrefix()
+                                .append(Component.text("Falscher Befehl: ", SurfColors.ERROR))
+                                .append(Component.text(subCommand, SurfColors.TERTIARY))
+                                .append(Component.text(" - verwende /poll <create | end | delete | list>", SurfColors.INFO))));
             }
-
         }
         return true;
     }
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        List<String> list = new ArrayList<>();//all completion are added to the list
-        List<String> completions = new ArrayList<>();//the final completion list
-        String currentarg = args[args.length - 1];//the current argument
+        // Initialize the list of completions
+        List<String> completions = new ArrayList<>();
 
-        if (args.length > 1){
-            if (args[0].equalsIgnoreCase("quick")){
-                list.add("15");
-                list.add("900");
-                sortedSuggestions(list, currentarg, completions);
+        // Get the current argument being completed
+        String currentarg = args[args.length - 1];
+
+        // Check the number of arguments passed to the command
+        if (args.length == 1) {
+            // Add suggestions for the first argument
+            completions.addAll(Arrays.asList("create", "delete", "end", "list"));
+        } else {
+            // Get the first argument (the subcommand)
+            String subCommand = args[0].toLowerCase();
+
+            switch (subCommand) {
+                case "create":
+                    // Add suggestions for the "create" subcommand
+                    if (args.length == 2) {
+                        completions.add("NAME");
+                    } else if (args.length == 3) {
+                        completions.addAll(Arrays.asList("SECONDS", "60", "300", "600", "900"));
+                    } else completions.add("QUESTION");
+                    break;
+                case "end":
+                case "delete":
+                case "list":
+                    // Add suggestions for the "end", "delete", and "list" subcommands
+                    completions.add("NAME");
+                    break;
+                default:
+                    // Don't provide suggestions for unknown subcommands
+                    break;
             }
         }
-        return completions;
+
+        // Filter the completions list and return the suggestions that match the current argument
+        return completions.stream()
+                .filter(s -> s.toLowerCase().startsWith(currentarg.toLowerCase()))
+                .collect(Collectors.toList());
     }
 
 }
