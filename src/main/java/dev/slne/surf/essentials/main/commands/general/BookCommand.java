@@ -22,7 +22,7 @@ public class BookCommand extends EssentialsCommand {
     public BookCommand(PluginCommand command) {
         super(command);
         command.setPermission("surf.essentials.commands.book");
-        command.setUsage("/<command> [title|author <name>]");
+        command.setUsage("/book [title|author <name>]");
         command.setDescription("Allows reopening and editing of sealed books.");
         command.permissionMessage(EssentialsUtil.NO_PERMISSION());
     }

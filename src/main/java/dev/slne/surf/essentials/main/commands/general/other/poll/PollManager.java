@@ -23,7 +23,7 @@ public class PollManager extends EssentialsCommand {
         command.setPermission("surf.essentials.commands.poll.create");
         command.permissionMessage(EssentialsUtil.NO_PERMISSION());
         command.setDescription("create a poll");
-        command.setUsage("/poll create|delete|end");
+        command.setUsage("/poll create|delete|end|list");
     }
 
     @Override

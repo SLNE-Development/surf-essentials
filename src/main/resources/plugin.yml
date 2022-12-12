@@ -145,7 +145,6 @@ commands:
   spawner:
   suicide:
   world:
-  createworld:
   poll:
   vote:
   book:

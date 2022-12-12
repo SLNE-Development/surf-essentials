@@ -31,7 +31,8 @@ public class WorldCommand extends EssentialsCommand implements Listener {
         super(command);
         command.setPermission("surf.essentials.command.world.create");
         command.permissionMessage(EssentialsUtil.NO_PERMISSION());
-        command.setUsage("/createworld <name> <environment> [<type>] [<generateStructures>]");
+        command.setUsage("/world <name> <environment> [<type>] [<generateStructures>]");
+        command.setDescription("Create Worlds in game");
         command.setAliases(List.of("newworld", "addworld", "cworld"));
     }
 
