@@ -76,7 +76,8 @@ public class Commands {
         this.commands.add(new PollManager(this.surf.getCommand("poll")));
         //Vote Command
         this.commands.add(new VoteCommand(this.surf.getCommand("vote")));
-
+        //Book Command
+        this.commands.add(new BookCommand(this.surf.getCommand("book")));
 
     }
 

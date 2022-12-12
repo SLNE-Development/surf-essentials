@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public abstract class EssentialsUtil {
      *
      * @param s  the string to be checked for an int
      */
-    public static boolean isInt(String s) {
+    public static boolean isInt(@NotNull String s) {
         int i;
         try {
             i = Integer.parseInt(s);
@@ -45,7 +46,7 @@ public abstract class EssentialsUtil {
      * @param firstHex  the first hex color
      * @param secondHex  the second hex color
      */
-    public static Component gradientify(String input, String firstHex, String secondHex) {
+    public static Component gradientify(@NotNull String input, @NotNull String firstHex, @NotNull String secondHex) {
 
         TextColor gradientFirst = TextColor.fromHexString(firstHex);
         TextColor gradientSecond = TextColor.fromHexString(secondHex);
@@ -88,7 +89,7 @@ public abstract class EssentialsUtil {
      * @param sender  the sender
      * @param error  the error
      */
-    public static void somethingWentWrongAsync_DE(Player sender, String error){
+    public static void somethingWentWrongAsync_DE(@NotNull Player sender, @NotNull String error){
         SurfApi.getUser(sender).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                 .append(gradientify("Es ist ein Fehler aufgetreten:", "#eb3349", "#f45c43"))
                 .append(Component.newline())
@@ -104,7 +105,7 @@ public abstract class EssentialsUtil {
      * @param currentarg  the currentarg
      * @param completions  the completions
      */
-    public static void sortedSuggestions(List<String> list, String currentarg, List<String> completions){
+    public static void sortedSuggestions(@NotNull List<String> list, @NotNull String currentarg, @NotNull List<String> completions){
         for (String s : list) {
             if (s.toLowerCase().startsWith(currentarg)) {
                 completions.add(s);

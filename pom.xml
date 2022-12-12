@@ -13,42 +13,51 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.javalite/activejdbc -->
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activejdbc</artifactId>
             <version>3.1-j11-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
+        <!-- https://papermc.io/using-the-api -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.19.2-R0.1-SNAPSHOT</version>
+            <version>1.19.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <!-- enter link -->
         <dependency>
             <groupId>dev.slne</groupId>
             <artifactId>surf-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
+        <!-- https://docs.adventure.kyori.net/getting-started.html -->
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-nbt</artifactId>
             <version>4.11.0</version>
             <scope>compile</scope>
         </dependency>
+        <!-- https://github.com/Mojang/brigadier -->
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>brigadier</artifactId>
             <version>1.0.17</version>
             <scope>provided</scope>
         </dependency>
+        <!-- https://github.com/lucko/commodore#usage -->
         <dependency>
             <groupId>me.lucko</groupId>
             <artifactId>commodore</artifactId>
             <version>2.2</version>
             <scope>compile</scope>
         </dependency>
+        <!-- https://github.com/Alvinn8/paper-nms-maven-plugin -->
         <dependency>
             <groupId>ca.bkaw</groupId>
             <artifactId>paper-nms</artifactId>
@@ -56,6 +65,7 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
     <repositories>
         <repository>
             <id>slne-snapshot</id>
@@ -72,6 +82,10 @@
         <repository>
             <id>minecraft-repo</id>
             <url>https://libraries.minecraft.net/</url>
+        </repository>
+        <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
     </repositories>
     <pluginRepositories>
@@ -111,7 +125,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>17</source>
                     <release>17</release>

@@ -31,6 +31,8 @@ public class GeneralTabComplete {
         builder(commodore, "poll", new PollBuilder().pollBuilder());
         //vote command completions
         builder(commodore, "vote", new VoteBuilder().voteBuilder());
+        //book command completions
+        builder(commodore, "book", new BookBuilder().bookBuilder());
 
     }
 
