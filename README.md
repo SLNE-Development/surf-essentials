@@ -25,6 +25,14 @@ Makes the server commands better and more peronalized.
 - `/weather <weather>` _Changes the weather with default length of 5 minutes_
 - `/weather <weather> <duration>` _Changes the weather with duration_
 - `/speed <speed>` _Changes the walk/fly speed of the player_
+- `/more` _Fills the item stack in hand to maximum size_
+- `/teleport <location>` _Teleports you to the given location_
+- `/spawner [<entity>] [<minSpawnDelay>] [<maxSpawnDelay>] [<spawnRange>] [<requiredPlayerRange>]` _Allows you to change the type, speed, radius, etc. of a spawner_
+- `/suicide` _Makes you commit suicide_
+- `/world <name> <environment> [<type>] [<generateStructures>]` _Create Worlds in game_
+- `/poll <create|delete|end|list>` _create a poll_
+- `/vote <poll> <yes|no>` _Vote for polls!_
+- `/book [title|author <name>]` _Allows reopening and editing of sealed books._
 ## Authors
 
 - [@twisti](https://git.slne.dev/twisti)
