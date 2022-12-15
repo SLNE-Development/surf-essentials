@@ -12,7 +12,6 @@ Makes the server commands better and more peronalized.
   
 
 1. [Commands](#Commands)
-
 2. [Authors](#Authors)
 3. [Permission](#Permission)
 
@@ -69,6 +68,8 @@ Makes the server commands better and more peronalized.
 - `/vote <poll> <yes|no>` _Vote for polls!_
 
 - `/book [title|author <name>]` _Allows reopening and editing of sealed books._
+
+- `/worldbroadcast <world> <broadcast message>` _Sends a message to all players in the world_
 
 ## Permission
 ***Note:** these are not finished yet*

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static dev.slne.surf.essentials.main.utils.EssentialsUtil.sortedSuggestions;
 
@@ -226,6 +227,14 @@ public class WorldCommand extends EssentialsCommand implements Listener {
                 .append(Component.text("...!", SurfColors.INFO))));
     }
 
+    public static List<String> getCustomLoadedWorlds(){
+        List<World> worlds = Bukkit.getWorlds();
 
-
+        return worlds.stream()
+                .filter(world -> !world.getName().equalsIgnoreCase("world")
+                        && !world.getName().equalsIgnoreCase("world_the_end")
+                        && !world.getName().equalsIgnoreCase("world_the_nether"))
+                .map(World::getName)
+                .collect(Collectors.toList());
+    }
 }
