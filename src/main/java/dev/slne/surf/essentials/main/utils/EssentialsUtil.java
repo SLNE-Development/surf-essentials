@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -111,5 +112,20 @@ public abstract class EssentialsUtil {
                 completions.add(s);
             }
         }
+    }
+
+    /**
+     * Returns whether the given player is vanished or not.
+     * A player is considered vanished if they have a "vanished" metadata value
+     * set to `true`.
+     *
+     * @param player the player to check
+     * @return `true` if the player is vanished, `false` otherwise
+     */
+    public static boolean isVanished(Player player) {
+        for (MetadataValue meta : player.getMetadata("vanished")) {
+            if (meta.asBoolean()) return true;
+        }
+        return false;
     }
 }
