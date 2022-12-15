@@ -1,7 +1,7 @@
 name: SurfEssentials
 version: '${project.version}'
 main: dev.slne.surf.essentials.SurfEssentials
-api-version: 1.19.3
+api-version: 1.19
 depend: [SurfAPI]
 authors: [Twisti_twixi]
 load: POSTWORLD
