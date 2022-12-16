@@ -77,6 +77,8 @@ Makes the server commands better and more peronalized.
 
 - `/kill [targets]` _kills yourself or the specified target_
 
+- `/enchant <targets> <enchantment> [level]` _enchants the items the targets are holding_
+
 ## Permission
 ***Note:** these are not finished yet*
 
