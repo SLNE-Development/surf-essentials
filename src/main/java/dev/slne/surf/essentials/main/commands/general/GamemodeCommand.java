@@ -4,7 +4,6 @@ import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.commands.EssentialsCommand;
-import dev.slne.surf.independent.logger.LogLevel;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
@@ -182,19 +181,19 @@ public class GamemodeCommand extends EssentialsCommand {
         //Succes message to player
         player.sendMessage(SurfApi.getPrefix()
                 .append(Component.text("Dein Gamemode wurde auf ", SurfColors.SUCCESS))
-                .append(Component.text(player.getGameMode().toString(), SurfColors.AQUA))
+                .append(Component.text(player.getGameMode().toString().toLowerCase(), SurfColors.TERTIARY))
                 .append(Component.text(" gesetzt!", SurfColors.SUCCESS)));
 
         //message for moderators
         final Component gamemodeChange = SurfApi.getPrefix()
                 .append(player.teamDisplayName())
-                .append(Component.text(" hat in den Gamemode ", SurfColors.DARK_AQUA))
-                .append(Component.text(player.getGameMode().toString(), SurfColors.AQUA))
-                .append(Component.text(" gewechselt!", SurfColors.DARK_AQUA));
+                .append(Component.text(" hat in den Gamemode ", SurfColors.INFO))
+                .append(Component.text(player.getGameMode().toString().toLowerCase(), SurfColors.TERTIARY))
+                .append(Component.text(" gewechselt!", SurfColors.INFO));
 
         Bukkit.broadcast(gamemodeChange, "surf.gamemode.announce");
         //log gamemode change
-        SurfApi.getLogger(SurfEssentials.class).info(LogLevel.INFO, Component.text("Set ", SurfColors.SUCCESS)
+        SurfEssentials.logger().info(Component.text("Set ", SurfColors.SUCCESS)
                 .append(player.teamDisplayName())
                         .append(Component.text("´s ",SurfColors.GOLD))
                 .append(Component.text("game mode to ", SurfColors.SUCCESS))
@@ -213,16 +212,16 @@ public class GamemodeCommand extends EssentialsCommand {
             onlinePlayer.setGameMode(gameMode);
             //succes message
             onlinePlayer.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Deine Gamemode wurde auf ", SurfColors.SUCCESS))
-                    .append(Component.text(gameMode.toString(), SurfColors.AQUA))
+                    .append(Component.text("Dein Gamemode wurde auf ", SurfColors.SUCCESS))
+                    .append(Component.text(gameMode.toString(), SurfColors.TERTIARY))
                     .append(Component.text(" gesetzt!", SurfColors.SUCCESS)));
         }
 
         //message to moderators in german
         final Component gamemodeChangeAll_de = SurfApi.getPrefix()
-                .append(Component.text("Der Gamemode von allen Spielern wurde auf ", SurfColors.AQUA))
-                .append(Component.text(gameMode.toString(), SurfColors.DARK_AQUA))
-                .append(Component.text(" gesetzt!", SurfColors.AQUA));
+                .append(Component.text("Der Gamemode von allen Spielern wurde auf ", SurfColors.INFO))
+                .append(Component.text(gameMode.toString(), SurfColors.TERTIARY))
+                .append(Component.text(" gesetzt!", SurfColors.INFO));
 
         //log message in english
         final Component gamemodeChangeAll_en = Component.text("The gamemode of all players was set to ", SurfColors.AQUA)
@@ -231,7 +230,7 @@ public class GamemodeCommand extends EssentialsCommand {
 
         Bukkit.broadcast(gamemodeChangeAll_de, "surf.gamemode.announce");
 
-        SurfApi.getLogger(SurfEssentials.class).info(LogLevel.INFO, gamemodeChangeAll_en);
+        SurfEssentials.logger().info(gamemodeChangeAll_en);
     }
 
 }

@@ -71,6 +71,10 @@ Makes the server commands better and more peronalized.
 
 - `/worldbroadcast <world> <broadcast message>` _Sends a message to all players in the world_
 
+- `/list [uuids]` _List all online players and if specified with their UUID_
+
+- `lightning <player> [power]` _summons a lightning at a player_
+
 ## Permission
 ***Note:** these are not finished yet*
 
