@@ -2,6 +2,7 @@ package dev.slne.surf.essentials.main.commands;
 
 import dev.slne.surf.essentials.main.commands.cheat.LightningCommand;
 import dev.slne.surf.essentials.main.commands.general.BroadcastWorldCommand;
+import dev.slne.surf.essentials.main.commands.general.KillCommand;
 import dev.slne.surf.essentials.main.commands.general.ListCommand;
 
 public class BrigadierCommands {
@@ -12,5 +13,7 @@ public class BrigadierCommands {
         ListCommand.register();
         //lighting command
         LightningCommand.register();
+        //kill command
+        KillCommand.register();
     }
 }

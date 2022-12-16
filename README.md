@@ -73,7 +73,9 @@ Makes the server commands better and more peronalized.
 
 - `/list [uuids]` _List all online players and if specified with their UUID_
 
-- `lightning <player> [power]` _summons a lightning at a player_
+- `/lightning <player> [power]` _summons a lightning at a player_
+
+- `/kill [targets]` _kills yourself or the specified target_
 
 ## Permission
 ***Note:** these are not finished yet*

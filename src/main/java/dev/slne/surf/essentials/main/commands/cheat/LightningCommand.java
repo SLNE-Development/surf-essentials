@@ -27,6 +27,8 @@ public class LightningCommand {
      * @param literal a LiteralArgumentBuilder object that is used to define the structure of the command
      */
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        // required permission
+        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.lighting"));
         // This adds a required argument to the command, which expects one or more players
         literal.then(Commands.argument("players", EntityArgument.players())
                 // If the command is executed with just the required "players" argument
