@@ -32,5 +32,7 @@ public class BrigadierCommands {
         StonecutterCommand.register();
         //give command
         GiveCommand.register();
+        //getpos command
+        GetPosCommand.register();
     }
 }

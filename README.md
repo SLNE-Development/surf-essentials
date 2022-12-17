@@ -95,6 +95,8 @@ Makes the server commands better and more peronalized.
 
 - `/give <targets> <item> [amount]` _gives the targets the item_
 
+- `/getpos [target]` _gets the position of the sender or target_
+
 ## Permission
 ***Note:** these are not finished yet*
 
