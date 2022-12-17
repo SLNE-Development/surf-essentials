@@ -2,10 +2,7 @@ package dev.slne.surf.essentials.main.commands;
 
 import dev.slne.surf.essentials.main.commands.cheat.LightningCommand;
 import dev.slne.surf.essentials.main.commands.cheat.gui.*;
-import dev.slne.surf.essentials.main.commands.general.BroadcastWorldCommand;
-import dev.slne.surf.essentials.main.commands.general.EnchantCommand;
-import dev.slne.surf.essentials.main.commands.general.KillCommand;
-import dev.slne.surf.essentials.main.commands.general.ListCommand;
+import dev.slne.surf.essentials.main.commands.general.*;
 
 public class BrigadierCommands {
     public static void register(){
@@ -33,5 +30,7 @@ public class BrigadierCommands {
         LoomCommand.register();
         //stonecutter
         StonecutterCommand.register();
+        //give command
+        GiveCommand.register();
     }
 }

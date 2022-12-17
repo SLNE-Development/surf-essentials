@@ -93,6 +93,8 @@ Makes the server commands better and more peronalized.
 
 - `/stonecutter [targets]` _opens a stonecutter for the specified targets_
 
+- `/give <targets> <item> [amount]` _gives the targets the item_
+
 ## Permission
 ***Note:** these are not finished yet*
 
