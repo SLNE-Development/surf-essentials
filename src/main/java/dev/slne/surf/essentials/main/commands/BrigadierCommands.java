@@ -2,6 +2,7 @@ package dev.slne.surf.essentials.main.commands;
 
 import dev.slne.surf.essentials.main.commands.cheat.AnvilCommand;
 import dev.slne.surf.essentials.main.commands.cheat.LightningCommand;
+import dev.slne.surf.essentials.main.commands.cheat.SmithingTableCommand;
 import dev.slne.surf.essentials.main.commands.cheat.WorkbenchCommand;
 import dev.slne.surf.essentials.main.commands.general.BroadcastWorldCommand;
 import dev.slne.surf.essentials.main.commands.general.EnchantCommand;
@@ -24,5 +25,7 @@ public class BrigadierCommands {
         WorkbenchCommand.register();
         //anvil command
         AnvilCommand.register();
+        //smithing table command
+        SmithingTableCommand.register();
     }
 }
