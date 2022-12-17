@@ -79,6 +79,12 @@ Makes the server commands better and more peronalized.
 
 - `/enchant <targets> <enchantment> [level]` _enchants the items the targets are holding_
 
+- `/workbench [targets]` _opens a workbench for the specified targets_
+
+- `/anvil [targets]` _opens an anvil for the specified targets_
+
+- `/smithingtable [targets]` _opens a smithing table for the specified targets_
+
 ## Permission
 ***Note:** these are not finished yet*
 
