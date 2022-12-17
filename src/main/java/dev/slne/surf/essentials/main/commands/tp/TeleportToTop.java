@@ -52,7 +52,7 @@ public class TeleportToTop extends EssentialsCommand {
             int zInt = (int)z;
             //Success message to player
             player.sendMessage(SurfApi.getPrefix()
-                    .append(targetPlayer.teamDisplayName())
+                    .append(targetPlayer.displayName())
                     .append(Component.text(" wurde zum höchsten Block Teleportiert!", SurfColors.SUCCESS))
                     .append(Component.newline())
                     .append(SurfApi.getPrefix())

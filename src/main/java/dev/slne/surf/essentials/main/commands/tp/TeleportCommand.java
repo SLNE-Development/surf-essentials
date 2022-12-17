@@ -165,10 +165,10 @@ public class TeleportCommand extends EssentialsCommand {
 
         Objects.requireNonNull(sender).teleportAsync(Objects.requireNonNull(location));
         Bukkit.broadcast(SurfApi.getPrefix()
-                .append(sender.teamDisplayName()
+                .append(sender.displayName()
                         .decorate(TextDecoration.ITALIC))
                 .append(Component.text(" "))
-                .append(sender.teamDisplayName())
+                .append(sender.displayName())
                 .append(Component.text(" hat sich zu ", SurfColors.GRAY))
                 .append(Component.text(" %s %s %s".formatted(Math.round(location.getX()), Math.round(location.getY()), Math.round(location.getZ())), SurfColors.GOLD))
                 .append(Component.text(" teleportiert!", SurfColors.GRAY)), "surf.teleport.announce");
@@ -198,7 +198,7 @@ public class TeleportCommand extends EssentialsCommand {
                     player.teleportAsync(data);
 
                     Bukkit.broadcast(SurfApi.getPrefix()
-                            .append(player.teamDisplayName()
+                            .append(player.displayName()
                                     .decorate(TextDecoration.ITALIC))
                             .append(Component.text(" hat sich zu ", SurfColors.GRAY))
                             .append(Component.text(Objects.requireNonNull(target.getName())))
@@ -259,10 +259,10 @@ public class TeleportCommand extends EssentialsCommand {
     public void teleportAsync(Player sender, Player targetPlayer, Location location){
         Objects.requireNonNull(targetPlayer).teleportAsync(Objects.requireNonNull(location));
         Bukkit.broadcast(SurfApi.getPrefix()
-                .append(sender.teamDisplayName()
+                .append(sender.displayName()
                         .decorate(TextDecoration.ITALIC))
                 .append(Component.text(" "))
-                .append(targetPlayer.teamDisplayName())
+                .append(targetPlayer.displayName())
                 .append(Component.text(" wurde zu ", SurfColors.GRAY))
                 .append(Component.text(" %s %s %s".formatted(Math.round(location.getX()), Math.round(location.getY()), Math.round(location.getZ())), SurfColors.GOLD))
                 .append(Component.text(" teleportiert!", SurfColors.GRAY)), "surf.teleport.announce");

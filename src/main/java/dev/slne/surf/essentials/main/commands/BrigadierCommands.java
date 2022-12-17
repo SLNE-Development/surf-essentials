@@ -1,6 +1,7 @@
 package dev.slne.surf.essentials.main.commands;
 
 import dev.slne.surf.essentials.main.commands.cheat.LightningCommand;
+import dev.slne.surf.essentials.main.commands.cheat.WorkbenchCommand;
 import dev.slne.surf.essentials.main.commands.general.BroadcastWorldCommand;
 import dev.slne.surf.essentials.main.commands.general.EnchantCommand;
 import dev.slne.surf.essentials.main.commands.general.KillCommand;
@@ -18,5 +19,7 @@ public class BrigadierCommands {
         KillCommand.register();
         //enchant command
         EnchantCommand.register();
+        //workbench command
+        WorkbenchCommand.register();
     }
 }

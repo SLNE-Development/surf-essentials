@@ -4,7 +4,10 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.slne.surf.api.SurfApi;
+import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -13,6 +16,7 @@ import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LightningCommand {
@@ -65,6 +69,27 @@ public class LightningCommand {
             Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), bukkitTask ->
                     target.resetPlayerWeather(), 20L *power.get() + 40);
         });
+
+        if (context.getSource().isPlayer()){
+            Player player = Objects.requireNonNull(context.getSource().getPlayer()).getBukkitEntity();
+
+            if (EntityArgument.getPlayers(context, "players").size() == 1){
+                SurfApi.getUser(player).thenAcceptAsync(user -> {
+                    try {
+                        user.sendMessage(SurfApi.getPrefix()
+                                .append(Component.text("Der Blitz hat ", SurfColors.SUCCESS))
+                                .append(EntityArgument.getPlayers(context, "players").stream().findFirst().get().getBukkitEntity().teamDisplayName())
+                                .append(Component.text(" getroffen!", SurfColors.SUCCESS)));
+                    } catch (CommandSyntaxException ignored) {}
+                });
+            }else {
+                SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                        .append(Component.text("Der Blitz hat ", SurfColors.SUCCESS))
+                        .append(Component.text())
+                        .append(Component.text(" getroffen!", SurfColors.SUCCESS))));
+            }
+
+        }
 
         return 1;
     }

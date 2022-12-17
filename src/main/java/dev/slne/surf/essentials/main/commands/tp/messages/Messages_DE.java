@@ -23,10 +23,10 @@ public class Messages_DE {
      */
     public void teleportMessage_DE(Player player, Player targetPlayer){
         Bukkit.broadcast(SurfApi.getPrefix()
-                .append(player.teamDisplayName()
+                .append(player.displayName()
                         .decorate(TextDecoration.ITALIC))
                 .append(Component.text(" hat sich zu ", SurfColors.GRAY))
-                .append(targetPlayer.teamDisplayName())
+                .append(targetPlayer.displayName())
                 .append(Component.text(" teleportiert!", SurfColors.GRAY)), "surf.teleport.announce");
     }
 
@@ -40,7 +40,7 @@ public class Messages_DE {
      */
     public void teleportTargetPlayerMessage_DE(Player player, OfflinePlayer targetPlayer, Location location){
         Bukkit.broadcast(SurfApi.getPrefix()
-                .append(player.teamDisplayName()
+                .append(player.displayName()
                         .decorate(TextDecoration.ITALIC))
                         .append(Component.text(" "))
                 .append(Component.text(Objects.requireNonNull(targetPlayer.getName()), SurfColors.DARK_PURPLE))
