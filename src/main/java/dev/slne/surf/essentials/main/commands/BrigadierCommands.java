@@ -1,9 +1,7 @@
 package dev.slne.surf.essentials.main.commands;
 
-import dev.slne.surf.essentials.main.commands.cheat.AnvilCommand;
 import dev.slne.surf.essentials.main.commands.cheat.LightningCommand;
-import dev.slne.surf.essentials.main.commands.cheat.SmithingTableCommand;
-import dev.slne.surf.essentials.main.commands.cheat.WorkbenchCommand;
+import dev.slne.surf.essentials.main.commands.cheat.gui.*;
 import dev.slne.surf.essentials.main.commands.general.BroadcastWorldCommand;
 import dev.slne.surf.essentials.main.commands.general.EnchantCommand;
 import dev.slne.surf.essentials.main.commands.general.KillCommand;
@@ -27,5 +25,13 @@ public class BrigadierCommands {
         AnvilCommand.register();
         //smithing table command
         SmithingTableCommand.register();
+        //cartographytable command
+        CartographyTableCommand.register();
+        //grindtsone command
+        GrindstoneCommand.register();
+        //loom command
+        LoomCommand.register();
+        //stonecutter
+        StonecutterCommand.register();
     }
 }

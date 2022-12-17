@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.main.commands.cheat;
+package dev.slne.surf.essentials.main.commands.cheat.gui;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -15,13 +15,13 @@ import org.bukkit.Bukkit;
 
 import java.util.Collection;
 
-public class AnvilCommand {
+public class GrindstoneCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("anvil", AnvilCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("grindstone", GrindstoneCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.anvil"));
+        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.grindstone"));
         literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("targets", EntityArgument.players())
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));
@@ -29,27 +29,27 @@ public class AnvilCommand {
 
     private static int open(CommandSourceStack source, Collection<? extends Player> targets){
         for (Player target : targets) {
-            Bukkit.getPlayer(target.getUUID()).openAnvil(target.getBukkitEntity().getLocation(), true);
+            Bukkit.getPlayer(target.getUUID()).openGrindstone(target.getBukkitEntity().getLocation(), true);
         }
         if (source.isPlayer()){
             if (targets.size() == 1){
                 SurfApi.getUser(source.getPlayer().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Der Amboss wurde für ", SurfColors.SUCCESS))
+                        .append(Component.text("Der Schleifstein wurde für ", SurfColors.SUCCESS))
                         .append(Bukkit.getPlayer(targets.iterator().next().getUUID()).displayName())
                         .append(Component.text(" geöffnet", SurfColors.SUCCESS))));
             }else {
                 SurfApi.getUser(source.getPlayer().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Der Amboss wurde für ", SurfColors.SUCCESS))
+                        .append(Component.text("Der Schleifstein wurde für ", SurfColors.SUCCESS))
                         .append(Component.text(targets.size(), SurfColors.TERTIARY))
                         .append(Component.text(" Spieler geöffnet", SurfColors.SUCCESS))));
             }
         }else {
             if (targets.size() == 1){
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("Opened anvil for ")
+                source.sendSuccess(net.minecraft.network.chat.Component.literal("Opened grindstone for ")
                         .withStyle(ChatFormatting.WHITE)
                         .append(targets.iterator().next().getDisplayName()), false);
             }else{
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("Opened anvil for ")
+                source.sendSuccess(net.minecraft.network.chat.Component.literal("Opened grindstone table for ")
                         .withStyle(ChatFormatting.WHITE)
                         .append(net.minecraft.network.chat.Component.literal(String.valueOf(targets.size()))
                                 .withStyle(ChatFormatting.GOLD))

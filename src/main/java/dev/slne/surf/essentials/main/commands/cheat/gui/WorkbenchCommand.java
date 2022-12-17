@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.main.commands.cheat;
+package dev.slne.surf.essentials.main.commands.cheat.gui;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -15,14 +15,13 @@ import org.bukkit.Bukkit;
 
 import java.util.Collection;
 
-public class SmithingTableCommand {
+public class WorkbenchCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("smithingtable", SmithingTableCommand::literal);
-        SurfEssentials.registerPluginBrigadierCommand("smithing", SmithingTableCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("workbench", WorkbenchCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.smithingtable"));
+        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.workbench"));
         literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("targets", EntityArgument.players())
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));
@@ -30,27 +29,27 @@ public class SmithingTableCommand {
 
     private static int open(CommandSourceStack source, Collection<? extends Player> targets){
         for (Player target : targets) {
-            Bukkit.getPlayer(target.getUUID()).openSmithingTable(target.getBukkitEntity().getLocation(), true);
+            Bukkit.getPlayer(target.getUUID()).openWorkbench(target.getBukkitEntity().getLocation(), true);
         }
         if (source.isPlayer()){
             if (targets.size() == 1){
                 SurfApi.getUser(source.getPlayer().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Der Schmiedetisch wurde für ", SurfColors.SUCCESS))
+                        .append(Component.text("Der Crafting-table wurde für ", SurfColors.SUCCESS))
                         .append(Bukkit.getPlayer(targets.iterator().next().getUUID()).displayName())
                         .append(Component.text(" geöffnet", SurfColors.SUCCESS))));
             }else {
                 SurfApi.getUser(source.getPlayer().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Der Schmiedetisch wurde für ", SurfColors.SUCCESS))
+                        .append(Component.text("Der Crafting-table wurde für ", SurfColors.SUCCESS))
                         .append(Component.text(targets.size(), SurfColors.TERTIARY))
                         .append(Component.text(" Spieler geöffnet", SurfColors.SUCCESS))));
             }
         }else {
             if (targets.size() == 1){
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("Opened smithing table for ")
+                source.sendSuccess(net.minecraft.network.chat.Component.literal("Opened crafting table for ")
                         .withStyle(ChatFormatting.WHITE)
                         .append(targets.iterator().next().getDisplayName()), false);
             }else{
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("Opened smithing table for ")
+                source.sendSuccess(net.minecraft.network.chat.Component.literal("Opened crafting table for ")
                         .withStyle(ChatFormatting.WHITE)
                         .append(net.minecraft.network.chat.Component.literal(String.valueOf(targets.size()))
                                 .withStyle(ChatFormatting.GOLD))
@@ -60,4 +59,5 @@ public class SmithingTableCommand {
         }
         return 1;
     }
+
 }

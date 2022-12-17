@@ -85,6 +85,14 @@ Makes the server commands better and more peronalized.
 
 - `/smithingtable [targets]` _opens a smithing table for the specified targets_
 
+- `/cartographytable [targets]` _opens a cartographytable for the specified targets_
+
+- `/grindstone [targets]` _opens a grindstone for the specified targets_
+
+- `/loom [targets]` _opens a loom for the specified targets_
+
+- `/stonecutter [targets]` _opens a stonecutter for the specified targets_
+
 ## Permission
 ***Note:** these are not finished yet*
 
