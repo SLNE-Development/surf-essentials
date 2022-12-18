@@ -1,5 +1,7 @@
 package dev.slne.surf.essentials;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.brigadier.CheatTabComplete;
@@ -99,7 +101,9 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
         getLogger().info("The plugin has stopped!");
     }
 
-
+public static ProtocolManager manager(){
+        return ProtocolLibrary.getProtocolManager();
+}
 
     /**
      * A message that prints  a logo of the plugin to the console

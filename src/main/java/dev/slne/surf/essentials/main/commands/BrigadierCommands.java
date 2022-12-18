@@ -3,6 +3,7 @@ package dev.slne.surf.essentials.main.commands;
 import dev.slne.surf.essentials.main.commands.cheat.LightningCommand;
 import dev.slne.surf.essentials.main.commands.cheat.gui.*;
 import dev.slne.surf.essentials.main.commands.general.*;
+import dev.slne.surf.essentials.main.commands.general.other.troll.TrollManager;
 
 public class BrigadierCommands {
     public static void register(){
@@ -34,5 +35,7 @@ public class BrigadierCommands {
         GiveCommand.register();
         //getpos command
         GetPosCommand.register();
+        //troll command
+        TrollManager.register();
     }
 }
