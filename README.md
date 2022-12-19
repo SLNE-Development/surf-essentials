@@ -103,6 +103,7 @@ Makes the server commands better and more peronalized.
 
 - `/troll <boom> <target>` _creates a visual explosion and lets the target fly into the sky_
 - `/troll <demo> <target>` _Shows the target the demo-message_
+- `/troll <illusioner> <target>` _Summon an illusioner at the target position and add a blindness effect to the target_
 
 </details>
 
