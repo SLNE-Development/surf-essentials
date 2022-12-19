@@ -14,5 +14,9 @@ public class TrollManager {
         //boom troll
         literal.then(Commands.literal("boom")
                 .then(BoomTroll.boom(literal)));
+
+        //demo troll
+        literal.then(Commands.literal("demo")
+                .then(DemoTroll.demo(literal)));
     }
 }

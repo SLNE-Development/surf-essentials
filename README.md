@@ -97,7 +97,14 @@ Makes the server commands better and more peronalized.
 
 - `/getpos [target]` _gets the position of the sender or target_
 
+<details>
+<summary>Trolls</summary>
+<br>
+
 - `/troll <boom> <target>` _creates a visual explosion and lets the target fly into the sky_
+- `/troll <demo> <target>` _Shows the target the demo-message_
+
+</details>
 
 ## Permission
 ***Note:** these are not finished yet*
