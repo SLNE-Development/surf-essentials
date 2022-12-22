@@ -207,7 +207,7 @@ public class WorldCommand extends EssentialsCommand implements Listener {
                 .append(Component.text(world.getName(), SurfColors.TERTIARY))
                 .append(Component.text(" teleportiert!", SurfColors.SUCCESS))));
 
-        logger.info(target.displayName()
+        logger.info(target.displayName().colorIfAbsent(SurfColors.YELLOW)
                 .append(Component.text(" teleported to the world ", SurfColors.SUCCESS))
                 .append(Component.text(world.getName(), SurfColors.TERTIARY))
                 .append(Component.text("!", SurfColors.SUCCESS)));

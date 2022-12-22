@@ -75,7 +75,7 @@ public abstract class EssentialsUtil {
      * @return Time format in string
      */
     public static String ticksToString(int ticks){
-        int totalSeconds = ticks/20;
+        int totalSeconds = ticks / 20;
         int hours, minutes, seconds;
         hours = totalSeconds / 3600;
         minutes = (totalSeconds % 3600) / 60;

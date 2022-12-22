@@ -18,17 +18,18 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 
 public class DemoTroll {
-    public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> demo(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> demo(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.demo"));
         return Commands.argument("player", EntityArgument.player())
                 .executes(context -> makeDemo(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer()));
     }
 
-    private static int makeDemo(CommandContext<CommandSourceStack> context, Player target) throws CommandSyntaxException {
+    private static int makeDemo(@NotNull CommandContext<CommandSourceStack> context, Player target) throws CommandSyntaxException {
         // Get the source of the command
         CommandSourceStack source = context.getSource();
         // Get the ProtocolManager instance
@@ -52,7 +53,7 @@ public class DemoTroll {
         // Send a message to the source of the command
         if (source.isPlayer()){
             SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(target.displayName())
+                    .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
                     .append(Component.text(" wurde die Demo gezeigt!", SurfColors.SUCCESS))));
         }else{
             source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()

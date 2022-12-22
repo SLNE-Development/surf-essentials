@@ -1,0 +1,99 @@
+package dev.slne.surf.essentials.main.commands.general.other.troll;
+
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.slne.surf.api.SurfApi;
+import dev.slne.surf.api.utils.message.SurfColors;
+import dev.slne.surf.essentials.SurfEssentials;
+import net.kyori.adventure.text.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+
+@DefaultQualifier(NotNull.class)
+public class AnvilTroll {
+    private static HashMap<UUID, Boolean> playersInTroll = new HashMap<>();
+    private static int anvilTaskID;
+
+    public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> anvil(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.anvil"));
+        return Commands.argument("player", EntityArgument.player())
+                .executes(context -> dropAnvil(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer(), 60))
+                .then(Commands.argument("time", IntegerArgumentType.integer(1, 3600))
+                        .executes(context -> dropAnvil(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer(),
+                                IntegerArgumentType.getInteger(context, "time"))));
+    }
+
+    private static int dropAnvil(CommandContext<CommandSourceStack> context, Player target, int timeInSeconds) throws CommandSyntaxException {
+        CommandSourceStack source = context.getSource();
+
+        boolean isInTroll = playersInTroll.get(target.getUniqueId()) != null ? playersInTroll.get(target.getUniqueId()) : false;
+
+        if (!isInTroll){
+            playersInTroll.put(target.getUniqueId(), true);
+
+            Material anvil = Material.DAMAGED_ANVIL;
+            AtomicInteger timeLeft = new AtomicInteger(timeInSeconds*2);
+
+            Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), bukkitTask -> {
+                if (timeLeft.get() < 1) bukkitTask.cancel();
+                Location location = target.getLocation();
+                Location blockPosition = new Location(location.getWorld(), location.getX(), location.getY() + 20, location.getZ());
+
+                if (blockPosition.getBlock().getType() == Material.AIR){
+                    blockPosition.getBlock().setType(anvil, true);
+                }
+                timeLeft.getAndDecrement();
+                anvilTaskID = bukkitTask.getTaskId();
+            },1,10);
+
+            Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), bukkitTask -> playersInTroll.put(target.getUniqueId(), false), 20L * timeInSeconds);
+
+        }else {
+            cancelAnvilTroll(target);
+
+            if (source.isPlayer()){
+                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                        .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
+                        .append(Component.text(" wird nun nicht mehr mit Ambossen beworfen", SurfColors.INFO))));
+            }else {
+                source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
+                        .copy().append(net.minecraft.network.chat.Component.literal(" is no longer thrown with anvils!")
+                                .withStyle(ChatFormatting.GREEN)), false);
+            }
+            return 1;
+        }
+
+        if (source.isPlayer()){
+            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                            .append(Component.text("Bei ", SurfColors.SUCCESS))
+                    .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
+                    .append(Component.text(" regnet es jetzt Ambosse!", SurfColors.SUCCESS))));
+        }else{
+            source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
+                    .copy().append(net.minecraft.network.chat.Component.literal(" is thrown with anvils!")
+                            .withStyle(ChatFormatting.GREEN)), false);
+        }
+        return 1;
+    }
+
+    public static void cancelAnvilTroll(Player target){
+        Bukkit.getScheduler().cancelTask(anvilTaskID);
+        playersInTroll.put(target.getUniqueId(), false);
+    }
+}

@@ -75,7 +75,7 @@ public class RuleCommand extends EssentialsCommand {
                     //Success message
                     player.sendMessage(SurfApi.getPrefix()
                             .append(Component.text("Es wurden erfolgreich die Reglen und Informationen an ", SurfColors.SUCCESS))
-                            .append(targetPlayer.displayName())
+                            .append(targetPlayer.displayName().colorIfAbsent(SurfColors.YELLOW))
                             .append(Component.text(" gesendet!", SurfColors.SUCCESS)));
                     return true;
                 }

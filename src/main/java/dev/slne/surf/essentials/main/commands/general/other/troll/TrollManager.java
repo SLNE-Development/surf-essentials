@@ -4,13 +4,14 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.essentials.SurfEssentials;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import org.jetbrains.annotations.NotNull;
 
 public class TrollManager {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("troll", TrollManager::literal);
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    private static void literal(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){
         //boom troll
         literal.then(Commands.literal("boom")
                 .then(BoomTroll.boom(literal)));
@@ -22,5 +23,21 @@ public class TrollManager {
         //illusioner troll
         literal.then(Commands.literal("illusioner")
                 .then(IllusionerTroll.illusioner(literal)));
+
+        //anvil troll
+        literal.then(Commands.literal("anvil")
+                .then(AnvilTroll.anvil(literal)));
+
+        //villager
+        literal.then(Commands.literal("villager")
+                .then(VillagerAnnoyTroll.villager(literal)));
+
+        //water
+        literal.then(Commands.literal("water")
+                .then(WaterTroll.water(literal)));
+
+        //mlg
+        literal.then(Commands.literal("mlg")
+                .then(MlgTroll.mlg(literal)));
     }
 }

@@ -21,17 +21,18 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 
 public class BoomTroll {
-    public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> boom(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> boom(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.boom"));
         return Commands.argument("player", EntityArgument.player())
                 .executes(context -> makeBoom(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer()));
     }
 
-    private static int makeBoom(CommandContext<CommandSourceStack> context, Player target) throws CommandSyntaxException {
+    private static int makeBoom(@NotNull CommandContext<CommandSourceStack> context, @NotNull Player target) throws CommandSyntaxException {
         CommandSourceStack source = context.getSource();
         ProtocolManager manager = SurfEssentials.manager();
         Location location = target.getLocation();
@@ -61,7 +62,7 @@ public class BoomTroll {
 
         if (source.isPlayer()){
             SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(target.displayName())
+                    .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
                     .append(Component.text(" wurde gesprengt!", SurfColors.SUCCESS))));
         }else{
             source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()

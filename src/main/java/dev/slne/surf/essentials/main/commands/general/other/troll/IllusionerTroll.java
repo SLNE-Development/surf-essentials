@@ -22,11 +22,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class IllusionerTroll implements Listener {
-    public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> illusioner(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> illusioner(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.illusioner"));
         return Commands.argument("player", EntityArgument.player())
                 .executes(context -> makeIllusioner(context, EntityArgument.getPlayer(context, "player"), 1))
@@ -35,7 +36,7 @@ public class IllusionerTroll implements Listener {
                                 IntegerArgumentType.getInteger(context, "amount"))));
     }
 
-    private static int makeIllusioner(CommandContext<CommandSourceStack> context, Player target, int amount) throws CommandSyntaxException {
+    private static int makeIllusioner(CommandContext<CommandSourceStack> context, @NotNull Player target, int amount) throws CommandSyntaxException {
         BlockPos blockPosition = new BlockPos(target.blockPosition());
 
         // Check if position is valid spawn position
@@ -48,6 +49,10 @@ public class IllusionerTroll implements Listener {
             Bukkit.dispatchCommand(context.getSource().getBukkitSender(), "summon illusioner " + target.getX() + " " + target.getY()
                     + " " + target.getZ() + " {Tags:[\"target: " + target.getUUID() + "\"]}");
         }
+
+        // Sends message to the target
+        SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                .append(Component.text("Kannst du den echten finden?", SurfColors.AQUA))));
 
         // Add blindness effect to the target as long as at least one of the summoned illusioner is in the radius.
         Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), bukkitTask -> {
@@ -69,7 +74,7 @@ public class IllusionerTroll implements Listener {
         // Success messages
         if (context.getSource().isPlayer()){
             SurfApi.getUser(context.getSource().getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(Bukkit.getPlayer(target.getUUID()).displayName())
+                    .append(Bukkit.getPlayer(target.getUUID()).displayName().colorIfAbsent(SurfColors.YELLOW))
                     .append(Component.text(" wird mit Illusioner getrollt!", SurfColors.SUCCESS))));
         }else{
             context.getSource().sendSuccess(target.getDisplayName()

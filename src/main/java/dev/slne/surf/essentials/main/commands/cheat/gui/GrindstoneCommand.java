@@ -35,7 +35,7 @@ public class GrindstoneCommand {
             if (targets.size() == 1){
                 SurfApi.getUser(source.getPlayer().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                         .append(Component.text("Der Schleifstein wurde für ", SurfColors.SUCCESS))
-                        .append(Bukkit.getPlayer(targets.iterator().next().getUUID()).displayName())
+                        .append(Bukkit.getPlayer(targets.iterator().next().getUUID()).displayName().colorIfAbsent(SurfColors.YELLOW))
                         .append(Component.text(" geöffnet", SurfColors.SUCCESS))));
             }else {
                 SurfApi.getUser(source.getPlayer().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
