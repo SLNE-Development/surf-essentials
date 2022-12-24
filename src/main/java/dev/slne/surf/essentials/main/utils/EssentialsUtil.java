@@ -1,17 +1,33 @@
 package dev.slne.surf.essentials.main.utils;
 
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
+import net.minecraft.ChatFormatting;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class EssentialsUtil {
+    /**
+     * An array of {@link Sound} objects representing the sounds that can be played to
+     * scare the player.
+     */
+    public static Sound[] scareSounds = new Sound[]{Sound.ENTITY_LIGHTNING_BOLT_THUNDER, Sound.ENTITY_WOLF_HOWL,
+            Sound.ENTITY_BAT_DEATH, Sound.ENTITY_GHAST_SCREAM, Sound.ENTITY_GHAST_HURT};
+
+
     /**
      *
      * Check if arg is int.
@@ -122,10 +138,81 @@ public abstract class EssentialsUtil {
      * @param player the player to check
      * @return `true` if the player is vanished, `false` otherwise
      */
-    public static boolean isVanished(Player player) {
+    public static boolean isVanished(@NotNull Player player) {
         for (MetadataValue meta : player.getMetadata("vanished")) {
             if (meta.asBoolean()) return true;
         }
         return false;
+    }
+
+    /**
+     * Suggests all possible color codes to the given {@link SuggestionsBuilder}.
+     *
+     * @param builder the {@link SuggestionsBuilder} to which the color codes will be added
+     * @return a {@link CompletableFuture} containing the {@link Suggestions}
+     */
+    public static CompletableFuture<Suggestions> suggestAllColorCodes(@NotNull SuggestionsBuilder builder) {
+        builder.suggest("&0", net.minecraft.network.chat.Component.literal("Black").withStyle(ChatFormatting.BLACK));
+        builder.suggest("&2", net.minecraft.network.chat.Component.literal("Dark Green").withStyle(ChatFormatting.DARK_GREEN));
+        builder.suggest("&4", net.minecraft.network.chat.Component.literal("Dark Red").withStyle(ChatFormatting.DARK_RED));
+        builder.suggest("&6", net.minecraft.network.chat.Component.literal("Gold").withStyle(ChatFormatting.GOLD));
+        builder.suggest("&8", net.minecraft.network.chat.Component.literal("Dark Gray").withStyle(ChatFormatting.DARK_GRAY));
+        builder.suggest("&a", net.minecraft.network.chat.Component.literal("Green").withStyle(ChatFormatting.GREEN));
+        builder.suggest("&c", net.minecraft.network.chat.Component.literal("Red").withStyle(ChatFormatting.RED));
+        builder.suggest("&e", net.minecraft.network.chat.Component.literal("Yellow").withStyle(ChatFormatting.YELLOW));
+        builder.suggest("&1", net.minecraft.network.chat.Component.literal("Dark Blue").withStyle(ChatFormatting.DARK_BLUE));
+        builder.suggest("&3", net.minecraft.network.chat.Component.literal("Dark Aqua").withStyle(ChatFormatting.DARK_AQUA));
+        builder.suggest("&5", net.minecraft.network.chat.Component.literal("Dark Purple").withStyle(ChatFormatting.DARK_PURPLE));
+        builder.suggest("&7", net.minecraft.network.chat.Component.literal("Gray").withStyle(ChatFormatting.GRAY));
+        builder.suggest("&9", net.minecraft.network.chat.Component.literal("Blue").withStyle(ChatFormatting.BLUE));
+        builder.suggest("&b", net.minecraft.network.chat.Component.literal("Aqua").withStyle(ChatFormatting.AQUA));
+        builder.suggest("&d", net.minecraft.network.chat.Component.literal("Light Purple").withStyle(ChatFormatting.LIGHT_PURPLE));
+        builder.suggest("&f", net.minecraft.network.chat.Component.literal("White").withStyle(ChatFormatting.WHITE));
+
+        builder.suggest("&k", net.minecraft.network.chat.Component.literal("Obfuscated").withStyle(ChatFormatting.OBFUSCATED));
+        builder.suggest("&m", net.minecraft.network.chat.Component.literal("Strikethrough").withStyle(ChatFormatting.STRIKETHROUGH));
+        builder.suggest("&o", net.minecraft.network.chat.Component.literal("Italic").withStyle(ChatFormatting.ITALIC));
+        builder.suggest("&l", net.minecraft.network.chat.Component.literal("Bold").withStyle(ChatFormatting.BOLD));
+        builder.suggest("&n", net.minecraft.network.chat.Component.literal("Underline").withStyle(ChatFormatting.UNDERLINE));
+        builder.suggest("&r", net.minecraft.network.chat.Component.literal("Reset").withStyle(ChatFormatting.RESET));
+        return builder.buildFuture();
+    }
+
+    /**
+     * Adds a color code suggestion to the given {@link SuggestionsBuilder}.
+     *
+     * @param builder the {@link SuggestionsBuilder} to add the suggestion to
+     * @param colorCode the color code to add as a suggestion
+     * @param colorName the name of the color to display in the suggestion
+     * @param formatting the {@link ChatFormatting} to apply to the color name in the suggestion
+     * @return a {@link CompletableFuture} containing the completed {@link Suggestions} object
+     */
+    public static CompletableFuture<Suggestions> singleColorCode(@NotNull SuggestionsBuilder builder, @NotNull String colorCode,
+                                                                 @NotNull String colorName, @NotNull ChatFormatting formatting) {
+        return builder.suggest(colorCode, net.minecraft.network.chat.Component.literal(colorName).withStyle(formatting)).buildFuture();
+    }
+
+    /**
+     * Plays a random scare sound from the {@link #scareSounds} array for the player.
+     *
+     * @param player the player to play the sound for
+     */
+    public static void playScareSound(@NotNull Player player) {
+        Random random = new Random();
+        int scareIndex = random.nextInt(scareSounds.length - 1);
+        Sound scareSound = scareSounds[scareIndex];
+        player.playSound(player.getLocation(), scareSound, 1.0F, 1.0F);
+    }
+
+    /**
+     * Scares the player by playing a random scare sound from the {@link #scareSounds} array and
+     * applying a {@link PotionEffectType#DARKNESS} effect to the player for 7 seconds.
+     *
+     * @param player the player to scare
+     */
+    public static void scarePlayer(@NotNull Player player) {
+        playScareSound(player);
+        PotionEffect scareEffect = new PotionEffect(PotionEffectType.DARKNESS, 20*7, 1, false, false, false);
+        player.addPotionEffect(scareEffect);
     }
 }

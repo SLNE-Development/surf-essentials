@@ -1,6 +1,6 @@
 package dev.slne.surf.essentials.main.commands.general.other.troll.listener;
 
-import dev.slne.surf.essentials.main.commands.general.other.troll.WaterTroll;
+import dev.slne.surf.essentials.main.commands.general.other.troll.trolls.WaterTroll;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class WaterTrollListner implements Listener {
+public class WaterTrollListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();

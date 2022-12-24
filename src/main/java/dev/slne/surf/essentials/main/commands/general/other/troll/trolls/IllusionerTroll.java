@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.main.commands.general.other.troll;
+package dev.slne.surf.essentials.main.commands.general.other.troll.trolls;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;

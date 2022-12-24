@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.main.commands.general.other.troll;
+package dev.slne.surf.essentials.main.commands.general.other.troll.trolls;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -15,7 +15,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
@@ -25,20 +26,20 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @DefaultQualifier(NotNull.class)
-public class VillagerAnnoyTroll {
+public class AnvilTroll {
     private static HashMap<UUID, Boolean> playersInTroll = new HashMap<>();
-    private static int villagerTaskID;
+    private static int anvilTaskID;
 
-    public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> villager(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.villager"));
+    public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> anvil(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.anvil"));
         return Commands.argument("player", EntityArgument.player())
-                .executes(context -> annoyVillager(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer(), 60))
+                .executes(context -> dropAnvil(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer(), 60))
                 .then(Commands.argument("time", IntegerArgumentType.integer(1, 3600))
-                        .executes(context -> annoyVillager(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer(),
+                        .executes(context -> dropAnvil(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer(),
                                 IntegerArgumentType.getInteger(context, "time"))));
     }
 
-    private static int annoyVillager(CommandContext<CommandSourceStack> context, Player target, int timeInSeconds) throws CommandSyntaxException {
+    private static int dropAnvil(CommandContext<CommandSourceStack> context, Player target, int timeInSeconds) throws CommandSyntaxException {
         CommandSourceStack source = context.getSource();
 
         boolean isInTroll = playersInTroll.get(target.getUniqueId()) != null ? playersInTroll.get(target.getUniqueId()) : false;
@@ -46,31 +47,33 @@ public class VillagerAnnoyTroll {
         if (!isInTroll){
             playersInTroll.put(target.getUniqueId(), true);
 
-            AtomicInteger timeLeft = new AtomicInteger(timeInSeconds*4);
+            Material anvil = Material.DAMAGED_ANVIL;
+            AtomicInteger timeLeft = new AtomicInteger(timeInSeconds*2);
 
             Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), bukkitTask -> {
                 if (timeLeft.get() < 1) bukkitTask.cancel();
-                SurfApi.getUser(target).thenAcceptAsync(user -> {
-                    user.playSound(Sound.ENTITY_VILLAGER_NO, 100.F, 1.0F);
-                    user.playSound(Sound.ENTITY_VILLAGER_CELEBRATE, 100.F, 1.0F);
-                    user.playSound(Sound.ENTITY_VILLAGER_AMBIENT, 100.F, 1.0F);
-                });
+                Location location = target.getLocation();
+                Location blockPosition = new Location(location.getWorld(), location.getX(), location.getY() + 20, location.getZ());
+
+                if (blockPosition.getBlock().getType() == Material.AIR){
+                    blockPosition.getBlock().setType(anvil, true);
+                }
                 timeLeft.getAndDecrement();
-                villagerTaskID = bukkitTask.getTaskId();
-            },1,5);
+                anvilTaskID = bukkitTask.getTaskId();
+            },1,10);
 
             Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), bukkitTask -> playersInTroll.put(target.getUniqueId(), false), 20L * timeInSeconds);
 
         }else {
-            cancelVillagerTroll(target);
+            cancelAnvilTroll(target);
 
             if (source.isPlayer()){
                 SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                         .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
-                        .append(Component.text(" wird nun nicht mehr mit Dorfbewohner-geräuschen gestört", SurfColors.INFO))));
+                        .append(Component.text(" wird nun nicht mehr mit Ambossen beworfen", SurfColors.INFO))));
             }else {
                 source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
-                        .copy().append(net.minecraft.network.chat.Component.literal(" is no longer disturbed with villager noises!")
+                        .copy().append(net.minecraft.network.chat.Component.literal(" is no longer thrown with anvils!")
                                 .withStyle(ChatFormatting.GREEN)), false);
             }
             return 1;
@@ -78,18 +81,19 @@ public class VillagerAnnoyTroll {
 
         if (source.isPlayer()){
             SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                            .append(Component.text("Bei ", SurfColors.SUCCESS))
                     .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
-                    .append(Component.text(" wird nun mit Dorfbewohner-geräuschen gestört!", SurfColors.SUCCESS))));
+                    .append(Component.text(" regnet es jetzt Ambosse!", SurfColors.SUCCESS))));
         }else{
             source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
-                    .copy().append(net.minecraft.network.chat.Component.literal(" is now disturbed with villager noises!")
+                    .copy().append(net.minecraft.network.chat.Component.literal(" is thrown with anvils!")
                             .withStyle(ChatFormatting.GREEN)), false);
         }
         return 1;
     }
 
-    public static void cancelVillagerTroll(Player target){
-        Bukkit.getScheduler().cancelTask(villagerTaskID);
+    public static void cancelAnvilTroll(Player target){
+        Bukkit.getScheduler().cancelTask(anvilTaskID);
         playersInTroll.put(target.getUniqueId(), false);
     }
 }

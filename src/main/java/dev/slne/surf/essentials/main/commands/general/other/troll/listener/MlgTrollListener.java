@@ -1,6 +1,6 @@
 package dev.slne.surf.essentials.main.commands.general.other.troll.listener;
 
-import dev.slne.surf.essentials.main.commands.general.other.troll.MlgTroll;
+import dev.slne.surf.essentials.main.commands.general.other.troll.trolls.MlgTroll;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

@@ -9,7 +9,7 @@ import dev.slne.surf.essentials.brigadier.GeneralTabComplete;
 import dev.slne.surf.essentials.brigadier.TpTabComplete;
 import dev.slne.surf.essentials.main.commands.BrigadierCommands;
 import dev.slne.surf.essentials.main.commands.Commands;
-import dev.slne.surf.essentials.main.commands.general.other.troll.MlgTroll;
+import dev.slne.surf.essentials.main.commands.general.other.troll.trolls.MlgTroll;
 import dev.slne.surf.essentials.main.commands.general.sign.EditSignListener;
 import dev.slne.surf.essentials.main.utils.brigadier.CommandRegistered;
 import dev.slne.surf.essentials.main.utils.brigadier.PluginBrigadierCommand;

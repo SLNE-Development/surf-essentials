@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.main.commands.general.other.troll;
+package dev.slne.surf.essentials.main.commands.general.other.troll.trolls;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -25,6 +25,7 @@ import java.util.UUID;
 
 public class MlgTroll {
     private static HashMap<UUID, ItemStack[]> saveInventory = new HashMap<>();
+    private static HashMap<UUID, Boolean> scheduledTasks = new HashMap<>();
 
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> mlg(LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.mlg"));
@@ -48,8 +49,10 @@ public class MlgTroll {
     private static int mlgTroll(CommandContext<CommandSourceStack> context, Player target, String mlgType) throws CommandSyntaxException {
         CommandSourceStack source = context.getSource();
 
-        saveInventory.put(target.getUniqueId(), target.getInventory().getContents());
-        target.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20,100));
+        if (!saveInventory.containsKey(target.getUniqueId())) {
+            saveInventory.put(target.getUniqueId(), target.getInventory().getContents());
+        }
+        target.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20,100, false, false, false));
         SurfApi.getUser(target).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                 .append(Component.text("Schaffst du den MLG?", SurfColors.GREEN))));
         target.setInvulnerable(true);
@@ -66,11 +69,16 @@ public class MlgTroll {
             default -> throw new IllegalStateException("Unexpected value: " + mlgType);
         }
 
-        Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), () -> {
-            target.getInventory().setContents(saveInventory.get(target.getUniqueId()));
-            target.updateInventory();
-            target.setInvulnerable(false);
-        }, 20*10);
+        if (!scheduledTasks.containsKey(target.getUniqueId())) {
+            scheduledTasks.put(target.getUniqueId(), true);
+            Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), () -> {
+                target.getInventory().setContents(saveInventory.get(target.getUniqueId()));
+                target.setInvulnerable(false);
+                saveInventory.remove(target.getUniqueId());
+                scheduledTasks.remove(target.getUniqueId());
+                target.removePotionEffect(PotionEffectType.LEVITATION);
+            }, 20 * 10);
+        }
 
 
         //success message
@@ -86,17 +94,22 @@ public class MlgTroll {
         return 1;
     }
 
+
     public static void restoreInventoryFromMlgTroll(){
         saveInventory.forEach((uuid, itemStacks) -> {
             Bukkit.getPlayer(uuid).getInventory().setContents(itemStacks);
             Bukkit.getPlayer(uuid).setInvulnerable(false);
+            saveInventory.remove(uuid);
         });
+
     }
 
     public static void restoreInventoryFromMlgTroll(Player player){
+        if (!saveInventory.containsKey(player.getUniqueId())) return;
         player.getInventory().setContents(saveInventory.get(player.getUniqueId()));
         player.setInvulnerable(false);
-    }
+        saveInventory.remove(player.getUniqueId());
 
+    }
 
 }

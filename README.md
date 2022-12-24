@@ -103,7 +103,14 @@ Makes the server commands better and more peronalized.
 
 - `/troll <boom> <target>` _creates a visual explosion and lets the target fly into the sky_
 - `/troll <demo> <target>` _Shows the target the demo-message_
-- `/troll <illusioner> <target>` _Summon an illusioner at the target position and add a blindness effect to the target_
+- `/troll <illusioner> <target> [<amount>]` _Summon an illusioner at the target position and add a blindness effect to the target_
+- `/troll <bell> <target> [duration]` _Annoys the player with bell sounds for the given duration_
+- `/troll <villager> <target> [duration]` _Annoys the player with villager sounds for the given duration_
+- `/troll <anvil> <target> [duration]` _Summons damaged Anvil above the target for the given duration_
+- `/troll <bell> <target> ` _Annoys the player with bell sounds for the given duration_
+- `/troll <mlg> <target> <type>` _Forces the target to make the specified mlg_
+- `/troll <water> <target> [duration]` _Makes the target think that he suffers from water phobia_
+- `/troll <herobrine> <target>` _Scares the target with Herobrine (disappears after reconnecting)_
 
 </details>
 

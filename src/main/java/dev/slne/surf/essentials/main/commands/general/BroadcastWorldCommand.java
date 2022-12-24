@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -57,7 +58,11 @@ public class BroadcastWorldCommand {
                 // Add an argument for the broadcast message
                 .then(Commands.argument("broadcast message", StringArgumentType.greedyString())
                         // Specify the command execution logic
-                        .executes(BroadcastWorldCommand::run)));
+                        .executes(BroadcastWorldCommand::run)
+                        .suggests((context, builder) -> {
+                            EssentialsUtil.suggestAllColorCodes(builder);
+                            return builder.buildFuture();
+                        })));
     }
 
     private static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

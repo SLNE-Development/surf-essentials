@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.main.commands.general.other.troll;
+package dev.slne.surf.essentials.main.commands.general.other.troll.trolls;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
