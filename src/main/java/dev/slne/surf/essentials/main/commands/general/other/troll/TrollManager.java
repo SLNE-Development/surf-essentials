@@ -51,5 +51,9 @@ public class TrollManager {
         //herobrine
         literal.then(Commands.literal("herobrine")
                 .then(HerobrineTroll.herobrine(literal)));
+
+        //cage
+        literal.then(Commands.literal("cage")
+                .then(CageTroll.cage(literal)));
     }
 }

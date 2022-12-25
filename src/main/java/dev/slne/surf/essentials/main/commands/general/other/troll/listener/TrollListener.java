@@ -14,5 +14,8 @@ public class TrollListener {
 
         //Mlg troll Listener
         pluginManager.registerEvents(new MlgTrollListener(), plugin);
+
+        //Cage troll Listener
+        pluginManager.registerEvents(new CageTrollListener(), plugin);
     }
 }
