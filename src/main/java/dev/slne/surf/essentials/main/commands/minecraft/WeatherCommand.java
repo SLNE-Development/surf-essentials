@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.main.commands.general;
+package dev.slne.surf.essentials.main.commands.minecraft;
 
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.user.SurfUser;

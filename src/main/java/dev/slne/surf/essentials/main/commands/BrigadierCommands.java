@@ -1,9 +1,11 @@
 package dev.slne.surf.essentials.main.commands;
 
+import dev.slne.surf.essentials.main.commands.cheat.HurtCommand;
 import dev.slne.surf.essentials.main.commands.cheat.LightningCommand;
 import dev.slne.surf.essentials.main.commands.cheat.gui.*;
 import dev.slne.surf.essentials.main.commands.general.*;
 import dev.slne.surf.essentials.main.commands.general.other.troll.TrollManager;
+import dev.slne.surf.essentials.main.commands.minecraft.*;
 
 public class BrigadierCommands {
     public static void register(){
@@ -37,5 +39,9 @@ public class BrigadierCommands {
         GetPosCommand.register();
         //troll command
         TrollManager.register();
+        //hurt command
+        HurtCommand.register();
+        //bossbar command
+        BossbarCommand.register();
     }
 }

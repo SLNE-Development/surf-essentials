@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.main.commands.general;
+package dev.slne.surf.essentials.main.commands.minecraft;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;

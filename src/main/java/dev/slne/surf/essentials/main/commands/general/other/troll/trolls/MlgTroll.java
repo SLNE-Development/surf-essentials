@@ -97,8 +97,10 @@ public class MlgTroll {
 
     public static void restoreInventoryFromMlgTroll(){
         saveInventory.forEach((uuid, itemStacks) -> {
-            Bukkit.getPlayer(uuid).getInventory().setContents(itemStacks);
-            Bukkit.getPlayer(uuid).setInvulnerable(false);
+            if (Bukkit.getPlayer(uuid) != null){
+                Bukkit.getPlayer(uuid).getInventory().setContents(itemStacks);
+                Bukkit.getPlayer(uuid).setInvulnerable(false);
+            }
             saveInventory.remove(uuid);
         });
 

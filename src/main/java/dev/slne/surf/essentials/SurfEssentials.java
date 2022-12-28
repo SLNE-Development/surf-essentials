@@ -9,8 +9,12 @@ import dev.slne.surf.essentials.brigadier.GeneralTabComplete;
 import dev.slne.surf.essentials.brigadier.TpTabComplete;
 import dev.slne.surf.essentials.main.commands.BrigadierCommands;
 import dev.slne.surf.essentials.main.commands.Commands;
+import dev.slne.surf.essentials.main.commands.general.other.crawl.implementation.WorldGuardImplementation;
+import dev.slne.surf.essentials.main.commands.general.other.crawl.utils.CrawlBlockUtils;
 import dev.slne.surf.essentials.main.commands.general.other.troll.trolls.MlgTroll;
 import dev.slne.surf.essentials.main.commands.general.sign.EditSignListener;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.WorldGuardLink;
 import dev.slne.surf.essentials.main.utils.brigadier.CommandRegistered;
 import dev.slne.surf.essentials.main.utils.brigadier.PluginBrigadierCommand;
 import me.lucko.commodore.Commodore;
@@ -48,6 +52,14 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
     }
 
 
+    @Override
+    public void onLoad() {
+        if(Bukkit.getPluginManager().getPlugin("WorldGuard") != null) {
+            EssentialsUtil.worldGuardLink = new WorldGuardLink(getInstance());
+            EssentialsUtil.worldGuardLink.registerFlags();
+            worldGuard = new WorldGuardImplementation(Bukkit.getPluginManager().getPlugin("WorldGuard"), this);
+        }
+    }
 
     // Plugin startup logic
     @Override
@@ -56,7 +68,7 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
         Commands commands = new Commands();
         //Start message
         getLogger().info("The plugin is starting...");
-        //logo if the plugin
+        //logo for the plugin
         loadMessage();
         //Plugin Manager shortcut
         PluginManager pluginManager = Bukkit.getPluginManager();
@@ -145,5 +157,10 @@ public static ProtocolManager manager(){
         SurfEssentials.getInstance().getServer().getCommandMap().register(SurfEssentials.getInstance().getName(), pluginBrigadierCommand);
         ((CraftServer) SurfEssentials.getInstance().getServer()).syncCommands();
         return pluginBrigadierCommand;
+    }
+
+    private WorldGuardImplementation worldGuard;
+    public WorldGuardImplementation getWorldGuard() {
+        return this.worldGuard;
     }
 }

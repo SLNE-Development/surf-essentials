@@ -9,6 +9,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.ChatFormatting;
 import org.bukkit.Sound;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -27,6 +28,7 @@ public abstract class EssentialsUtil {
     public static Sound[] scareSounds = new Sound[]{Sound.ENTITY_LIGHTNING_BOLT_THUNDER, Sound.ENTITY_WOLF_HOWL,
             Sound.ENTITY_BAT_DEATH, Sound.ENTITY_GHAST_SCREAM, Sound.ENTITY_GHAST_HURT};
 
+    public static WorldGuardLink worldGuardLink;
 
     /**
      *
@@ -215,4 +217,18 @@ public abstract class EssentialsUtil {
         PotionEffect scareEffect = new PotionEffect(PotionEffectType.DARKNESS, 20*7, 1, false, false, false);
         player.addPotionEffect(scareEffect);
     }
+
+    public static WorldGuardLink getWorldGuardLink() {
+        return worldGuardLink;
+    }
+
+    public static void sendCorrectUsage(CommandSender sender, Component usage) {
+        sender.sendMessage(Component.text().append(SurfApi.getPrefix())
+                .append(Component.text("Korrekte Benutzung: ", SurfColors.ERROR)).append(usage).build());
+    }
+
+    public static void sendCorrectUsage(CommandSender sender, String usage) {
+       sendCorrectUsage(sender, Component.text(usage, SurfColors.TERTIARY));
+    }
+
 }
