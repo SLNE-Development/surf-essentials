@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.main.utils;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.slne.surf.api.SurfApi;
@@ -8,6 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -229,6 +231,17 @@ public abstract class EssentialsUtil {
 
     public static void sendCorrectUsage(CommandSender sender, String usage) {
        sendCorrectUsage(sender, Component.text(usage, SurfColors.TERTIARY));
+    }
+
+    /**
+     Sends an error message to the player.
+     @param source the command source
+     @param error the error message to send
+     @throws CommandSyntaxException if an error occurs while sending the message
+     */
+    public static void sendError(CommandSourceStack source, String error) throws CommandSyntaxException {
+        SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                .append(net.kyori.adventure.text.Component.text(error, SurfColors.ERROR))));
     }
 
 }

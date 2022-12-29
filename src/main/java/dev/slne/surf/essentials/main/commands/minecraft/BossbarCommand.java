@@ -36,6 +36,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Collections;
 
+import static dev.slne.surf.essentials.main.utils.EssentialsUtil.sendError;
+
 @DefaultQualifier(NotNull.class)
 public class BossbarCommand {
     /**
@@ -696,17 +698,6 @@ public class BossbarCommand {
      */
     public static final SuggestionProvider<CommandSourceStack> SUGGEST_BOSS_BAR = (context, builder) ->
             SharedSuggestionProvider.suggestResource(context.getSource().getServer().getCustomBossEvents().getIds(), builder);
-
-    /**
-     Sends an error message to the player.
-     @param source the command source
-     @param error the error message to send
-     @throws CommandSyntaxException if an error occurs while sending the message
-     */
-    private static void sendError(CommandSourceStack source, String error) throws CommandSyntaxException {
-        SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                .append(net.kyori.adventure.text.Component.text(error, SurfColors.ERROR))));
-    }
 
     private static net.kyori.adventure.text.Component convertBossbar(CustomBossEvent bossBar){
          ComponentBuilder<TextComponent, TextComponent.Builder> builder = net.kyori.adventure.text.Component.text();

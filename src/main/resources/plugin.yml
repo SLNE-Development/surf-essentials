@@ -159,3 +159,6 @@ permissions:
         description: Allows you to suicide other players
   surf.teleport.announce:
     description: Anounce to you if someone has teleported
+
+  surf.essentials.announce.op:
+    description: Anounce to you op changes

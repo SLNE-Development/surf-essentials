@@ -39,14 +39,14 @@ public class SpawnerChangeCommand extends EssentialsCommand {
         //check if sender is player
         if (sender instanceof Player player){
             //check if the player is facing a block, if not, a spawner is given
-            if (player.getTargetBlock(6) == null){
+            if (player.getTargetBlockExact(6) == null){
                 player.getInventory().addItem(new ItemStack(Material.SPAWNER));
                 SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                         .append(Component.text("Dir wurde ein Spawner gegeben!", SUCCESS))));
                 return true;
             }
             //target block
-            Block block = player.getTargetBlock(6);
+            Block block = player.getTargetBlockExact(6);
             //check if the block is a spawner, otherwise a spawner is given
             if (Objects.requireNonNull(block).getBlockData().getMaterial() != Material.SPAWNER){
                 player.getInventory().addItem(new ItemStack(Material.SPAWNER));

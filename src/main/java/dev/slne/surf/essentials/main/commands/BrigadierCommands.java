@@ -43,5 +43,9 @@ public class BrigadierCommands {
         HurtCommand.register();
         //bossbar command
         BossbarCommand.register();
+        //op command
+        OpCommand.register();
+        //deop command
+        DeopCommand.register();
     }
 }
