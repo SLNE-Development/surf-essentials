@@ -47,5 +47,7 @@ public class BrigadierCommands {
         OpCommand.register();
         //deop command
         DeopCommand.register();
+        //effect command
+        EffectCommand.register();
     }
 }
