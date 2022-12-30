@@ -49,5 +49,7 @@ public class BrigadierCommands {
         DeopCommand.register();
         //effect command
         EffectCommand.register();
+        //default game mode command
+        DefaultGamemodeCommand.register();
     }
 }
