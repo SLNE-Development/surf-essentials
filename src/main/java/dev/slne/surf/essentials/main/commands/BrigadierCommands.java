@@ -51,5 +51,7 @@ public class BrigadierCommands {
         EffectCommand.register();
         //default game mode command
         DefaultGamemodeCommand.register();
+        //difficulty command
+        DifficultyCommand.register();
     }
 }
