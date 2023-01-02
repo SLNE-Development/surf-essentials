@@ -716,7 +716,7 @@ public class BossbarCommand {
             case WHITE -> builder.color(NamedTextColor.WHITE);
             case YELLOW -> builder.color(NamedTextColor.YELLOW);
             default -> builder.color(NamedTextColor.WHITE)
-                        .append(net.kyori.adventure.text.Component.text("add new Color to code (line 681 in BossbarCommand.java) ", SurfColors.DARK_GRAY)
+                        .append(net.kyori.adventure.text.Component.text("add new Color to code (line 719 in BossbarCommand.java) ", SurfColors.DARK_GRAY)
                                 .decorate(TextDecoration.ITALIC));
         }
         return builder.build();

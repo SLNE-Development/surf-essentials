@@ -92,7 +92,7 @@ public class Commands {
         this.commands.add(new TeleportAll(this.surf.getCommand("tpall")));
         //TeleportToTopCommand
         this.commands.add(new TeleportToTop(this.surf.getCommand("tptop")));
-        //TeleportCommand
+        //TeleportOfflineCommand
         this.commands.add(new TeleportCommand(this.surf.getCommand("teleport")));
     }
 

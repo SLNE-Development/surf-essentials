@@ -94,13 +94,27 @@ public abstract class EssentialsUtil {
      * @param ticks  the ticks to convert
      * @return Time format in string
      */
-    public static String ticksToString(int ticks){
+    public static String ticksToString(int ticks) {
         int totalSeconds = ticks / 20;
-        int hours, minutes, seconds;
-        hours = totalSeconds / 3600;
-        minutes = (totalSeconds % 3600) / 60;
+        int days, hours, minutes, seconds;
+
+        if (totalSeconds < 60) return String.format("%ds", totalSeconds);
+        if (totalSeconds < 3600) {
+            minutes = totalSeconds / 60;
+            seconds = totalSeconds % 60;
+            return String.format("%02dm %02ds", minutes, seconds);
+        }
+        if (totalSeconds < 86400) {
+            hours = totalSeconds / 3600;
+            minutes = (totalSeconds % 3600) / 60;
+            seconds = totalSeconds % 60;
+            return String.format("%02dh %02dm %02ds", hours, minutes, seconds);
+        }
+        days = totalSeconds / 86400;
+        hours = (totalSeconds % 86400) / 3600;
+        minutes = ((totalSeconds % 86400) % 3600) / 60;
         seconds = totalSeconds % 60;
-        return String.format("%02dh %02dm %02ds", hours, minutes, seconds);
+        return String.format("%dd %02dh %02dm %02ds", days, hours, minutes, seconds);
     }
 
     /**
@@ -224,11 +238,23 @@ public abstract class EssentialsUtil {
         return worldGuardLink;
     }
 
+    /**
+     * Sends a message to the specified {@link CommandSender} with the correct usage of the command.
+     *
+     * @param sender the {@link CommandSender} to send the message to
+     * @param usage the correct usage of the command as a {@link Component}
+     */
     public static void sendCorrectUsage(CommandSender sender, Component usage) {
         sender.sendMessage(Component.text().append(SurfApi.getPrefix())
                 .append(Component.text("Korrekte Benutzung: ", SurfColors.ERROR)).append(usage).build());
     }
 
+    /**
+     * Sends a message to the specified {@link CommandSender} with the correct usage of the command.
+     *
+     * @param sender the {@link CommandSender} to send the message to
+     * @param usage the correct usage of the command as a {@link String}
+     */
     public static void sendCorrectUsage(CommandSender sender, String usage) {
        sendCorrectUsage(sender, Component.text(usage, SurfColors.TERTIARY));
     }
@@ -244,4 +270,38 @@ public abstract class EssentialsUtil {
                 .append(net.kyori.adventure.text.Component.text(error, SurfColors.ERROR))));
     }
 
+    /**
+     Sends an error message to the player.
+     @param source the command source
+     @param error the error message to send
+     @throws CommandSyntaxException if an error occurs while sending the message
+     */
+    public static void sendError(CommandSourceStack source, Component error) throws CommandSyntaxException {
+        SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                .append(error)));
+    }
+
+    /**
+     * Sends a success message to the player associated with the specified command source stack.
+     *
+     * @param source the {@link CommandSourceStack} to get the player from
+     * @param success the success message to send as a String
+     * @throws CommandSyntaxException if the player cannot be found
+     */
+    public static void sendSuccess(CommandSourceStack source, String success) throws CommandSyntaxException {
+        SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                .append(Component.text(success, SurfColors.SUCCESS))));
+    }
+
+    /**
+     * Sends a success message to the player associated with the specified command source stack.
+     *
+     * @param source the {@link CommandSourceStack} to get the player from
+     * @param success the success message to send as a {@link Component}
+     * @throws CommandSyntaxException if the player cannot be found
+     */
+    public static void sendSuccess(CommandSourceStack source, Component success) throws CommandSyntaxException {
+        SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                .append(success)));
+    }
 }

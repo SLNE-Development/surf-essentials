@@ -53,5 +53,7 @@ public class BrigadierCommands {
         DefaultGamemodeCommand.register();
         //difficulty command
         DifficultyCommand.register();
+        //experience command
+        ExperienceCommand.register();
     }
 }
