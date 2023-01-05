@@ -11,8 +11,6 @@ public class GeneralTabComplete {
     public void register(Commodore commodore){
         //alert command completions
         builder(commodore, "alert", new AlertBuilder().alertBuilder());
-        //gamemode command completions
-        builder(commodore, "gamemode", new GamemodeBuilder().gamemodeBuilder());
         //info command completions
         builder(commodore, "information", new InfoBuilder().infoBuilder());
         //time command completions

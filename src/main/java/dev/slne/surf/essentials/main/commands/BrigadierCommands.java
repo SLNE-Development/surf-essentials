@@ -6,6 +6,7 @@ import dev.slne.surf.essentials.main.commands.cheat.gui.*;
 import dev.slne.surf.essentials.main.commands.general.*;
 import dev.slne.surf.essentials.main.commands.general.other.troll.TrollManager;
 import dev.slne.surf.essentials.main.commands.minecraft.*;
+import dev.slne.surf.essentials.main.commands.minecraft.GameruleCommand;
 
 public class BrigadierCommands {
     public static void register(){
@@ -59,5 +60,7 @@ public class BrigadierCommands {
         ForceloadCommand.register();
         //game mode command
         GamemodeCommand.register();
+        //gamerule command
+        GameruleCommand.register();
     }
 }
