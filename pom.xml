@@ -234,7 +234,7 @@
                         <manifestEntries>
                             <mode>development</mode>
                             <url>https://git.slne.dev/surf/surf-essentials</url>
-                            <Built-By>Twisti_twixi</Built-By>
+                            <Built-By>SLNE Dev Team</Built-By>
                             <mainClass>dev.slne.surf.essentials.SurfEssentials</mainClass>
                         </manifestEntries>
                     </archive>

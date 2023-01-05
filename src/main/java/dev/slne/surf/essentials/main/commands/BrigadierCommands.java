@@ -55,5 +55,7 @@ public class BrigadierCommands {
         DifficultyCommand.register();
         //experience command
         ExperienceCommand.register();
+        //forceload command
+        ForceloadCommand.register();
     }
 }
