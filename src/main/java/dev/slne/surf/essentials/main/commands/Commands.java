@@ -6,7 +6,6 @@ import dev.slne.surf.essentials.main.commands.general.*;
 import dev.slne.surf.essentials.main.commands.general.other.poll.PollManager;
 import dev.slne.surf.essentials.main.commands.general.other.poll.VoteCommand;
 import dev.slne.surf.essentials.main.commands.general.other.world.WorldCommand;
-import dev.slne.surf.essentials.main.commands.minecraft.GamemodeCommand;
 import dev.slne.surf.essentials.main.commands.minecraft.TimeCommand;
 import dev.slne.surf.essentials.main.commands.minecraft.WeatherCommand;
 import dev.slne.surf.essentials.main.commands.tp.TeleportAll;
@@ -59,8 +58,6 @@ public class Commands {
     public void initializeGeneralCommands(){
         //AlertCommand
         this.commands.add(new AlertCommand(this.surf.getCommand("alert")));
-        //GamemodeCommand
-        this.commands.add(new GamemodeCommand(this.surf.getCommand("gamemode")));
         //InfoCommand
         this.commands.add(new InfoCommand(this.surf.getCommand("info")));
         //MsgCommand

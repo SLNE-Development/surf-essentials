@@ -84,13 +84,6 @@ commands:
       surf.command.time
     permission-message: You don't have permission to change the time!
 
-  gamemode:
-    usage: /gamemode <gamemode>
-    description: Change your gamemode
-    permission:
-      surf.command.gamemode
-    permission-message: You don't have permission to change your gamemode!
-
   signEdit:
     usage: /signedit <true|false>
     description: Toggles whether signs can be edited by right-clicking or not.

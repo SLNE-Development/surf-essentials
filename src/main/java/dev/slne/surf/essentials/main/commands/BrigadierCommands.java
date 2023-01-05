@@ -57,5 +57,7 @@ public class BrigadierCommands {
         ExperienceCommand.register();
         //forceload command
         ForceloadCommand.register();
+        //game mode command
+        GamemodeCommand.register();
     }
 }
