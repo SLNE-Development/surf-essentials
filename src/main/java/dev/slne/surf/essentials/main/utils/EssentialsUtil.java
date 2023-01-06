@@ -9,7 +9,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.MinecraftServer;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -303,5 +305,15 @@ public abstract class EssentialsUtil {
     public static void sendSuccess(CommandSourceStack source, Component success) throws CommandSyntaxException {
         SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                 .append(success)));
+    }
+
+    /**
+     * Builds a command build context.
+     *
+     * @return the built command build context
+     */
+    public static @NotNull CommandBuildContext buildContext(){
+        return CommandBuildContext.configurable(MinecraftServer.getServer().registryAccess(),
+            MinecraftServer.getServer().getWorldData().getDataConfiguration().enabledFeatures());
     }
 }

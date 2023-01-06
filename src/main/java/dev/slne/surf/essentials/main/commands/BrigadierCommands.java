@@ -62,5 +62,7 @@ public class BrigadierCommands {
         GamemodeCommand.register();
         //gamerule command
         GameruleCommand.register();
+        //particle command
+        ParticleCommand.register();
     }
 }
