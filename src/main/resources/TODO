@@ -1,0 +1,24 @@
+- finish tp command
+- Effect on teleport (/particle minecraft:ambient_entity_effect ~ ~ ~ 0.5 1 0.5 1 4000 normal @a)
+- migrate old commands to brigadier
+- maybe add mysql support (e.g. poll saves, sign toggle...)
+- customize most of the default minecraft commands
+- add gui option for several commands (e.g. troll, world, poll...)
+
+Add new Commands:
+    - /nic (set or clear a nicname)
+    - /realname (show the "real" name of a player)
+    - /titlebroadcast (show titles to players)
+    - /hotbarbroadcast (show a hotbar message to players (the thing over active slots - idk how it´s called))
+    - /personalchatclear | pcc (clears only your chat)
+    - /chatclear | cc (clears the chat from every player except they have a permission)
+    - /setname (set the name of an item)
+    - /lore (set the lore of an item)
+    - /infinite (never run out of the item holding when the command is issued)
+    - /pvptoggle | pvp (toggle pvp)
+    - /ping (get your or the target ping)
+    - /rtp (teleports you to a random location)
+    - /back (teleports you to your location before the teleport)
+    - /hat (puts the item from your main hand on your head)
+    - /unhat (puts the ite, from your head back to your inventory)
+
