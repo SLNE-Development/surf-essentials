@@ -21,4 +21,5 @@ Add new Commands:
     - /back (teleports you to your location before the teleport)
     - /hat (puts the item from your main hand on your head)
     - /unhat (puts the ite, from your head back to your inventory)
+    - /timer (show a timer for the targets ib the action bar)
 
