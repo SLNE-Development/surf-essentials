@@ -1,10 +1,13 @@
 package dev.slne.surf.essentials.main.utils;
 
+import com.destroystokyo.paper.event.brigadier.AsyncPlayerSendCommandsEvent;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
+import dev.slne.surf.essentials.main.exceptions.BrigadierUnsupportedException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
@@ -32,7 +35,7 @@ public abstract class EssentialsUtil {
     public static Sound[] scareSounds = new Sound[]{Sound.ENTITY_LIGHTNING_BOLT_THUNDER, Sound.ENTITY_WOLF_HOWL,
             Sound.ENTITY_BAT_DEATH, Sound.ENTITY_GHAST_SCREAM, Sound.ENTITY_GHAST_HURT};
 
-    public static WorldGuardLink worldGuardLink;
+    public static final int MAX_FOOD = 20;
 
     /**
      *
@@ -99,6 +102,7 @@ public abstract class EssentialsUtil {
     public static String ticksToString(int ticks) {
         int totalSeconds = ticks / 20;
         int days, hours, minutes, seconds;
+        // <editor-fold defaultstate="collapsed" desc="calculation">
 
         if (totalSeconds < 60) return String.format("%ds", totalSeconds);
         if (totalSeconds < 3600) {
@@ -116,6 +120,7 @@ public abstract class EssentialsUtil {
         hours = (totalSeconds % 86400) / 3600;
         minutes = ((totalSeconds % 86400) % 3600) / 60;
         seconds = totalSeconds % 60;
+        // </editor-fold>
         return String.format("%dd %02dh %02dm %02ds", days, hours, minutes, seconds);
     }
 
@@ -172,6 +177,7 @@ public abstract class EssentialsUtil {
      * @return a {@link CompletableFuture} containing the {@link Suggestions}
      */
     public static CompletableFuture<Suggestions> suggestAllColorCodes(@NotNull SuggestionsBuilder builder) {
+        // <editor-fold defaultstate="collapsed" desc="allColorCodes">
         builder.suggest("&0", net.minecraft.network.chat.Component.literal("Black").withStyle(ChatFormatting.BLACK));
         builder.suggest("&2", net.minecraft.network.chat.Component.literal("Dark Green").withStyle(ChatFormatting.DARK_GREEN));
         builder.suggest("&4", net.minecraft.network.chat.Component.literal("Dark Red").withStyle(ChatFormatting.DARK_RED));
@@ -195,6 +201,7 @@ public abstract class EssentialsUtil {
         builder.suggest("&l", net.minecraft.network.chat.Component.literal("Bold").withStyle(ChatFormatting.BOLD));
         builder.suggest("&n", net.minecraft.network.chat.Component.literal("Underline").withStyle(ChatFormatting.UNDERLINE));
         builder.suggest("&r", net.minecraft.network.chat.Component.literal("Reset").withStyle(ChatFormatting.RESET));
+        // </editor-fold>
         return builder.buildFuture();
     }
 
@@ -234,10 +241,6 @@ public abstract class EssentialsUtil {
         playScareSound(player);
         PotionEffect scareEffect = new PotionEffect(PotionEffectType.DARKNESS, 20*7, 1, false, false, false);
         player.addPotionEffect(scareEffect);
-    }
-
-    public static WorldGuardLink getWorldGuardLink() {
-        return worldGuardLink;
     }
 
     /**
@@ -315,5 +318,24 @@ public abstract class EssentialsUtil {
     public static @NotNull CommandBuildContext buildContext(){
         return CommandBuildContext.configurable(MinecraftServer.getServer().registryAccess(),
             MinecraftServer.getServer().getWorldData().getDataConfiguration().enabledFeatures());
+    }
+
+    public static boolean checkForBrigadierClasses(){
+        try {
+            Class.forName(CommandDispatcher.class.getName());
+            Class.forName(AsyncPlayerSendCommandsEvent.class.getName());
+        } catch (Throwable e) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isBrigadierSupported(){
+        if (!checkForBrigadierClasses()){
+            throw new BrigadierUnsupportedException(
+                "Brigadier is not supported by the server. " +
+                "The plugin will not work without! " +
+                "Set -Dcommodore.debug=true for debug info.");
+        }else return true;
     }
 }

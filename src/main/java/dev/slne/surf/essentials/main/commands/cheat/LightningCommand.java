@@ -21,15 +21,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class LightningCommand {
     public static void register(){
-        // This registers the "lighting" command with the Brigadier command framework, and associates it with the "literal" method
         SurfEssentials.registerPluginBrigadierCommand("lighting", LightningCommand::literal);
     }
 
-    /**
-     * This method defines the structure and behavior of the "lighting" command.
-     *
-     * @param literal a LiteralArgumentBuilder object that is used to define the structure of the command
-     */
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
         // required permission
         literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.lighting"));
@@ -42,14 +36,6 @@ public class LightningCommand {
                         .executes(context -> lightingCustom(context, new AtomicInteger(IntegerArgumentType.getInteger(context, "amount"))))));
     }
 
-    /**
-     * This method performs the action of the "lighting" command.
-     *
-     * @param context a CommandContext object that contains the arguments and context of the command
-     * @param power an AtomicInteger that represents the number of times the lightning strike task should be run
-     * @return 1 if the command succeeds, or 0 if it fails
-     * @throws CommandSyntaxException if the command is used improperly
-     */
     private static int lightingCustom(CommandContext<CommandSourceStack> context, AtomicInteger power) throws CommandSyntaxException {
         // Get a list of players from the "players" argument
         EntityArgument.getPlayers(context, "players").forEach(serverPlayer -> {

@@ -23,12 +23,14 @@ import java.util.Iterator;
 
 @DefaultQualifier(NotNull.class)
 public class DefaultGamemodeCommand {
+    @Nullable public static String PERMISSION;
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("defaultgamemode", DefaultGamemodeCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("defaultgamemode", DefaultGamemodeCommand::literal).setUsage("/defaultgamemode [<gamemode>]")
+                .setDescription("Set or query the default game mode");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.defaultgamemode"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
         literal.executes(context -> getGameMode(context.getSource()));
         literal.then(Commands.argument("gamemode", GameModeArgument.gameMode())

@@ -1,98 +1,118 @@
 package dev.slne.surf.essentials.main.commands.general;
 
-import dev.slne.surf.api.SurfApi;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.Items;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+public class BookCommand {
+    public static String PERMISSION;
+    public static String PERMISSION_BYPASS;
 
-public class BookCommand extends EssentialsCommand {
-    public BookCommand(PluginCommand command) {
-        super(command);
-        command.setPermission("surf.essentials.commands.book");
-        command.setUsage("/book [title|author <name>]");
-        command.setDescription("Allows reopening and editing of sealed books.");
-        command.permissionMessage(EssentialsUtil.NO_PERMISSION());
+    public static void register(){
+        SurfEssentials.registerPluginBrigadierCommand("book", BookCommand::literal).setUsage("/book [title|author <name>]")
+                .setDescription("Allows reopening and editing of sealed books.");
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (sender instanceof Player player){
-            @NotNull PlayerInventory inv = player.getInventory();
-            @NotNull ItemStack mainHandItem = player.getActiveItem();
+    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
-            if (inv.getItemInMainHand().getType() != Material.WRITTEN_BOOK) {
-                SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                                .append(Component.text("Korrekte Benutzung: ", SurfColors.RED))
-                        .append(Component.text("/book [title|author <name>] + das Buch in der main-Hand halten", SurfColors.TERTIARY))));
-                return true;
-            }
+        literal.executes(context -> reopenBook(context.getSource()));
 
-            @NotNull ItemStack originalBook = inv.getItemInMainHand();
-            BookMeta originalBookMeta = (BookMeta) originalBook.getItemMeta();
-            ItemStack book = new ItemStack(Material.WRITABLE_BOOK);
-            BookMeta mbook = (BookMeta) book.getItemMeta();
+        literal.then(Commands.literal("title")
+                .then(Commands.argument("title", StringArgumentType.string())
+                        .executes(context -> changeTitle(context.getSource(), StringArgumentType.getString(context, "title")))));
 
-            if (!(originalBookMeta.getAuthor().equals(player.getName())) && !player.hasPermission("surf.essentials.commands.book.bypass")){
-                SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Du hast keine Rechte Bücher von anderen Spielern zu bearbeiten!", SurfColors.ERROR))));
-                return true;
-            }
+        literal.then(Commands.literal("author")
+                .then(Commands.argument("author", StringArgumentType.string())
+                        .executes(context -> changeAuthor(context.getSource(), StringArgumentType.getString(context, "author")))));
+    }
 
-            if (args.length == 0){
-                setBookMeta(originalBookMeta, mbook);
-                book.setItemMeta(mbook);
-                inv.setItem(inv.getItemInMainHand().getType().getEquipmentSlot(), book);
-                return true;
-            }
+    private static int reopenBook(CommandSourceStack source) throws CommandSyntaxException {
+        Player player = source.getPlayerOrException().getBukkitEntity();
+        PlayerInventory inv = player.getInventory();
 
-            if (!(args.length > 1)){
-                SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Korrekte Benutzung: ", SurfColors.RED))
-                        .append(Component.text("/book [title <name> | author <name>]", SurfColors.TERTIARY))));
-                return true;
-            }
-
-            if (args[0].equalsIgnoreCase("title")){
-                String title = args[1];
-                originalBookMeta.setTitle(title);
-                SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Der Title wurde zu ", SurfColors.SUCCESS))
-                        .append(Component.text(title, SurfColors.TERTIARY))
-                        .append(Component.text(" geändert!", SurfColors.SUCCESS))));
-                return true;
-            }
-            if (args[0].equalsIgnoreCase("author")){
-                String author = args[1];
-                originalBookMeta.setAuthor(author);
-                SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Der Autor wurde zu ", SurfColors.SUCCESS))
-                        .append(Component.text(author, SurfColors.TERTIARY))
-                        .append(Component.text(" geändert!", SurfColors.SUCCESS))));
-                return true;
-            }
+        if (inv.getItemInMainHand().getType() != Material.WRITTEN_BOOK) {
+            EssentialsUtil.sendError(source, "Du hältst kein Buch in der Hand!");
+            return 0;
         }
-        return true;
+
+        ItemStack originalBook = inv.getItemInMainHand();
+        BookMeta originalBookMeta = (BookMeta) originalBook.getItemMeta();
+        ItemStack book = new ItemStack(Material.WRITABLE_BOOK);
+        BookMeta mbook = (BookMeta) book.getItemMeta();
+
+        if (!hasPerm(source, net.minecraft.world.item.ItemStack.fromBukkitCopy(originalBook))) return 0;
+
+        setBookMeta(originalBookMeta, mbook);
+        book.setItemMeta(mbook);
+        inv.setItem(inv.getItemInMainHand().getType().getEquipmentSlot(), book);
+
+        source.getPlayerOrException().openItemGui(net.minecraft.world.item.ItemStack.fromBukkitCopy(book), InteractionHand.MAIN_HAND);
+        EssentialsUtil.sendSuccess(source, "Du kannst das Buch nun bearbeiten!");
+
+        return 1;
     }
 
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return null;
+    private static int changeTitle(CommandSourceStack source, String title) throws CommandSyntaxException {
+        net.minecraft.world.item.ItemStack mainHandItem = source.getPlayerOrException().getMainHandItem();
+
+        if (!mainHandItem.is(Items.WRITTEN_BOOK)){
+            EssentialsUtil.sendError(source, "Du musst ein Buch in deiner Hand halten!");
+            return 0;
+        }
+        if (!hasPerm(source, mainHandItem)) return 0;
+
+        CompoundTag compoundTag = mainHandItem.getTag();
+        if (compoundTag == null){
+            compoundTag = new CompoundTag();
+        }
+        compoundTag.putString("title", title);
+        mainHandItem.setTag(compoundTag);
+        EssentialsUtil.sendSuccess(source, Component.text("Der Title vom Buch ", SurfColors.SUCCESS)
+                .append(PaperAdventure.asAdventure(mainHandItem.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
+                .append(Component.text(" wurde geändert!", SurfColors.SUCCESS)));
+        return 1;
     }
 
-    private void setBookMeta(@NotNull BookMeta originalBookMeta, @NotNull BookMeta mbook){
+    private static int changeAuthor(CommandSourceStack source, String author) throws CommandSyntaxException {
+        net.minecraft.world.item.ItemStack mainHandItem = source.getPlayerOrException().getMainHandItem();
+
+        if (!mainHandItem.is(Items.WRITTEN_BOOK)){
+            EssentialsUtil.sendError(source, "Du musst ein Buch in deiner Hand halten!");
+            return 0;
+        }
+
+        if (!hasPerm(source, mainHandItem)) return 0;
+
+        CompoundTag compoundTag = mainHandItem.getTag();
+        if (compoundTag == null){
+            compoundTag = new CompoundTag();
+        }
+        compoundTag.putString("author", author);
+        mainHandItem.setTag(compoundTag);
+        EssentialsUtil.sendSuccess(source, Component.text("Der Autor vom Buch ", SurfColors.SUCCESS)
+                .append(PaperAdventure.asAdventure(mainHandItem.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
+                .append(Component.text(" wurde geändert!", SurfColors.SUCCESS)));
+        return 1;
+    }
+
+    private static void setBookMeta(@NotNull BookMeta originalBookMeta, @NotNull BookMeta mbook){
         if (originalBookMeta.hasAuthor()) mbook.setAuthor(originalBookMeta.getAuthor());
         if (originalBookMeta.hasGeneration()) mbook.setGeneration(originalBookMeta.getGeneration());
         if (originalBookMeta.hasTitle()) mbook.setTitle(originalBookMeta.getTitle());
@@ -108,5 +128,13 @@ public class BookCommand extends EssentialsCommand {
         for (Component page : originalBookMeta.pages()) {
             mbook.addPages(page);
         }
+    }
+
+    private static boolean hasPerm(@NotNull CommandSourceStack source, net.minecraft.world.item.@NotNull ItemStack mainHandItem) throws CommandSyntaxException {
+        if (!(mainHandItem.getTag().getString("author").equals(source.getPlayerOrException().getName().getString())) && !source.hasPermission(4, PERMISSION_BYPASS)){
+            EssentialsUtil.sendError(source, "Du hast keine Berechtigung, Bücher von anderen Spielern zu bearbeiten!");
+            return false;
+        }
+        return true;
     }
 }

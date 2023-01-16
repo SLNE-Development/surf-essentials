@@ -33,13 +33,14 @@ import java.util.Collections;
 import java.util.List;
 
 public class ForceloadCommand {
-    public static final String permission = "surf.essentials.commands.forceload";
+    public static String PERMISSION;
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("forceload", ForceloadCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("forceload", ForceloadCommand::literal).setUsage("/forceload <query | add | remove>")
+                .setDescription("Query, add or remove force loaded chunks");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, permission));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
         literal.then(Commands.literal("query")
                 .executes(context -> list(context.getSource()))

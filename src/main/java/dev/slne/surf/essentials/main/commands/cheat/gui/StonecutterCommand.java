@@ -16,12 +16,14 @@ import org.bukkit.Bukkit;
 import java.util.Collection;
 
 public class StonecutterCommand {
+    public static String PERMISSION;
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("stonecutter", StonecutterCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("stonecutter", StonecutterCommand::literal).setUsage("/stonecutter [<players>]")
+                .setDescription("Opens the stonecutter gui for the targets");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.stonecutter"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
         literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("targets", EntityArgument.players())
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));

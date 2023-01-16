@@ -16,12 +16,14 @@ import org.bukkit.Bukkit;
 import java.util.Collection;
 
 public class CartographyTableCommand {
+    public static String PERMISSION;
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("cartographytable", CartographyTableCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("cartographytable", CartographyTableCommand::literal).setUsage("/cartographytable [<players>]")
+                .setDescription("Opens the cartographytable gui for the targets");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.cartographytable"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
         literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("targets", EntityArgument.players())
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));

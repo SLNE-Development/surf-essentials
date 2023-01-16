@@ -1,117 +1,89 @@
 package dev.slne.surf.essentials.main.commands.cheat;
 
-import dev.slne.surf.api.SurfApi;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
-import dev.slne.surf.essentials.main.commands.EssentialsCommand;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
-import java.util.Objects;
+public class FillStackCommand{
+    public static String PERMISSION;
 
-public class FillStackCommand extends EssentialsCommand {
-    public FillStackCommand(PluginCommand command) {
-        super(command);
+    public static void register(){
+        SurfEssentials.registerPluginBrigadierCommand("more", FillStackCommand::literal).setUsage("/more [<player>]")
+                .setDescription("Fills the item stack in hand to maximum size.");
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (sender instanceof Player player) {
-            if (args.length == 0){
-                fillStack(player, true, null);
-                return true;
-            }else if (!EssentialsUtil.isInt(args[0])){
-                SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Du musst eine gültige Zahl angeben!", SurfColors.ERROR))));
-                return true;
-            }else fillStack(player, true, Integer.valueOf(args[0]));
-            return true;
-        }else if (sender instanceof ConsoleCommandSender){
-            ComponentLogger logger = SurfEssentials.logger();
-            if (args.length == 0){
-                logger.warn("You must specify a player!", SurfColors.ERROR);
-                return true;
+    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+
+        literal.executes(context -> more(context.getSource(), context.getSource().getPlayerOrException()));
+
+        literal.then(Commands.argument("player", EntityArgument.player())
+                .executes(context -> more(context.getSource(), EntityArgument.getPlayer(context, "player"))));
+    }
+
+    private static int more(CommandSourceStack source, ServerPlayer target) throws CommandSyntaxException{
+        ItemStack item = target.getMainHandItem();
+
+        if (item.isEmpty()){
+            if (source.isPlayer()){
+                EssentialsUtil.sendError(source, target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
+                        .append(Component.text(" hält nichts in der Haupthand!", SurfColors.ERROR)));
+            }else {
+                throw ERROR_HOLDS_NOTHING.create(target);
             }
-            if (Bukkit.getPlayerExact(args[0]) == null){
-                logger.warn(Component.text("The player does not exist!", SurfColors.ERROR));
-                return true;
-            }
-            if (args.length == 1) {
-                fillStack(Bukkit.getPlayerExact(args[0]), false, null );
-            }
-            if (args.length > 2 && !EssentialsUtil.isInt(args[1])){
-                logger.warn(Component.text("You must enter a valid number!"));
-                return true;
-            }
-            fillStack(Objects.requireNonNull(Bukkit.getPlayerExact(args[0])), false, Integer.valueOf(args[1]));
+            return 0;
         }
-        return true;
-    }
-
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return null;
-    }
-    public void fillStack(Player player, Boolean isPlayer, Integer fillSize){
-        ComponentLogger logger = SurfEssentials.logger();
-        PlayerInventory inv = player.getInventory();
-        if (inv.getItemInMainHand().getType() == Material.AIR){
-            if (isPlayer){
-                SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Du musst das zu füllende Item in deiner Hand halten!", SurfColors.ERROR))));
+        if (item.getMaxStackSize() == 1){
+            if (source.isPlayer()){
+                EssentialsUtil.sendError(source, Component.text("Das Item ", SurfColors.ERROR)
+                        .append(PaperAdventure.asAdventure(item.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
+                        .append(Component.text(" kann nicht gestackt werden!", SurfColors.ERROR)));
             }else {
-                logger.warn(Component.text("The player is not holding an item!"));
+                throw ERROR_CANNOT_STACK.create(item);
             }
-        }else if (inv.getItemInMainHand().getMaxStackSize() == 1){
-            if (isPlayer){
-                SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Das Item ist nicht stackbar", SurfColors.ERROR))));
-            }else {
-                logger.warn(Component.text("The item is not stackable!", SurfColors.ERROR));
-            }
+            return 0;
         }
-        else if (fillSize != null && fillSize > inv.getItemInMainHand().getMaxStackSize()){
-            if (isPlayer){
-                SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Du kannst ", SurfColors.ERROR)
-                                .append(inv.getItemInMainHand().displayName().color(SurfColors.GOLD)))
-                        .append(Component.text(" nur ", SurfColors.ERROR)
-                                .append(Component.text(inv.getItemInMainHand().getMaxStackSize(), SurfColors.AQUA)))
-                        .append(Component.text("x stacken!", SurfColors.ERROR))));
-            }else {
-                logger.warn(Component.text("The maximum stack size is ", SurfColors.ERROR)
-                        .append(Component.text(fillSize, SurfColors.GREEN)));
-            }
+
+        item.setCount(item.getMaxStackSize());
+
+        if (source.isPlayer()){
+            EssentialsUtil.sendSuccess(source, Component.text("Das Item ", SurfColors.SUCCESS)
+                    .append(PaperAdventure.asAdventure(item.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
+                    .append(Component.text(" wurde ", SurfColors.SUCCESS))
+                    .append(Component.text("%dx".formatted(item.getMaxStackSize()), SurfColors.TERTIARY))
+                    .append(Component.text(" für ", SurfColors.SUCCESS))
+                    .append(target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
+                    .append(Component.text(" gestackt!", SurfColors.SUCCESS)));
         }else {
-            ItemStack item = inv.getItemInMainHand();
-            if (fillSize == null){
-                item.setAmount(item.getMaxStackSize());
-            }else {
-                item.setAmount(fillSize);
-            }
-            player.updateInventory();
-
-
-            SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Das item ", SurfColors.SUCCESS))
-                    .append(item.displayName().color(SurfColors.GOLD))
-                    .append(Component.text(" wurde erfolgreich gestackt!", SurfColors.SUCCESS))));
-            if (!isPlayer){
-                logger.info(Component.text("The item was stacked", SurfColors.SUCCESS));
-            }
+            source.sendSuccess(net.minecraft.network.chat.Component.literal("The item ")
+                    .withStyle(ChatFormatting.GREEN)
+                    .append(item.getDisplayName())
+                    .append(net.minecraft.network.chat.Component.literal("has been stacked "))
+                    .withStyle(ChatFormatting.GREEN)
+                    .append(net.minecraft.network.chat.Component.literal(item.getMaxStackSize() + "x"))
+                    .withStyle(ChatFormatting.GOLD)
+                    .append(net.minecraft.network.chat.Component.literal(" for "))
+                    .withStyle(ChatFormatting.GREEN)
+                    .append(target.getDisplayName()), false);
         }
+        return item.getMaxStackSize();
     }
+
+    private static final DynamicCommandExceptionType ERROR_HOLDS_NOTHING = new DynamicCommandExceptionType(target -> ((ServerPlayer) target).getDisplayName()
+            .copy().append(net.minecraft.network.chat.Component.literal("´s main hand is empty!")));
+
+    private static final DynamicCommandExceptionType ERROR_CANNOT_STACK = new DynamicCommandExceptionType(item -> net.minecraft.network.chat.Component.literal("The maximum stack size for ")
+            .append(((net.minecraft.world.item.ItemStack) item).getDisplayName())
+            .append(net.minecraft.network.chat.Component.literal(" is 1!")));
 }

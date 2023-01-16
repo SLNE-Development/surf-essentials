@@ -20,12 +20,14 @@ import java.util.Collection;
 import java.util.Objects;
 
 public class DeopCommand {
+    public static String PERMISSION;
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("deop", DeopCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("deop", DeopCommand::literal).setUsage("/deop <player>")
+                .setDescription("Deop a player");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.deop"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
         literal.then(Commands.argument("players", GameProfileArgument.gameProfile())
                 .suggests((context, builder) -> SharedSuggestionProvider.suggest(context.getSource().getServer().getPlayerList().getOpNames(), builder))

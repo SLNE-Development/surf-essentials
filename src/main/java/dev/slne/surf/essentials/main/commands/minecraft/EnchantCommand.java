@@ -28,9 +28,11 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 
 public class EnchantCommand {
+    public static String PERMISSION;
 
     public static void register() {
-        SurfEssentials.registerPluginBrigadierCommand("enchant", EnchantCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("enchant", EnchantCommand::literal).setUsage("/enchant <targets> <enchantment> [<level>]")
+                .setDescription("Enchant the items of the targets");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
@@ -39,7 +41,7 @@ public class EnchantCommand {
                 MinecraftServer.getServer().getWorldData().getDataConfiguration().enabledFeatures());
 
         // Require the permission to use this command
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.enchant"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
         // Add an argument for the entities to be enchanted
         literal.then(Commands.argument("targets", EntityArgument.entities())
                 // Add an argument for the enchantment to be applied

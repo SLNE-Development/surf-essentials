@@ -1,47 +1,75 @@
 package dev.slne.surf.essentials.main.commands.cheat;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.server.level.ServerPlayer;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
-public class GodmodeCommand extends EssentialsCommand {
-    public GodmodeCommand(PluginCommand command) {
-        super(command);
+public class GodmodeCommand {
+    public static String PERMISSION;
+
+    public static void register(){
+        SurfEssentials.registerPluginBrigadierCommand("godmode", GodmodeCommand::literal).setUsage("/godmode [<enable | disable>] [<players>]")
+                .setDescription("makes the targets invulnerable");
+        SurfEssentials.registerPluginBrigadierCommand("god", GodmodeCommand::literal).setUsage("/godmode [<enable | disable>] [<players>]")
+                .setDescription("makes the targets invulnerable");
+        SurfEssentials.registerPluginBrigadierCommand("gommemode", GodmodeCommand::literal).setUsage("/godmode [<enable | disable>] [<players>]")
+                .setDescription("makes the targets invulnerable");
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player)){sender.sendMessage(SurfApi.getPrefix().append(Component.text("You must be a player to execute this command!", SurfColors.ERROR))); return true;}
-        Player player = (Player)sender;
-        if (args.length > 0) {player.sendMessage(SurfApi.getPrefix().append(Component.text("Du darfst keine Argumente angeben!", SurfColors.ERROR))); return true;}
+    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
+        literal.executes(context -> godmode(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), !context.getSource().getPlayerOrException().isInvulnerable()));
+        literal.then(Commands.literal("enable")
+                .then(Commands.argument("players", EntityArgument.players())
+                        .executes(context -> godmode(context.getSource(), EntityArgument.getPlayers(context, "players"), true))));
 
-        boolean isInvulnerable = player.isInvulnerable();
-        player.setInvulnerable(!isInvulnerable);
+        literal.then(Commands.literal("disable")
+                .then(Commands.argument("players", EntityArgument.players())
+                        .executes(context -> godmode(context.getSource(), EntityArgument.getPlayers(context, "players"), false))));
+    }
 
-        if (isInvulnerable){
-            player.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Du hast den Godmode verlassen!", SurfColors.SUCCESS)));
-        }else {
-            player.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Du hast den Godmode betreten!", SurfColors.SUCCESS)));
+    private static int godmode(CommandSourceStack source, Collection<ServerPlayer> targets, boolean enable) throws CommandSyntaxException{
+        int successfulChanges = 0;
 
+        for (ServerPlayer target : targets) {
+            target.setInvulnerable(enable);
+            successfulChanges ++;
+            SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                    .append(Component.text("Du bist nun ", SurfColors.GREEN))
+                    .append(Component.text(target.isInvulnerable() ? "unverwundbar!" : "verwundbar!", SurfColors.GREEN))));
         }
 
-        return true;
-    }
-
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return null;
+        ServerPlayer target = targets.iterator().next();
+        if (source.isPlayer()){
+            if (successfulChanges == 1 && source.getPlayerOrException() != targets.iterator().next()){
+                EssentialsUtil.sendSuccess(source, target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
+                        .append(Component.text(" ist nun ", SurfColors.SUCCESS))
+                        .append(Component.text(target.isInvulnerable() ? "unverwundbar!" : "verwundbar!", SurfColors.SUCCESS)));
+            }else if (successfulChanges >= 1 && source.getPlayerOrException() != targets.iterator().next()){
+                EssentialsUtil.sendSuccess(source, Component.text(successfulChanges, SurfColors.TERTIARY)
+                        .append(Component.text(" Spieler sind nun ", SurfColors.SUCCESS))
+                        .append(Component.text(enable ? "unverwundbar!" : "verwundbar!", SurfColors.SUCCESS)));
+            }
+        }else {
+            if (successfulChanges == 1){
+                source.sendSuccess(target.getDisplayName()
+                        .copy().append(net.minecraft.network.chat.Component.literal(" is now " + (target.isInvulnerable() ? "invulnerable" : "vulnerable"))), false);
+            }else {
+                source.sendSuccess(net.minecraft.network.chat.Component.literal(successfulChanges + " players are now " + (enable ? "invulnerable" : "vulnerable")), false);
+            }
+        }
+        return successfulChanges;
     }
 }

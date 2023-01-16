@@ -27,8 +27,10 @@ import java.util.Collection;
 
 
 public class GiveCommand {
+    public static String PERMISSION;
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("give", GiveCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("give", GiveCommand::literal).setUsage("/give <targets> <item> [<amount>]")
+                .setDescription("Gives the targets the specified item");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
@@ -37,7 +39,7 @@ public class GiveCommand {
                 MinecraftServer.getServer().getWorldData().getDataConfiguration().enabledFeatures());
 
         // Require permission for the command
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.give"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
         // Add player argument to the command
         literal.then(Commands.argument("targets", EntityArgument.players())
                 // Add item argument to the command

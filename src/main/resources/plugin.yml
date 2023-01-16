@@ -2,7 +2,7 @@ name: SurfEssentials
 version: '${project.version}'
 main: dev.slne.surf.essentials.SurfEssentials
 api-version: 1.19
-depend: [SurfAPI, ProtocolLib, WorldGuard]
+depend: [SurfAPI, ProtocolLib]
 authors: [Twisti_twixi]
 load: POSTWORLD
 database: false
@@ -10,41 +10,6 @@ website: https://git.slne.dev/surf/surf-essentials
 loadbefore: [SurfAPI, ProtocolLib, WorldGuard]
 
 commands:
-  fly:
-    usage: /fly
-    description: Allow you to fly!
-    permission:
-      surf.command.fly
-    permission-message: You don´t have permission to fly!
-
-  heal:
-    usage: /heal
-    description: Heals you instantly!
-    permission:
-      surf.command.heal
-    permission-message: You don´t have permission to heal yourself!
-
-  godmode:
-    usage: /godmode
-    description: Makes you god!
-    permission:
-      surf.command.godmode
-    permission-message: You don´t have permission to make yourself god!
-    aliases: [gommemode]
-
-  feed:
-    usage: /feed
-    description: Feeds you instantly!
-    permission:
-      surf.command.feed
-    permission-message: You don't have permission to feed yourself!
-
-  repair:
-    usage: /repair
-    description: Repairs everything in your main hand!
-    permission:
-      surf.command.repair
-    permission-message: You don't have permission to repair!
 
   tptop:
     usage: /tptop
@@ -61,29 +26,6 @@ commands:
       surf.command.tpall
     permission-message: You don't have permission to teleport others!
 
-  info:
-    usage: /info <player>
-    description: Display information about a player!
-    aliases: [information]
-    permission:
-      surf.command.info
-    permission-message: You don't have permission to view information about other players!
-
-  rule:
-    usage: /rule <player>
-    description: Displays the rules of the server to a player.
-    aliases: [rules, serverrule, serverrules]
-    permission:
-      surf.command.rule
-    permission-message: You don't have permission to display the rules!
-
-  time:
-    usage: /time <time>
-    description: Sets the time to day/evening/night/midnight
-    permission:
-      surf.command.time
-    permission-message: You don't have permission to change the time!
-
   signEdit:
     usage: /signedit <true|false>
     description: Toggles whether signs can be edited by right-clicking or not.
@@ -91,14 +33,6 @@ commands:
     permission:
       sign.toggle
     permission-message: You don't have permission to toggle the sign edit!
-
-  alert:
-    usage: /alert <alert-message>
-    description: Sends an alert message to online players
-    aliases: [al]
-    permission:
-      surf.command.alert
-    permission-message: You don't have permission to send alerts!
 
   msg:
     usage: /msg <player> <msg-message>
@@ -108,27 +42,6 @@ commands:
       surf.command.msg
     permission-message: You don't have permission to send a private message!
 
-  weather:
-    usage: /weather <weather type> <duration>
-    description: Changes the weather in the world.
-    permission:
-      surf.command.weather
-    permission-message: You don't have permission to change the weather!
-
-  speed:
-    usage: /speed <speed>
-    description: Changes your fly/walk speed.
-    permission:
-      surf.command.speed
-    permission-message: You don't have permission to change your speed!
-
-  more:
-    usage: /more
-    description: Fills the item stack in hand to maximum size.
-    permission:
-      surf.command.more
-    permission-message: You don't have permission to fill the item stack!
-
   teleport:
     usage: /teleport <location>
     description: Teleports you to the given location
@@ -136,12 +49,7 @@ commands:
       surf.command.teleport
     permission-message: You don´t have permission to teleport
 
-  spawner:
-  suicide:
   world:
-  poll:
-  vote:
-  book:
 
 permissions:
   surf.essentials:

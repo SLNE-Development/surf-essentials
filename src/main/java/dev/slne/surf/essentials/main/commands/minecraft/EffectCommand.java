@@ -32,12 +32,14 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 
 public class EffectCommand {
+    public static String PERMISSION;
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("effect", EffectCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("effect", EffectCommand::literal).setUsage("/effect <give | clear>")
+                .setDescription("Give or clear the effects of the entities");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.effect"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
         // Get the command build context for the server
         CommandBuildContext buildContext = CommandBuildContext.configurable(MinecraftServer.getServer().registryAccess(),

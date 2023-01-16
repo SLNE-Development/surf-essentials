@@ -20,6 +20,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -93,6 +94,14 @@ public class CageTroll {
                 }
             }
         }
+
+        double middleX = Math.round( (minX + maxX) / 2.0 * 2) / 2.0 + 0.5;
+        double middleY = Math.round( entityLocation.getY() * 2) / 2.0;
+        double middleZ = Math.round( (minZ + maxZ) / 2.0 * 2) / 2.0 + 0.5;
+
+        Location middle = new Location(entityLocation.getWorld(), middleX, middleY, middleZ, entityLocation.getYaw(), entityLocation.getPitch());
+
+        target.teleportAsync(middle, PlayerTeleportEvent.TeleportCause.COMMAND);
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), () -> cancelCageTroll(target.getUniqueId()), 20L * timeInSeconds);
 

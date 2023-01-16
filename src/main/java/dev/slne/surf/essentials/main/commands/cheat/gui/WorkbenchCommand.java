@@ -16,12 +16,14 @@ import org.bukkit.Bukkit;
 import java.util.Collection;
 
 public class WorkbenchCommand {
+    public static String PERMISSION;
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("workbench", WorkbenchCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("workbench", WorkbenchCommand::literal).setUsage("/workbench [<players>]")
+                .setDescription("Opens the workbench gui for the targets");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.workbench"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
         literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("targets", EntityArgument.players())
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));

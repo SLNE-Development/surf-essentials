@@ -1,237 +1,170 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import com.google.common.collect.Iterators;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
-import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.main.exceptions.InvalidStringTimeException;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import io.papermc.paper.configuration.GlobalConfiguration;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
-import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.TimeArgument;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import org.bukkit.Bukkit;
+import org.bukkit.event.world.TimeSkipEvent;
 
-import java.util.List;
+import java.util.Iterator;
 
-public class TimeCommand extends EssentialsCommand {
-    public TimeCommand(PluginCommand command) {
-        super(command);
+public class TimeCommand{
+    public static String PERMISSION;
+
+    public static void register() {
+        SurfEssentials.registerPluginBrigadierCommand("time", TimeCommand::literal).setUsage("/time [<set | add]")
+                .setDescription("Get set or add time in time in the current world");
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        //If sender is instance of Player
-        if (sender instanceof Player player) {
-            //If the player has not specify any arguments
-            if (args.length == 0) {
-                //The player must specify a time
-                player.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Du musst eine Zeit angeben!", SurfColors.ERROR)));
-                return true;
-            }
-            //Gets the player world
-            World world = SurfEssentials.getInstance().getServer().getWorlds().get(0);
-            //Day
-            if (args[0].equalsIgnoreCase("day")) {
-                //Sets the time to day
-                world.setTime(350);
-                //Success message to the player
-                player.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Die Zeit in der Welt ", SurfColors.SUCCESS)
-                                .append(Component.text(world.getName())
-                                        .color(SurfColors.GOLD)))
-                        .append(Component.text(" wurde auf ", SurfColors.SUCCESS)
-                                .append(Component.text("Tag", SurfColors.GOLD)))
-                        .append(Component.text(" gesetzt!", SurfColors.SUCCESS)));
-                return true;
-            }
-            //Evening
-            if (args[0].equalsIgnoreCase("evening")) {
-                //Sets the time to day
-                world.setTime(12350);
-                //Success message to the player
-                player.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Die Zeit in der Welt ", SurfColors.SUCCESS)
-                                .append(Component.text(world.getName())
-                                        .color(SurfColors.GOLD)))
-                        .append(Component.text(" wurde auf ", SurfColors.SUCCESS)
-                                .append(Component.text("Abend", SurfColors.GOLD)))
-                        .append(Component.text(" gesetzt!", SurfColors.SUCCESS)));
-                return true;
-            }
-            //night
-            if (args[0].equalsIgnoreCase("night")) {
-                //Sets the time to day
-                world.setTime(13000);
-                //Success message to the player
-                player.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Die Zeit in der Welt ", SurfColors.SUCCESS)
-                                .append(Component.text(world.getName())
-                                        .color(SurfColors.GOLD)))
-                        .append(Component.text(" wurde auf ", SurfColors.SUCCESS)
-                                .append(Component.text("Nacht", SurfColors.GOLD)))
-                        .append(Component.text(" gesetzt!", SurfColors.SUCCESS)));
-                return true;
-            }
-            //Midnight
-            if (args[0].equalsIgnoreCase("midnight")) {
-                //Sets the time to day
-                world.setTime(18000);
-                //Success message to the player
-                player.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Die Zeit in der Welt ", SurfColors.SUCCESS)
-                                .append(Component.text(world.getName())
-                                        .color(SurfColors.GOLD)))
-                        .append(Component.text(" wurde auf ", SurfColors.SUCCESS)
-                                .append(Component.text("Mittenacht", SurfColors.GOLD)))
-                        .append(Component.text(" gesetzt!", SurfColors.SUCCESS)));
-                return true;
-            }
-            //set time
-            if (args[0].equalsIgnoreCase("set")) {
-                //Check if player provided enough args
-                if (args.length > 1) {
-                    //Check if args[1] is an int
-                    if (isInt(args[1])) {
-                        //Sets the time to the specified number of ticks
-                        world.setTime(Integer.parseInt(args[1]));
-                        //Success message to player
-                        player.sendMessage(SurfApi.getPrefix()
-                                .append(Component.text("Die Zeit wurde erfolgreich auf ", SurfColors.SUCCESS))
-                                .append(Component.text(args[1], SurfColors.GOLD))
-                                .append(Component.text(" Ticks gesetzt!", SurfColors.SUCCESS)));
-                        return true;
-                        //If args[1] isn´t an int
-                    } else {
-                        player.sendMessage(SurfApi.getPrefix()
-                                .append(Component.text("Du musst eine gültige Zahl angeben!", SurfColors.ERROR)));
-                        return true;
-                    }
-                    //If the player has too few arguments to specify
-                } else {
-                    player.sendMessage(SurfApi.getPrefix()
-                            .append(Component.text("Du musst eine gültige Zahl angeben!", SurfColors.ERROR)));
-                    return true;
-                }
-            }
+    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
-        } else if (sender instanceof ConsoleCommandSender console) {
-            ComponentLogger logger = SurfEssentials.getInstance().getComponentLogger();
-            //If the no arguments have been provided
-            if (args.length == 0) {
-                logger.warn(Component.text("You must specify a time!", SurfColors.ERROR));
-                logger.warn(Component.text("Valid times are: ", SurfColors.DARK_GREEN)
-                        .append(Component.text("day | evening | night | midnight | set <ticks>", SurfColors.SECONDARY)));
-                return true;
-            }
-                //Gets the player world
-                World world = console.getServer().getWorlds().get(0);
-                //Day
-                if (args[0].equalsIgnoreCase("day")) {
-                    //Sets the time to day
-                    world.setTime(350);
-                    //Success message to console
-                    logger.info(Component.text("The time in the world ", SurfColors.SUCCESS)
-                            .append(Component.text(world.getName())
-                                    .color(SurfColors.GOLD))
-                            .append(Component.text(" was set to ", SurfColors.SUCCESS)
-                                    .append(Component.text("day", SurfColors.GOLD)))
-                            .append(Component.text("!", SurfColors.SUCCESS)));
-                    return true;
-                }
-                //Evening
-                if (args[0].equalsIgnoreCase("evening")) {
-                    //Sets the time to day
-                    world.setTime(12350);
-                    //Success message to the player
-                    logger.info(Component.text("The time in the world ", SurfColors.SUCCESS)
-                            .append(Component.text(world.getName())
-                                    .color(SurfColors.GOLD))
-                            .append(Component.text(" was set to ", SurfColors.SUCCESS)
-                                    .append(Component.text("evening", SurfColors.GOLD)))
-                            .append(Component.text("!", SurfColors.SUCCESS)));
-                    return true;
-                }
-                //night
-                if (args[0].equalsIgnoreCase("night")) {
-                    //Sets the time to day
-                    world.setTime(13000);
-                    //Success message to the player
-                    logger.info(Component.text("The time in the world ", SurfColors.SUCCESS)
-                            .append(Component.text(world.getName())
-                                    .color(SurfColors.GOLD))
-                            .append(Component.text(" was set to ", SurfColors.SUCCESS)
-                                    .append(Component.text("night", SurfColors.GOLD)))
-                            .append(Component.text("!", SurfColors.SUCCESS)));
-                    return true;
-                }
-                //Midnight
-                if (args[0].equalsIgnoreCase("midnight")) {
-                    //Sets the time to day
-                    world.setTime(18000);
-                    //Success message to the player
-                    logger.info(Component.text("The time in the world ", SurfColors.SUCCESS)
-                            .append(Component.text(world.getName())
-                                    .color(SurfColors.GOLD))
-                            .append(Component.text(" was set to ", SurfColors.SUCCESS)
-                                    .append(Component.text("midnight", SurfColors.GOLD)))
-                            .append(Component.text("!", SurfColors.SUCCESS)));
-                    return true;
-                }
-                //Set time
-                if (args[0].equalsIgnoreCase("set")) {
-                    //Check if player provided enough args
-                    if (args.length > 1) {
-                        //Check if args[1] is an int
-                        if (isInt(args[1])) {
-                            //Sets the time to the specified number of ticks
-                            world.setTime(Integer.parseInt(args[1]));
-                            //Success message to player
-                            logger.info(Component.text("The time was successfully set to ", SurfColors.SUCCESS)
-                                    .append(Component.text(args[1], SurfColors.GOLD))
-                                    .append(Component.text(" ticks!", SurfColors.SUCCESS)));
-                            return true;
-                            //If args[1] isn´t an int
-                        } else {
-                            logger.warn(Component.text("You must enter a valid number!", SurfColors.ERROR));
-                            return true;
-                        }
-                        //If the sender has too few arguments to specify
-                    } else {
-                        logger.warn(Component.text("You must enter a valid number!", SurfColors.ERROR));
-                        return true;
-                    }
-                }
-                else {
-                    logger.warn(Component.text("You must specify a valid time!", SurfColors.ERROR));
-                    logger.warn(Component.text("Valid times are: ", SurfColors.DARK_GREEN)
-                            .append(Component.text("day | evening | night | midnight | set <ticks>", SurfColors.SECONDARY)));
-                    return true;
-                }
-            }
-            return true;
+        literal.executes(context -> queryTime(context.getSource(), context.getSource().getLevel(), getDayTime(context.getSource().getLevel()), 1));
+
+        literal.then(Commands.literal("query")
+                .then(Commands.literal("day")
+                        .executes(context -> queryTime(context.getSource(), context.getSource().getLevel(), (int) (context.getSource().getLevel().getDayTime() / 24000L % 2147483647L), 0)))
+                .then(Commands.literal("daytime")
+                        .executes(context -> queryTime(context.getSource(), context.getSource().getLevel(), getDayTime(context.getSource().getLevel()), 1)))
+                .then(Commands.literal("gametime")
+                        .executes(context -> queryTime(context.getSource(), context.getSource().getLevel(), (int) context.getSource().getLevel().getGameTime(), 2))));
+
+
+        literal.then(Commands.literal("add")
+                .then(Commands.argument("time", TimeArgument.time())
+                        .executes(context -> addTime(context.getSource(), IntegerArgumentType.getInteger(context, "time")))));
+
+        literal.then(Commands.literal("set")
+                .then(Commands.argument("time", TimeArgument.time())
+                        .executes(context -> setTime(context.getSource(), IntegerArgumentType.getInteger(context, "time")))));
+
+        literal.then(Commands.literal("day")
+                .executes(context -> addNamedTime(context.getSource(), "Tag")));
+
+        literal.then(Commands.literal("noon")
+                .executes(context -> addNamedTime(context.getSource(), "Mittag")));
+
+        literal.then(Commands.literal("night")
+                .executes(context -> addNamedTime(context.getSource(), "Nacht")));
+
+        literal.then(Commands.literal("midnight")
+                .executes(context -> addNamedTime(context.getSource(), "Mitternacht")));
     }
 
-        @Override
-        public @Nullable List<String> onTabComplete (@NotNull CommandSender sender, @NotNull Command
-        command, @NotNull String label, @NotNull String[]args){
-            return null;
+    private static int queryTime(CommandSourceStack source, ServerLevel serverLevel, int time, int whatTime) throws CommandSyntaxException {
+        if (source.isPlayer()) {
+            ResourceKey<Level> resourceKey = serverLevel.dimension();
+            String timeName;
+            switch (whatTime) {
+                case 0 -> timeName = "Zeit";
+                case 1 -> timeName = "Tageszeit";
+                case 2 -> timeName = "gesamte Zeit";
+                default -> timeName = "undefined";
+            }
+            EssentialsUtil.sendSuccess(source, Component.text("Die ", SurfColors.INFO)
+                    .append(Component.text(timeName, SurfColors.TERTIARY))
+                    .append(Component.text(" in der Welt ", SurfColors.INFO))
+                    .append(Component.text(resourceKey.location().toString().replace("minecraft:", ""), SurfColors.TERTIARY))
+                    .append(Component.text(" beträgt ", SurfColors.INFO))
+                    .append(Component.text(time, SurfColors.TERTIARY)
+                            .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), SurfColors.INFO))))
+                    .append(Component.text(" Ticks!", SurfColors.INFO)));
+        } else {
+            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.time.query", time), false);
         }
-
-        //Check if arg is int
-        public boolean isInt(String s){
-            int i;
-            try {
-                i = Integer.parseInt(s);
-                return true;
-            } catch (NumberFormatException ex) {
-                //string is not an integer
-                return false;
-            }
-        }
-
+        return time;
     }
+
+    private static int setTime(CommandSourceStack source, int time) throws CommandSyntaxException {
+        Iterator<ServerLevel> iterator = GlobalConfiguration.get().commands.timeCommandAffectsAllWorlds ?
+                source.getServer().getAllLevels().iterator() : Iterators.singletonIterator(source.getLevel());
+
+        iterator.forEachRemaining(level -> {
+            TimeSkipEvent timeSkipEvent = new TimeSkipEvent(level.getWorld(), TimeSkipEvent.SkipReason.COMMAND, time - level.getDayTime());
+            SurfApi.callEvent(timeSkipEvent);
+            if (!timeSkipEvent.isCancelled()) level.setDayTime(level.getDayTime() + timeSkipEvent.getSkipAmount());
+        });
+
+        if (source.isPlayer()) {
+            EssentialsUtil.sendSuccess(source, Component.text("Die Zeit wurde auf ", SurfColors.SUCCESS)
+                    .append(Component.text(time, SurfColors.TERTIARY)
+                            .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), SurfColors.INFO))))
+                    .append(Component.text(" Ticks gesetzt!", SurfColors.SUCCESS)));
+        } else {
+            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.time.set", time), false);
+        }
+        return getDayTime(source.getLevel());
+    }
+
+    private static int addTime(CommandSourceStack source, int time) throws CommandSyntaxException {
+        Iterator<ServerLevel> iterator = GlobalConfiguration.get().commands.timeCommandAffectsAllWorlds ?
+                source.getServer().getAllLevels().iterator() : Iterators.singletonIterator(source.getLevel());
+
+        iterator.forEachRemaining(level -> {
+            TimeSkipEvent timeSkipEvent = new TimeSkipEvent(level.getWorld(), TimeSkipEvent.SkipReason.COMMAND, time);
+            SurfApi.callEvent(timeSkipEvent);
+            if (!timeSkipEvent.isCancelled()) level.setDayTime(level.getDayTime() + timeSkipEvent.getSkipAmount());
+        });
+
+        if (source.isPlayer()) {
+            EssentialsUtil.sendSuccess(source, Component.text("Es wurden ", SurfColors.SUCCESS)
+                    .append(Component.text(time, SurfColors.TERTIARY)
+                            .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), SurfColors.INFO))))
+                    .append(Component.text(" Ticks zur Zeit hinzugefügt!", SurfColors.SUCCESS)));
+        } else {
+            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.time.set", getDayTime(source.getLevel())), false);
+        }
+        return getDayTime(source.getLevel());
+    }
+
+    private static int addNamedTime(CommandSourceStack source, String namedTime) throws CommandSyntaxException {
+        int addTime = switch (namedTime) {
+            case "Tag" -> 500;
+            case "Mittag" -> 6000;
+            case "Nacht" -> 13000;
+            case "Mitternacht" -> 18000;
+            default -> throw new InvalidStringTimeException("Invalid time: \"" + namedTime + "\"");
+        };
+        Iterator<ServerLevel> iterator = GlobalConfiguration.get().commands.timeCommandAffectsAllWorlds ?
+                source.getServer().getAllLevels().iterator() : Iterators.singletonIterator(source.getLevel());
+
+        iterator.forEachRemaining(level -> {
+            int dayDuration = 24000;
+            int currentTime = (int) level.getGameTime();
+            int newTime = currentTime + (dayDuration - currentTime) + addTime;
+            int timeSkipped = (newTime + dayDuration - currentTime) % dayDuration;
+
+            TimeSkipEvent timeSkipEvent = new TimeSkipEvent(level.getWorld(), TimeSkipEvent.SkipReason.COMMAND, timeSkipped);
+            Bukkit.getPluginManager().callEvent(timeSkipEvent);
+            if (!timeSkipEvent.isCancelled()) level.setDayTime(newTime);
+        });
+
+        if (source.isPlayer()) {
+            EssentialsUtil.sendSuccess(source, Component.text("Die Zeit wurde auf ", SurfColors.SUCCESS)
+                    .append(Component.text(namedTime, SurfColors.TERTIARY))
+                    .append(Component.text(" gesetzt!")));
+        } else {
+            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.time.set", getDayTime(source.getLevel())), false);
+        }
+        return 0;
+    }
+
+    private static int getDayTime(ServerLevel world) {
+        return (int) (world.getDayTime() % 24000L);
+    }
+}

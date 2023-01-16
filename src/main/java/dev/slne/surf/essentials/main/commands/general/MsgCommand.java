@@ -21,11 +21,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class MsgCommand extends EssentialsCommand {
-
-
     public MsgCommand(PluginCommand command) {
         super(command);
     }
+    public static String PERMISSION;
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {

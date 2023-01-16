@@ -17,7 +17,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class GamemodeCommand {
-    public static final String PERMISSION = "surf.essentials.commands.gamemode";
+    public static String PERMISSION;
 
     public static void register() {
         SurfEssentials.registerPluginBrigadierCommand("gamemode", GamemodeCommand::literal).setDescription("Change the gamemode of players")

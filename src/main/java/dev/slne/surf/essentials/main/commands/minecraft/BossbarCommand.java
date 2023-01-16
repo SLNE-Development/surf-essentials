@@ -32,6 +32,7 @@ import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.player.Player;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,11 +41,13 @@ import static dev.slne.surf.essentials.main.utils.EssentialsUtil.sendError;
 
 @DefaultQualifier(NotNull.class)
 public class BossbarCommand {
+    @Nullable public static String PERMISSION;
     /**
      * Registers the bossbar command.
      */
     public static void register() {
-        SurfEssentials.registerPluginBrigadierCommand("bossbar", BossbarCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("bossbar", BossbarCommand::literal).setUsage("/bossbar <add | get | remove | list | set>")
+                .setDescription("Change, list or create a bossbar");
     }
 
     /**
@@ -53,7 +56,7 @@ public class BossbarCommand {
      * @param literal the root command literal
      */
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.bossbar"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
         //--------------------------------------------------------------------------------------------------------------
         //                                      add a bossbar

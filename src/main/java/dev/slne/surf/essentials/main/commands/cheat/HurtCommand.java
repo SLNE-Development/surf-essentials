@@ -18,12 +18,14 @@ import org.bukkit.Bukkit;
 import java.util.Collection;
 
 public class HurtCommand {
+    public static String PERMISSION;
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("hurt", HurtCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("hurt", HurtCommand::literal).setUsage("/hurt <players> <damage>")
+                .setDescription("Hurts the targets with the given amount of damage");
     }
 
     public static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.hurt"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
         literal.then(Commands.argument("players", EntityArgument.players())
                 .then(Commands.argument("amount", IntegerArgumentType.integer(1, 250))

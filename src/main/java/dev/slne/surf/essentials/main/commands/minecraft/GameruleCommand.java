@@ -13,10 +13,10 @@ import net.minecraft.world.level.GameRules;
 import org.jetbrains.annotations.NotNull;
 
 public class GameruleCommand {
-    public static final String PERMISSION = "surf.essentials.commands.gamerule";
+    public static String PERMISSION;
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("gamerules", GameruleCommand::literal).setDescription("Change the server gamerules")
+        SurfEssentials.registerPluginBrigadierCommand("gamerule", GameruleCommand::literal).setDescription("Change the server gamerules")
                 .setUsage("/gamerule <gamerule> [<value>]");
     }
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

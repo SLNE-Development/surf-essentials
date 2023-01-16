@@ -1,50 +1,65 @@
 package dev.slne.surf.essentials.main.commands.cheat;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Sound;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.server.level.ServerPlayer;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
-public class FoodCommand extends EssentialsCommand {
-    public FoodCommand(PluginCommand command) {
-        super(command);
+public class FoodCommand {
+    public static String PERMISSION;
+
+    public static void register(){
+        SurfEssentials.registerPluginBrigadierCommand("feed", FoodCommand::literal).setUsage("/feed [<players>]")
+                .setDescription("feeds the players");
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        //Check if sender is player
-        if (!(sender instanceof Player)) {sender.sendMessage(Component.text("You must be a player to execute this command!").color(SurfColors.ERROR)); return true;}
-        //Player declaration
-        Player player = (Player) sender;
-        //if player provided to many args
-        if (args.length > 0){player.sendMessage(SurfApi.getPrefix().append(Component.text("Du darfst keine Argumente angeben!" )).color(SurfColors.ERROR)); return true;}
-        //Effect to food player
-        player.setFoodLevel(20);
+    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
-        SurfApi.getUser(player).thenAcceptAsync((user) -> {
-            if (user == null) return;
-            user.playSound(Sound.BLOCK_AMETHYST_CLUSTER_BREAK, 1f, 1);
-        });
-
-        //Success Message
-        player.sendMessage(SurfApi.getPrefix()
-                .append(Component.text("Du wurdest gefüttert!"))
-                .color(SurfColors.SUCCESS));
-        return true;
-
+        literal.executes(context -> feed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
+        literal.then(Commands.argument("players", EntityArgument.players())
+                .executes(context -> feed(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return null;
+    private static int feed(CommandSourceStack source, Collection<ServerPlayer> targets)throws CommandSyntaxException{
+        int successfulFeeds = 0;
+
+        for (ServerPlayer target : targets) {
+            target.getFoodData().setFoodLevel(EssentialsUtil.MAX_FOOD);
+            successfulFeeds ++;
+            //TODO: Add food sound
+            SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                    .append(Component.text("Du wurdest gefüttert!", SurfColors.GREEN))));
+        }
+
+        if(source.isPlayer()){
+            if (successfulFeeds == 1 && source.getPlayerOrException() != targets.iterator().next()){
+                EssentialsUtil.sendSuccess(source, targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
+                        .append(Component.text(" wurde gefüttert!", SurfColors.SUCCESS)));
+            }else if (successfulFeeds >= 1 && source.getPlayerOrException() != targets.iterator().next()){
+                EssentialsUtil.sendSuccess(source, Component.text(successfulFeeds, SurfColors.TERTIARY)
+                        .append(Component.text(" Spieler wurden gefüttert!", SurfColors.SUCCESS)));
+            }
+        }else {
+            if (successfulFeeds == 1){
+                source.sendSuccess(targets.iterator().next().getDisplayName()
+                        .copy().append(net.minecraft.network.chat.Component.literal(" has been fed")), false);
+            }else {
+                source.sendSuccess(net.minecraft.network.chat.Component.literal(targets.size() + " players have been fed"), false);
+            }
+        }
+        return successfulFeeds;
     }
+
+   
 }

@@ -22,6 +22,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
@@ -29,13 +30,13 @@ import java.util.Objects;
 
 @DefaultQualifier(NotNull.class)
 public class ParticleCommand {
-    public static final String PERMISSIONS = "surf.essentials.commands.particle";
+    @Nullable public static String PERMISSION;
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("particles", ParticleCommand::literal).setUsage("/particle <name> ")
+        SurfEssentials.registerPluginBrigadierCommand("particles", ParticleCommand::literal).setUsage("/particle <name> [<position>] [<delta>] [<speed>] [<amount>] [<force | normal>] [<viewers>]")
                 .setDescription("Creates particles");
     }
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSIONS));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
         literal.then(Commands.argument("name", ParticleArgument.particle(EssentialsUtil.buildContext()))
                 .executes(context -> showParticles(context.getSource(), ParticleArgument.getParticle(context, "name"),

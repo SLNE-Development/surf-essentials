@@ -1,51 +1,64 @@
 package dev.slne.surf.essentials.main.commands.cheat;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Sound;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
-public class HealCommand extends EssentialsCommand {
-    public HealCommand(PluginCommand command) {
-        super(command);
+public class HealCommand {
+    public static String PERMISSION;
+
+    public static void register(){
+        SurfEssentials.registerPluginBrigadierCommand("heal", HealCommand::literal).setUsage("/heal [<players>]")
+                .setDescription("heals the targets");
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        //Check if sender is player
-        if (!(sender instanceof Player)) {sender.sendMessage(Component.text("You must be a player to execute this command!").color(SurfColors.ERROR)); return true;}
-        //Player declaration
-        Player player = (Player) sender;
-        //if player provided to many args
-        if (args.length > 0){player.sendMessage(SurfApi.getPrefix().append(Component.text("Du darfst keine Argumente angeben!" )).color(SurfColors.ERROR)); return true;}
-        //Effect to Heal player
-        double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-        player.setHealth(maxHealth);
-        //TODO: Cool Sound
+    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
-        SurfApi.getUser(player).thenAcceptAsync((user) -> {
-            if (user == null) return;
-            user.playSound(Sound.BLOCK_AMETHYST_CLUSTER_PLACE, 0.25f, 1);
-        });
-
-        //Success Message
-        player.sendMessage(SurfApi.getPrefix()
-                .append(Component.text("Du wurdest geheilt!", SurfColors.SUCCESS)));
-        return true;
+        literal.executes(context -> heal(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
+        literal  .then(Commands.argument("players", EntityArgument.players())
+                        .executes(context -> heal(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return null;
+    private static int heal(CommandSourceStack source, Collection<ServerPlayer> targets) throws CommandSyntaxException {
+        int successfulChanges = 0;
+
+        for (ServerPlayer target : targets) {
+            target.heal(target.getMaxHealth(), EntityRegainHealthEvent.RegainReason.CUSTOM, true);
+            successfulChanges ++;
+            SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                    .append(Component.text("Du wurdest geheilt! ", SurfColors.GREEN))));
+        }
+
+        ServerPlayer target = targets.iterator().next();
+        if (source.isPlayer()){
+            if (successfulChanges == 1 && source.getPlayerOrException() != targets.iterator().next()){
+                EssentialsUtil.sendSuccess(source, target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
+                        .append(Component.text(" wurde geheilt!", SurfColors.SUCCESS)));
+            }else if (successfulChanges >= 1 && source.getPlayerOrException() != targets.iterator().next()){
+                EssentialsUtil.sendSuccess(source, Component.text(successfulChanges, SurfColors.TERTIARY)
+                        .append(Component.text(" Spieler wurden geheilt!", SurfColors.SUCCESS)));
+            }
+        }else {
+            if (successfulChanges == 1){
+                source.sendSuccess(target.getDisplayName()
+                        .copy().append(net.minecraft.network.chat.Component.literal(" was healed")), false);
+            }else {
+                source.sendSuccess(net.minecraft.network.chat.Component.literal(successfulChanges + " players were healed"), false);
+            }
+        }
+        return successfulChanges;
     }
 }

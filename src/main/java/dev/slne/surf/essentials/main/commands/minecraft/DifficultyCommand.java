@@ -15,13 +15,15 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
 
 public class DifficultyCommand {
+    public static String PERMISSION;
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("difficulty", DifficultyCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("difficulty", DifficultyCommand::literal).setUsage("/difficulty [<difficulty>]")
+                .setDescription("Query or set a level difficulty");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
         Difficulty[] allDifficultyLevels = Difficulty.values();
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.difficulty"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
         literal.executes(context -> getDifficulty(context.getSource()));
         for (Difficulty difficulty : allDifficultyLevels) {

@@ -1,99 +1,66 @@
 package dev.slne.surf.essentials.main.commands.general;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.server.level.ServerPlayer;
 
-import java.util.List;
+import java.util.UUID;
 
-public class InfoCommand extends EssentialsCommand {
-    public InfoCommand(PluginCommand command) {
-        super(command);
+public class InfoCommand{
+    public static String PERMISSION;
+
+    public static void register(){
+        SurfEssentials.registerPluginBrigadierCommand("information", InfoCommand::literal).setUsage("/information <player>")
+                .setUsage("Get some information about the player");
+        SurfEssentials.registerPluginBrigadierCommand("info", InfoCommand::literal).setUsage("/information <player>")
+                .setUsage("Get some information about the player");
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        //Check if sender is player
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("You must be a player to execute this command!", SurfColors.ERROR)));
-            return true;
-        }
-        //Check args length
-        if (args.length > 1) {
-            player.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Du darfst nur einen Spieler angeben!", SurfColors.ERROR)));
-            return true;
-        }
-        //Check if sender provided player
-        if (args.length == 0) {
-            player.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Du musst einen Spieler angeben!", SurfColors.ERROR)));
-            return true;
-        }
-        //check if arg[0] is valid Player
-        if (Bukkit.getPlayerExact(args[0]) == null) {
-            player.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Der Spieler existiert nicht!", SurfColors.ERROR)));
-            return true;
-        }
-        //Target Player
-        Player targetPlayer = Bukkit.getPlayerExact(args[0]);
-        //Info message
-        player.sendMessage(SurfApi.getPrefix()
-                .append(Component.text("Informationen über: ", SurfColors.INFO)).append(targetPlayer.teamDisplayName())
-                .append(Component.newline())
-                .append(SurfApi.getPrefix())
-                .append(Component.newline())
-                .append(SurfApi.getPrefix())
-                //Displays the UUID of the target player
-                .append(Component.text("UUID: ", SurfColors.AQUA)
-                        .append(Component.text(targetPlayer.getUniqueId().toString(), SurfColors.GOLD)
-                                .clickEvent(ClickEvent.copyToClipboard(targetPlayer.getUniqueId().toString()))
-                                .hoverEvent(Component.text("Klicke um die UUID zu kopieren!", SurfColors.INFO))))
-                .append(Component.newline())
-                .append(SurfApi.getPrefix())
-                .append(Component.newline())
-                .append(SurfApi.getPrefix())
-                //Displays the playtime of the target player
-                .append(Component.text("Spielzeit: ", SurfColors.AQUA)
-                        .append(Component.text("Spielzeit Einfügen", SurfColors.GOLD)))
-                .append(Component.newline())
-                .append(SurfApi.getPrefix())
-                .append(Component.newline())
-                .append(SurfApi.getPrefix())
-                //Generates a link to the NameMC profile of the target player
-                .append(Component.text("Name MC: ", SurfColors.AQUA)
-                        .append(Component.text("Klick mich", SurfColors.GREEN)
-                                .clickEvent(ClickEvent.openUrl("https://de.namemc.com/profile/%s".formatted(targetPlayer.getUniqueId().toString())))))
-                .append(Component.newline())
-                .append(SurfApi.getPrefix())
-                .append(Component.newline())
-                .append(SurfApi.getPrefix())
-                //Shows the health and saturation of the target player
-                .append(Component.text("Health: ", SurfColors.AQUA)
-                        .append(Component.text("%s".formatted(Math.round(targetPlayer.getHealth() * 10 / 10)), SurfColors.GOLD))
-                        .append(Component.text("/%s".formatted(targetPlayer.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue())).color(SurfColors.GOLD)))
-                .append(Component.newline())
-                .append(SurfApi.getPrefix())
-                .append(Component.text("Food: ", SurfColors.AQUA)
-                        .append(Component.text("%s".formatted(targetPlayer.getFoodLevel()), SurfColors.GOLD))
-                        .append(Component.text("/20", SurfColors.GOLD))));
-        return true;
+    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+
+        literal.then(Commands.argument("player", EntityArgument.player())
+                .executes(context -> info(context.getSource(), EntityArgument.getPlayer(context, "player"))));
     }
 
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return null;
+    private static int info(CommandSourceStack source, ServerPlayer player) throws CommandSyntaxException {
+        Component line = Component.newline().append(SurfApi.getPrefix());
+        Component name = player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY);
+        UUID uuid = player.getUUID();
+        String nameMc = "https://de.namemc.com/profile/" + uuid;
+        float health = player.getHealth();
+        float food = player.getFoodData().getFoodLevel();
+
+        EssentialsUtil.sendSuccess(source, Component.empty().append(name
+                .append(Component.text(":", SurfColors.INFO)).decorate(TextDecoration.UNDERLINED))
+                .append(line)
+                .append(line)
+                .append(Component.text("UUID: ", SurfColors.INFO))
+                .append(Component.text(uuid.toString(), SurfColors.TERTIARY)
+                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Kopieren", SurfColors.INFO)))
+                        .clickEvent(ClickEvent.copyToClipboard(uuid.toString())))
+                .append(line)
+                .append(Component.text("Name Mc: ", SurfColors.INFO)
+                        .append(Component.text("Hier", SurfColors.SECONDARY)
+                                .hoverEvent(HoverEvent.showText(Component.text("Klicke zum öffnen", SurfColors.INFO)))
+                                .clickEvent(ClickEvent.openUrl(nameMc))))
+                .append(line)
+                .append(Component.text("Leben: ", SurfColors.INFO)
+                        .append(Component.text(health, SurfColors.GREEN)))
+                .append(line)
+                .append(Component.text("Essen: ", SurfColors.INFO)
+                        .append(Component.text(food, SurfColors.GREEN))));
+        return 1;
     }
 }

@@ -18,8 +18,10 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 
 public class KillCommand {
+    public static String PERMISSION;
     public static void register() {
-        SurfEssentials.registerPluginBrigadierCommand("kill", KillCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("kill", KillCommand::literal).setUsage("/kill [<targets>]")
+                .setDescription("Kills the sender or the targets");
     }
 
     /**
@@ -29,7 +31,7 @@ public class KillCommand {
      */
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         // Require the player to have the permission
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.kill"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
         // Kills the player who issued the command
         literal.executes(context -> kill(context, ImmutableList.of(context.getSource().getEntityOrException())));
         // Kills multiple entities

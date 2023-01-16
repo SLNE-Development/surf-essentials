@@ -1,12 +1,12 @@
 package dev.slne.surf.essentials.main.commands;
 
-import dev.slne.surf.essentials.main.commands.cheat.HurtCommand;
-import dev.slne.surf.essentials.main.commands.cheat.LightningCommand;
+import dev.slne.surf.essentials.main.commands.cheat.*;
 import dev.slne.surf.essentials.main.commands.cheat.gui.*;
 import dev.slne.surf.essentials.main.commands.general.*;
+import dev.slne.surf.essentials.main.commands.general.other.poll.PollCommand;
+import dev.slne.surf.essentials.main.commands.general.other.poll.VoteCommand;
 import dev.slne.surf.essentials.main.commands.general.other.troll.TrollManager;
 import dev.slne.surf.essentials.main.commands.minecraft.*;
-import dev.slne.surf.essentials.main.commands.minecraft.GameruleCommand;
 
 public class BrigadierCommands {
     public static void register(){
@@ -64,5 +64,37 @@ public class BrigadierCommands {
         GameruleCommand.register();
         //particle command
         ParticleCommand.register();
+        //fill stack command
+        FillStackCommand.register();
+        //fly command
+        FlyCommand.register();
+        //feed command
+        FoodCommand.register();
+        //godmode command
+        GodmodeCommand.register();
+        //heahl command
+        HealCommand.register();
+        //repair command
+        RepairCommand.register();
+        //speed command
+        SpeedCommand.register();
+        //time command
+        TimeCommand.register();
+        //weather command
+        WeatherCommand.register();
+        //poll command
+        PollCommand.register();
+        //vote command
+        VoteCommand.register();
+        //alert command
+        AlertCommand.register();
+        //book command
+        BookCommand.register();
+        //info command
+        InfoCommand.register();
+        //rule command
+        RuleCommand.register();
+        //spawner command
+        SpawnerChangeCommand.register();
     }
 }

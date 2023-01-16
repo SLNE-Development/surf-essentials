@@ -18,14 +18,16 @@ import net.minecraft.world.entity.player.Player;
 import java.util.Collection;
 
 public class ExperienceCommand {
-    public static final String permission = "surf.essentials.commands.experience";
+    public static String PERMISSION;
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("experience", ExperienceCommand::literal);
-        SurfEssentials.registerPluginBrigadierCommand("xp", ExperienceCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("experience", ExperienceCommand::literal).setUsage("/experience <query | add  set>")
+                .setDescription("Query, add or set the experience of the targets");
+        SurfEssentials.registerPluginBrigadierCommand("xp", ExperienceCommand::literal).setUsage("/experience <query | add  set>")
+                .setDescription("Query, add or set the experience of the targets");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.getBukkitSender().hasPermission(permission));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
         literal.then(Commands.literal("query")
                 .then(Commands.argument("player", EntityArgument.player())

@@ -4,17 +4,14 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.brigadier.CheatTabComplete;
 import dev.slne.surf.essentials.brigadier.GeneralTabComplete;
 import dev.slne.surf.essentials.brigadier.TpTabComplete;
 import dev.slne.surf.essentials.main.commands.BrigadierCommands;
 import dev.slne.surf.essentials.main.commands.Commands;
-import dev.slne.surf.essentials.main.commands.general.other.crawl.implementation.WorldGuardImplementation;
-import dev.slne.surf.essentials.main.commands.general.other.crawl.utils.CrawlBlockUtils;
 import dev.slne.surf.essentials.main.commands.general.other.troll.trolls.MlgTroll;
 import dev.slne.surf.essentials.main.commands.general.sign.EditSignListener;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
-import dev.slne.surf.essentials.main.utils.WorldGuardLink;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import dev.slne.surf.essentials.main.utils.brigadier.CommandRegistered;
 import dev.slne.surf.essentials.main.utils.brigadier.PluginBrigadierCommand;
 import me.lucko.commodore.Commodore;
@@ -51,21 +48,19 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
         return instance;
     }
 
+    Commands commands;
+
 
     @Override
     public void onLoad() {
-        if(Bukkit.getPluginManager().getPlugin("WorldGuard") != null) {
-            EssentialsUtil.worldGuardLink = new WorldGuardLink(getInstance());
-            EssentialsUtil.worldGuardLink.registerFlags();
-            worldGuard = new WorldGuardImplementation(Bukkit.getPluginManager().getPlugin("WorldGuard"), this);
-        }
+        Permissions.setPerms();
+        commands = new Commands();
     }
 
     // Plugin startup logic
     @Override
     public void onEnable() {
         instance = this;
-        Commands commands = new Commands();
         //Start message
         getLogger().info("The plugin is starting...");
         //logo for the plugin
@@ -79,7 +74,6 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new CommandRegistered(), this);
 
         //Register Commands
-        commands.initializeCheatCommands();
         commands.initializeGeneralCommands();
         commands.initializeTpCommands();
 
@@ -87,14 +81,14 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
          * This section deals with brigadier TabCompletion that uses {@link Commodore}
          */
         //check if brigadier is supported
-        if (!CommodoreProvider.isSupported()) {
-            throw new IllegalStateException("Brigadier is not supported! Most commands will not work properly.");
+
+        if (!EssentialsUtil.isBrigadierSupported()) {
+            pluginManager.disablePlugin(this);
+            //throw new IllegalStateException("Brigadier is not supported! Most commands will not work properly.");
         }
         // get a commodore instance
         Commodore commodore = CommodoreProvider.getCommodore(this);
 
-        //Brigadier tab Complete for cheat commands
-        new CheatTabComplete().register(commodore);
         //Brigadier tab Complete for general commands
         new GeneralTabComplete().register(commodore);
         //Brigadier tab Complete for tp commands
@@ -102,6 +96,7 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
 
         //register brigadier commands
         BrigadierCommands.register();
+
         //Success start message
         getLogger().info("The plugin has started successfully!");
     }
@@ -159,8 +154,4 @@ public static ProtocolManager manager(){
         return pluginBrigadierCommand;
     }
 
-    private WorldGuardImplementation worldGuard;
-    public WorldGuardImplementation getWorldGuard() {
-        return this.worldGuard;
-    }
 }

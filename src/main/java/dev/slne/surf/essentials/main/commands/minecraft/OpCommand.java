@@ -20,12 +20,14 @@ import java.util.Collection;
 import java.util.Objects;
 
 public class OpCommand {
+    public static String PERMISSION;
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("op", OpCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("op", OpCommand::literal).setUsage("/op <player>")
+                .setDescription("Makes the player a Serveroperator");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.op"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
         literal.then(Commands.argument("players", GameProfileArgument.gameProfile())
                 .suggests((context, builder) -> {
                     PlayerList playerList = context.getSource().getServer().getPlayerList();

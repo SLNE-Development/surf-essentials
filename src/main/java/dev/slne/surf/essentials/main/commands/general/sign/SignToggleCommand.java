@@ -21,6 +21,7 @@ public class SignToggleCommand extends EssentialsCommand {
     public SignToggleCommand(PluginCommand command) {
         super(command);
     }
+    public static String PERMISSION;
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {

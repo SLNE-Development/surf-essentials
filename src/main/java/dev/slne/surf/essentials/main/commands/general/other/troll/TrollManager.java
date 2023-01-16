@@ -9,6 +9,7 @@ import net.minecraft.commands.Commands;
 import org.jetbrains.annotations.NotNull;
 
 public class TrollManager {
+    public static String PERMISSION;
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("troll", TrollManager::literal);
         //Listener
@@ -16,6 +17,7 @@ public class TrollManager {
     }
 
     private static void literal(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
         //boom troll
         literal.then(Commands.literal("boom")
                 .then(BoomTroll.boom(literal)));

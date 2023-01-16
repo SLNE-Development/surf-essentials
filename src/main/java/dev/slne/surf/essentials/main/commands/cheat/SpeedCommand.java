@@ -1,84 +1,86 @@
 package dev.slne.surf.essentials.main.commands.cheat;
 
+import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
-import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.PluginCommand;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+public class SpeedCommand {
+    public static String PERMISSION;
 
-public class SpeedCommand extends EssentialsCommand {
-    public SpeedCommand(PluginCommand command) {
-        super(command);
+    public static void register(){
+        SurfEssentials.registerPluginBrigadierCommand("speed", SpeedCommand::literal).setUsage("/speed [<target>]")
+                .setDescription("changes the walk and fly speed of the target");
     }
 
+    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (sender instanceof Player player) {
-            if (args.length == 0) {
-                SurfApi.getUser(player).thenAcceptAsync(user -> {
-                    user.sendMessage(SurfApi.getPrefix()
-                            .append(Component.text("Dein Fly/Walk speed ist: ", SurfColors.SUCCESS))
-                            .append(Component.text(player.getWalkSpeed(), SurfColors.GOLD)));
-                });
-                return true;
+        literal.then(Commands.argument("speed", FloatArgumentType.floatArg(-1, 2))
+                .executes(context -> speed(context.getSource(), context.getSource().getPlayerOrException(), FloatArgumentType.getFloat(context, "speed")))
+                .then(Commands.argument("player", EntityArgument.player())
+                        .executes(context -> speed(context.getSource(), EntityArgument.getPlayer(context, "player"), FloatArgumentType.getFloat(context, "speed")))))
+                .then(Commands.literal("default")
+                        .executes(context -> speed(context.getSource(), context.getSource().getPlayerOrException(), null)));
+    }
+
+    private static int speed(CommandSourceStack source, ServerPlayer target, Float speed) throws CommandSyntaxException {
+        Player bukkitTarget = target.getBukkitEntity();
+        if (speed == null){ //reset the speed to default
+            bukkitTarget.setFlySpeed(0.1f);
+            bukkitTarget.setWalkSpeed(0.2f);
+
+            if (source.isPlayer()){
+                if (source.getPlayerOrException() == target){
+                    EssentialsUtil.sendSuccess(source, "Deine Geh- und Fluggeschwindigkeit wurde zurückgesetzt!");
+                }else {
+                    SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                            .append(Component.text("Deine Geh- und Fluggeschwindigkeit wurde zurückgesetzt!", SurfColors.INFO))));
+
+                    EssentialsUtil.sendSuccess(source, Component.text("Die Geh- und Fluggeschwindigkeit von ", SurfColors.SUCCESS)
+                            .append(target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
+                            .append(Component.text(" wurde zurückgesetzt!", SurfColors.SUCCESS)));
+                }
+            }else {
+                source.sendSuccess(target.getDisplayName()
+                        .copy().append(net.minecraft.network.chat.Component.literal("´s walking and flying speed has been reset")), false);
             }
-            if (isFloat(args[0])) {
-                player.setFlySpeed(Float.parseFloat(args[0]));
-                player.setWalkSpeed(Float.parseFloat(args[0]));
-                SurfApi.getUser(player).thenAcceptAsync(user -> {
-                    user.sendMessage(SurfApi.getPrefix()
-                            .append(Component.text("Dein fly/walk speed wurde geändert zu: ", SurfColors.SUCCESS))
-                            .append(Component.text(player.getWalkSpeed(), SurfColors.GOLD)));
-                });
-            } else if (args[0].equalsIgnoreCase("default")) {
-                player.setFlySpeed((float) 0.1);
-                player.setWalkSpeed((float) 0.2);
-                SurfApi.getUser(player).thenAcceptAsync(user -> {
-                    user.sendMessage(SurfApi.getPrefix()
-                            .append(Component.text("Dein fly/walk speed wurde zurückgesetzt!", SurfColors.SUCCESS)));
-                });
-                return true;
-            } else {
-                SurfApi.getUser(player).thenAcceptAsync(user -> {
-                    user.sendMessage(SurfApi.getPrefix()
-                            .append(Component.text("Du musst eine gültige Zahl angeben!", SurfColors.ERROR)));
-                });
-                return true;
+            return 1;
+        }
+
+        bukkitTarget.setFlySpeed(speed);
+        bukkitTarget.setWalkSpeed(speed);
+
+        if (source.isPlayer()){
+            if (source.getPlayerOrException() == target){
+                EssentialsUtil.sendSuccess(source, Component.text("Deine Geh- und Fluggeschwindigkeit wurde auf ", SurfColors.SUCCESS)
+                        .append(Component.text(speed, SurfColors.TERTIARY))
+                        .append(Component.text(" gesetzt!", SurfColors.SUCCESS)));
+            }else {
+                SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+                        .append(Component.text("Deine Geh- und Fluggeschwindigkeit wurde auf ", SurfColors.INFO))
+                        .append(Component.text(speed, SurfColors.TERTIARY))
+                        .append(Component.text(" gesetzt!", SurfColors.INFO))));
+
+                EssentialsUtil.sendSuccess(source, Component.text("Die Geh- und Fluggeschwindigkeit von ", SurfColors.SUCCESS)
+                        .append(target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
+                        .append(Component.text(" wurde auf ", SurfColors.SUCCESS))
+                        .append(Component.text(speed, SurfColors.TERTIARY))
+                        .append(Component.text(" gesetzt!", SurfColors.SUCCESS)));
             }
-
-        } else if (sender instanceof ConsoleCommandSender console) {
-            ComponentLogger logger = SurfEssentials.logger();
-
-            logger.warn(Component.text("You must be a player to execute this command!", SurfColors.ERROR));
-            return true;
+        }else {
+            source.sendSuccess(target.getDisplayName()
+                    .copy().append(net.minecraft.network.chat.Component.literal("´s walking and flying speed has been set to " + speed)), false);
         }
-        return true;
+        return 1;
     }
-
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return null;
-    }
-
-    public boolean isFloat(String input) {
-        try {
-            Float.parseFloat(input);
-            float fullInput = Float.parseFloat(input);
-            return !(fullInput > 1);
-        }catch (NumberFormatException e){
-            return false;
-        }
-    }
-
 }

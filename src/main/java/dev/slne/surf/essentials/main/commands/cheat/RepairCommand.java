@@ -1,63 +1,69 @@
 package dev.slne.surf.essentials.main.commands.cheat;
 
-import dev.slne.surf.api.SurfApi;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.meta.Damageable;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
+public class RepairCommand {
+    public static String PERMISSION;
 
-public class RepairCommand extends EssentialsCommand {
-    public RepairCommand(PluginCommand command) {
-        super(command);
+    public static void register(){
+        SurfEssentials.registerPluginBrigadierCommand("repair", RepairCommand::literal).setUsage("/repair [<player>]")
+                .setDescription("the player's item is repaired");
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        //Check if sender is player
-        if (!(sender instanceof Player player)) {sender.sendMessage(Component.text("You must be a player to execute this command!", SurfColors.ERROR)); return true;}
-        //if player provided right args
-        if (args.length > 0){player.sendMessage(SurfApi.getPrefix().append(Component.text("Du darfst keine Argumente angeben!", SurfColors.ERROR ))); return true;}
-        //Repairs item in hand
-        repairinHand(player);
-        return true;
+    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+
+        literal.executes(context -> repair(context.getSource(), context.getSource().getPlayerOrException()));
+        literal.then(Commands.argument("player", EntityArgument.player())
+                .executes(context -> repair(context.getSource(), EntityArgument.getPlayer(context, "players"))));
     }
 
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return null;
-    }
+    private static int repair(CommandSourceStack source, ServerPlayer target)throws CommandSyntaxException{
+        ItemStack item = target.getMainHandItem();
 
-    //Repair tool/armor in main hand
-    public static void repairinHand(Player player) {
-        //Material Type
-        final Material material = player.getInventory().getItemInMainHand().getType();
-        //Check if item is valid
-        if (!(material.isBlock() || material.getMaxDurability() < 1)) {
-            //Get item Meta
-            Damageable item = (Damageable) player.getInventory().getItemInMainHand().getItemMeta();
-            //Repair item in hand
-            item.setDamage(0);
-            player.getInventory().getItemInMainHand().setItemMeta(item);
-            //Success Message
-            player.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Dein Item wurde Repariert!", SurfColors.SUCCESS)));
-        }else {
-            //Fail Message
-            player.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Du kannst dieses Item nicht Reparieren!", SurfColors.ERROR))
-                    .append(Component.text("\n").append(SurfApi.getPrefix()).append(Component.text("Bitte stelle sicher, dass du das zu reparierende Item in deiner Main Hand hälst!", SurfColors.GOLD))));
+        if (!item.isDamageableItem()){
+            if (source.isPlayer()){
+                EssentialsUtil.sendError(source, Component.text("Das Item ", SurfColors.ERROR)
+                        .append(PaperAdventure.asAdventure(item.getDisplayName()))
+                        .append(Component.text(" kann nicht repariert werden!", SurfColors.ERROR)));
 
+            }else throw  ERROR_NOT_DAMAGEABLE.create(item);
+            return 0;
         }
 
+        item.setDamageValue(0);
+
+        if (source.isPlayer()){
+            EssentialsUtil.sendSuccess(source, PaperAdventure.asAdventure(item.getDisplayName())
+                    .append(Component.text(" von ", SurfColors.SUCCESS))
+                    .append(target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
+                    .append(Component.text(" wurde repariert!", SurfColors.SUCCESS)));
+        }else {
+            source.sendSuccess(net.minecraft.network.chat.Component.literal("The item ")
+                    .append(item.getDisplayName())
+                    .append(net.minecraft.network.chat.Component.literal(" from "))
+                    .append(target.getDisplayName())
+                    .append(net.minecraft.network.chat.Component.literal(" was repaired")), false);
+        }
+
+        return 1;
     }
+
+    private static final DynamicCommandExceptionType ERROR_NOT_DAMAGEABLE = new DynamicCommandExceptionType(item -> ((ItemStack) item).getDisplayName()
+            .copy().append(net.minecraft.network.chat.Component.literal(" is not damageable!")
+                    .withStyle(ChatFormatting.RED)));
 
 }

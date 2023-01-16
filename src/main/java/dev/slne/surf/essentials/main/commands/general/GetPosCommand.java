@@ -1,6 +1,7 @@
 package dev.slne.surf.essentials.main.commands.general;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
@@ -9,39 +10,43 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.world.entity.player.Player;
-import org.bukkit.Bukkit;
+import net.minecraft.server.level.ServerPlayer;
+
+import java.text.DecimalFormat;
 
 public class GetPosCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("getpos", GetPosCommand::literal);
-        SurfEssentials.registerPluginBrigadierCommand("position", GetPosCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("getpos", GetPosCommand::literal).setUsage("/getpos [<player>]")
+                .setDescription("Gets the position from the target");
+        SurfEssentials.registerPluginBrigadierCommand("position", GetPosCommand::literal).setUsage("/getpos [<player>]")
+                .setDescription("Gets the position from the target");
     }
+    public static String PERMISSION;
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.getpos"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
         literal.executes(context -> getpos(context.getSource(), context.getSource().getPlayerOrException()));
         literal.then(Commands.argument("player", EntityArgument.player())
                 .executes(context -> getpos(context.getSource(), EntityArgument.getPlayer(context, "player"))));
     }
 
-    private static int getpos(CommandSourceStack source, Player player){
-        double posX = Math.round(player.getX());
-        double posY = Math.round(player.getY());
-        double posZ = Math.round(player.getZ());
+    private static int getpos(CommandSourceStack source, ServerPlayer player) throws CommandSyntaxException {
+        double posX = Double.parseDouble(new DecimalFormat("#.#").format(player.getX()));
+        double posY = Double.parseDouble(new DecimalFormat("#.#").format(player.getY()));
+        double posZ = Double.parseDouble(new DecimalFormat("#.#").format(player.getZ()));
 
         if (source.isPlayer()){
-            SurfApi.getUser(player.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
+            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                     .append(Component.text("Die Position von ", SurfColors.INFO))
-                    .append(Bukkit.getPlayer(player.getUUID()).displayName())
+                    .append(player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
                     .append(Component.text(" ist: ", SurfColors.INFO))
                     .append(Component.text("%s, %s, %s".formatted(posX, posY, posZ), SurfColors.TERTIARY))));
         }else {
             source.sendSuccess(player.getDisplayName()
                     .copy().append(net.minecraft.network.chat.Component.literal("'s position: ")
                             .withStyle(ChatFormatting.GRAY)
-                            .append(net.minecraft.network.chat.Component.literal(posX + ", " + posY + ", " + posZ)
-                                    .withStyle(ChatFormatting.GOLD))), false);
+                            .append(posX + ", " + posY + ", " + posZ)
+                                    .withStyle(ChatFormatting.GOLD)), false);
         }
         return 1;
     }

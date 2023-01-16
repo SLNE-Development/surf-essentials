@@ -16,12 +16,14 @@ import org.bukkit.Bukkit;
 import java.util.Collection;
 
 public class AnvilCommand {
+    public static String PERMISSION;
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("anvil", AnvilCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("anvil", AnvilCommand::literal).setUsage("/anvil [<targets>]")
+                .setDescription("Opens the anvil gui for the targets");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.anvil"));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
         literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("targets", EntityArgument.players())
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));

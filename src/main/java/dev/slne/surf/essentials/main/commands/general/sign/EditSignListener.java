@@ -18,11 +18,12 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 public class EditSignListener implements Listener {
+    public static String PERMISSION;
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         //Check if player has permission to edit a sign
-        if (!player.hasPermission("sign.edit")) {
+        if (!player.hasPermission(PERMISSION)) {
             return;
         }
 
@@ -38,8 +39,7 @@ public class EditSignListener implements Listener {
             BlockData data = block.getBlockData();
 
             //If sign is Wall sign
-            if (data instanceof Directional){
-                Directional directional = (Directional) data;
+            if (data instanceof Directional directional){
                 //Gets the facing direction
                 attachedBlock = block.getRelative(directional.getFacing().getOppositeFace());
             }else {
@@ -58,8 +58,6 @@ public class EditSignListener implements Listener {
                 player.openSign(sign);
                 //updates the sign for changes
                 sign.update();
-            }else {
-                return;
             }
         }
     }
