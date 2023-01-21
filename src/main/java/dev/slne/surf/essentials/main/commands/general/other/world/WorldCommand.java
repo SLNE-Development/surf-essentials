@@ -1,10 +1,10 @@
 package dev.slne.surf.essentials.main.commands.general.other.world;
 
+import aetherial.spigot.plugin.annotation.command.CommandTag;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.commands.EssentialsCommand;
-import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -27,14 +27,14 @@ import java.util.stream.Collectors;
 
 import static dev.slne.surf.essentials.main.utils.EssentialsUtil.sortedSuggestions;
 
+@CommandTag(name = "world",
+        usage = "/world <name> <environment> [<type>] [<generateStructures>]",
+        desc = "Create Worlds in game",
+        permission = "surf.essentials.commands.world.create",
+        aliases = {"newworld", "addworld", "cworld"})
 public class WorldCommand extends EssentialsCommand implements Listener {
     public WorldCommand(PluginCommand command) {
         super(command);
-        command.setPermission("surf.essentials.command.world.create");
-        command.permissionMessage(EssentialsUtil.NO_PERMISSION());
-        command.setUsage("/world <name> <environment> [<type>] [<generateStructures>]");
-        command.setDescription("Create Worlds in game");
-        command.setAliases(List.of("newworld", "addworld", "cworld"));
     }
 
     @Override

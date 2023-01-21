@@ -1,11 +1,13 @@
 package dev.slne.surf.essentials.main.commands.general;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -25,8 +27,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import static dev.slne.surf.api.utils.message.SurfColors.SUCCESS;
 
+@PermissionTag(name = Permissions.SPAWNER_PERMISSION, desc = "This is the permission for the 'spawner' command")
 public class SpawnerChangeCommand{
-    public static String PERMISSION;
 
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("spawner", SpawnerChangeCommand::literal).setUsage("/spawner [<location>] [<entity>] [<minSpawnDelay>] [<maxSpawnDelay>] [<spawnRange>] [<requiredPlayerRange>]")
@@ -34,7 +36,7 @@ public class SpawnerChangeCommand{
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SPAWNER_PERMISSION));
 
         literal.executes(context -> giveSpawner(context.getSource()));
 

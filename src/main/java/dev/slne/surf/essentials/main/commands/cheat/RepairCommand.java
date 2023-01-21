@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -14,9 +15,10 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 
+@PermissionTag(name = Permissions.REPAIR_PERMISSION, desc = "This is the permission for the 'repair' command")
 public class RepairCommand {
-    public static String PERMISSION;
 
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("repair", RepairCommand::literal).setUsage("/repair [<player>]")
@@ -24,7 +26,7 @@ public class RepairCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.REPAIR_PERMISSION));
 
         literal.executes(context -> repair(context.getSource(), context.getSource().getPlayerOrException()));
         literal.then(Commands.argument("player", EntityArgument.player())

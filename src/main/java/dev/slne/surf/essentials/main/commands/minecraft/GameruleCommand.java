@@ -1,26 +1,28 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.GameRules;
 import org.jetbrains.annotations.NotNull;
 
+@PermissionTag(name = Permissions.GAMERULE_PERMISSION, desc = "This is the permission for the 'gamerule' command")
 public class GameruleCommand {
-    public static String PERMISSION;
 
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("gamerule", GameruleCommand::literal).setDescription("Change the server gamerules")
                 .setUsage("/gamerule <gamerule> [<value>]");
     }
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GAMERULE_PERMISSION));
 
         //TODO: perhaps add a gamerule description when the user hovers over the suggested gamerule
         GameRules.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor() {

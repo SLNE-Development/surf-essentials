@@ -1,10 +1,12 @@
 package dev.slne.surf.essentials.main.commands.cheat.gui;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -15,15 +17,15 @@ import org.bukkit.Bukkit;
 
 import java.util.Collection;
 
+@PermissionTag(name = Permissions.ANVIL_PERMISSION, desc = "This is the permission for the 'anvil' command")
 public class AnvilCommand {
-    public static String PERMISSION;
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("anvil", AnvilCommand::literal).setUsage("/anvil [<targets>]")
                 .setDescription("Opens the anvil gui for the targets");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.ANVIL_PERMISSION));
         literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("targets", EntityArgument.players())
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));

@@ -1,9 +1,12 @@
 package dev.slne.surf.essentials.main.commands.general;
 
+import aetherial.spigot.plugin.annotation.command.CommandTag;
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -20,11 +23,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+@CommandTag(name = "msg",
+        usage = "/msg <player> <msg-message>",
+        desc = "Sends a private message to the specified player",
+        aliases = {"tell", "whisper"},
+        permission = "surf.command.msg")
+@PermissionTag(name = Permissions.MSG_PERMISSION, desc = "This is the permission for the 'msg' command") // only when the command gets converted to brigadier
 public class MsgCommand extends EssentialsCommand {
     public MsgCommand(PluginCommand command) {
         super(command);
     }
-    public static String PERMISSION;
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {

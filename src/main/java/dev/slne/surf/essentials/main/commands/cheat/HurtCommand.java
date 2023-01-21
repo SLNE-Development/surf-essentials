@@ -1,11 +1,13 @@
 package dev.slne.surf.essentials.main.commands.cheat;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -17,15 +19,15 @@ import org.bukkit.Bukkit;
 
 import java.util.Collection;
 
+@PermissionTag(name = Permissions.HURT_PERMISSION, desc = "This is the permission for the 'hurt' command")
 public class HurtCommand {
-    public static String PERMISSION;
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("hurt", HurtCommand::literal).setUsage("/hurt <players> <damage>")
                 .setDescription("Hurts the targets with the given amount of damage");
     }
 
     public static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.HURT_PERMISSION));
 
         literal.then(Commands.argument("players", EntityArgument.players())
                 .then(Commands.argument("amount", IntegerArgumentType.integer(1, 250))

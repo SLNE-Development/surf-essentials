@@ -1,11 +1,13 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -14,8 +16,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
 
+@PermissionTag(name = Permissions.DIFFICULTY_PERMISSION, desc = "This is the permission for the 'difficulty' command")
 public class DifficultyCommand {
-    public static String PERMISSION;
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("difficulty", DifficultyCommand::literal).setUsage("/difficulty [<difficulty>]")
                 .setDescription("Query or set a level difficulty");
@@ -23,7 +25,7 @@ public class DifficultyCommand {
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
         Difficulty[] allDifficultyLevels = Difficulty.values();
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.DIFFICULTY_PERMISSION));
 
         literal.executes(context -> getDifficulty(context.getSource()));
         for (Difficulty difficulty : allDifficultyLevels) {

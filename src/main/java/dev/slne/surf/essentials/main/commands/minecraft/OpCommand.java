@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -8,6 +9,7 @@ import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -19,15 +21,15 @@ import org.bukkit.Bukkit;
 import java.util.Collection;
 import java.util.Objects;
 
+@PermissionTag(name = Permissions.OP_PERMISSION, desc = "This is the permission for the 'op' command")
 public class OpCommand {
-    public static String PERMISSION;
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("op", OpCommand::literal).setUsage("/op <player>")
                 .setDescription("Makes the player a Serveroperator");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.OP_PERMISSION));
         literal.then(Commands.argument("players", GameProfileArgument.gameProfile())
                 .suggests((context, builder) -> {
                     PlayerList playerList = context.getSource().getServer().getPlayerList();

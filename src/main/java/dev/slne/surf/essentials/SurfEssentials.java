@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials;
 
+import aetherial.spigot.plugin.annotation.plugin.*;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -9,10 +10,8 @@ import dev.slne.surf.essentials.brigadier.TpTabComplete;
 import dev.slne.surf.essentials.main.commands.BrigadierCommands;
 import dev.slne.surf.essentials.main.commands.Commands;
 import dev.slne.surf.essentials.main.commands.general.other.troll.trolls.MlgTroll;
-import dev.slne.surf.essentials.main.commands.general.sign.EditSignListener;
+import dev.slne.surf.essentials.main.listeners.ListenerManager;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
-import dev.slne.surf.essentials.main.utils.Permissions;
-import dev.slne.surf.essentials.main.utils.brigadier.CommandRegistered;
 import dev.slne.surf.essentials.main.utils.brigadier.PluginBrigadierCommand;
 import me.lucko.commodore.Commodore;
 import me.lucko.commodore.CommodoreProvider;
@@ -20,84 +19,60 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.minecraft.commands.CommandSourceStack;
-import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_19_R2.CraftServer;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
 import static dev.slne.surf.essentials.main.utils.EssentialsUtil.gradientify;
 import static net.kyori.adventure.text.Component.text;
 
+@Plugin(name = "SurfEssentials", version = "1.0-SNAPSHOT")
+@ApiVersion("1.19")
+@Depend({"SurfAPI", "ProtocolLib"})
+@LoadBefore({"SurfAPI", "ProtocolLib"})
+@Authors({"Twisti_twixi", "SLNE Dev Team"})
+@Load(Load.LoadType.POST_WORLD)
+@Website("https://git.slne.dev/surf/surf-essentials")
 public final class SurfEssentials extends JavaPlugin implements Listener {
 
     private static SurfEssentials instance;
-    //Check if the Plugin is already initialized
-    public SurfEssentials() {
-        if (SurfEssentials.instance != null) {
-            throw new Error("Plugin already initialized!");
-        }
-        //Plugin constructor
-        SurfEssentials.instance = this;
-    }
-    //Get Plugin instance
-    public static SurfEssentials getInstance() {
-        return instance;
-    }
-
     Commands commands;
-
+    ListenerManager listeners;
+    Commodore commodore;
+    BrigadierCommands brigadierCommands;
 
     @Override
     public void onLoad() {
-        Permissions.setPerms();
         commands = new Commands();
+        listeners = new ListenerManager();
+        brigadierCommands = new BrigadierCommands();
     }
 
     // Plugin startup logic
     @Override
     public void onEnable() {
         instance = this;
-        //Start message
-        getLogger().info("The plugin is starting...");
-        //logo for the plugin
         loadMessage();
-        //Plugin Manager shortcut
-        PluginManager pluginManager = Bukkit.getPluginManager();
-        //SignEditListener
-        //TODO: Make it switchable via command (something like /signedit <true|false>)
-        pluginManager.registerEvents(new EditSignListener(), this);
-        //onCommandRegistered
-        pluginManager.registerEvents(new CommandRegistered(), this);
-
-        //Register Commands
-        commands.initializeGeneralCommands();
-        commands.initializeTpCommands();
-
-        /**
-         * This section deals with brigadier TabCompletion that uses {@link Commodore}
-         */
-        //check if brigadier is supported
 
         if (!EssentialsUtil.isBrigadierSupported()) {
-            pluginManager.disablePlugin(this);
-            //throw new IllegalStateException("Brigadier is not supported! Most commands will not work properly.");
+            getServer().getPluginManager().disablePlugin(this);
         }
-        // get a commodore instance
-        Commodore commodore = CommodoreProvider.getCommodore(this);
 
-        //Brigadier tab Complete for general commands
+        listeners.registerListeners(this);
+        commands.initializeGeneralCommands();
+        commands.initializeTpCommands();
+        commodore = CommodoreProvider.getCommodore(this);
+
         new GeneralTabComplete().register(commodore);
-        //Brigadier tab Complete for tp commands
         new TpTabComplete().register(commodore);
 
-        //register brigadier commands
-        BrigadierCommands.register();
+        brigadierCommands.register();
 
-        //Success start message
+
         getLogger().info("The plugin has started successfully!");
     }
 
@@ -105,16 +80,25 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         instance = null;
-        //restore inventory
         MlgTroll.restoreInventoryFromMlgTroll();
-
-        //Stop message
         getLogger().info("The plugin has stopped!");
     }
 
-public static ProtocolManager manager(){
+
+    public SurfEssentials() {
+        if (SurfEssentials.instance != null) {
+            throw new Error("Plugin already initialized!");
+        }
+        SurfEssentials.instance = this;
+    }
+
+    public static SurfEssentials getInstance() {
+        return instance;
+    }
+
+    public static ProtocolManager manager(){
         return ProtocolLibrary.getProtocolManager();
-}
+    }
 
     /**
      * A message that prints  a logo of the plugin to the console
@@ -143,14 +127,14 @@ public static ProtocolManager manager(){
     /**
      * Component Logger
      */
-    public static ComponentLogger logger(){
-        return SurfEssentials.getInstance().getComponentLogger();
+    public static @NotNull ComponentLogger logger(){
+        return instance.getComponentLogger();
     }
 
-    public static PluginBrigadierCommand registerPluginBrigadierCommand(final String label, final Consumer<LiteralArgumentBuilder<CommandSourceStack>> command) {
-        final PluginBrigadierCommand pluginBrigadierCommand = new PluginBrigadierCommand(SurfEssentials.getInstance(), label, command);
-        SurfEssentials.getInstance().getServer().getCommandMap().register(SurfEssentials.getInstance().getName(), pluginBrigadierCommand);
-        ((CraftServer) SurfEssentials.getInstance().getServer()).syncCommands();
+    public static @NotNull PluginBrigadierCommand registerPluginBrigadierCommand(final String label, final Consumer<LiteralArgumentBuilder<CommandSourceStack>> command) {
+        final PluginBrigadierCommand pluginBrigadierCommand = new PluginBrigadierCommand(instance, label, command);
+        instance.getServer().getCommandMap().register(instance.getName(), pluginBrigadierCommand);
+        ((CraftServer) instance.getServer()).syncCommands();
         return pluginBrigadierCommand;
     }
 

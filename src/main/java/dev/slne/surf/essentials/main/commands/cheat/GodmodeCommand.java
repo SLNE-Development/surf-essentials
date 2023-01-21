@@ -6,17 +6,19 @@ import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 
 import java.util.Collection;
 import java.util.Collections;
 
+@PermissionTag(name = Permissions.GOD_MODE_PERMISSION, desc = "This is the permission for the 'godmode' command")
 public class GodmodeCommand {
-    public static String PERMISSION;
 
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("godmode", GodmodeCommand::literal).setUsage("/godmode [<enable | disable>] [<players>]")
@@ -28,7 +30,7 @@ public class GodmodeCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GOD_MODE_PERMISSION));
 
         literal.executes(context -> godmode(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), !context.getSource().getPlayerOrException().isInvulnerable()));
         literal.then(Commands.literal("enable")

@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.main.commands.tp;
 
+import aetherial.spigot.plugin.annotation.command.CommandTag;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.main.commands.EssentialsCommand;
@@ -17,6 +18,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+@CommandTag(name = "tptop",
+        usage = "/tptop",
+        desc = "Teleports you to the highest block at your location.",
+        permission = "surf.command.tptop",
+        aliases = {"teleporttop", "teletop"})
 public class TeleportToTop extends EssentialsCommand {
     public TeleportToTop(PluginCommand command) {
         super(command);

@@ -1,11 +1,13 @@
 package dev.slne.surf.essentials.main.commands.general;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -18,9 +20,9 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.Collection;
 import java.util.Collections;
 
+@PermissionTag(name = Permissions.RULE_PERMISSION, desc = "This is the permission for the 'rule' command")
+@PermissionTag(name = Permissions.RULE_SELF_PERMISSION, desc = "Allows the player to see the rules, but not send them to other players")
 public class RuleCommand {
-    public static String PERMISSION;
-    public static String SELF_PERMISSION;
 
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("rule", RuleCommand::literal).setUsage("/rule [<players>]")
@@ -28,11 +30,11 @@ public class RuleCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(0, SELF_PERMISSION));
-
+        literal.requires(sourceStack -> sourceStack.hasPermission(0, Permissions.RULE_SELF_PERMISSION));
         literal.executes(context -> sendRules(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
+
         literal.then(Commands.argument("players", EntityArgument.players())
-                .requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION))
+                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.RULE_PERMISSION))
                 .executes(context -> sendRules(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 

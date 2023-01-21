@@ -1,10 +1,12 @@
 package dev.slne.surf.essentials.main.commands.general;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -14,6 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.text.DecimalFormat;
 
+@PermissionTag(name = Permissions.GET_POS_PERMISSION, desc = "This is the permission for the 'getpos' command")
 public class GetPosCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("getpos", GetPosCommand::literal).setUsage("/getpos [<player>]")
@@ -21,10 +24,9 @@ public class GetPosCommand {
         SurfEssentials.registerPluginBrigadierCommand("position", GetPosCommand::literal).setUsage("/getpos [<player>]")
                 .setDescription("Gets the position from the target");
     }
-    public static String PERMISSION;
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GET_POS_PERMISSION));
         literal.executes(context -> getpos(context.getSource(), context.getSource().getPlayerOrException()));
         literal.then(Commands.argument("player", EntityArgument.player())
                 .executes(context -> getpos(context.getSource(), EntityArgument.getPlayer(context, "player"))));

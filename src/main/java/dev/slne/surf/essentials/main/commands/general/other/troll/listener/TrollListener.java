@@ -1,6 +1,7 @@
 package dev.slne.surf.essentials.main.commands.general.other.troll.listener;
 
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.commands.general.other.troll.trolls.AnvilTroll;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
@@ -17,5 +18,8 @@ public class TrollListener {
 
         //Cage troll Listener
         pluginManager.registerEvents(new CageTrollListener(), plugin);
+
+        //anvil troll Listener
+        pluginManager.registerEvents(new AnvilTroll(), plugin);
     }
 }

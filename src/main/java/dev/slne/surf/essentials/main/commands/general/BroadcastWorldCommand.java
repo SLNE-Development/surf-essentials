@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.main.commands.general;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -7,6 +8,7 @@ import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.commands.CommandSourceStack;
@@ -20,8 +22,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+@PermissionTag(name = Permissions.BROADCAST_WORLD_PERMISSION, desc = "This is the permission for the 'broadcastworld' command")
 public class BroadcastWorldCommand {
-    public static String PERMISSION;
     public static void register(){
         // Create a set of command aliases
         Set<String> aliases = new HashSet<>(Arrays.asList("worldbroadcast", "worldalert", "broadcastworld"));
@@ -33,7 +35,7 @@ public class BroadcastWorldCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.BROADCAST_WORLD_PERMISSION));
 
         literal.then(Commands.argument("world", DimensionArgument.dimension())
                 .then(Commands.argument("broadcast message", StringArgumentType.greedyString())

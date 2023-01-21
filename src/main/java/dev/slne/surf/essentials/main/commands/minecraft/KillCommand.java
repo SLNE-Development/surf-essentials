@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -7,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -17,8 +19,8 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
+@PermissionTag(name = Permissions.KILL_PERMISSION, desc = "This is the permission for the 'kill' command")
 public class KillCommand {
-    public static String PERMISSION;
     public static void register() {
         SurfEssentials.registerPluginBrigadierCommand("kill", KillCommand::literal).setUsage("/kill [<targets>]")
                 .setDescription("Kills the sender or the targets");
@@ -31,7 +33,7 @@ public class KillCommand {
      */
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         // Require the player to have the permission
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.KILL_PERMISSION));
         // Kills the player who issued the command
         literal.executes(context -> kill(context, ImmutableList.of(context.getSource().getEntityOrException())));
         // Kills multiple entities

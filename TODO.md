@@ -2,7 +2,7 @@
 ## general
 
  - [ ] finish tp command
- - [ ] Effect on teleport *(/particle minecraft:ambient_entity_effect ~ ~ ~ 0.5 1 0.5 1 4000 normal @a)*
+ - [x] Effect on teleport *(/particle minecraft:ambient_entity_effect ~ ~ ~ 0.5 1 0.5 1 4000 normal @a)*
  - [x] migrate old commands to brigadier
  - [ ] maybe add mysql support (e.g. poll saves, sign toggle...)
  - [ ] customize most of the default minecraft commands
@@ -10,8 +10,8 @@
  
  ## New commands
  
- - [ ] /titlebroadcast (show titles to players)
- - [ ] /actionbarbroadcast (show a action bar message to players)
+ - [x] /titlebroadcast (show titles to players)
+ - [x] /actionbarbroadcast (show a action bar message to players)
  - [ ] /personalchatclear | pcc (clears only your chat)
  - [ ] /chatclear | cc (clears the chat from every player except they have a permission)
  - [ ]  /setname (set the name of an item)

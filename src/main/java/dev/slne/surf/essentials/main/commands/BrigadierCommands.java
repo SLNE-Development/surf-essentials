@@ -3,13 +3,13 @@ package dev.slne.surf.essentials.main.commands;
 import dev.slne.surf.essentials.main.commands.cheat.*;
 import dev.slne.surf.essentials.main.commands.cheat.gui.*;
 import dev.slne.surf.essentials.main.commands.general.*;
-import dev.slne.surf.essentials.main.commands.general.other.poll.PollCommand;
-import dev.slne.surf.essentials.main.commands.general.other.poll.VoteCommand;
+import dev.slne.surf.essentials.main.commands.general.other.*;
+import dev.slne.surf.essentials.main.commands.general.other.poll.*;
 import dev.slne.surf.essentials.main.commands.general.other.troll.TrollManager;
 import dev.slne.surf.essentials.main.commands.minecraft.*;
 
 public class BrigadierCommands {
-    public static void register(){
+    public void register(){
         //world-broadcast command
         BroadcastWorldCommand.register();
         //list command
@@ -72,7 +72,7 @@ public class BrigadierCommands {
         FoodCommand.register();
         //godmode command
         GodmodeCommand.register();
-        //heahl command
+        //heal command
         HealCommand.register();
         //repair command
         RepairCommand.register();
@@ -96,5 +96,10 @@ public class BrigadierCommands {
         RuleCommand.register();
         //spawner command
         SpawnerChangeCommand.register();
+        //title-broadcast command
+        TitlebroadcastCommand.register();
+        //actionbar-broadcast command
+        new ActionbarBroadcast();
+
     }
 }

@@ -1,10 +1,12 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -22,15 +24,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 
 @DefaultQualifier(NotNull.class)
+@PermissionTag(name = Permissions.DEFAULT_GAMEMODE_PERMISSION, desc = "This is the permission for the 'defaultgamemode' command")
 public class DefaultGamemodeCommand {
-    @Nullable public static String PERMISSION;
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("defaultgamemode", DefaultGamemodeCommand::literal).setUsage("/defaultgamemode [<gamemode>]")
                 .setDescription("Set or query the default game mode");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.DEFAULT_GAMEMODE_PERMISSION));
 
         literal.executes(context -> getGameMode(context.getSource()));
         literal.then(Commands.argument("gamemode", GameModeArgument.gameMode())

@@ -1,9 +1,12 @@
 package dev.slne.surf.essentials.main.commands.general.sign;
 
+import aetherial.spigot.plugin.annotation.command.CommandTag;
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.command.Command;
@@ -17,11 +20,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+@CommandTag(name = "signEdit",
+        usage = "/signedit <true|false>",
+        desc = "Toggles whether signs can be edited by right-clicking or not.",
+        aliases = {"editsign", "signtoggle", "togglesign"},
+        permission = "sign.toggle")
+@PermissionTag(name = Permissions.TOGGLE_SIGN_PERMISSION, desc = "This is the permission for the 'signedit' command") // only when the command get´s migrated to brigadier
 public class SignToggleCommand extends EssentialsCommand {
     public SignToggleCommand(PluginCommand command) {
         super(command);
     }
-    public static String PERMISSION;
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {

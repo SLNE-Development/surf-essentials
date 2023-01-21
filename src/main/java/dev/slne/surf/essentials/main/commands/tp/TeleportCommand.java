@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.main.commands.tp;
 
+import aetherial.spigot.plugin.annotation.command.CommandTag;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
@@ -23,6 +24,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Objects;
 
+@CommandTag(name = "teleport",
+        usage = "/teleport <location>",
+        desc = "Teleports you to the given location",
+        permission = "surf.command.teleport")
 public class TeleportCommand extends EssentialsCommand {
     public TeleportCommand(PluginCommand command) {
         super(command);

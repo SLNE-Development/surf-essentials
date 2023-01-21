@@ -18,6 +18,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,8 +30,9 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @DefaultQualifier(NotNull.class)
-public class AnvilTroll {
+public class AnvilTroll implements Listener {
     private static HashMap<UUID, Boolean> playersInTroll = new HashMap<>();
+    private static final HashMap<Double, Double> anvilLocation = new HashMap<>();
     private static int anvilTaskID;
 
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> anvil(LiteralArgumentBuilder<CommandSourceStack> literal){
@@ -57,6 +62,7 @@ public class AnvilTroll {
 
                 if (blockPosition.getBlock().getType() == Material.AIR){
                     blockPosition.getBlock().setType(anvil, true);
+                    anvilLocation.put(blockPosition.getX(), blockPosition.getY());
                 }
                 timeLeft.getAndDecrement();
                 anvilTaskID = bukkitTask.getTaskId();
@@ -95,5 +101,17 @@ public class AnvilTroll {
     public static void cancelAnvilTroll(Player target){
         Bukkit.getScheduler().cancelTask(anvilTaskID);
         playersInTroll.put(target.getUniqueId(), false);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onBlockPhysics(BlockPhysicsEvent event) {
+        if (event.getBlock().getType() != Material.DAMAGED_ANVIL) return;
+        Location blockLocation = event.getBlock().getLocation();
+        if (anvilLocation.get(blockLocation.getX()) != null && anvilLocation.get(blockLocation.getZ()) == blockLocation.getZ()){
+            anvilLocation.remove(blockLocation.getX(), blockLocation.getZ());
+            event.getBlock().setType(Material.AIR);
+            System.out.println("yes");
+        }
+
     }
 }

@@ -1,11 +1,13 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -25,9 +27,8 @@ import org.bukkit.Bukkit;
 import java.util.Collection;
 
 
-
+@PermissionTag(name = Permissions.GIVE_PERMISSION, desc = "This is the permission for the 'give' command")
 public class GiveCommand {
-    public static String PERMISSION;
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("give", GiveCommand::literal).setUsage("/give <targets> <item> [<amount>]")
                 .setDescription("Gives the targets the specified item");
@@ -39,7 +40,7 @@ public class GiveCommand {
                 MinecraftServer.getServer().getWorldData().getDataConfiguration().enabledFeatures());
 
         // Require permission for the command
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GIVE_PERMISSION));
         // Add player argument to the command
         literal.then(Commands.argument("targets", EntityArgument.players())
                 // Add item argument to the command

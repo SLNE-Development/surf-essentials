@@ -1,11 +1,13 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -17,8 +19,8 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
 
+@PermissionTag(name = Permissions.EXPERIENCE_PERMISSION, desc = "This is the permission for the 'experience' command")
 public class ExperienceCommand {
-    public static String PERMISSION;
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("experience", ExperienceCommand::literal).setUsage("/experience <query | add  set>")
                 .setDescription("Query, add or set the experience of the targets");
@@ -27,7 +29,7 @@ public class ExperienceCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.EXPERIENCE_PERMISSION));
 
         literal.then(Commands.literal("query")
                 .then(Commands.argument("player", EntityArgument.player())

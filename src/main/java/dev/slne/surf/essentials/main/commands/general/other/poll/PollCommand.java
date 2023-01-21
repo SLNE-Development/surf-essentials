@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.main.commands.general.other.poll;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -8,6 +9,7 @@ import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.TextComponent;
@@ -23,8 +25,8 @@ import org.bukkit.Sound;
 
 import java.util.*;
 
+@PermissionTag(name = Permissions.POLL_PERMISSION, desc = "This is the permission for the 'poll' command")
 public class PollCommand {
-    public static String PERMISSION;
 
     private static final List<String> pollNames = new ArrayList<>();
     private static final List<String> pollsToRemove = new ArrayList<>();
@@ -43,7 +45,7 @@ public class PollCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.TROLL_PERMISSION));
 
         literal.then(Commands.literal("create")
                 .then(Commands.argument("name", StringArgumentType.word())

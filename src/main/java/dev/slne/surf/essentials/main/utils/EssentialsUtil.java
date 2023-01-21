@@ -2,6 +2,8 @@ package dev.slne.surf.essentials.main.utils;
 
 import com.destroystokyo.paper.event.brigadier.AsyncPlayerSendCommandsEvent;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -15,6 +17,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -206,6 +209,50 @@ public abstract class EssentialsUtil {
     }
 
     /**
+     * Suggests all possible color codes to the given {@link SuggestionsBuilder} with the {@link StringArgumentType} input.
+     *
+     * @param builder the {@link SuggestionsBuilder} to which the color codes will be added
+     * @param context the {@link CommandContext<CommandSourceStack>}
+     * @param stringArgumentType the {@link StringArgumentType} from the current argument
+     * @return a {@link CompletableFuture} containing the {@link Suggestions}
+     */
+    public static CompletableFuture<Suggestions> suggestAllColorCodes(@NotNull SuggestionsBuilder builder, @NotNull CommandContext<CommandSourceStack> context, @NotNull String stringArgumentType) {
+        String input;
+        try {
+            input = context.getArgument(stringArgumentType, String.class);
+        }catch (IllegalArgumentException ignored) {
+            input = "";
+        }
+
+        // <editor-fold defaultstate="collapsed" desc="allColorCodes">
+        builder.suggest("\"" + input + "&0", net.minecraft.network.chat.Component.literal("Black").withStyle(ChatFormatting.BLACK));
+        builder.suggest("\"" + input + "&2", net.minecraft.network.chat.Component.literal("Dark Green").withStyle(ChatFormatting.DARK_GREEN));
+        builder.suggest("\"" + input + "&4", net.minecraft.network.chat.Component.literal("Dark Red").withStyle(ChatFormatting.DARK_RED));
+        builder.suggest("\"" + input + "&6", net.minecraft.network.chat.Component.literal("Gold").withStyle(ChatFormatting.GOLD));
+        builder.suggest("\"" + input + "&8", net.minecraft.network.chat.Component.literal("Dark Gray").withStyle(ChatFormatting.DARK_GRAY));
+        builder.suggest("\"" + input + "&a", net.minecraft.network.chat.Component.literal("Green").withStyle(ChatFormatting.GREEN));
+        builder.suggest("\"" + input + "&c", net.minecraft.network.chat.Component.literal("Red").withStyle(ChatFormatting.RED));
+        builder.suggest("\"" + input + "&e", net.minecraft.network.chat.Component.literal("Yellow").withStyle(ChatFormatting.YELLOW));
+        builder.suggest("\"" + input + "&1", net.minecraft.network.chat.Component.literal("Dark Blue").withStyle(ChatFormatting.DARK_BLUE));
+        builder.suggest("\"" + input + "&3", net.minecraft.network.chat.Component.literal("Dark Aqua").withStyle(ChatFormatting.DARK_AQUA));
+        builder.suggest("\"" + input + "&5", net.minecraft.network.chat.Component.literal("Dark Purple").withStyle(ChatFormatting.DARK_PURPLE));
+        builder.suggest("\"" + input + "&7", net.minecraft.network.chat.Component.literal("Gray").withStyle(ChatFormatting.GRAY));
+        builder.suggest("\"" + input + "&9", net.minecraft.network.chat.Component.literal("Blue").withStyle(ChatFormatting.BLUE));
+        builder.suggest("\"" + input + "&b", net.minecraft.network.chat.Component.literal("Aqua").withStyle(ChatFormatting.AQUA));
+        builder.suggest("\"" + input + "&d", net.minecraft.network.chat.Component.literal("Light Purple").withStyle(ChatFormatting.LIGHT_PURPLE));
+        builder.suggest("\"" + input + "&f", net.minecraft.network.chat.Component.literal("White").withStyle(ChatFormatting.WHITE));
+
+        builder.suggest("\"" + input + "&k", net.minecraft.network.chat.Component.literal("Obfuscated").withStyle(ChatFormatting.OBFUSCATED));
+        builder.suggest("\"" + input + "&m", net.minecraft.network.chat.Component.literal("Strikethrough").withStyle(ChatFormatting.STRIKETHROUGH));
+        builder.suggest("\"" + input + "&o", net.minecraft.network.chat.Component.literal("Italic").withStyle(ChatFormatting.ITALIC));
+        builder.suggest("\"" + input + "&l", net.minecraft.network.chat.Component.literal("Bold").withStyle(ChatFormatting.BOLD));
+        builder.suggest("\"" + input + "&n", net.minecraft.network.chat.Component.literal("Underline").withStyle(ChatFormatting.UNDERLINE));
+        builder.suggest("\"" + input + "&r", net.minecraft.network.chat.Component.literal("Reset").withStyle(ChatFormatting.RESET));
+        // </editor-fold>
+        return builder.buildFuture();
+    }
+
+    /**
      * Adds a color code suggestion to the given {@link SuggestionsBuilder}.
      *
      * @param builder the {@link SuggestionsBuilder} to add the suggestion to
@@ -337,5 +384,10 @@ public abstract class EssentialsUtil {
                 "The plugin will not work without! " +
                 "Set -Dcommodore.debug=true for debug info.");
         }else return true;
+    }
+
+    public static boolean canPlayerSeePlayer(@NotNull ServerPlayer player, @NotNull ServerPlayer playerToCheck){
+        if (!isVanished(player.getBukkitEntity())) return true;
+        return playerToCheck.getBukkitEntity().canSee(player.getBukkitEntity());
     }
 }

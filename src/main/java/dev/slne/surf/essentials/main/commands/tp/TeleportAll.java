@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.main.commands.tp;
 
+import aetherial.spigot.plugin.annotation.command.CommandTag;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.main.commands.EssentialsCommand;
@@ -15,6 +16,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+@CommandTag(name = "tpall",
+        usage = "/tpall",
+        desc = "Teleports all online players to you.",
+        permission = "surf.command.tpall")
 public class TeleportAll extends EssentialsCommand {
     public TeleportAll(PluginCommand command) {
         super(command);

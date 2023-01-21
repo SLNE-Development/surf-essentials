@@ -1,15 +1,17 @@
 package dev.slne.surf.essentials.main.commands.general.other.poll;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
+@PermissionTag(name = Permissions.VOTE_PERMISSION, desc = "This is the permission for the 'vote' command")
 public class VoteCommand {
-    public static String PERMISSION;
 
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("vote2", VoteCommand::literal).setUsage("/vote <poll>")
@@ -17,7 +19,7 @@ public class VoteCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(0, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(0, Permissions.VOTE_PERMISSION));
 
         literal.then(Commands.argument("poll", StringArgumentType.word())
                         .suggests((context, builder) -> {

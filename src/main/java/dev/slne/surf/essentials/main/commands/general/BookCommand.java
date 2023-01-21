@@ -1,11 +1,13 @@
 package dev.slne.surf.essentials.main.commands.general;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -20,9 +22,9 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 import org.jetbrains.annotations.NotNull;
 
+@PermissionTag(name = Permissions.BOOK_PERMISSION, desc = "This is the permission for the 'book' command")
+@PermissionTag(name = Permissions.BOOK_PERMISSION_BYPASS, desc = "Allows you to edit books from other players")
 public class BookCommand {
-    public static String PERMISSION;
-    public static String PERMISSION_BYPASS;
 
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("book", BookCommand::literal).setUsage("/book [title|author <name>]")
@@ -30,7 +32,7 @@ public class BookCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.BOOK_PERMISSION));
 
         literal.executes(context -> reopenBook(context.getSource()));
 
@@ -131,7 +133,7 @@ public class BookCommand {
     }
 
     private static boolean hasPerm(@NotNull CommandSourceStack source, net.minecraft.world.item.@NotNull ItemStack mainHandItem) throws CommandSyntaxException {
-        if (!(mainHandItem.getTag().getString("author").equals(source.getPlayerOrException().getName().getString())) && !source.hasPermission(4, PERMISSION_BYPASS)){
+        if (!(mainHandItem.getTag().getString("author").equals(source.getPlayerOrException().getName().getString())) && !source.hasPermission(4, Permissions.BOOK_PERMISSION_BYPASS)){
             EssentialsUtil.sendError(source, "Du hast keine Berechtigung, Bücher von anderen Spielern zu bearbeiten!");
             return false;
         }

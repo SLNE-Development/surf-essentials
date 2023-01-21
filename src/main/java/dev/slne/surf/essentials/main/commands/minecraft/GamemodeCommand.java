@@ -1,9 +1,11 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -16,8 +18,8 @@ import org.bukkit.Bukkit;
 import java.util.Collection;
 import java.util.Collections;
 
+@PermissionTag(name = Permissions.GAMEMODE_PERMISSION, desc = "This is the permission for the 'gamemode' command")
 public class GamemodeCommand {
-    public static String PERMISSION;
 
     public static void register() {
         SurfEssentials.registerPluginBrigadierCommand("gamemode", GamemodeCommand::literal).setDescription("Change the gamemode of players")
@@ -25,7 +27,7 @@ public class GamemodeCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GAMEMODE_PERMISSION));
 
         literal.then(Commands.argument("gamemode", GameModeArgument.gameMode())
                 .executes(context -> setMode(Collections.singleton(context.getSource().getPlayerOrException()),

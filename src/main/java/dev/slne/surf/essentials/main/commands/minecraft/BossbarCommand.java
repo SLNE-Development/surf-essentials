@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -11,6 +12,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -32,7 +34,6 @@ import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.player.Player;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,8 +41,8 @@ import java.util.Collections;
 import static dev.slne.surf.essentials.main.utils.EssentialsUtil.sendError;
 
 @DefaultQualifier(NotNull.class)
+@PermissionTag(name = Permissions.BOSSBAR_PERMISSION, desc = "This is the permission for the 'bossbar' command")
 public class BossbarCommand {
-    @Nullable public static String PERMISSION;
     /**
      * Registers the bossbar command.
      */
@@ -56,7 +57,7 @@ public class BossbarCommand {
      * @param literal the root command literal
      */
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.BOSSBAR_PERMISSION));
 
         //--------------------------------------------------------------------------------------------------------------
         //                                      add a bossbar

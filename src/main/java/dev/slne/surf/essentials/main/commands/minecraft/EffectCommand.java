@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -11,6 +12,7 @@ import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EffectColors;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.minecraft.commands.CommandBuildContext;
@@ -31,15 +33,15 @@ import org.bukkit.event.entity.EntityPotionEffectEvent;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
+@PermissionTag(name = Permissions.EFFECT_PERMISSION, desc = "This is the permission for the 'effect' command")
 public class EffectCommand {
-    public static String PERMISSION;
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("effect", EffectCommand::literal).setUsage("/effect <give | clear>")
                 .setDescription("Give or clear the effects of the entities");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.EFFECT_PERMISSION));
 
         // Get the command build context for the server
         CommandBuildContext buildContext = CommandBuildContext.configurable(MinecraftServer.getServer().registryAccess(),

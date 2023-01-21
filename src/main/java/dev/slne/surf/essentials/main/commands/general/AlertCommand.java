@@ -1,11 +1,13 @@
 package dev.slne.surf.essentials.main.commands.general;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -15,8 +17,8 @@ import org.bukkit.Sound;
 
 import java.util.List;
 
+@PermissionTag(name = Permissions.ALERT_PERMISSION, desc = "This is the permission for the 'alert' command")
 public class AlertCommand{
-    public static String PERMISSION;
     private static final List<String> aliases = List.of("alert", "broadcast", "al");
 
     public static void register(){
@@ -27,7 +29,7 @@ public class AlertCommand{
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.ALERT_PERMISSION));
 
         literal.then(Commands.argument("message", StringArgumentType.greedyString())
                 .suggests((context, builder) -> {

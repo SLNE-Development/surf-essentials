@@ -1,55 +1,7 @@
-name: SurfEssentials
-version: '${project.version}'
-main: dev.slne.surf.essentials.SurfEssentials
-api-version: 1.19
-depend: [SurfAPI, ProtocolLib]
-authors: [Twisti_twixi]
-load: POSTWORLD
-database: false
-website: https://git.slne.dev/surf/surf-essentials
-loadbefore: [SurfAPI, ProtocolLib, WorldGuard]
+########################################################################################################################
+#                 The project now generates this file automatically when it compiles using annotations                 #
+########################################################################################################################
 
-commands:
-
-  tptop:
-    usage: /tptop
-    description: Teleports you to the highest block at your location.
-    permission:
-      surf.command.tptop
-    permission-message: You don't have permission to teleport!
-    aliases: [teleporttop, teletop]
-
-  tpall:
-    usage: /tpall
-    description: Teleports all online players to you.
-    permission:
-      surf.command.tpall
-    permission-message: You don't have permission to teleport others!
-
-  signEdit:
-    usage: /signedit <true|false>
-    description: Toggles whether signs can be edited by right-clicking or not.
-    aliases: [editsign, signtoggle, togglesign]
-    permission:
-      sign.toggle
-    permission-message: You don't have permission to toggle the sign edit!
-
-  msg:
-    usage: /msg <player> <msg-message>
-    description: Sends a private message to the specified player
-    aliases: [tell, whisper]
-    permission:
-      surf.command.msg
-    permission-message: You don't have permission to send a private message!
-
-  teleport:
-    usage: /teleport <location>
-    description: Teleports you to the given location
-    permission:
-      surf.command.teleport
-    permission-message: You don´t have permission to teleport
-
-  world:
 
 permissions:
   surf.essentials:

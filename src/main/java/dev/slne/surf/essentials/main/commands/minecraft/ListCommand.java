@@ -1,11 +1,13 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
 import net.minecraft.commands.CommandSourceStack;
@@ -22,8 +24,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@PermissionTag(name = Permissions.LIST_PERMISSION, desc = "This is the permission for the 'list' command")
 public class ListCommand {
-    public static String PERMISSION;
     public static void register(){
         // Register the  command
         SurfEssentials.registerPluginBrigadierCommand("list", ListCommand::literal).setUsage("/list [<uuids>]")
@@ -32,7 +34,7 @@ public class ListCommand {
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         // Require the permission to use the command
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.LIST_PERMISSION));
         // If the user only types "list", run the listPlayerName method
         literal.executes(ListCommand::listPlayerName);
         // If the user types "list uuids", run the listPlayerUUID method

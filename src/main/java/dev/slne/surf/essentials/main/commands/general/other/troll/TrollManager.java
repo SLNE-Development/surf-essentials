@@ -1,15 +1,17 @@
 package dev.slne.surf.essentials.main.commands.general.other.troll;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.commands.general.other.troll.listener.TrollListener;
 import dev.slne.surf.essentials.main.commands.general.other.troll.trolls.*;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import org.jetbrains.annotations.NotNull;
 
+@PermissionTag(name = Permissions.TROLL_PERMISSION, desc = "This is the permission for the 'troll' command")
 public class TrollManager {
-    public static String PERMISSION;
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("troll", TrollManager::literal);
         //Listener
@@ -17,7 +19,7 @@ public class TrollManager {
     }
 
     private static void literal(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.TROLL_PERMISSION));
         //boom troll
         literal.then(Commands.literal("boom")
                 .then(BoomTroll.boom(literal)));

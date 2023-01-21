@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
@@ -9,6 +10,7 @@ import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.kyori.adventure.text.Component;
@@ -32,15 +34,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@PermissionTag(name = Permissions.FORCELOAD_PERMISSION, desc = "This is the permission for the 'forceload' command")
 public class ForceloadCommand {
-    public static String PERMISSION;
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("forceload", ForceloadCommand::literal).setUsage("/forceload <query | add | remove>")
                 .setDescription("Query, add or remove force loaded chunks");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.FORCELOAD_PERMISSION));
 
         literal.then(Commands.literal("query")
                 .executes(context -> list(context.getSource()))

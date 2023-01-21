@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.google.common.collect.Iterators;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -9,6 +10,7 @@ import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.exceptions.InvalidStringTimeException;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import io.papermc.paper.configuration.GlobalConfiguration;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -23,8 +25,8 @@ import org.bukkit.event.world.TimeSkipEvent;
 
 import java.util.Iterator;
 
+@PermissionTag(name = Permissions.TIME_PERMISSION, desc = "This is the permission for the 'time' command")
 public class TimeCommand{
-    public static String PERMISSION;
 
     public static void register() {
         SurfEssentials.registerPluginBrigadierCommand("time", TimeCommand::literal).setUsage("/time [<set | add]")
@@ -32,7 +34,7 @@ public class TimeCommand{
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.TIME_PERMISSION));
 
         literal.executes(context -> queryTime(context.getSource(), context.getSource().getLevel(), getDayTime(context.getSource().getLevel()), 1));
 

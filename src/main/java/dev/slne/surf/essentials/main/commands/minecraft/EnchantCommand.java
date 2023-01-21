@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.main.commands.minecraft;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -9,6 +10,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -27,8 +29,8 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
+@PermissionTag(name = Permissions.ENCHANT_PERMISSION, desc = "This is the permission for the 'enchant' command")
 public class EnchantCommand {
-    public static String PERMISSION;
 
     public static void register() {
         SurfEssentials.registerPluginBrigadierCommand("enchant", EnchantCommand::literal).setUsage("/enchant <targets> <enchantment> [<level>]")
@@ -41,7 +43,7 @@ public class EnchantCommand {
                 MinecraftServer.getServer().getWorldData().getDataConfiguration().enabledFeatures());
 
         // Require the permission to use this command
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.ENCHANT_PERMISSION));
         // Add an argument for the entities to be enchanted
         literal.then(Commands.argument("targets", EntityArgument.entities())
                 // Add an argument for the enchantment to be applied
