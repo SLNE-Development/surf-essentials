@@ -132,7 +132,8 @@ public class WeatherCommand {
                 .append(Component.text(" wurde auf ", SurfColors.INFO))
                 .append(Component.text(weather, SurfColors.TERTIARY))
                 .append(Component.text(" für ", SurfColors.INFO))
-                .append(Component.text(EssentialsUtil.ticksToString(durationInTicks), SurfColors.TERTIARY));
+                .append(Component.text(EssentialsUtil.ticksToString(durationInTicks), SurfColors.TERTIARY))
+                .append(Component.text(" gesetzt.", SurfColors.INFO));
     }
 
     private static net.minecraft.network.chat.Component weatherComponent(String weather, ServerLevel serverLevel, int durationInTicks){

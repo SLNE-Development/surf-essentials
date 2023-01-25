@@ -27,7 +27,7 @@ public class SpeedCommand {
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SPEED_PERMISSION));
 
-        literal.then(Commands.argument("speed", FloatArgumentType.floatArg(-1, 2))
+        literal.then(Commands.argument("speed", FloatArgumentType.floatArg(-1, 1))
                 .executes(context -> speed(context.getSource(), context.getSource().getPlayerOrException(), FloatArgumentType.getFloat(context, "speed")))
                 .then(Commands.argument("player", EntityArgument.player())
                         .executes(context -> speed(context.getSource(), EntityArgument.getPlayer(context, "player"), FloatArgumentType.getFloat(context, "speed")))))

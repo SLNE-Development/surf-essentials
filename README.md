@@ -1,23 +1,20 @@
 
-  
+
+
 
 # Surf Essentials
 
-  
 
 Makes the server commands better and more peronalized.
 
 ## Table of contents
 
-  
 
 1. [Commands](#Commands)
 2. [Authors](#Authors)
 3. [Permission](#Permission)
 
 ## Commands
-
-  
 
 - `/fly` _Allows you to fly_
 
@@ -97,9 +94,9 @@ Makes the server commands better and more peronalized.
 
 - `/getpos [target]` _gets the position of the sender or target_
 
-<details>
-<summary>Trolls</summary>
-<br>
+<details>  
+<summary>Trolls</summary>  
+<br>  
 
 - `/troll <boom> <target>` _creates a visual explosion and lets the target fly into the sky_
 - `/troll <demo> <target>` _Shows the target the demo-message_
@@ -112,7 +109,7 @@ Makes the server commands better and more peronalized.
 - `/troll <water> <target> [duration]` _Makes the target think that he suffers from water phobia_
 - `/troll <herobrine> <target>` _Scares the target with Herobrine (disappears after reconnecting)_
 
-</details>
+</details>  
 
 ## Permission
 ***Note:** these are not finished yet*
@@ -126,6 +123,5 @@ Makes the server commands better and more peronalized.
 
 ## Authors
 
-  
 
 - [@twisti](https://git.slne.dev/twisti)

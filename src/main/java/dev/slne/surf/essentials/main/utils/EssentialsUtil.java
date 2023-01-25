@@ -387,7 +387,7 @@ public abstract class EssentialsUtil {
     }
 
     public static boolean canPlayerSeePlayer(@NotNull ServerPlayer player, @NotNull ServerPlayer playerToCheck){
-        if (!isVanished(player.getBukkitEntity())) return true;
-        return playerToCheck.getBukkitEntity().canSee(player.getBukkitEntity());
+        if (!isVanished(playerToCheck.getBukkitEntity())) return true;
+        return player.getBukkitEntity().canSee(playerToCheck.getBukkitEntity());
     }
 }

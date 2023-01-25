@@ -70,6 +70,13 @@
             <artifactId>SpigotPluginAnnotations</artifactId>
             <version>1.0.3</version>
         </dependency>
+
+        <!-- https://github.com/stefvanschie/IF -->
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>IF</artifactId>
+            <version>0.10.8</version>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -243,12 +250,13 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
                     <artifactSet>
                         <includes>
                             <include>net.kyori:adventure-nbt</include>
                             <include>me.lucko:commodore</include>
                             <include>me.lucko:commodore-file</include>
+                            <include>com.github.stefvanschie.inventoryframework*</include>
                         </includes>
                     </artifactSet>
                     <relocations>
@@ -263,6 +271,10 @@
                         <relocation>
                             <pattern>net.kyori.adventure.nbt</pattern>
                             <shadedPattern>dev.slne.surf.essentials.kyori.adventure.nbt</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.github.stefvanschie.inventoryframework</pattern>
+                            <shadedPattern>dev.slne.surf.essentials.stefvanschie.inventoryframework</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

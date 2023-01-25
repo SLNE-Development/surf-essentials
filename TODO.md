@@ -2,7 +2,7 @@
 ## general
 
  - [ ] finish tp command
- - [x] Effect on teleport *(/particle minecraft:ambient_entity_effect ~ ~ ~ 0.5 1 0.5 1 4000 normal @a)*
+ - [x] Effect on teleport *(/particle minecraft:end_rod ~ ~ ~ 0.5 1 0.5 .1 700 normal @a*
  - [x] migrate old commands to brigadier
  - [ ] maybe add mysql support (e.g. poll saves, sign toggle...)
  - [ ] customize most of the default minecraft commands

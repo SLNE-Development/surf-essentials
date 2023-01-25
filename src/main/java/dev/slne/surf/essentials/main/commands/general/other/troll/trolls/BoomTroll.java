@@ -52,7 +52,7 @@ public class BoomTroll {
         }
 
         target.setInvulnerable(true);
-        target.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20, 127, false, true, true));
+        target.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20, 127, false, false, false));
 
         Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), bukkitTask ->
                 target.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20*2, 128, false, false, false)), 20);

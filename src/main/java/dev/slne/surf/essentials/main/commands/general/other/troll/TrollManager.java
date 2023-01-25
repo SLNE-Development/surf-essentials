@@ -1,17 +1,26 @@
 package dev.slne.surf.essentials.main.commands.general.other.troll;
 
 import aetherial.spigot.plugin.annotation.permission.PermissionTag;
+import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
+import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.commands.general.other.troll.gui.Boarders;
+import dev.slne.surf.essentials.main.commands.general.other.troll.gui.TrollGuiItems;
 import dev.slne.surf.essentials.main.commands.general.other.troll.listener.TrollListener;
 import dev.slne.surf.essentials.main.commands.general.other.troll.trolls.*;
 import dev.slne.surf.essentials.main.utils.Permissions;
+import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
 @PermissionTag(name = Permissions.TROLL_PERMISSION, desc = "This is the permission for the 'troll' command")
-public class TrollManager {
+public class TrollManager{
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("troll", TrollManager::literal);
         //Listener
@@ -20,6 +29,10 @@ public class TrollManager {
 
     private static void literal(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.TROLL_PERMISSION));
+
+        // open the troll gui
+        literal.executes(context -> gui(context.getSource()));
+
         //boom troll
         literal.then(Commands.literal("boom")
                 .then(BoomTroll.boom(literal)));
@@ -59,5 +72,31 @@ public class TrollManager {
         //cage
         literal.then(Commands.literal("cage")
                 .then(CageTroll.cage(literal)));
+    }
+
+    private static int gui(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("Troll GUI", SurfColors.SECONDARY)));
+
+        gui.setOnGlobalClick(event -> event.setCancelled(true));
+        Boarders.setAllBoarders(gui);
+
+        StaticPane trollSelection = new StaticPane(1, 1,7,3);
+
+        trollSelection.addItem(TrollGuiItems.anvilTroll(), 0,0);
+        trollSelection.addItem(TrollGuiItems.bellTroll(), 1,0);
+        trollSelection.addItem(TrollGuiItems.boomTroll(), 2,0);
+        trollSelection.addItem(TrollGuiItems.cageTroll(), 3,0);
+        trollSelection.addItem(TrollGuiItems.demoTroll(), 4,0);
+        trollSelection.addItem(TrollGuiItems.herobrineTroll(), 5,0);
+        trollSelection.addItem(TrollGuiItems.illusionerTroll(), 6,0);
+        trollSelection.addItem(TrollGuiItems.mlgTroll(), 0,1);
+        trollSelection.addItem(TrollGuiItems.villagerAnnoyTroll(), 1,1);
+        trollSelection.addItem(TrollGuiItems.waterTroll(), 2,1);
+
+        gui.addPane(trollSelection);
+
+        gui.show(player.getBukkitEntity());
+        return 1;
     }
 }
