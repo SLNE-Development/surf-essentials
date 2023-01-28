@@ -10,9 +10,9 @@ Makes the server commands better and more peronalized.
 ## Table of contents
 
 
-1. [Commands](#Commands)
-2. [Authors](#Authors)
-3. [Permission](#Permission)
+1. [Commands](#user-content-commands)
+2. [Authors](#user-content-authors)
+3. [Permission](#user-content-permission)
 
 ## Commands
 
