@@ -1,10 +1,15 @@
 package dev.slne.surf.essentials.main.commands.general.other.world;
 
 import aetherial.spigot.plugin.annotation.command.CommandTag;
+import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
+import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.commands.EssentialsCommand;
+import dev.slne.surf.essentials.main.commands.general.other.world.gui.WorldItems;
+import dev.slne.surf.essentials.main.utils.GuiUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -67,6 +72,23 @@ public class WorldCommand extends EssentialsCommand implements Listener {
             }else if (args[0].equalsIgnoreCase("allPlayers")){//only for commands to teleport all players on a given world to the overworld
                 OverworldTeleport.tp(player, args);
                 return true;
+
+            }else if (args[0].equalsIgnoreCase("gui")){
+                ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("World GUI", SurfColors.SECONDARY)));
+
+                gui.setOnGlobalClick(event -> event.setCancelled(true));
+                GuiUtils.setAllBoarders(gui);
+
+                StaticPane worldActionSelect = new StaticPane(1, 1,7,4);
+
+                worldActionSelect.addItem(WorldItems.WORLD_JOIN(), 3,1);
+                worldActionSelect.addItem(WorldItems.WORLD_LOAD(), 0,0);
+                worldActionSelect.addItem(WorldItems.WORLD_UNLOAD(),6,0);
+                worldActionSelect.addItem(WorldItems.WORLD_REMOVE(), 6,3);
+
+                gui.addPane(worldActionSelect);
+
+                gui.show(player);
             }
             return true;
         }

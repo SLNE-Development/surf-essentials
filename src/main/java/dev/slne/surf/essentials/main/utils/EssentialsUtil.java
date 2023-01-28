@@ -16,8 +16,10 @@ import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,6 +28,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -389,5 +392,24 @@ public abstract class EssentialsUtil {
     public static boolean canPlayerSeePlayer(@NotNull ServerPlayer player, @NotNull ServerPlayer playerToCheck){
         if (!isVanished(playerToCheck.getBukkitEntity())) return true;
         return player.getBukkitEntity().canSee(playerToCheck.getBukkitEntity());
+    }
+
+    public static boolean isPlayerVisibleToPlayerInSuggestion(CommandSourceStack source, Collection<? extends Entity> targets) throws CommandSyntaxException {
+        if (targets.size() == 1){
+            Entity entity = targets.iterator().next();
+            if (entity instanceof ServerPlayer player){
+                if (canPlayerSeePlayer(source.getPlayerOrException(), player)) return true;
+                throw EntityArgument.NO_PLAYERS_FOUND.create();
+            }
+            return false;
+        }else {
+            for (Entity target : targets) {
+                if (target instanceof ServerPlayer player){
+                    if (canPlayerSeePlayer(source.getPlayerOrException(), player)) return true;
+                    targets.remove(target);
+                }
+            }
+            return true;
+        }
     }
 }
