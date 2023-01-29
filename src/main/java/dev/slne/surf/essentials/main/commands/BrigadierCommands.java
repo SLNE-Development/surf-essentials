@@ -7,6 +7,7 @@ import dev.slne.surf.essentials.main.commands.general.other.*;
 import dev.slne.surf.essentials.main.commands.general.other.poll.*;
 import dev.slne.surf.essentials.main.commands.general.other.troll.TrollManager;
 import dev.slne.surf.essentials.main.commands.minecraft.*;
+import dev.slne.surf.essentials.main.commands.tp.TeleportOffline;
 
 public class BrigadierCommands {
     public void register(){
@@ -100,6 +101,8 @@ public class BrigadierCommands {
         TitlebroadcastCommand.register();
         //actionbar-broadcast command
         new ActionbarBroadcast();
+        //teleport offline
+        new TeleportOffline();
 
     }
 }

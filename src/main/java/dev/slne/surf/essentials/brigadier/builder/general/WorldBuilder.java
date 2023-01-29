@@ -31,6 +31,8 @@ public class WorldBuilder {
                         .then(RequiredArgumentBuilder.argument("world", StringArgumentType.word())))
 
                 .then(LiteralArgumentBuilder.literal("remove")
-                        .then(RequiredArgumentBuilder.argument("world", StringArgumentType.word()))).build();
+                        .then(RequiredArgumentBuilder.argument("world", StringArgumentType.word())))
+
+                .then(LiteralArgumentBuilder.literal("gui")).build();
     }
 }

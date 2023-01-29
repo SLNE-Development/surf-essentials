@@ -8,7 +8,6 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
-import dev.slne.surf.essentials.main.commands.general.other.world.WorldCommand;
 import dev.slne.surf.essentials.main.utils.GuiUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -23,19 +22,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class WorldItems {
-    //TODO: move duplicated code into methods
-
     private static final List<Material> worldMaterials = new ArrayList<>(List.of(Material.BLACK_CONCRETE, Material.BLUE_CONCRETE, Material.GREEN_CONCRETE,
             Material.BROWN_CONCRETE, Material.CYAN_CONCRETE, Material.LIME_CONCRETE, Material.ORANGE_CONCRETE, Material.RED_CONCRETE, Material.MAGENTA_CONCRETE,
             Material.PINK_CONCRETE, Material.PURPLE_CONCRETE, Material.WHITE_CONCRETE, Material.YELLOW_CONCRETE));
 
-    /**
-     * An air {@link GuiItem} using {@link Material#LIGHT_GRAY_STAINED_GLASS_PANE}
-     * @return the {@link GuiItem}
-     */
     public static final GuiItem nothing(){
         GuiItem item = new GuiItem(new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE, 1));
         GuiUtils.rename(item, "");
@@ -74,192 +69,64 @@ public class WorldItems {
         return guiItem;
     }
 
+    private static final Consumer<InventoryClickEvent> unloadWorldClick() {
+        return createGui(Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()), (player, world) -> {
+            if (Bukkit.getWorld(world).getPlayerCount() != 0){
+                ChestGui askForConfirmationGui = new ChestGui(6, ComponentHolder.of(Component.text("Confirmation", SurfColors.SECONDARY)));
+                askForConfirmationGui.setOnGlobalClick(inventoryClickEvent -> inventoryClickEvent.setCancelled(true));
+
+                GuiUtils.setAllBoarders(askForConfirmationGui);
+
+                StaticPane staticPane = new StaticPane(0,0,7,4);
+
+                GuiItem info = new GuiItem(new ItemStack(Material.PAPER, 1));
+                GuiUtils.rename(info, "In der Welt befinden sich noch Spieler");
+                GuiUtils.lore(info, "Sollen die Spieler in die overworld Teleportiert werden?");
+
+                GuiItem yes = new GuiItem(new ItemStack(Material.LIME_WOOL));
+                GuiUtils.rename(yes, Component.text("Ja", SurfColors.GREEN));
+                yes.setAction(inventoryClickEvent1 -> {
+                    player.performCommand("world allPlayers " + world);
+                    Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), bukkitTask -> {
+                        player.performCommand("world unload " + world);
+                    }, 20);
+                });
+
+                GuiItem no = new GuiItem(new ItemStack(Material.RED_WOOL));
+                GuiUtils.rename(no, Component.text("Nein", SurfColors.RED));
+                no.setAction(inventoryClickEvent1 -> inventoryClickEvent1.getClickedInventory().close());
+
+                staticPane.addItem(info, 4,2);
+                staticPane.addItem(yes, 3,3);
+                staticPane.addItem(no, 5,3);
+
+                askForConfirmationGui.addPane(staticPane);
+                askForConfirmationGui.show(player);
+            }else {
+                player.performCommand("world unload " + world);
+            }
+        });
+    }
 
     private static final Consumer<InventoryClickEvent> joinWorldClick(){
-        return clickEvent -> {
-            Player player = (Player) clickEvent.getWhoClicked();
-            List<World> worlds = Bukkit.getWorlds();
-            List<StaticPane> pages = new ArrayList<>();
-            PaginatedPane paginatedPane = new PaginatedPane(1, 1,7,4);
-            int x = 0, y = 0, length = 7, height = 3;
-
-            ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("Welt auswählen", SurfColors.SECONDARY)));
-            gui.setOnGlobalClick(event -> event.setCancelled(true));
-
-            int currentPage = 0;
-            int currentSlot = 0;
-            for (World world : worlds) {
-                GuiItem guiItem = new GuiItem(new ItemStack(getNextMaterial(), 1), inventoryClickEvent -> {
-                    Player whoClicked = (Player) inventoryClickEvent.getWhoClicked();
-                    inventoryClickEvent.getClickedInventory().close();
-                    resetMaterialCounter();
-                    whoClicked.performCommand("world join " + world.getName());
-                });
-                GuiUtils.rename(guiItem, world.getName());
-
-                if (currentPage >= pages.size()) {
-                    StaticPane newPane = new StaticPane(x, y, length, height);
-                    pages.add(newPane);
-                    paginatedPane.addPane(currentPage, newPane);
-                }
-                pages.get(currentPage).addItem(guiItem, Slot.fromIndex(currentSlot));
-                currentSlot++;
-
-                if(currentSlot >= 21) {
-                    currentPage++;
-                    currentSlot = 0;
-                }
-            }
-
-            gui.addPane(paginatedPane);
-            GuiUtils.setAllBoarders(gui, paginatedPane);
-
-            gui.show(player);
-        };
+        List<World> worlds = Bukkit.getWorlds();
+        return createGui(worlds.stream().map(World::getName).collect(Collectors.toList()), (player, world) -> player.performCommand("world join " + world));
     }
 
     private static final Consumer<InventoryClickEvent> loadWorldClick(){
-        List<String> offlineWorlds = new ArrayList<>();
-        for (File file : Objects.requireNonNull(SurfEssentials.getInstance().getServer().getWorldContainer().listFiles())) {
-            if (!file.isDirectory()) continue;
-            if (!Arrays.asList(Objects.requireNonNull(file.list())).contains("level.dat") || !Arrays.asList(Objects.requireNonNull(file.list())).contains("uid.dat")) continue;
-            if (SurfEssentials.getInstance().getServer().getWorld(file.getName()) != null) continue;
-            offlineWorlds.add(file.getName());
-        }
-
-        return clickEvent -> {
-            Player player = (Player) clickEvent.getWhoClicked();
-            List<StaticPane> pages = new ArrayList<>();
-            PaginatedPane paginatedPane = new PaginatedPane(1, 1,7,4);
-            int x = 0, y = 0, length = 7, height = 3;
-
-            ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("Welt auswählen", SurfColors.SECONDARY)));
-            gui.setOnGlobalClick(event -> event.setCancelled(true));
-
-            int currentPage = 0;
-            int currentSlot = 0;
-            for (String world : offlineWorlds) {
-                GuiItem guiItem = new GuiItem(new ItemStack(getNextMaterial(), 1), inventoryClickEvent -> {
-                    Player whoClicked = (Player) inventoryClickEvent.getWhoClicked();
-                    inventoryClickEvent.getClickedInventory().close();
-                    resetMaterialCounter();
-                    whoClicked.performCommand("world load " + world);
-                });
-                GuiUtils.rename(guiItem, world);
-
-                if (currentPage >= pages.size()) {
-                    StaticPane newPane = new StaticPane(x, y, length, height);
-                    pages.add(newPane);
-                    paginatedPane.addPane(currentPage, newPane);
-                }
-                pages.get(currentPage).addItem(guiItem, Slot.fromIndex(currentSlot));
-                currentSlot++;
-
-                if(currentSlot >= 21) {
-                    currentPage++;
-                    currentSlot = 0;
-                }
-            }
-
-            gui.addPane(paginatedPane);
-            GuiUtils.setAllBoarders(gui, paginatedPane);
-
-            gui.show(player);
-        };
+        return createGui(offlineWorlds(), (player, world) -> player.performCommand("world load " + world));
     }
-
-    private static final Consumer<InventoryClickEvent> unloadWorldClick(){
-        return clickEvent -> {
-            Player player = (Player) clickEvent.getWhoClicked();
-            List<StaticPane> pages = new ArrayList<>();
-            List<String> loadedWorlds = WorldCommand.getCustomLoadedWorlds();
-            PaginatedPane paginatedPane = new PaginatedPane(1, 1,7,4);
-            int x = 0, y = 0, length = 7, height = 3;
-
-            ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("Welt auswählen", SurfColors.SECONDARY)));
-            gui.setOnGlobalClick(event -> event.setCancelled(true));
-
-            int currentPage = 0;
-            int currentSlot = 0;
-            for (String world : loadedWorlds) {
-                GuiItem guiItem = new GuiItem(new ItemStack(getNextMaterial(), 1), inventoryClickEvent -> {
-                    Player whoClicked = (Player) inventoryClickEvent.getWhoClicked();
-                    resetMaterialCounter();
-                    inventoryClickEvent.getClickedInventory().close();
-
-                    if (Bukkit.getWorld(world).getPlayerCount() != 0){
-                        ChestGui askForConfirmationGui = new ChestGui(6, ComponentHolder.of(Component.text("Confirmation", SurfColors.SECONDARY)));
-                        askForConfirmationGui.setOnGlobalClick(inventoryClickEvent1 -> inventoryClickEvent1.setCancelled(true));
-
-                        GuiUtils.setAllBoarders(askForConfirmationGui);
-
-                        StaticPane staticPane = new StaticPane(0,0,7,4);
-
-                        GuiItem info = new GuiItem(new ItemStack(Material.PAPER, 1));
-                        GuiUtils.rename(info, "In der Welt befinden sich noch Spieler");
-                        GuiUtils.lore(info, "Sollen die Spieler in die overworld Teleportiert werden?");
-
-                        GuiItem yes = new GuiItem(new ItemStack(Material.LIME_WOOL));
-                        GuiUtils.rename(yes, Component.text("Ja", SurfColors.GREEN));
-                        yes.setAction(inventoryClickEvent1 -> {
-                            whoClicked.performCommand("world allPlayers " + world);
-                            Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), bukkitTask -> {
-                                whoClicked.performCommand("world unload " + world);
-                            }, 20);
-                        });
-
-                        GuiItem no = new GuiItem(new ItemStack(Material.RED_WOOL));
-                        GuiUtils.rename(no, Component.text("Nein", SurfColors.RED));
-                        no.setAction(inventoryClickEvent1 -> inventoryClickEvent1.getClickedInventory().close());
-
-                        staticPane.addItem(info, 4,2);
-                        staticPane.addItem(yes, 3,3);
-                        staticPane.addItem(no, 5,3);
-
-                        askForConfirmationGui.addPane(staticPane);
-                        askForConfirmationGui.show(whoClicked);
-                    }else {
-                        whoClicked.performCommand("world unload " + world);
-                    }
-                });
-
-                GuiUtils.rename(guiItem, world);
-
-                if (currentPage >= pages.size()) {
-                    StaticPane newPane = new StaticPane(x, y, length, height);
-                    pages.add(newPane);
-                    paginatedPane.addPane(currentPage, newPane);
-                }
-                pages.get(currentPage).addItem(guiItem, Slot.fromIndex(currentSlot));
-                currentSlot++;
-
-                if(currentSlot >= 21) {
-                    currentPage++;
-                    currentSlot = 0;
-                }
-            }
-
-            gui.addPane(paginatedPane);
-            GuiUtils.setAllBoarders(gui, paginatedPane);
-
-            gui.show(player);
-        };
-    }
-
 
     private static final Consumer<InventoryClickEvent> removeWorldClick(){
-        List<String> offlineWorlds = new ArrayList<>();
-        for (File file : Objects.requireNonNull(SurfEssentials.getInstance().getServer().getWorldContainer().listFiles())) {
-            if (!file.isDirectory()) continue;
-            if (!Arrays.asList(Objects.requireNonNull(file.list())).contains("level.dat") || !Arrays.asList(Objects.requireNonNull(file.list())).contains("uid.dat")) continue;
-            if (SurfEssentials.getInstance().getServer().getWorld(file.getName()) != null) continue;
-            offlineWorlds.add(file.getName());
-        }
+        return createGui(offlineWorlds(), (player, world) -> player.performCommand("world remove " + world + " --confirm"));
+    }
 
+
+    private static final Consumer<InventoryClickEvent> createGui(List<String> worlds, BiConsumer<Player, String> command){
         return clickEvent -> {
             Player player = (Player) clickEvent.getWhoClicked();
             List<StaticPane> pages = new ArrayList<>();
-            PaginatedPane paginatedPane = new PaginatedPane(1, 1,7,4);
+            PaginatedPane paginatedPane = new PaginatedPane(1, 1, 7, 4);
             int x = 0, y = 0, length = 7, height = 3;
 
             ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("Welt auswählen", SurfColors.SECONDARY)));
@@ -267,16 +134,16 @@ public class WorldItems {
 
             int currentPage = 0;
             int currentSlot = 0;
-            for (String world : offlineWorlds) {
+            for (String world : worlds) {
                 GuiItem guiItem = new GuiItem(new ItemStack(getNextMaterial(), 1), inventoryClickEvent -> {
                     Player whoClicked = (Player) inventoryClickEvent.getWhoClicked();
                     inventoryClickEvent.getClickedInventory().close();
                     resetMaterialCounter();
-                    whoClicked.performCommand("world remove " + world + " --confirm");
+                    command.accept(whoClicked, world);
                 });
                 GuiUtils.rename(guiItem, world);
 
-                if (currentPage >= pages.size()) {
+                if (currentPage >= pages.size()){
                     StaticPane newPane = new StaticPane(x, y, length, height);
                     pages.add(newPane);
                     paginatedPane.addPane(currentPage, newPane);
@@ -284,7 +151,7 @@ public class WorldItems {
                 pages.get(currentPage).addItem(guiItem, Slot.fromIndex(currentSlot));
                 currentSlot++;
 
-                if(currentSlot >= 21) {
+                if (currentSlot >= 21) {
                     currentPage++;
                     currentSlot = 0;
                 }
@@ -297,44 +164,17 @@ public class WorldItems {
         };
     }
 
-    private static void addWorldsToGuiWithCommand(List<World> worlds, Player player) {
-        List<StaticPane> pages = new ArrayList<>();
-        ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("Welt auswählen", SurfColors.SECONDARY)));
-        gui.setOnGlobalClick(event -> event.setCancelled(true));
-        PaginatedPane paginatedPane = new PaginatedPane(1, 1, 7, 4);
-        int x = 0, y = 0, length = 7, height = 3;
 
-        int currentPage = 0;
-        int currentSlot = 0;
-        for (World world : worlds) {
-            GuiItem guiItem = new GuiItem(new ItemStack(getNextMaterial(), 1), inventoryClickEvent -> {
-                Player whoClicked = (Player) inventoryClickEvent.getWhoClicked();
-                inventoryClickEvent.getClickedInventory().close();
-                resetMaterialCounter();
-                whoClicked.performCommand("world join " + world.getName());
-            });
-            GuiUtils.rename(guiItem, world.getName());
-
-            if (currentPage >= pages.size()) {
-                StaticPane newPane = new StaticPane(x, y, length, height);
-                pages.add(newPane);
-                paginatedPane.addPane(currentPage, newPane);
-            }
-            pages.get(currentPage).addItem(guiItem, Slot.fromIndex(currentSlot));
-            currentSlot++;
-
-            if (currentSlot >= 21) {
-                currentPage++;
-                currentSlot = 0;
-            }
+    private static final List<String> offlineWorlds(){
+        List<String> offlineWorlds = new ArrayList<>();
+        for (File file : Objects.requireNonNull(SurfEssentials.getInstance().getServer().getWorldContainer().listFiles())) {
+            if (!file.isDirectory()) continue;
+            if (!Arrays.asList(Objects.requireNonNull(file.list())).contains("level.dat") || !Arrays.asList(Objects.requireNonNull(file.list())).contains("uid.dat")) continue;
+            if (SurfEssentials.getInstance().getServer().getWorld(file.getName()) != null) continue;
+            offlineWorlds.add(file.getName());
         }
-
-        gui.addPane(paginatedPane);
-        GuiUtils.setAllBoarders(gui, paginatedPane);
-
-        gui.show(player);
+        return offlineWorlds;
     }
-
 
 
     private static int counter = 0;

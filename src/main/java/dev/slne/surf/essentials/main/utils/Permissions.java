@@ -64,4 +64,5 @@ public class Permissions {
     public static final String POLL_PERMISSION = "surf.essentials.commands.polls";
     public static final String VOTE_PERMISSION = "surf.essentials.commands.vote";
     public static final String TITLE_BROADCAST_PERMISSION = "surf.essentials.commands.titlebroadcast";
+    public static final String OFFLINE_TELEPORT_PERMISSION = "surf.essentials.commands.tpoff";
 }
