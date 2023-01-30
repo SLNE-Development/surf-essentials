@@ -105,8 +105,10 @@ public class BrigadierCommands {
         new TeleportOffline();
         // set item name command
         new SetItemNameCommand();
-        //set item lore command
+        // set item lore command
         new SetItemLoreCommand();
+        // ping command
+        new PingCommand();
 
     }
 }
