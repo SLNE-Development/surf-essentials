@@ -29,7 +29,6 @@ public class Commands {
     public void initializeGeneralCommands(){
         //WorldCommand
         this.commands.add(new WorldCommand(this.surf.getCommand("world")));
-
     }
 
     /**

@@ -7,6 +7,7 @@ import dev.slne.surf.essentials.main.commands.general.other.*;
 import dev.slne.surf.essentials.main.commands.general.other.poll.*;
 import dev.slne.surf.essentials.main.commands.general.other.troll.TrollManager;
 import dev.slne.surf.essentials.main.commands.minecraft.*;
+import dev.slne.surf.essentials.main.commands.tp.TeleportBackCommand;
 import dev.slne.surf.essentials.main.commands.tp.TeleportOffline;
 
 public class BrigadierCommands {
@@ -107,5 +108,7 @@ public class BrigadierCommands {
         new SetItemNameCommand();
         // set item lore command
         new SetItemLoreCommand();
+        // back command
+        new TeleportBackCommand();
     }
 }

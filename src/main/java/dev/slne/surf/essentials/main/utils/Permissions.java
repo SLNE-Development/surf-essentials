@@ -69,4 +69,5 @@ public class Permissions {
     public static final String SET_ITEM_LORE_PERMISSION = "surf.essentials.commands.setlore";
     public static final String GET_OWN_PING_PERMISSION = "surf.essentials.commands.ping";
     public static final String GET_PING_FROM_OTHERS_PERMISSION = "surf.essentials.commands.ping.other";
+    public static final String TELEPORT_BACK_PERMISSION = "surf.essentials.commands.back";
 }

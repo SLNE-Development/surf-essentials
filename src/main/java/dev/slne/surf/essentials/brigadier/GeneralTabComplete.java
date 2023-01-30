@@ -9,8 +9,6 @@ public class GeneralTabComplete {
     SurfEssentials surf = SurfEssentials.getInstance();
 
     public void register(Commodore commodore){
-        //msg command completions
-        builder(commodore, "msg", new MsgBuilder().msgBuilder());
         //worldChange command completions
         builder(commodore, "world", new WorldBuilder().worldChangeBuilder());
 
