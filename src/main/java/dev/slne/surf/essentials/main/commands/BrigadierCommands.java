@@ -103,6 +103,10 @@ public class BrigadierCommands {
         new ActionbarBroadcast();
         //teleport offline
         new TeleportOffline();
+        // set item name command
+        new SetItemNameCommand();
+        //set item lore command
+        new SetItemLoreCommand();
 
     }
 }

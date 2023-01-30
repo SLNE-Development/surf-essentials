@@ -13,6 +13,7 @@ import dev.slne.surf.essentials.main.exceptions.BrigadierUnsupportedException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -411,5 +412,9 @@ public abstract class EssentialsUtil {
             }
             return true;
         }
+    }
+
+    public static Component deserialize(String toDeserialize){
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(toDeserialize);
     }
 }
