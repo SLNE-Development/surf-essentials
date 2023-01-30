@@ -18,7 +18,6 @@
  - [x] /lore (set the lore of an item)
  - [ ] /infinite (never run out of the item holding when the command is issued)
  - [ ] /pvptoggle | pvp (toggle pvp)
- - [x] /ping (get your or the target ping)
  - [ ] /rtp (teleports you to a random location)
  - [ ] /back (teleports you to your location before the teleport)
  - [ ] /hat (puts the item from your main hand on your head)

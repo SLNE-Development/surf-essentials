@@ -107,8 +107,5 @@ public class BrigadierCommands {
         new SetItemNameCommand();
         // set item lore command
         new SetItemLoreCommand();
-        // ping command
-        new PingCommand();
-
     }
 }
