@@ -1,7 +1,6 @@
 package dev.slne.surf.essentials.main.commands;
 
 import dev.slne.surf.essentials.SurfEssentials;
-import dev.slne.surf.essentials.main.commands.general.MsgCommand;
 import dev.slne.surf.essentials.main.commands.general.other.world.WorldCommand;
 import dev.slne.surf.essentials.main.commands.tp.TeleportAll;
 import dev.slne.surf.essentials.main.commands.tp.TeleportCommand;
@@ -28,8 +27,6 @@ public class Commands {
      * initialize General Commands
      */
     public void initializeGeneralCommands(){
-        //MsgCommand
-        this.commands.add(new MsgCommand(this.surf.getCommand("msg")));
         //WorldCommand
         this.commands.add(new WorldCommand(this.surf.getCommand("world")));
 
