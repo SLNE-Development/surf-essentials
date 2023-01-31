@@ -23,4 +23,4 @@
  - [ ] /hat (puts the item from your main hand on your head)
  - [ ] /unhat (puts the ite, from your head back to your inventory)
  - [ ] /timer (show a timer for the targets in the action bar)
- - [ ] /clearitem `<item> <targets>`
+ - [x] /clearitem `<item> <targets>`

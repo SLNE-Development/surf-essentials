@@ -54,7 +54,6 @@ public class Permissions {
     public static final String BROADCAST_WORLD_PERMISSION = "surf.essentials.commands.broadcastworld";
     public static final String GET_POS_PERMISSION = "surf.essentials.commands.getpos";
     public static final String INFO_PERMISSION = "surf.essentials.commands.info";
-    public static final String MSG_PERMISSION = "surf.essentials.commands.msg";
     public static final String RULE_PERMISSION = "surf.essentials.commands.rule";
     public static final String RULE_SELF_PERMISSION = "surf.essentials.commands.rule.self";
     public static final String SPAWNER_PERMISSION = "surf.essentials.commands.spawner";
@@ -69,4 +68,5 @@ public class Permissions {
     public static final String SET_ITEM_LORE_PERMISSION = "surf.essentials.commands.setlore";
     public static final String TELEPORT_BACK_PERMISSION = "surf.essentials.commands.back";
     public static final String TELEPORT_RANDOM_PERMISSION = "surf.essentials.commands.tpr";
+    public static final String CLEAR_ITEM_PERMISSION = "surf.essentials.commands.clearitem";
 }

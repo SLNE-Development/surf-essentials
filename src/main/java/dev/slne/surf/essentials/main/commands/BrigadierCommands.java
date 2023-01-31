@@ -113,5 +113,7 @@ public class BrigadierCommands {
         new TeleportBackCommand();
         // random teleport
         new RandomTeleportCommand();
+        // clear item command
+        new ClearItemCommand();
     }
 }

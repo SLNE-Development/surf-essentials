@@ -20,7 +20,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -396,22 +395,19 @@ public abstract class EssentialsUtil {
         return player.getBukkitEntity().canSee(playerToCheck.getBukkitEntity());
     }
 
-    public static boolean isPlayerVisibleToPlayerInSuggestion(CommandSourceStack source, Collection<? extends Entity> targets) throws CommandSyntaxException {
-        if (targets.size() == 1){
-            Entity entity = targets.iterator().next();
-            if (entity instanceof ServerPlayer player){
-                if (canPlayerSeePlayer(source.getPlayerOrException(), player)) return true;
-                throw EntityArgument.NO_PLAYERS_FOUND.create();
+    public static Collection<? extends ServerPlayer> checkSuggestion(CommandSourceStack source, Collection<? extends ServerPlayer> targets) throws CommandSyntaxException {
+        if (!source.isPlayer()) return targets;
+        if (targets.size() == 1) {
+            ServerPlayer player = targets.iterator().next();
+
+            if (canPlayerSeePlayer(source.getPlayerOrException(), player)) return targets;
+            throw EntityArgument.NO_PLAYERS_FOUND.create();
+        } else {
+            for (ServerPlayer target : targets) {
+                if (canPlayerSeePlayer(source.getPlayerOrException(), target)) continue;
+                targets.remove(target);
             }
-            return false;
-        }else {
-            for (Entity target : targets) {
-                if (target instanceof ServerPlayer player){
-                    if (canPlayerSeePlayer(source.getPlayerOrException(), player)) return true;
-                    targets.remove(target);
-                }
-            }
-            return true;
+            return targets;
         }
     }
 
