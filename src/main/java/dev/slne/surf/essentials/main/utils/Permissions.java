@@ -69,4 +69,5 @@ public class Permissions {
     public static final String TELEPORT_BACK_PERMISSION = "surf.essentials.commands.back";
     public static final String TELEPORT_RANDOM_PERMISSION = "surf.essentials.commands.tpr";
     public static final String CLEAR_ITEM_PERMISSION = "surf.essentials.commands.clearitem";
+    public static final String INFINITY_PERMISSION = "surf.essentials.commands.infinity";
 }

@@ -115,5 +115,7 @@ public class BrigadierCommands {
         new RandomTeleportCommand();
         // clear item command
         new ClearItemCommand();
+        // infinity command
+        new InfinityCommand();
     }
 }

@@ -12,5 +12,6 @@ public class ListenerManager {
         pluginManager.registerEvents(new TeleportListener(), plugin);
         pluginManager.registerEvents(new EditSignListener(), plugin);
         pluginManager.registerEvents(new CommandRegistered(), plugin);
+        pluginManager.registerEvents(new InfinityListener(), plugin);
     }
 }

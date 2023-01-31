@@ -7,6 +7,7 @@
  - [ ] maybe add mysql support (e.g. poll saves, sign toggle...)
  - [ ] customize most of the default minecraft commands
  - [ ] add gui option for several commands (e.g. troll, world, poll...)
+ - [ ] more permissions
  
  ## New commands
  
