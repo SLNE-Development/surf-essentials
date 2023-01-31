@@ -14,7 +14,7 @@ import net.minecraft.commands.Commands;
 public class VoteCommand {
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("vote2", VoteCommand::literal).setUsage("/vote <poll>")
+        SurfEssentials.registerPluginBrigadierCommand("vote", VoteCommand::literal).setUsage("/vote <poll>")
                 .setDescription("Vote for polls");
     }
 

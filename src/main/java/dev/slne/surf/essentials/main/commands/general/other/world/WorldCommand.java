@@ -220,9 +220,8 @@ public class WorldCommand extends EssentialsCommand implements Listener {
      * @param logger  the logger
      */
     public static void changeWorld(Player target, World world, ComponentLogger logger){
-        double x = target.getLocation().getX();
-        double z = target.getLocation().getZ();
-        target.teleportAsync(new Location(world, x, world.getHighestBlockYAt((int) x, (int) z), z));
+        Location worldSpawn = world.getSpawnLocation();
+        target.teleportAsync(worldSpawn);
 
         SurfApi.getUser(target).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                 .append(Component.text("Du wirst in die Welt ", SurfColors.SUCCESS))

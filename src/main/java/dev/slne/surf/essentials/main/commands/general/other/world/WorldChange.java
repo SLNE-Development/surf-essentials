@@ -13,20 +13,21 @@ public class WorldChange {
             EssentialsUtil.somethingWentWrongAsync_DE(player, "Du musst eine Welt angeben!");
             return;
         }
-        if (Bukkit.getWorld(args[1]) == null){//no valid world
+        World worldToChange = Bukkit.getWorld(args[1]);
+        if (worldToChange == null){//no valid world
             EssentialsUtil.somethingWentWrongAsync_DE(player, "Diese Welt existiert nicht oder ist nicht Geladen!");
             return;
         }
         ComponentLogger logger = SurfEssentials.logger();
-        World worldToChange = Bukkit.getWorld(args[1]);
         if (args.length == 2){//change world for the sender
             WorldCommand.changeWorld(player, worldToChange, logger);
             return;
         }
-        if (Bukkit.getPlayerExact(args[2]) == null){//check if specified player is valid
+        Player playerToChange = Bukkit.getPlayerExact(args[2]);
+        if (playerToChange == null){//check if specified player is valid
             EssentialsUtil.somethingWentWrongAsync_DE(player, "Dieser Spieler existiert nicht!");
             return;
         }
-        WorldCommand.changeWorld(Bukkit.getPlayerExact(args[2]), worldToChange, logger);//change world for target player
+        WorldCommand.changeWorld(playerToChange, worldToChange, logger);//change world for target player
     }
 }

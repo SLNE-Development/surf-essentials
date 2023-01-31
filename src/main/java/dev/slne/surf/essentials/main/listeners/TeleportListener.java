@@ -19,9 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TeleportListener implements Listener {
-    private static Map<Player, Location> playerTeleportLocationMap = new HashMap<>();
+    private static final Map<Player, Location> playerTeleportLocationMap = new HashMap<>();
+
     //TODO: fire the event in the tp command
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
 
@@ -36,7 +37,7 @@ public class TeleportListener implements Listener {
         ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
         Vec3 vec3 = new Vec3(event.getTo().getX(), event.getTo().getY(), event.getTo().getZ());
 
-        serverPlayer.getLevel().sendParticles(serverPlayer, ParticleTypes.END_ROD, false, vec3.x(), vec3.y(), vec3.z(), 700, 0.5, 1, 0.5, 0.1);
+        serverPlayer.getLevel().sendParticles(serverPlayer, ParticleTypes.END_ROD, true, vec3.x(), vec3.y(), vec3.z(), 700, 0.5, 1, 0.5, 0.1);
         SurfApi.getUser(player).thenAcceptAsync(user -> user.playSound(Sound.ITEM_CHORUS_FRUIT_TELEPORT, 1f, 1f));
     }
 

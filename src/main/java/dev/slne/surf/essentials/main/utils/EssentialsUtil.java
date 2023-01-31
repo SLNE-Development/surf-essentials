@@ -29,6 +29,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -416,5 +417,9 @@ public abstract class EssentialsUtil {
 
     public static Component deserialize(String toDeserialize){
         return LegacyComponentSerializer.legacyAmpersand().deserialize(toDeserialize);
+    }
+
+    public static <T extends Double> double makeDoubleReadable(T value){
+        return Double.parseDouble(new DecimalFormat("#.#").format(value));
     }
 }
