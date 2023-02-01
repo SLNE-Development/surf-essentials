@@ -17,7 +17,8 @@ import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import java.util.Collection;
 import java.util.Collections;
 
-@PermissionTag(name = Permissions.GOD_MODE_PERMISSION, desc = "This is the permission for the 'godmode' command")
+@PermissionTag(name = Permissions.GOD_MODE_SELF_PERMISSION, desc = "Allows you to make yourself invulnerable")
+@PermissionTag(name = Permissions.GOD_MODE_OTHER_PERMISSION, desc = "Allows you to make others invulnerable")
 public class GodmodeCommand {
 
     public static void register(){
@@ -25,20 +26,20 @@ public class GodmodeCommand {
                 .setDescription("makes the targets invulnerable");
         SurfEssentials.registerPluginBrigadierCommand("god", GodmodeCommand::literal).setUsage("/godmode [<enable | disable>] [<players>]")
                 .setDescription("makes the targets invulnerable");
-        SurfEssentials.registerPluginBrigadierCommand("gommemode", GodmodeCommand::literal).setUsage("/godmode [<enable | disable>] [<players>]")
-                .setDescription("makes the targets invulnerable");
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GOD_MODE_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GOD_MODE_SELF_PERMISSION));
 
         literal.executes(context -> godmode(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), !context.getSource().getPlayerOrException().isInvulnerable()));
         literal.then(Commands.literal("enable")
                 .then(Commands.argument("players", EntityArgument.players())
+                        .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GOD_MODE_OTHER_PERMISSION))
                         .executes(context -> godmode(context.getSource(), EntityArgument.getPlayers(context, "players"), true))));
 
         literal.then(Commands.literal("disable")
                 .then(Commands.argument("players", EntityArgument.players())
+                        .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GOD_MODE_OTHER_PERMISSION))
                         .executes(context -> godmode(context.getSource(), EntityArgument.getPlayers(context, "players"), false))));
     }
 

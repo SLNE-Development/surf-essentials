@@ -17,7 +17,8 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.Collection;
 import java.util.Collections;
 
-@PermissionTag(name = Permissions.FLY_PERMISSION, desc = "This is the permission for the 'fly' command")
+@PermissionTag(name = Permissions.FLY_SELF_PERMISSION, desc = "Allows you to toggle the fly mode for yourself")
+@PermissionTag(name = Permissions.FLY_OTHER_PERMISSION, desc = "Allows you to toggle the fly mode for others")
 public class FlyCommand {
 
     public static void register(){
@@ -26,11 +27,12 @@ public class FlyCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.FLY_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.FLY_SELF_PERMISSION));
 
         literal.executes(context -> fly(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), true, true));
 
         literal.then(Commands.argument("players", EntityArgument.players())
+                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.FLY_OTHER_PERMISSION))
                 .executes(context -> fly(context.getSource(), EntityArgument.getPlayers(context, "players"), true, true))
                 .then(Commands.literal("enable")
                         .executes(context -> fly(context.getSource(), EntityArgument.getPlayers(context, "players"), false, true)))

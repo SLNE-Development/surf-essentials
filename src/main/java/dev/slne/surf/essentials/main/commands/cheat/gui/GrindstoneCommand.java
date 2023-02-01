@@ -18,7 +18,8 @@ import org.bukkit.Bukkit;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.GRINDSTONE_PERMISSION, desc = "This is the permission for the 'grindstone' command")
+@PermissionTag(name = Permissions.GRINDSTONE_SELF_PERMISSION, desc = "Allows you to open the grindstone gui for yourself")
+@PermissionTag(name = Permissions.GRINDSTONE_OTHER_PERMISSION, desc = "Allows you to open the grindstone gui for others")
 public class GrindstoneCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("grindstone", GrindstoneCommand::literal).setUsage("/grindstone [<players>]")
@@ -26,9 +27,10 @@ public class GrindstoneCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GRINDSTONE_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GRINDSTONE_SELF_PERMISSION));
         literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("targets", EntityArgument.players())
+                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GRINDSTONE_OTHER_PERMISSION))
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));
     }
 

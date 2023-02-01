@@ -20,7 +20,9 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
@@ -28,10 +30,12 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class EssentialsUtil {
@@ -417,5 +421,17 @@ public abstract class EssentialsUtil {
 
     public static <T extends Double> double makeDoubleReadable(T value){
         return Double.parseDouble(new DecimalFormat("#.#").format(value));
+    }
+
+    public static File getPlayerFile(UUID uuid) {
+        for (World world : Bukkit.getWorlds()) {
+            File worldFolder = world.getWorldFolder();
+            if (!worldFolder.isDirectory()) continue;
+            File playerDataFolder = new File(worldFolder, "playerdata");
+            if (!playerDataFolder.isDirectory()) continue;
+            File playerFile = new File(playerDataFolder, uuid.toString() + ".dat");
+            if (playerFile.exists()) return playerFile;
+        }
+        return null;
     }
 }

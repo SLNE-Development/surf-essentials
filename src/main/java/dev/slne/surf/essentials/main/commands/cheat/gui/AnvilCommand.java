@@ -17,7 +17,8 @@ import org.bukkit.Bukkit;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.ANVIL_PERMISSION, desc = "This is the permission for the 'anvil' command")
+@PermissionTag(name = Permissions.ANVIL_SELF_PERMISSION, desc = "Allows you to open the anvil gui for yourself")
+@PermissionTag(name = Permissions.ANVIL_OTHER_PERMISSION, desc = "Allows you to open the anvil gui for others")
 public class AnvilCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("anvil", AnvilCommand::literal).setUsage("/anvil [<targets>]")
@@ -25,9 +26,10 @@ public class AnvilCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.ANVIL_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.ANVIL_SELF_PERMISSION));
         literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("targets", EntityArgument.players())
+                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.ANVIL_OTHER_PERMISSION))
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));
     }
 

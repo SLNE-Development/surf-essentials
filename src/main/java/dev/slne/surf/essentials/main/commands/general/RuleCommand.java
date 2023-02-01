@@ -20,7 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.Collection;
 import java.util.Collections;
 
-@PermissionTag(name = Permissions.RULE_PERMISSION, desc = "This is the permission for the 'rule' command")
+@PermissionTag(name = Permissions.RULE_OTHER_PERMISSION, desc = "This is the permission for the 'rule' command")
 @PermissionTag(name = Permissions.RULE_SELF_PERMISSION, desc = "Allows the player to see the rules, but not send them to other players")
 public class RuleCommand {
 
@@ -34,7 +34,7 @@ public class RuleCommand {
         literal.executes(context -> sendRules(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
 
         literal.then(Commands.argument("players", EntityArgument.players())
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.RULE_PERMISSION))
+                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.RULE_OTHER_PERMISSION))
                 .executes(context -> sendRules(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 

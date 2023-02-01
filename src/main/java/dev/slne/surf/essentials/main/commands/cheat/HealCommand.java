@@ -18,7 +18,8 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import java.util.Collection;
 import java.util.Collections;
 
-@PermissionTag(name = Permissions.HEAL_PERMISSION, desc = "This is the permission for the 'heal' command")
+@PermissionTag(name = Permissions.HEAL_SELF_PERMISSION, desc = "Allows you to heal yourself")
+@PermissionTag(name = Permissions.HEAL_OTHER_PERMISSION, desc = "Allows you to heal others")
 public class HealCommand {
 
     public static void register(){
@@ -27,10 +28,11 @@ public class HealCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.HEAL_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.HEAL_SELF_PERMISSION));
 
         literal.executes(context -> heal(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
-        literal  .then(Commands.argument("players", EntityArgument.players())
+        literal.then(Commands.argument("players", EntityArgument.players())
+                        .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.HEAL_OTHER_PERMISSION))
                         .executes(context -> heal(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 

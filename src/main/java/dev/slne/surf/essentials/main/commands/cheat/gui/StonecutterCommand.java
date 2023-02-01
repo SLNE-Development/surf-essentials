@@ -17,7 +17,8 @@ import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.STONECUTTER_PERMISSION, desc = "This is the permission for the 'stonecutter' command")
+@PermissionTag(name = Permissions.STONECUTTER_SELF_PERMISSION, desc = "Allows you to open the stonecutter gui for yourself")
+@PermissionTag(name = Permissions.STONECUTTER_OTHER_PERMISSION, desc = "Allows you to open the stonecutter gui for others")
 public class StonecutterCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("stonecutter", StonecutterCommand::literal).setUsage("/stonecutter [<players>]")
@@ -25,9 +26,10 @@ public class StonecutterCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.STONECUTTER_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.STONECUTTER_SELF_PERMISSION));
         literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("targets", EntityArgument.players())
+                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.STONECUTTER_OTHER_PERMISSION))
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));
     }
 

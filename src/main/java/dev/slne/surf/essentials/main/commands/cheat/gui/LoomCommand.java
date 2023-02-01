@@ -18,7 +18,8 @@ import org.bukkit.Bukkit;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.LOOM_PERMISSION, desc = "This is the permission for the 'loom' command")
+@PermissionTag(name = Permissions.LOOM_SELF_PERMISSION, desc = "Allows you to open the loom gui for yourself")
+@PermissionTag(name = Permissions.LOOM_OTHER_PERMISSION, desc = "Allows you to open the loom gui for others")
 public class LoomCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("loom", LoomCommand::literal).setUsage("/loom [<targets]")
@@ -26,9 +27,10 @@ public class LoomCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.LOOM_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.LOOM_SELF_PERMISSION));
         literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("targets", EntityArgument.players())
+                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.LOOM_OTHER_PERMISSION))
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));
     }
 

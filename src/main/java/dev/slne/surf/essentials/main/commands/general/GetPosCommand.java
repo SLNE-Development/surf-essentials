@@ -16,7 +16,8 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.text.DecimalFormat;
 
-@PermissionTag(name = Permissions.GET_POS_PERMISSION, desc = "This is the permission for the 'getpos' command")
+@PermissionTag(name = Permissions.GET_POS_SELF_PERMISSION, desc = "Allows you to get your position")
+@PermissionTag(name = Permissions.GET_POS_OTHER_PERMISSION, desc = "Allows you to get others position")
 public class GetPosCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("getpos", GetPosCommand::literal).setUsage("/getpos [<player>]")
@@ -26,9 +27,10 @@ public class GetPosCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GET_POS_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GET_POS_SELF_PERMISSION));
         literal.executes(context -> getpos(context.getSource(), context.getSource().getPlayerOrException()));
         literal.then(Commands.argument("player", EntityArgument.player())
+                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GET_POS_OTHER_PERMISSION))
                 .executes(context -> getpos(context.getSource(), EntityArgument.getPlayer(context, "player"))));
     }
 

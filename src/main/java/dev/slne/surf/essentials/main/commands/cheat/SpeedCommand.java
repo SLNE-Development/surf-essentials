@@ -16,7 +16,8 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.entity.Player;
 
-@PermissionTag(name = Permissions.SPEED_PERMISSION, desc = "This is the permission for the 'speed' command")
+@PermissionTag(name = Permissions.SPEED_SELF_PERMISSION, desc = "Allows you to change your walk and fly speed")
+@PermissionTag(name = Permissions.SPEED_SELF_PERMISSION, desc = "Allows you to change others walk and fly speed")
 public class SpeedCommand {
 
     public static void register(){
@@ -25,11 +26,12 @@ public class SpeedCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SPEED_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SPEED_SELF_PERMISSION));
 
         literal.then(Commands.argument("speed", FloatArgumentType.floatArg(-1, 1))
                 .executes(context -> speed(context.getSource(), context.getSource().getPlayerOrException(), FloatArgumentType.getFloat(context, "speed")))
                 .then(Commands.argument("player", EntityArgument.player())
+                        .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SPEED_OTHER_PERMISSION))
                         .executes(context -> speed(context.getSource(), EntityArgument.getPlayer(context, "player"), FloatArgumentType.getFloat(context, "speed")))))
                 .then(Commands.literal("default")
                         .executes(context -> speed(context.getSource(), context.getSource().getPlayerOrException(), null)));

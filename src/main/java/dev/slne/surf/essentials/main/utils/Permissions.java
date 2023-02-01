@@ -6,21 +6,34 @@ public class Permissions {
      * These are the permissions for the 'cheat' commands
      */
     public static final String FILL_STACK_PERMISSION = "surf.essentials.commands.more";
-    public static final String FLY_PERMISSION = "surf.essentials.commands.fly";
-    public static final String FEED_PERMISSION = "surf.essentials.commands.feed";
-    public static final String GOD_MODE_PERMISSION = "surf.essentials.commands.godmode";
-    public static final String HEAL_PERMISSION = "surf.essentials.commands.heal";
-    public static final String REPAIR_PERMISSION = "surf.essentials.commands.repair";
-    public static final String SPEED_PERMISSION = "surf.essentials.commands.speed";
+    public static final String FLY_SELF_PERMISSION = "surf.essentials.commands.fly";
+    public static final String FLY_OTHER_PERMISSION = "surf.essentials.commands.fly.others";
+    public static final String FEED_SELF_PERMISSION = "surf.essentials.commands.feed";
+    public static final String FEED_OTHER_PERMISSION = "surf.essentials.commands.feed.others";
+    public static final String GOD_MODE_SELF_PERMISSION = "surf.essentials.commands.godmode";
+    public static final String GOD_MODE_OTHER_PERMISSION = "surf.essentials.commands.godmode.others";
+    public static final String HEAL_SELF_PERMISSION = "surf.essentials.commands.heal";
+    public static final String HEAL_OTHER_PERMISSION = "surf.essentials.commands.heal.others";
+    public static final String REPAIR_SELF_PERMISSION = "surf.essentials.commands.repair";
+    public static final String REPAIR_OTHER_PERMISSION = "surf.essentials.commands.repair.others";
+    public static final String SPEED_SELF_PERMISSION = "surf.essentials.commands.speed";
+    public static final String SPEED_OTHER_PERMISSION = "surf.essentials.commands.speed.others";
     public static final String SUICIDE_PERMISSION = "surf.essentials.commands.suicide";
     public static final String HURT_PERMISSION = "surf.essentials.commands.hurt";
-    public static final String ANVIL_PERMISSION = "surf.essentials.commands.anvil";
-    public static final String CARTOGRAPHY_TABLE_PERMISSION = "surf.essentials.commands.cartographytable";
-    public static final String GRINDSTONE_PERMISSION = "surf.essentials.commands.grindstone";
-    public static final String LOOM_PERMISSION = "surf.essentials.commands.loom";
-    public static final String SMITHING_TABLE_PERMISSION = "surf.essentials.commands.smithingtable";
-    public static final String STONECUTTER_PERMISSION = "surf.essentials.commands.stonecutter";
-    public static final String WORBENCH_PERMISSION = "surf.essentials.commands.workbench";
+    public static final String ANVIL_SELF_PERMISSION = "surf.essentials.commands.anvil";
+    public static final String ANVIL_OTHER_PERMISSION = "surf.essentials.commands.anvil.others";
+    public static final String CARTOGRAPHY_TABLE_SELF_PERMISSION = "surf.essentials.commands.cartographytable";
+    public static final String CARTOGRAPHY_TABLE_OTHER_PERMISSION = "surf.essentials.commands.cartographytable.others";
+    public static final String GRINDSTONE_SELF_PERMISSION = "surf.essentials.commands.grindstone";
+    public static final String GRINDSTONE_OTHER_PERMISSION = "surf.essentials.commands.grindstone.others";
+    public static final String LOOM_SELF_PERMISSION = "surf.essentials.commands.loom";
+    public static final String LOOM_OTHER_PERMISSION = "surf.essentials.commands.loom.others";
+    public static final String SMITHING_TABLE_SELF_PERMISSION = "surf.essentials.commands.smithingtable";
+    public static final String SMITHING_TABLE_OTHER_PERMISSION = "surf.essentials.commands.smithingtable.others";
+    public static final String STONECUTTER_SELF_PERMISSION = "surf.essentials.commands.stonecutter";
+    public static final String STONECUTTER_OTHER_PERMISSION = "surf.essentials.commands.stonecutter.others";
+    public static final String WORKBENCH_SELF_PERMISSION = "surf.essentials.commands.workbench";
+    public static final String WORKBENCH_OTHER_PERMISSION = "surf.essentials.commands.workbench.others";
 
     /**
      * Permission for the recreated 'minecraft' commands
@@ -33,10 +46,24 @@ public class Permissions {
     public static final String ENCHANT_PERMISSION = "surf.essentials.commands.enchant";
     public static final String EXPERIENCE_PERMISSION = "surf.essentials.commands.experience";
     public static final String FORCELOAD_PERMISSION = "surf.essentials.commands.forceload";
-    public static final String GAMEMODE_PERMISSION = "surf.essentials.commands.gamemode";
+
+    public static final String GAMEMODE_CREATIVE_SELF_PERMISSION = "surf.essentials.commands.gamemode.creative";
+    public static final String GAMEMODE_CREATIVE_OTHER_PERMISSION = "surf.essentials.commands.gamemode.creative.others";
+    public static final String GAMEMODE_CREATIVE_OTHER_OFFLINE_PERMISSION = "surf.essentials.commands.gamemode.creative.others.offline";
+    public static final String GAMEMODE_SURVIVAL_SELF_PERMISSION = "surf.essentials.commands.gamemode.survival";
+    public static final String GAMEMODE_SURVIVAL_OTHER_PERMISSION = "surf.essentials.commands.gamemode.survival.others";
+    public static final String GAMEMODE_SURVIVAL_OTHER_OFFLINE_PERMISSION = "surf.essentials.commands.gamemode.survival.others.offline";
+    public static final String GAMEMODE_SPECTATOR_SELF_PERMISSION = "surf.essentials.commands.gamemode.spectator";
+    public static final String GAMEMODE_SPECTATOR_OTHER_PERMISSION = "surf.essentials.commands.gamemode.spectator.others";
+    public static final String GAMEMODE_SPECTATOR_OTHER_OFFLINE_PERMISSION = "surf.essentials.commands.gamemode.spectator.others.offline";
+    public static final String GAMEMODE_ADVENTURE_SELF_PERMISSION = "surf.essentials.commands.gamemode.adventure";
+    public static final String GAMEMODE_ADVENTURE_OTHER_PERMISSION = "surf.essentials.commands.gamemode.adventure.others";
+    public static final String GAMEMODE_ADVENTURE_OTHER_OFFLINE_PERMISSION = "surf.essentials.commands.gamemode.adventure.others.offline";
+
     public static final String GAMERULE_PERMISSION = "surf.essentials.commands.gamerule";
     public static final String GIVE_PERMISSION = "surf.essentials.commands.give";
-    public static final String KILL_PERMISSION = "surf.essentials.commands.kill";
+    public static final String KILL_SELF_PERMISSION = "surf.essentials.commands.kill";
+    public static final String KILL_OTHER_PERMISSION = "surf.essentials.commands.kill.others";
     public static final String LIST_PERMISSION = "surf.essentials.commands.list";
     public static final String OP_PERMISSION = "surf.essentials.commands.op";
     public static final String PARTICLE_PERMISSION = "surf.essentials.commands.particle";
@@ -52,10 +79,11 @@ public class Permissions {
     public static final String BOOK_PERMISSION = "surf.essentials.commands.book";
     public static final String BOOK_PERMISSION_BYPASS = "surf.essentials.book.bypass";
     public static final String BROADCAST_WORLD_PERMISSION = "surf.essentials.commands.broadcastworld";
-    public static final String GET_POS_PERMISSION = "surf.essentials.commands.getpos";
+    public static final String GET_POS_SELF_PERMISSION = "surf.essentials.commands.getpos";
+    public static final String GET_POS_OTHER_PERMISSION = "surf.essentials.commands.getpos.others";
     public static final String INFO_PERMISSION = "surf.essentials.commands.info";
-    public static final String RULE_PERMISSION = "surf.essentials.commands.rule";
-    public static final String RULE_SELF_PERMISSION = "surf.essentials.commands.rule.self";
+    public static final String RULE_SELF_PERMISSION = "surf.essentials.commands.rule";
+    public static final String RULE_OTHER_PERMISSION = "surf.essentials.commands.rule.others";
     public static final String SPAWNER_PERMISSION = "surf.essentials.commands.spawner";
     public static final String EDIT_SIGN_PERMISSION = "surf.essentials.listeners.sign.edit";
     public static final String TOGGLE_SIGN_PERMISSION = "surf.essentials.commands.sign.toggle";
@@ -68,6 +96,7 @@ public class Permissions {
     public static final String SET_ITEM_LORE_PERMISSION = "surf.essentials.commands.setlore";
     public static final String TELEPORT_BACK_PERMISSION = "surf.essentials.commands.back";
     public static final String TELEPORT_RANDOM_PERMISSION = "surf.essentials.commands.tpr";
-    public static final String CLEAR_ITEM_PERMISSION = "surf.essentials.commands.clearitem";
+    public static final String CLEAR_ITEM_SELF_PERMISSION = "surf.essentials.commands.clearitem";
+    public static final String CLEAR_ITEM_OTHER_PERMISSION = "surf.essentials.commands.clearitem.others";
     public static final String INFINITY_PERMISSION = "surf.essentials.commands.infinity";
 }

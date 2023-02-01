@@ -17,7 +17,8 @@ import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import java.util.Collection;
 import java.util.Collections;
 
-@PermissionTag(name = Permissions.FEED_PERMISSION, desc = "This is the permission for the 'feed' command")
+@PermissionTag(name = Permissions.FEED_SELF_PERMISSION, desc = "Allows you to feed yourself")
+@PermissionTag(name = Permissions.FEED_OTHER_PERMISSION, desc = "Allows you to feed other players")
 public class FoodCommand {
 
     public static void register(){
@@ -26,10 +27,11 @@ public class FoodCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.FEED_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.FEED_SELF_PERMISSION));
 
         literal.executes(context -> feed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("players", EntityArgument.players())
+                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.FEED_OTHER_PERMISSION))
                 .executes(context -> feed(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 

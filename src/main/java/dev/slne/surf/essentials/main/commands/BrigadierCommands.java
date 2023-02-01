@@ -81,6 +81,8 @@ public class BrigadierCommands {
         RepairCommand.register();
         //speed command
         SpeedCommand.register();
+        // suicide command
+        SuicideCommand.register();
         //time command
         TimeCommand.register();
         //weather command

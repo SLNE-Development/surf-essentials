@@ -17,7 +17,8 @@ import org.bukkit.Bukkit;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.WORBENCH_PERMISSION, desc = "This is the permission for the 'workbench' command")
+@PermissionTag(name = Permissions.WORKBENCH_SELF_PERMISSION, desc = "Allows you to open the workbench gui for yourself")
+@PermissionTag(name = Permissions.WORKBENCH_OTHER_PERMISSION, desc = "Allows you to open the workbench gui for others")
 public class WorkbenchCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("workbench", WorkbenchCommand::literal).setUsage("/workbench [<players>]")
@@ -25,9 +26,10 @@ public class WorkbenchCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.WORBENCH_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.WORKBENCH_SELF_PERMISSION));
         literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("targets", EntityArgument.players())
+                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.WORKBENCH_OTHER_PERMISSION))
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));
     }
 

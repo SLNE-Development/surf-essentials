@@ -21,7 +21,8 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Collection;
 import java.util.Collections;
 
-@PermissionTag(name = Permissions.CLEAR_ITEM_PERMISSION, desc = "allows you to remove a specific item from the targets' inventories")
+@PermissionTag(name = Permissions.CLEAR_ITEM_SELF_PERMISSION, desc = "allows you to remove a specific item from your inventory")
+@PermissionTag(name = Permissions.CLEAR_ITEM_OTHER_PERMISSION, desc = "allows you to remove a specific item from the targets' inventories")
 public class ClearItemCommand extends BrigadierCommand {
     @Override
     public String[] names() {
@@ -40,11 +41,12 @@ public class ClearItemCommand extends BrigadierCommand {
 
     @Override
     public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.CLEAR_ITEM_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.CLEAR_ITEM_SELF_PERMISSION));
 
         literal.then(Commands.argument("item", ItemArgument.item(EssentialsUtil.buildContext()))
                 .executes(context -> clearItem(context.getSource(), ItemArgument.getItem(context, "item"), Collections.singleton(context.getSource().getPlayerOrException())))
                 .then(Commands.argument("players", EntityArgument.players())
+                        .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.CLEAR_ITEM_OTHER_PERMISSION))
                         .executes(context -> clearItem(context.getSource(), ItemArgument.getItem(context, "item"), EntityArgument.getPlayers(context, "players")))));
     }
 

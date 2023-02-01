@@ -19,7 +19,8 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.KILL_PERMISSION, desc = "This is the permission for the 'kill' command")
+@PermissionTag(name = Permissions.KILL_SELF_PERMISSION, desc = "Allows you to kill yourself")
+@PermissionTag(name = Permissions.KILL_OTHER_PERMISSION, desc = "Allows you to kill other entities")
 public class KillCommand {
     public static void register() {
         SurfEssentials.registerPluginBrigadierCommand("kill", KillCommand::literal).setUsage("/kill [<targets>]")
@@ -33,11 +34,12 @@ public class KillCommand {
      */
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         // Require the player to have the permission
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.KILL_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.KILL_SELF_PERMISSION));
         // Kills the player who issued the command
         literal.executes(context -> kill(context, ImmutableList.of(context.getSource().getEntityOrException())));
         // Kills multiple entities
         literal.then(Commands.argument("targets", EntityArgument.entities())
+                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.KILL_OTHER_PERMISSION))
                 .executes(context -> kill(context, EntityArgument.getEntities(context, "targets"))));
     }
 

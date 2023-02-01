@@ -18,7 +18,8 @@ import org.bukkit.Bukkit;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.SMITHING_TABLE_PERMISSION, desc = "This is the permission for the 'smithingtable' command")
+@PermissionTag(name = Permissions.SMITHING_TABLE_SELF_PERMISSION, desc = "Allows you to open the smithingtable gui for yourself")
+@PermissionTag(name = Permissions.SMITHING_TABLE_OTHER_PERMISSION, desc = "Allows you to open the smithingtable gui for others")
 public class SmithingTableCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("smithingtable", SmithingTableCommand::literal).setUsage("/smithingtable [<targets>]")
@@ -28,9 +29,10 @@ public class SmithingTableCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SMITHING_TABLE_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SMITHING_TABLE_SELF_PERMISSION));
         literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("targets", EntityArgument.players())
+                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SMITHING_TABLE_OTHER_PERMISSION))
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));
     }
 

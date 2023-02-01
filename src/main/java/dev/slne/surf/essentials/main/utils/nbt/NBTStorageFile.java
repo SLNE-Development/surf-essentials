@@ -15,8 +15,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Read and write to nbt files
+ *
+ * @author <a href="https://www.spigotmc.org/members/flamedek.41495/">Flamedek</a>
+ * @see <a href="https://www.spigotmc.org/threads/tutorial-nbt-storage-create-your-own-compressed-nbt-files.71289/">Resource</a>
+ * @version 1.0
+ */
 public class NBTStorageFile {
-
     // the file to use
     private final File file;
     // the TagCompound containing the files content
@@ -57,11 +63,9 @@ public class NBTStorageFile {
 
     public void write() {
         try {
-
             if(!file.exists()) {
                 file.createNewFile();
             }
-
             FileOutputStream fileoutputstream = new FileOutputStream(file);
             NbtIo.write(tagCompound, file);
             fileoutputstream.close();

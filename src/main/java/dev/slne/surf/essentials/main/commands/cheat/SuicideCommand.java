@@ -10,7 +10,7 @@ import dev.slne.surf.essentials.main.utils.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 
-@PermissionTag(name = Permissions.SUICIDE_PERMISSION, desc = "This is the permission for the 'suicide' command")
+@PermissionTag(name = Permissions.SUICIDE_PERMISSION, desc = "Allows you to kill yourself")
 public class SuicideCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("suicide", SuicideCommand::literal).setUsage("/suicide")

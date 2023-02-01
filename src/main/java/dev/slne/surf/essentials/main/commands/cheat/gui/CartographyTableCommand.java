@@ -17,7 +17,8 @@ import org.bukkit.Bukkit;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.CARTOGRAPHY_TABLE_PERMISSION, desc = "This is the permission for the 'cartographytable' command")
+@PermissionTag(name = Permissions.CARTOGRAPHY_TABLE_SELF_PERMISSION, desc = "Allows you to open the cartographytable gui for yourself")
+@PermissionTag(name = Permissions.CARTOGRAPHY_TABLE_OTHER_PERMISSION, desc = "Allows you to open the cartographytable gui for others")
 public class CartographyTableCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("cartographytable", CartographyTableCommand::literal).setUsage("/cartographytable [<players>]")
@@ -25,9 +26,10 @@ public class CartographyTableCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.CARTOGRAPHY_TABLE_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.CARTOGRAPHY_TABLE_SELF_PERMISSION));
         literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("targets", EntityArgument.players())
+                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.CARTOGRAPHY_TABLE_OTHER_PERMISSION))
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));
     }
 

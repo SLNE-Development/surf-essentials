@@ -138,7 +138,7 @@ public class TeleportOffline {
 
 
     private Location getLocation(UUID uuid) throws IOException {
-        File dataFile = getPlayerFile(uuid);
+        File dataFile = EssentialsUtil.getPlayerFile(uuid);
 
         if (dataFile == null) return null;
         CompoundBinaryTag tag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), GZIP);
@@ -155,7 +155,7 @@ public class TeleportOffline {
 
     private void setLocation(OfflinePlayer player, Location location) throws IOException{
         UUID uuid = player.getUniqueId();
-        File dataFile = getPlayerFile(uuid);
+        File dataFile = EssentialsUtil.getPlayerFile(uuid);
 
         if (dataFile == null) return;
         CompoundBinaryTag rawTag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), GZIP);
@@ -174,19 +174,5 @@ public class TeleportOffline {
         builder.put("Rotation", rotTag.build());
 
         BinaryTagIO.writer().write(builder.build(), dataFile.toPath(), GZIP);
-    }
-
-
-
-    private File getPlayerFile(UUID uuid) {
-        for (World world : Bukkit.getWorlds()) {
-            File worldFolder = world.getWorldFolder();
-            if (!worldFolder.isDirectory()) continue;
-            File playerDataFolder = new File(worldFolder, "playerdata");
-            if (!playerDataFolder.isDirectory()) continue;
-            File playerFile = new File(playerDataFolder, uuid.toString() + ".dat");
-            if (playerFile.exists()) return playerFile;
-        }
-        return null;
     }
 }

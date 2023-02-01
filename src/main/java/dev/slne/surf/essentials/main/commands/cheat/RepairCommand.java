@@ -17,7 +17,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 
-@PermissionTag(name = Permissions.REPAIR_PERMISSION, desc = "This is the permission for the 'repair' command")
+@PermissionTag(name = Permissions.REPAIR_SELF_PERMISSION, desc = "Allows you to repair the item in Hand for yourself")
+@PermissionTag(name = Permissions.REPAIR_OTHER_PERMISSION, desc = "Allows you to repair the item in Hand for others")
 public class RepairCommand {
 
     public static void register(){
@@ -26,10 +27,11 @@ public class RepairCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.REPAIR_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.REPAIR_SELF_PERMISSION));
 
         literal.executes(context -> repair(context.getSource(), context.getSource().getPlayerOrException()));
         literal.then(Commands.argument("player", EntityArgument.player())
+                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.REPAIR_OTHER_PERMISSION))
                 .executes(context -> repair(context.getSource(), EntityArgument.getPlayer(context, "players"))));
     }
 
