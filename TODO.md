@@ -7,7 +7,7 @@
  - [ ] maybe add mysql support (e.g. poll saves, sign toggle...)
  - [ ] customize most of the default minecraft commands
  - [ ] add gui option for several commands (e.g. troll, world, poll...)
- - [ ] more permissions
+ - [x] more permissions
  
  ## New commands
  
@@ -15,13 +15,13 @@
  - [x] /actionbarbroadcast (show a action bar message to players)
  - [ ] /personalchatclear | pcc (clears only your chat)
  - [ ] /chatclear | cc (clears the chat from every player except they have a permission)
- - [x]  /setname (set the name of an item)
+ - [x] /setname (set the name of an item)
  - [x] /lore (set the lore of an item)
  - [ ] /infinite (never run out of the item holding when the command is issued)
  - [ ] /pvptoggle | pvp (toggle pvp)
  - [x] /rtp (teleports you to a random location)
  - [x] /back (teleports you to your location before the teleport)
- - [ ] /hat (puts the item from your main hand on your head)
- - [ ] /unhat (puts the ite, from your head back to your inventory)
+ - [x] /hat (puts the item from your main hand on your head)
+ - [x] /unhat (puts the ite, from your head back to your inventory)
  - [ ] /timer (show a timer for the targets in the action bar)
  - [x] /clearitem `<item> <targets>`

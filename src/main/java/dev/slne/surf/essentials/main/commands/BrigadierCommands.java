@@ -119,5 +119,9 @@ public class BrigadierCommands {
         new ClearItemCommand();
         // infinity command
         new InfinityCommand();
+        // unhat command
+        new UnhatCommand();
+        // hat command
+        new HatCommand();
     }
 }

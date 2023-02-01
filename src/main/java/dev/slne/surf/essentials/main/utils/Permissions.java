@@ -34,6 +34,10 @@ public class Permissions {
     public static final String STONECUTTER_OTHER_PERMISSION = "surf.essentials.commands.stonecutter.others";
     public static final String WORKBENCH_SELF_PERMISSION = "surf.essentials.commands.workbench";
     public static final String WORKBENCH_OTHER_PERMISSION = "surf.essentials.commands.workbench.others";
+    public static final String HAT_SELF_PERMISSION = "surf.essentials.commands.hat";
+    public static final String HAT_OTHER_PERMISSION = "surf.essentials.commands.hat.others";
+    public static final String UNHAT_SELF_PERMISSION = "surf.essentials.commands.unhat";
+    public static final String UNHAT_OTHER_PERMISSION = "surf.essentials.commands.unhat.others";
 
     /**
      * Permission for the recreated 'minecraft' commands
