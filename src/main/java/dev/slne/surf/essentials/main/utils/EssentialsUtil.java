@@ -20,6 +20,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -399,7 +400,7 @@ public abstract class EssentialsUtil {
         return player.getBukkitEntity().canSee(playerToCheck.getBukkitEntity());
     }
 
-    public static Collection<? extends ServerPlayer> checkSuggestion(CommandSourceStack source, Collection<? extends ServerPlayer> targets) throws CommandSyntaxException {
+    public static Collection<ServerPlayer> checkPlayerSuggestion(CommandSourceStack source, Collection<ServerPlayer> targets) throws CommandSyntaxException {
         if (!source.isPlayer()) return targets;
         if (targets.size() == 1) {
             ServerPlayer player = targets.iterator().next();
@@ -413,6 +414,26 @@ public abstract class EssentialsUtil {
             }
             return targets;
         }
+    }
+
+    public static Collection<? extends Entity> checkEntitySuggestion(CommandSourceStack source, Collection<? extends Entity> targets) throws CommandSyntaxException {
+        if (!source.isPlayer()) return targets;
+        if (targets.size() == 1) {
+            Entity entity = targets.iterator().next();
+
+            if (entity instanceof ServerPlayer serverPlayer) {
+                if (canPlayerSeePlayer(source.getPlayerOrException(), serverPlayer)) return targets;
+                throw EntityArgument.NO_ENTITIES_FOUND.create();
+            }
+        } else {
+            for (Entity target : targets) {
+                if (target instanceof ServerPlayer serverPlayer) {
+                    if (canPlayerSeePlayer(source.getPlayerOrException(), serverPlayer)) continue;
+                    targets.remove(target);
+                }
+            }
+        }
+        return targets;
     }
 
     public static Component deserialize(String toDeserialize){

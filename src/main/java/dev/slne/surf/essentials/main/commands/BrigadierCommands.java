@@ -3,8 +3,11 @@ package dev.slne.surf.essentials.main.commands;
 import dev.slne.surf.essentials.main.commands.cheat.*;
 import dev.slne.surf.essentials.main.commands.cheat.gui.*;
 import dev.slne.surf.essentials.main.commands.general.*;
-import dev.slne.surf.essentials.main.commands.general.other.*;
-import dev.slne.surf.essentials.main.commands.general.other.poll.*;
+import dev.slne.surf.essentials.main.commands.general.other.ActionbarBroadcast;
+import dev.slne.surf.essentials.main.commands.general.other.TimerCommand;
+import dev.slne.surf.essentials.main.commands.general.other.TitlebroadcastCommand;
+import dev.slne.surf.essentials.main.commands.general.other.poll.PollCommand;
+import dev.slne.surf.essentials.main.commands.general.other.poll.VoteCommand;
 import dev.slne.surf.essentials.main.commands.general.other.troll.TrollManager;
 import dev.slne.surf.essentials.main.commands.minecraft.*;
 import dev.slne.surf.essentials.main.commands.tp.RandomTeleportCommand;
@@ -123,5 +126,7 @@ public class BrigadierCommands {
         new UnhatCommand();
         // hat command
         new HatCommand();
+        // timer command
+        new TimerCommand();
     }
 }

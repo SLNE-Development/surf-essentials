@@ -55,12 +55,14 @@ public class FlyCommand {
             successfulChanges++;
             SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                     .append(Component.text("Du kannst nun ", SurfColors.GREEN)
-                            .append(Component.text((target.getAbilities().flying) ? "fliegen!" : "nicht mehr fliegen!", SurfColors.GREEN)))));
+                            .append(Component.text((target.getAbilities().mayfly) ? "fliegen!" : "nicht mehr fliegen!", SurfColors.GREEN)))));
         }
 
         if (source.isPlayer()) {
             if (successfulChanges == 1) {
-                // EssentialsUtil.sendSuccess(source, "Du kannst nun " + ((targets.iterator().next().getAbilities().flying) ? "fliegen!" : "nicht mehr fliegen!"));
+                if (source.getPlayerOrException() == targets.iterator().next()) return 1;
+                EssentialsUtil.sendSuccess(source, targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
+                        .append(Component.text(" kann nun " + ((targets.iterator().next().getAbilities().mayfly) ? "fliegen!" : "nicht mehr fliegen!"))));
             } else {
                 if (toggle) {
                     EssentialsUtil.sendSuccess(source, Component.text("Die Flugfunktion wurde für ", SurfColors.SUCCESS)

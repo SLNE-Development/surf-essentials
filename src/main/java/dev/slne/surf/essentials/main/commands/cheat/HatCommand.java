@@ -3,6 +3,7 @@ package dev.slne.surf.essentials.main.commands.cheat;
 import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import dev.slne.surf.essentials.main.utils.Permissions;
@@ -17,6 +18,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 @PermissionTag(name = Permissions.HAT_SELF_PERMISSION, desc = "Allows you to put the item in your main hand on your head")
 @PermissionTag(name = Permissions.HAT_OTHER_PERMISSION, desc = "Allows you to put the item in the other player's main hand on their head")
@@ -51,6 +53,8 @@ public class HatCommand extends BrigadierCommand {
         ItemStack itemStackInMainHand = player.getMainHandItem();
         ItemStack itemStackOnHead = playerInventory.getArmor(EquipmentSlot.HEAD.getIndex());
 
+        if(itemStackInMainHand.is(Items.AIR)) throw ERROR_NO_ITEM.create(player.getName().getString());
+
         playerInventory.setItem(playerInventory.selected, itemStackOnHead);
         playerInventory.setItem(playerInventory.getContainerSize() - 2, itemStackInMainHand);
 
@@ -68,4 +72,7 @@ public class HatCommand extends BrigadierCommand {
 
         return 1;
     }
+
+    private static final DynamicCommandExceptionType ERROR_NO_ITEM = new DynamicCommandExceptionType((entityName) ->
+            net.minecraft.network.chat.Component.translatable("commands.enchant.failed.itemless", entityName));
 }

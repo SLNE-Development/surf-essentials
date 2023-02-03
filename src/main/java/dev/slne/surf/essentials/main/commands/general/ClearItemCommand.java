@@ -51,7 +51,7 @@ public class ClearItemCommand extends BrigadierCommand {
     }
 
     private int clearItem(CommandSourceStack source, ItemInput itemInput, Collection<ServerPlayer> targets) throws CommandSyntaxException {
-        Collection<? extends ServerPlayer> targetsChecked = EssentialsUtil.checkSuggestion(source, targets);
+        Collection<ServerPlayer> targetsChecked = EssentialsUtil.checkPlayerSuggestion(source, targets);
 
         int successfullyRemoved = 0;
         for (ServerPlayer target : targetsChecked) {

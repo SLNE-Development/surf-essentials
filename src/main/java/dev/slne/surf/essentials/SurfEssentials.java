@@ -9,7 +9,9 @@ import dev.slne.surf.essentials.brigadier.GeneralTabComplete;
 import dev.slne.surf.essentials.brigadier.TpTabComplete;
 import dev.slne.surf.essentials.main.commands.BrigadierCommands;
 import dev.slne.surf.essentials.main.commands.Commands;
+import dev.slne.surf.essentials.main.commands.general.other.TimerCommand;
 import dev.slne.surf.essentials.main.commands.general.other.troll.trolls.MlgTroll;
+import dev.slne.surf.essentials.main.exceptions.UnsupportedServerVersionException;
 import dev.slne.surf.essentials.main.listeners.ListenerManager;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import dev.slne.surf.essentials.main.utils.brigadier.PluginBrigadierCommand;
@@ -58,8 +60,14 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
         instance = this;
         loadMessage();
 
+        if (!getServer().getMinecraftVersion().equals("1.19.3")){
+            getServer().getPluginManager().disablePlugin(instance);
+            throw new UnsupportedServerVersionException("This Serverversion (" + getServer().getMinecraftVersion() +") is not supported by the plugin!");
+        }
+
         if (!EssentialsUtil.isBrigadierSupported()) {
-            getServer().getPluginManager().disablePlugin(this);
+            getServer().getPluginManager().disablePlugin(instance);
+            return;
         }
 
         listeners.registerListeners(this);
@@ -81,6 +89,7 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
     public void onDisable() {
         instance = null;
         MlgTroll.restoreInventoryFromMlgTroll();
+        TimerCommand.removeRemainingBossbars();
         getLogger().info("The plugin has stopped!");
     }
 
