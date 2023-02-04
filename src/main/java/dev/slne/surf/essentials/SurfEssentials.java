@@ -146,5 +146,4 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
         ((CraftServer) instance.getServer()).syncCommands();
         return pluginBrigadierCommand;
     }
-
 }

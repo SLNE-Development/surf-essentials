@@ -104,4 +104,7 @@ public class Permissions {
     public static final String CLEAR_ITEM_OTHER_PERMISSION = "surf.essentials.commands.clearitem.others";
     public static final String INFINITY_PERMISSION = "surf.essentials.commands.infinity";
     public static final String TIMER_PERMISSION = "surf.essentials.commands.timer";
+    public static final String CHAT_CLEAR_SELF_PERMISSION = "surf.essentials.commands.chatclear";
+    public static final String CHAT_CLEAR_OTHER_PERMISSION = "surf.essentials.commands.chatclear.others";
+    public static final String CHAT_CLEAR_BYPASS_PERMISSION = "surf.essentials.commands.chatclear.bypass";
 }

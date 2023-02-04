@@ -128,5 +128,7 @@ public class BrigadierCommands {
         new HatCommand();
         // timer command
         new TimerCommand();
+        // chat clear command
+        new ChatClearCommand();
     }
 }
