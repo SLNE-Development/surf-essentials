@@ -1,275 +1,362 @@
 package dev.slne.surf.essentials.main.commands.tp;
 
-import aetherial.spigot.plugin.annotation.command.CommandTag;
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.SurfEssentials;
-import dev.slne.surf.essentials.main.commands.EssentialsCommand;
-import dev.slne.surf.essentials.main.commands.tp.messages.Messages_DE;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
-import dev.slne.surf.essentials.main.utils.nbt.NBTLocationReader;
+import dev.slne.surf.essentials.main.utils.Permissions;
+import dev.slne.surf.essentials.main.utils.brigadier.BrigadierCommand;
+import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.ComponentBuilder;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.coordinates.Vec3Argument;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.bukkit.craftbukkit.v1_19_R2.CraftWorld;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 
-@CommandTag(name = "teleport",
-        usage = "/teleport <location>",
-        desc = "Teleports you to the given location",
-        permission = "surf.command.teleport")
-public class TeleportCommand extends EssentialsCommand {
-    public TeleportCommand(PluginCommand command) {
-        super(command);
+@PermissionTag(name = Permissions.TELEPORT_PERMISSION, desc = "Allows you to teleport")
+public class TeleportCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"tp", "teleport"};
     }
 
-    Messages_DE messages_DE = new Messages_DE();
+    @Override
+    public String usage() {
+        return "/tp <Location | Entities [<toLocation | to Entity>]>";
+    }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (sender instanceof Player player) {
-            switch (args.length) {
-                case 0:
-                    /* Too few arguments for teleport */
-                    messages_DE.somethingWentWrongAsync_DE(player, "Du musst Argumente angeben!");
-                    break;
-                case 1:
-                    /* teleport sender to offline player */
-                    if (Bukkit.getPlayerExact(args[0]) == null) {
-                        OfflinePlayer offlineTarget = Bukkit.getOfflinePlayer(args[0]);
-                        teleportToOfflineAsync(player, offlineTarget);
-                        break;
-                    }
-                    /* get online target */
-                    Player playerArg0 = Bukkit.getPlayerExact(args[0]);
-                    /* teleport sender to target */
-                    player.teleportAsync(Objects.requireNonNull(playerArg0).getLocation());
-                    messages_DE.teleportMessage_DE(player, playerArg0);
-                    break;
+    public String description() {
+        return "Teleport the targets to location/targets";
+    }
 
-                case 2:
-                    /* all targets are offline */
-                    if ((Bukkit.getPlayerExact(args[0]) == null) && (Bukkit.getPlayerExact(args[1]) == null)) {
-                        messages_DE.somethingWentWrongAsync_DE(player, "Es muss mindestens ein Spieler online sein!");
-                        break;
-                    }
-                    /* second target is offline */
-                    if ((Bukkit.getPlayerExact(args[1]) == null) && (Bukkit.getPlayerExact(args[0]) != null)) {
-                        /* teleport first target to second target */
-                        teleportToOfflineAsync(Bukkit.getPlayerExact(args[0]), Bukkit.getOfflinePlayer(args[1]));
-                        break;
-                    }
-                    /* second target */
-                    Player playerArg1 = Bukkit.getPlayerExact(args[1]);
-                    /* first target is offline */
-                    if (Bukkit.getPlayerExact(args[0]) == null) {
-                        /* teleport first target to second target */
-                        teleportOfflineToTargetAsync(player, Bukkit.getOfflinePlayer(args[0]), Objects.requireNonNull(playerArg1).getLocation());
-                        break;
-                    }
-                    /* second target */
-                    playerArg0 = Bukkit.getPlayerExact(args[0]);
-                    /* normal online teleportation */
-                    teleportAsync(player, playerArg0, Objects.requireNonNull(playerArg1).getLocation());
-                    break;
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.TELEPORT_PERMISSION));
 
-                case 3:
-                    try {
-                        /* new Location from sender input */
-                        final double x = args[0].startsWith("~") ? player.getLocation().getX() + (args[0].length() > 1 ? Double.parseDouble(args[0].substring(1)) : 0) : Double.parseDouble(args[0]);
-                        final double y = args[1].startsWith("~") ? player.getLocation().getY() + (args[1].length() > 1 ? Double.parseDouble(args[1].substring(1)) : 0) : Double.parseDouble(args[1]);
-                        final double z = args[2].startsWith("~") ? player.getLocation().getZ() + (args[2].length() > 1 ? Double.parseDouble(args[2].substring(1)) : 0) : Double.parseDouble(args[2]);
-                        Location location = new Location(player.getWorld(), x, y, z);
+        literal.then(Commands.argument("toLocation", Vec3Argument.vec3(true))
+                .executes(context -> teleportEntityToLocation(context.getSource(), context.getSource().getEntityOrException(), Vec3Argument.getVec3(context, "toLocation"))));
 
-                        /* teleport player to location */
-                        teleportAsync(player, location);
-                        break;
-                    } catch (Exception e) {
-                        /* no location given */
-                        if (!EssentialsUtil.isInt(args[0]) || !EssentialsUtil.isInt(args[1]) || !EssentialsUtil.isInt(args[2])) {
-                            /* message to sender */
-                            messages_DE.somethingWentWrongAsync_DE(player, "Du musst einen gültigen Ort angeben!");
-                            break;
-                        }
-                        Location location = new Location(player.getWorld(), Double.parseDouble(args[0]), Double.parseDouble(args[1]), Double.parseDouble(args[2]));
-                        teleportAsync(player, location);
-                    }
-                    break;
+        literal.then(Commands.argument("entity", EntityArgument.entity())
+                .executes(context -> teleportToEntity(context.getSource(), EntityArgument.getEntity(context, "entity")))
 
-                default:
-                    /* normal online teleport */
-                    if (Bukkit.getPlayerExact(args[0]) != null) {
-                        /* get online player */
-                        playerArg0 = Bukkit.getPlayerExact(args[0]);
-                        try {
-                            final double x2 = args[0].startsWith("~") ? playerArg0.getLocation().getX() + (args[1].length() > 1 ? Double.parseDouble(args[1].substring(1)) : 0) : Double.parseDouble(args[1]);
-                            final double y2 = args[1].startsWith("~") ? playerArg0.getLocation().getY() + (args[2].length() > 1 ? Double.parseDouble(args[2].substring(1)) : 0) : Double.parseDouble(args[2]);
-                            final double z2 = args[2].startsWith("~") ? playerArg0.getLocation().getZ() + (args[3].length() > 1 ? Double.parseDouble(args[3].substring(1)) : 0) : Double.parseDouble(args[3]);
+                .then(Commands.argument("toEntity", EntityArgument.entity())
+                        .executes(context -> teleportEntityToEntity(context.getSource(), EntityArgument.getEntity(context, "entity"), EntityArgument.getEntity(context, "toEntity"))))
 
-                            Location location2 = new Location(playerArg0.getWorld(), x2, y2, z2);
-                            teleportAsync(player, playerArg0, location2);
-                            break;
-                        } catch (Exception e) {
-                            /* wrong input */
-                            if (EssentialsUtil.isInt(args[0]) || !EssentialsUtil.isInt(args[1]) || !EssentialsUtil.isInt(args[2]) || !EssentialsUtil.isInt(args[3])) {
-                                /* message to sender */
-                                messages_DE.somethingWentWrongAsync_DE(player, "/tp <Spieler> <x> <y> <z>");
-                                break;
-                            }
-                            /* new Location from sender input */
-                            Location location = new Location(player.getWorld(), Double.parseDouble(args[1]), Double.parseDouble(args[2]), Double.parseDouble(args[3]));
+                .then(Commands.argument("toLocation", Vec3Argument.vec3(true))
+                        .executes(context -> teleportEntityToLocation(context.getSource(), EntityArgument.getEntity(context, "entity"), Vec3Argument.getVec3(context, "toLocation")))));
 
-                            teleportAsync(player, playerArg0, location);
-                        }
-                    }
+        literal.then(Commands.argument("fromEntities", EntityArgument.entities())
+                .then(Commands.argument("toEntity", EntityArgument.entity())
+                        .executes(context -> teleportEntitiesToEntity(context.getSource(), EntityArgument.getEntities(context, "fromEntities"), EntityArgument.getEntity(context, "toEntity"))))
+                .then(Commands.argument("toLocation", Vec3Argument.vec3(true))
+                        .executes(context -> teleportEntitiesToLocation(context.getSource(), EntityArgument.getEntities(context, "fromEntities"), Vec3Argument.getVec3(context, "toLocation")))));
+    }
 
-                    /* wrong input */
-                    if (EssentialsUtil.isInt(args[0]) || !EssentialsUtil.isInt(args[1]) || !EssentialsUtil.isInt(args[2]) || !EssentialsUtil.isInt(args[3])) {
-                        /* message to sender */
-                        messages_DE.somethingWentWrongAsync_DE(player, "/tp <Spieler> <x> <y> <z>");
-                        break;
-                    }
-                    /* new Location from sender input */
-                    Location location = new Location(player.getWorld(), Double.parseDouble(args[1]), Double.parseDouble(args[2]), Double.parseDouble(args[3]));
-                    /* teleport offline target to location */
-                    teleportOfflineToTargetAsync(player, Bukkit.getOfflinePlayer(args[0]), location);
-                    break;
-            }
+    private int teleportToEntity(CommandSourceStack source, Entity entity) throws CommandSyntaxException {
+        canSourceSeeEntity(source, entity);
+        ServerPlayer sender = source.getPlayerOrException();
+        Location targetLocation = entity.getBukkitEntity().getLocation();
 
-            //TODO: make the command executable via the console
-        }else if (sender instanceof ConsoleCommandSender){
+        if (isLoaded(targetLocation)){
+            sender.teleportTo(targetLocation.getX(), targetLocation.getY(), targetLocation.getZ());
+            EssentialsUtil.sendSuccess(source, teleportToEntity$adventure(entity));
 
+        }else {
+            waiting$adventure(source);
+
+            sender.getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAcceptAsync(aBoolean -> {
+                try {
+                    EssentialsUtil.sendSuccess(source, teleportToEntity$adventure(entity));
+                } catch (CommandSyntaxException ignored) {}
+            });
         }
-        return true;
+
+        return 1;
     }
 
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return null;
-    }
+    private int teleportEntityToEntity(CommandSourceStack source, Entity fromEntity, Entity toEntity) throws CommandSyntaxException {
+        canSourceSeeEntity(source, fromEntity);
+        canSourceSeeEntity(source, toEntity);
+        Location targetLocation = toEntity.getBukkitEntity().getLocation();
 
+        if (isLoaded(targetLocation)){
+            fromEntity.teleportTo(targetLocation.getX(), targetLocation.getY(), targetLocation.getZ());
 
-    /**
-     *
-     * Teleport online player to location.
-     *
-     * @param sender  the sender
-     * @param location  the location
-     */
-    public void teleportAsync(Player sender, Location location){
-
-        Objects.requireNonNull(sender).teleportAsync(Objects.requireNonNull(location));
-        Bukkit.broadcast(SurfApi.getPrefix()
-                .append(sender.displayName().colorIfAbsent(SurfColors.YELLOW)
-                        .decorate(TextDecoration.ITALIC))
-                .append(Component.text(" "))
-                .append(sender.displayName().colorIfAbsent(SurfColors.YELLOW))
-                .append(Component.text(" hat sich zu ", SurfColors.GRAY))
-                .append(Component.text(" %s %s %s".formatted(Math.round(location.getX()), Math.round(location.getY()), Math.round(location.getZ())), SurfColors.GOLD))
-                .append(Component.text(" teleportiert!", SurfColors.GRAY)), "surf.teleport.announce");
-    }
-
-    /**
-     *
-     * Teleports the player to offline player.
-     *
-     * @param player  the player
-     * @param target  the target player
-     */
-    public void teleportToOfflineAsync(Player player, OfflinePlayer target){
-        NBTLocationReader.getLocationAsync(target.getName(), new NBTLocationReader.NBTCallback<Location>() {
-            /**
-             *
-             * On success player teleported to offline player location.
-             *
-             * @param data  the location of offline Player
-             */
-            @Override
-            public void onSuccess(Location data) {
-                Bukkit.getScheduler().runTaskAsynchronously(SurfEssentials.getInstance(), () -> {
-                    player.sendMessage(SurfApi.getPrefix()
-                            .append(EssentialsUtil.gradientify("Teleportiere...", "#F9655B", "#EE821A")));
-
-                    player.teleportAsync(data);
-
-                    Bukkit.broadcast(SurfApi.getPrefix()
-                            .append(player.displayName().colorIfAbsent(SurfColors.YELLOW)
-                                    .decorate(TextDecoration.ITALIC))
-                            .append(Component.text(" hat sich zu ", SurfColors.GRAY))
-                            .append(Component.text(Objects.requireNonNull(target.getName())))
-                            .append(Component.text(" teleportiert!", SurfColors.GRAY)), "surf.teleport.announce");
-                });
+            if (source.isPlayer()){
+                EssentialsUtil.sendSuccess(source, teleportEntityToEntity$adventure(fromEntity, toEntity));
+            }else {
+                source.sendSuccess(teleportEntityToEntity(fromEntity, toEntity), false);
             }
-            @Override
-            /**
-             *
-             * If the teleport fails, a message is sent to the player.
-             *
-             * @param message  the message
-             */
-            public void onFail(Component message) {
-                player.sendMessage(message);
-            }
-        }, Messages_DE.playerWasNeverOnlineMessage_DE(target), Messages_DE.failedOfflineTeleportMessage_DE());
+        }else {
+            waiting$adventure(source);
+
+            fromEntity.getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAcceptAsync(aBoolean -> {
+                if (source.isPlayer()){
+                    try {
+                        EssentialsUtil.sendSuccess(source, teleportEntityToEntity$adventure(fromEntity, toEntity));
+                    } catch (CommandSyntaxException ignored) {}
+                }else {
+                    source.sendSuccess(teleportEntityToEntity(fromEntity, toEntity), false);
+                }
+            });
+        }
+        return 1;
     }
 
-    /**
-     *
-     * Teleports an offline player to a location.
-     *
-     * @param sender  the sender
-     * @param target  the offline player
-     * @param location  the location
-     */
-    public void teleportOfflineToTargetAsync(Player sender, OfflinePlayer target, Location location){
-        NBTLocationReader.setLocationAsync(target.getName(), location, new NBTLocationReader.NBTCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean data) {
-                Bukkit.getScheduler().runTaskAsynchronously(SurfEssentials.getInstance(), () -> {
-                    messages_DE.teleportTargetPlayerMessage_DE(sender, target, location);
-                });
-            }
+    private int teleportEntityToLocation(CommandSourceStack source, Entity entity, Vec3 vec3) throws CommandSyntaxException{
+        canSourceSeeEntity(source, entity);
+        Location targetLocation = new Location(source.getLevel().getWorld(), vec3.x(), vec3.y(), vec3.z());
 
-            /**
-             *
-             * If the teleport fails, a message is sent to the player.
-             *
-             * @param message  the message
-             */
-            @Override
-            public void onFail(Component message) {
-                sender.sendMessage(message);
+        if (isLoaded(targetLocation)){
+            entity.teleportTo(vec3.x(), vec3.y(), vec3.z());
+
+            if (source.isPlayer()){
+                EssentialsUtil.sendSuccess(source, teleportEntityToLocation$adventure(entity, targetLocation));
+            }else {
+                source.sendSuccess(teleportEntityToLocation(entity, targetLocation), false);
             }
-        }, Messages_DE.failedOfflineTeleportMessage_DE());
+        }else {
+            waiting$adventure(source);
+
+            entity.getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAcceptAsync(aBoolean -> {
+                if (source.isPlayer()){
+                    try {
+                        EssentialsUtil.sendSuccess(source, teleportEntityToLocation$adventure(entity, targetLocation));
+                    } catch (CommandSyntaxException ignored) {}
+                }else {
+                    source.sendSuccess(teleportEntityToLocation(entity, targetLocation), false);
+                }
+            });
+        }
+        return 1;
     }
 
-    /**
-     *
-     * Teleports a player to a location async.
-     *
-     * @param sender  the sender
-     * @param targetPlayer  the target player
-     * @param location  the location
-     */
-    public void teleportAsync(Player sender, Player targetPlayer, Location location){
-        Objects.requireNonNull(targetPlayer).teleportAsync(Objects.requireNonNull(location));
-        Bukkit.broadcast(SurfApi.getPrefix()
-                .append(sender.displayName().colorIfAbsent(SurfColors.YELLOW)
-                        .decorate(TextDecoration.ITALIC))
-                .append(Component.text(" "))
-                .append(targetPlayer.displayName().colorIfAbsent(SurfColors.YELLOW))
-                .append(Component.text(" wurde zu ", SurfColors.GRAY))
-                .append(Component.text(" %s %s %s".formatted(Math.round(location.getX()), Math.round(location.getY()), Math.round(location.getZ())), SurfColors.GOLD))
-                .append(Component.text(" teleportiert!", SurfColors.GRAY)), "surf.teleport.announce");
+    private int teleportEntitiesToEntity(CommandSourceStack source, Collection<? extends Entity> entitiesUnchecked, Entity toEntity) throws CommandSyntaxException{
+        Collection<? extends Entity> entities = EssentialsUtil.checkEntitySuggestion(source, entitiesUnchecked);
+        canSourceSeeEntity(source, toEntity);
+
+        Location targetLocation = toEntity.getBukkitEntity().getLocation();
+        AtomicInteger successfulTeleports = new AtomicInteger();
+
+        if (isLoaded(targetLocation)){
+            for (Entity entity : entities) {
+                entity.teleportTo(targetLocation.getX(), targetLocation.getY(), targetLocation.getZ());
+                successfulTeleports.getAndIncrement();
+            }
+            if (source.isPlayer()){
+                EssentialsUtil.sendSuccess(source, teleportEntitiesToEntity$adventure(successfulTeleports.get(), toEntity));
+            }else {
+                source.sendSuccess(teleportEntitiesToEntity(successfulTeleports.get(), toEntity), false);
+            }
+        }else {
+            waiting$adventure(source);
+
+            entities.iterator().next().getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAccept(aBoolean -> {
+                for (Entity entity : entities) {
+                    entity.teleportTo(targetLocation.getX(), targetLocation.getY(), targetLocation.getZ());
+                    successfulTeleports.getAndIncrement();
+                }
+                if (source.isPlayer()){
+                    try {
+                        EssentialsUtil.sendSuccess(source, teleportEntitiesToEntity$adventure(successfulTeleports.get(), toEntity));
+                    } catch (CommandSyntaxException ignored) {}
+                }else {
+                    source.sendSuccess(teleportEntitiesToEntity(successfulTeleports.get(), toEntity), false);
+                }
+            });
+        }
+        return successfulTeleports.get();
+    }
+
+    private int teleportEntitiesToLocation(CommandSourceStack source, Collection<? extends Entity> entitiesUnchecked, Vec3 vec3) throws CommandSyntaxException{
+        Collection<? extends Entity> entities = EssentialsUtil.checkEntitySuggestion(source, entitiesUnchecked);
+        Location targetLocation = new Location(source.getLevel().getWorld(), vec3.x(), vec3.y(), vec3.z());
+        AtomicInteger successfulTeleports = new AtomicInteger();
+
+        if (isLoaded(targetLocation)){
+            for (Entity entity : entities) {
+                entity.teleportTo(vec3.x(), vec3.y(), vec3.z());
+                successfulTeleports.getAndIncrement();
+            }
+            if (source.isPlayer()){
+                EssentialsUtil.sendSuccess(source, teleportEntitiesToLocation$adventure(successfulTeleports.get(), targetLocation));
+            }else {
+                source.sendSuccess(teleportEntitiesToLocation(successfulTeleports.get(), targetLocation), false);
+            }
+        }else {
+            waiting$adventure(source);
+
+            entities.iterator().next().getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAccept(aBoolean -> {
+                for (Entity entity : entities) {
+                    entity.teleportTo(vec3.x(), vec3.y(), vec3.z());
+                    successfulTeleports.getAndIncrement();
+                }
+                if (source.isPlayer()){
+                    try {
+                        EssentialsUtil.sendSuccess(source, teleportEntitiesToLocation$adventure(successfulTeleports.get(), targetLocation));
+                    } catch (CommandSyntaxException ignored) {}
+                }else {
+                    source.sendSuccess(teleportEntitiesToLocation(successfulTeleports.get(), targetLocation), false);
+                }
+            });
+        }
+        return successfulTeleports.get();
+    }
+
+
+
+
+
+
+    private boolean isLoaded(Location location){
+        ServerLevel level = ((CraftWorld) location.getWorld()).getHandle();
+        return level.isLoaded(new BlockPos(location.getX(), location.getY(), location.getZ()));
+    }
+
+    private void canSourceSeeEntity(CommandSourceStack source, Entity entity) throws CommandSyntaxException {
+        if (source.isPlayer()) {
+            if (entity instanceof ServerPlayer player) {
+                if (!EssentialsUtil.isVanished(player.getBukkitEntity())) return;
+                if (source.getPlayerOrException().getBukkitEntity().canSee(player.getBukkitEntity())) return;
+            }else {
+                if (source.getPlayerOrException().getBukkitEntity().canSee(entity.getBukkitEntity())) return;
+            }
+            throw EntityArgument.NO_ENTITIES_FOUND.create();
+        }
+    }
+
+    private void waiting$adventure(CommandSourceStack source) throws CommandSyntaxException {
+        if (source.isPlayer()){
+            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAccept(user -> user.sendMessage(SurfApi.getPrefix()
+                    .append(Component.text("Teleportiere...", SurfColors.INFO))));
+        }
+    }
+
+    private Component teleportToEntity$adventure(Entity entity){
+        ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
+        builder.append(Component.text("Du hast dich zu ", SurfColors.SUCCESS));
+
+        if (entity instanceof ServerPlayer player){
+            builder.append(player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY));
+        }else {
+            builder.append(PaperAdventure.asAdventure(entity.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY));
+        }
+
+        return builder.append(Component.text(" teleportiert!", SurfColors.SUCCESS)).build();
+    }
+
+    private Component teleportEntityToEntity$adventure(Entity fromEntity, Entity toEntity){
+        ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
+
+        if (fromEntity instanceof ServerPlayer player){
+            builder.append(player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY));
+        }else {
+            builder.append(PaperAdventure.asAdventure(fromEntity.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY));
+        }
+
+        builder.append(Component.text(" wurde zu ", SurfColors.SUCCESS));
+
+        if (toEntity instanceof ServerPlayer player) {
+            builder.append(player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
+                    .hoverEvent(HoverEvent.showText(Component.text("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(player.getX()),
+                            EssentialsUtil.makeDoubleReadable(player.getY()), EssentialsUtil.makeDoubleReadable(player.getZ())), SurfColors.INFO))));
+        }else {
+            builder.append(PaperAdventure.asAdventure(toEntity.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY)
+                    .hoverEvent(HoverEvent.showText(Component.text("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(toEntity.getX()),
+                            EssentialsUtil.makeDoubleReadable(toEntity.getY()), EssentialsUtil.makeDoubleReadable(toEntity.getZ())), SurfColors.INFO))));
+        }
+
+        return builder.append(Component.text(" teleportiert!", SurfColors.SUCCESS)).build();
+    }
+
+    private net.minecraft.network.chat.Component teleportEntityToEntity(Entity fromEntity, Entity toEntity){
+        return net.minecraft.network.chat.Component.literal("Teleported ")
+                .withStyle(ChatFormatting.GREEN)
+                .append(fromEntity.getDisplayName())
+                .append(net.minecraft.network.chat.Component.literal(" to ")
+                        .withStyle(ChatFormatting.GREEN))
+                .append(toEntity.getDisplayName());
+    }
+
+    private Component teleportEntityToLocation$adventure(Entity entity, Location location){
+        ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
+
+        if (entity instanceof ServerPlayer player){
+            builder.append(player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY));
+        }else {
+            builder.append(PaperAdventure.asAdventure(entity.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY));
+        }
+
+        return builder.append(Component.text(" wurde zu ", SurfColors.SUCCESS)
+                .append(Component.text("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(location.getX()),
+                        EssentialsUtil.makeDoubleReadable(location.getY()), EssentialsUtil.makeDoubleReadable(location.getZ())), SurfColors.TERTIARY))
+                .append(Component.text(" teleportiert!", SurfColors.SUCCESS))).build();
+    }
+
+    private net.minecraft.network.chat.Component teleportEntityToLocation(Entity entity, Location location){
+        return net.minecraft.network.chat.Component.literal("Teleported ")
+                .withStyle(ChatFormatting.GREEN)
+                .append(entity.getDisplayName())
+                .append(net.minecraft.network.chat.Component.literal(" to %s %s %s".formatted(location.getX(), location.getY(), location.getZ()))
+                        .withStyle(ChatFormatting.GREEN));
+    }
+
+    private Component teleportEntitiesToEntity$adventure(int successfulTeleports, Entity toEntity){
+        ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
+
+        builder.append(Component.text(successfulTeleports, SurfColors.TERTIARY)
+                .append(Component.text(" Entities wurden zu ", SurfColors.SUCCESS)));
+
+        if (toEntity instanceof ServerPlayer player){
+            builder.append(player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY));
+        }else {
+            builder.append(PaperAdventure.asAdventure(toEntity.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY));
+        }
+
+        return builder.append(Component.text(" teleportiert!", SurfColors.SUCCESS)).build();
+    }
+
+    private net.minecraft.network.chat.Component teleportEntitiesToEntity(int successfulTeleports, Entity toEntity){
+        return net.minecraft.network.chat.Component.literal("Teleported " + successfulTeleports + " entities to ")
+                .withStyle(ChatFormatting.GREEN)
+                .append(toEntity.getDisplayName());
+    }
+
+    private Component teleportEntitiesToLocation$adventure(int successfulTeleports, Location location){
+        ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
+
+        builder.append(Component.text(successfulTeleports, SurfColors.TERTIARY)
+                .append(Component.text(" Entities wurden zu ", SurfColors.SUCCESS)));
+
+        builder.append(Component.text("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(location.getX()),
+                EssentialsUtil.makeDoubleReadable(location.getY()), EssentialsUtil.makeDoubleReadable(location.getZ())), SurfColors.TERTIARY));
+
+        return builder.append(Component.text(" teleportiert!", SurfColors.SUCCESS)).build();
+    }
+
+    private net.minecraft.network.chat.Component teleportEntitiesToLocation(int successfulTeleports, Location location){
+        return net.minecraft.network.chat.Component.literal("Teleported " + successfulTeleports + " entities to ")
+                .withStyle(ChatFormatting.GREEN)
+                .append(net.minecraft.network.chat.Component.literal("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(location.getX()),
+                        EssentialsUtil.makeDoubleReadable(location.getY()), EssentialsUtil.makeDoubleReadable(location.getZ())))
+                        .withStyle(ChatFormatting.GRAY));
     }
 }

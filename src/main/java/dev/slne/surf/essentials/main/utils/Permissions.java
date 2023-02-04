@@ -107,4 +107,5 @@ public class Permissions {
     public static final String CHAT_CLEAR_SELF_PERMISSION = "surf.essentials.commands.chatclear";
     public static final String CHAT_CLEAR_OTHER_PERMISSION = "surf.essentials.commands.chatclear.others";
     public static final String CHAT_CLEAR_BYPASS_PERMISSION = "surf.essentials.commands.chatclear.bypass";
+    public static final String TELEPORT_PERMISSION = "surf.essentials.commands.teleport";
 }

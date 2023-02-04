@@ -3,7 +3,6 @@ package dev.slne.surf.essentials.main.commands;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.commands.general.other.world.WorldCommand;
 import dev.slne.surf.essentials.main.commands.tp.TeleportAll;
-import dev.slne.surf.essentials.main.commands.tp.TeleportCommand;
 import dev.slne.surf.essentials.main.commands.tp.TeleportToTop;
 
 import java.util.ArrayList;
@@ -39,8 +38,6 @@ public class Commands {
         this.commands.add(new TeleportAll(this.surf.getCommand("tpall")));
         //TeleportToTopCommand
         this.commands.add(new TeleportToTop(this.surf.getCommand("tptop")));
-        //TeleportOfflineCommand
-        this.commands.add(new TeleportCommand(this.surf.getCommand("teleport")));
     }
 
 

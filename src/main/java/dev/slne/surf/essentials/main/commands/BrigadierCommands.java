@@ -11,6 +11,7 @@ import dev.slne.surf.essentials.main.commands.general.other.poll.VoteCommand;
 import dev.slne.surf.essentials.main.commands.general.other.troll.TrollManager;
 import dev.slne.surf.essentials.main.commands.minecraft.*;
 import dev.slne.surf.essentials.main.commands.tp.RandomTeleportCommand;
+import dev.slne.surf.essentials.main.commands.tp.TeleportCommand;
 import dev.slne.surf.essentials.main.commands.tp.TeleportBackCommand;
 import dev.slne.surf.essentials.main.commands.tp.TeleportOffline;
 
@@ -130,5 +131,7 @@ public class BrigadierCommands {
         new TimerCommand();
         // chat clear command
         new ChatClearCommand();
+        // teleport command
+        new TeleportCommand();
     }
 }
