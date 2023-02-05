@@ -76,6 +76,11 @@ public class Permissions {
     public static final String CLEAR_SELF_PERMISSION = "surf.essentials.commands.clear";
     public static final String CLEAR_OTHER_PERMISSION = "surf.essentials.commands.clear.others";
     public static final String HELP_PERMISSION = "surf.essentials.commands.help";
+    public static final String SEED_PERMISSION = "surf.essentials.commands.seed";
+    public static final String SET_WORLD_SPAWN_PERMISSION = "surf.essentials.commands.setworldspawn";
+    public static final String SPECTATE_SELF_PERMISSION = "surf.essentials.commands.spectate";
+    public static final String SPECTATE_OTHER_PERMISSION = "surf.essentials.commands.spectate.others";
+    public static final String SUMMON_PERMISSION = "surf.essentials.commands.summon";
 
 
     /**

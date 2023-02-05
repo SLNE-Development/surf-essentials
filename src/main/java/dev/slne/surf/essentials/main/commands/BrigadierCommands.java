@@ -137,5 +137,13 @@ public class BrigadierCommands {
         new ClearInventoryCommand();
         // help command
         new HelpCommand();
+        // seed command
+        new SeedCommand();
+        // set world spawn command
+        new SetWorldSpawnCommand();
+        // spectate command
+        new SpectateCommand();
+        // summon command
+        new SummonCommand();
     }
 }

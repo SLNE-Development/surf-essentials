@@ -44,25 +44,25 @@ public class SpawnerChangeCommand{
                 .executes(context -> querySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position")))
 
                 .then(Commands.argument("entity", ResourceArgument.resource(EssentialsUtil.buildContext(), Registries.ENTITY_TYPE))
-                        .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getEntityType(context, "entity").value(),
+                        .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getSummonableEntityType(context, "entity").value(),
                                 null, null, null, null))
 
                         .then(Commands.argument("minSpawnDelay", IntegerArgumentType.integer(1))
-                                .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getEntityType(context, "entity").value(),
+                                .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getSummonableEntityType(context, "entity").value(),
                                         IntegerArgumentType.getInteger(context, "minSpawnDelay"), null, null, null))
 
                                 .then(Commands.argument("maxSpawnDelay", IntegerArgumentType.integer(1))
-                                        .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getEntityType(context, "entity").value(),
+                                        .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getSummonableEntityType(context, "entity").value(),
                                                 IntegerArgumentType.getInteger(context, "minSpawnDelay"), IntegerArgumentType.getInteger(context, "maxSpawnDelay"),
                                                 null, null))
 
                                         .then(Commands.argument("spawnRange", IntegerArgumentType.integer(1, 50))
-                                                .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getEntityType(context, "entity").value(),
+                                                .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getSummonableEntityType(context, "entity").value(),
                                                         IntegerArgumentType.getInteger(context, "minSpawnDelay"), IntegerArgumentType.getInteger(context, "maxSpawnDelay"),
                                                         IntegerArgumentType.getInteger(context, "spawnRange"), null))
 
                                                 .then(Commands.argument("requiredPlayerRange", IntegerArgumentType.integer(0))
-                                                        .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getEntityType(context, "entity").value(),
+                                                        .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getSummonableEntityType(context, "entity").value(),
                                                                 IntegerArgumentType.getInteger(context, "minSpawnDelay"), IntegerArgumentType.getInteger(context, "maxSpawnDelay"),
                                                                 IntegerArgumentType.getInteger(context, "spawnRange"), IntegerArgumentType.getInteger(context, "requiredPlayerRange")))))))));
     }
