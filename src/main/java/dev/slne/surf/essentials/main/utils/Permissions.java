@@ -73,6 +73,9 @@ public class Permissions {
     public static final String PARTICLE_PERMISSION = "surf.essentials.commands.particle";
     public static final String TIME_PERMISSION = "surf.essentials.commands.time";
     public static final String WEATHER_PERMISSION = "surf.essentials.commands.weather";
+    public static final String CLEAR_SELF_PERMISSION = "surf.essentials.commands.clear";
+    public static final String CLEAR_OTHER_PERMISSION = "surf.essentials.commands.clear.others";
+    public static final String HELP_PERMISSION = "surf.essentials.commands.help";
 
 
     /**

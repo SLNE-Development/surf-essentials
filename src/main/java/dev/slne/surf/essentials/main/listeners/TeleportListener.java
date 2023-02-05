@@ -21,13 +21,12 @@ import java.util.Map;
 public class TeleportListener implements Listener {
     private static final Map<Player, Location> playerTeleportLocationMap = new HashMap<>();
 
-    //TODO: fire the event in the tp command
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
 
         if (EssentialsUtil.isVanished(player)) return;
-        if (event.getCause() != PlayerTeleportEvent.TeleportCause.COMMAND && event.getCause() != PlayerTeleportEvent.TeleportCause.PLUGIN) return;
+        if (event.getCause() != PlayerTeleportEvent.TeleportCause.COMMAND && event.getCause() != PlayerTeleportEvent.TeleportCause.PLUGIN && event.getCause() != PlayerTeleportEvent.TeleportCause.UNKNOWN) return;
 
         playerTeleportLocationMap.remove(player);
         playerTeleportLocationMap.put(player, event.getFrom());

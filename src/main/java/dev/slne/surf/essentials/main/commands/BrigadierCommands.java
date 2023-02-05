@@ -133,5 +133,9 @@ public class BrigadierCommands {
         new ChatClearCommand();
         // teleport command
         new TeleportCommand();
+        // clear inventory command
+        new ClearInventoryCommand();
+        // help command
+        new HelpCommand();
     }
 }
