@@ -41,7 +41,7 @@ public class HealCommand {
         int successfulChanges = 0;
 
         for (ServerPlayer target : targets) {
-            target.heal(target.getMaxHealth(), EntityRegainHealthEvent.RegainReason.CUSTOM, true);
+            target.heal(target.getMaxHealth(), EntityRegainHealthEvent.RegainReason.EATING, true);
             successfulChanges ++;
             SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                     .append(Component.text("Du wurdest geheilt! ", SurfColors.GREEN))));

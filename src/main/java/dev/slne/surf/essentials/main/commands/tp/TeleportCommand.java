@@ -98,6 +98,12 @@ public class TeleportCommand extends BrigadierCommand {
         Location targetLocation = toEntity.getBukkitEntity().getLocation();
 
         if (isLoaded(targetLocation)){
+            if (fromEntity instanceof ServerPlayer player) {
+                PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
+                        targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);
+                if (playerTeleportEvent.isCancelled()) return 0;
+                SurfApi.callEvent(playerTeleportEvent);
+            }
             fromEntity.teleportTo(targetLocation.getX(), targetLocation.getY(), targetLocation.getZ());
 
             if (source.isPlayer()){
@@ -126,6 +132,12 @@ public class TeleportCommand extends BrigadierCommand {
         Location targetLocation = new Location(source.getLevel().getWorld(), vec3.x(), vec3.y(), vec3.z());
 
         if (isLoaded(targetLocation)){
+            if (entity instanceof ServerPlayer player) {
+                PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
+                        targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);
+                if (playerTeleportEvent.isCancelled()) return 0;
+                SurfApi.callEvent(playerTeleportEvent);
+            }
             entity.teleportTo(vec3.x(), vec3.y(), vec3.z());
 
             if (source.isPlayer()){
@@ -158,6 +170,12 @@ public class TeleportCommand extends BrigadierCommand {
 
         if (isLoaded(targetLocation)){
             for (Entity entity : entities) {
+                if (entity instanceof ServerPlayer player) {
+                    PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
+                            targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);
+                    if (playerTeleportEvent.isCancelled()) continue;
+                    SurfApi.callEvent(playerTeleportEvent);
+                }
                 entity.teleportTo(targetLocation.getX(), targetLocation.getY(), targetLocation.getZ());
                 successfulTeleports.getAndIncrement();
             }
@@ -193,6 +211,12 @@ public class TeleportCommand extends BrigadierCommand {
 
         if (isLoaded(targetLocation)){
             for (Entity entity : entities) {
+                if (entity instanceof ServerPlayer player) {
+                    PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
+                            targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);
+                    if (playerTeleportEvent.isCancelled()) continue;
+                    SurfApi.callEvent(playerTeleportEvent);
+                }
                 entity.teleportTo(vec3.x(), vec3.y(), vec3.z());
                 successfulTeleports.getAndIncrement();
             }

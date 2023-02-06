@@ -21,6 +21,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -63,9 +64,15 @@ public class TeleportToTopCommand extends BrigadierCommand {
         ServerPlayer player = source.getServer().getPlayerList().getPlayer(uuid);
         Location location;
 
-        if (player != null){
+        if (player != null) {
             location = player.getBukkitEntity().getLocation();
             location.setY(player.getLevel().getWorld().getHighestBlockYAt((int) location.x(), (int) location.z()));
+
+
+            PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
+                    location, PlayerTeleportEvent.TeleportCause.COMMAND);
+            if (playerTeleportEvent.isCancelled()) return 0;
+            SurfApi.callEvent(playerTeleportEvent);
 
             player.teleportTo(location.x(), location.getY() + 1, location.z());
         }else {

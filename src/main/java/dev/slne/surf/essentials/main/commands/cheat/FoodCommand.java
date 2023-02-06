@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.main.commands.cheat;
 
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
@@ -12,7 +13,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
+import org.bukkit.Sound;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,9 +43,11 @@ public class FoodCommand {
         for (ServerPlayer target : targets) {
             target.getFoodData().setFoodLevel(EssentialsUtil.MAX_FOOD);
             successfulFeeds ++;
-            //TODO: Add food sound
-            SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Du wurdest gefüttert!", SurfColors.GREEN))));
+            SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> {
+                user.playSound(Sound.ENTITY_STRIDER_EAT, 1f, 0f);
+                user.sendMessage(SurfApi.getPrefix()
+                        .append(Component.text("Du wurdest gefüttert!", SurfColors.GREEN)));
+            });
         }
 
         if(source.isPlayer()){

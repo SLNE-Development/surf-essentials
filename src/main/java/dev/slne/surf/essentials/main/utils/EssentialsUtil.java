@@ -24,8 +24,10 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import org.bukkit.*;
-import org.bukkit.command.CommandSender;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -53,32 +55,6 @@ public abstract class EssentialsUtil {
 
     public static final int MAX_FOOD = 20;
 
-    /**
-     *
-     * Check if arg is int.
-     *
-     * @param s  the string to be checked for an int
-     */
-    public static boolean isInt(@NotNull String s) {
-        int i;
-        try {
-            i = Integer.parseInt(s);
-            return true;
-        } catch (NumberFormatException ex) {
-            //string is not an integer
-            return false;
-        }
-    }
-
-    /**
-     *
-     * Simple "No permission" message.
-     *
-     */
-    public static Component NO_PERMISSION(){
-        return SurfApi.getPrefix()
-                .append(Component.text("You do not have permission to execute this command!", SurfColors.ERROR));
-    }
 
     /**
      *
@@ -266,63 +242,20 @@ public abstract class EssentialsUtil {
     }
 
     /**
-     * Adds a color code suggestion to the given {@link SuggestionsBuilder}.
-     *
-     * @param builder the {@link SuggestionsBuilder} to add the suggestion to
-     * @param colorCode the color code to add as a suggestion
-     * @param colorName the name of the color to display in the suggestion
-     * @param formatting the {@link ChatFormatting} to apply to the color name in the suggestion
-     * @return a {@link CompletableFuture} containing the completed {@link Suggestions} object
-     */
-    public static CompletableFuture<Suggestions> singleColorCode(@NotNull SuggestionsBuilder builder, @NotNull String colorCode,
-                                                                 @NotNull String colorName, @NotNull ChatFormatting formatting) {
-        return builder.suggest(colorCode, net.minecraft.network.chat.Component.literal(colorName).withStyle(formatting)).buildFuture();
-    }
-
-    /**
-     * Plays a random scare sound from the {@link #scareSounds} array for the player.
-     *
-     * @param player the player to play the sound for
-     */
-    public static void playScareSound(@NotNull Player player) {
-        Random random = new Random();
-        int scareIndex = random.nextInt(scareSounds.length - 1);
-        Sound scareSound = scareSounds[scareIndex];
-        player.playSound(player.getLocation(), scareSound, 1.0F, 1.0F);
-    }
-
-    /**
      * Scares the player by playing a random scare sound from the {@link #scareSounds} array and
      * applying a {@link PotionEffectType#DARKNESS} effect to the player for 7 seconds.
      *
      * @param player the player to scare
      */
     public static void scarePlayer(@NotNull Player player) {
-        playScareSound(player);
+        Random random = new Random();
+        int scareIndex = random.nextInt(scareSounds.length - 1);
+        Sound scareSound = scareSounds[scareIndex];
+        player.playSound(player.getLocation(), scareSound, 1.0F, 1.0F);
         PotionEffect scareEffect = new PotionEffect(PotionEffectType.DARKNESS, 20*7, 1, false, false, false);
         player.addPotionEffect(scareEffect);
     }
 
-    /**
-     * Sends a message to the specified {@link CommandSender} with the correct usage of the command.
-     *
-     * @param sender the {@link CommandSender} to send the message to
-     * @param usage the correct usage of the command as a {@link Component}
-     */
-    public static void sendCorrectUsage(CommandSender sender, Component usage) {
-        sender.sendMessage(Component.text().append(SurfApi.getPrefix())
-                .append(Component.text("Korrekte Benutzung: ", SurfColors.ERROR)).append(usage).build());
-    }
-
-    /**
-     * Sends a message to the specified {@link CommandSender} with the correct usage of the command.
-     *
-     * @param sender the {@link CommandSender} to send the message to
-     * @param usage the correct usage of the command as a {@link String}
-     */
-    public static void sendCorrectUsage(CommandSender sender, String usage) {
-       sendCorrectUsage(sender, Component.text(usage, SurfColors.TERTIARY));
-    }
 
     /**
      Sends an error message to the player.

@@ -26,7 +26,7 @@ public class TeleportListener implements Listener {
         Player player = event.getPlayer();
 
         if (EssentialsUtil.isVanished(player)) return;
-        if (event.getCause() != PlayerTeleportEvent.TeleportCause.COMMAND && event.getCause() != PlayerTeleportEvent.TeleportCause.PLUGIN && event.getCause() != PlayerTeleportEvent.TeleportCause.UNKNOWN) return;
+        if (event.getCause() != PlayerTeleportEvent.TeleportCause.COMMAND && event.getCause() != PlayerTeleportEvent.TeleportCause.PLUGIN) return;
 
         playerTeleportLocationMap.remove(player);
         playerTeleportLocationMap.put(player, event.getFrom());
