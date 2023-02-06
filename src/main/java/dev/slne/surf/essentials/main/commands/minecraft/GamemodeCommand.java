@@ -69,7 +69,8 @@ public class GamemodeCommand {
                 Permissions.GAMEMODE_ADVENTURE_OTHER_OFFLINE_PERMISSION);
     }
 
-    private static int setMode(Collection<ServerPlayer> targets, GameType gameMode) {
+    private static int setMode(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, GameType gameMode) throws CommandSyntaxException {
+        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulChanges = 0;
 
         if (targets.size() == 1) {
@@ -100,7 +101,7 @@ public class GamemodeCommand {
         UUID targetUUID = gameProfile.getId();
 
         if (source.getServer().getPlayerList().getPlayer(targetUUID) != null){
-            setMode(Collections.singleton(source.getServer().getPlayerList().getPlayer(targetUUID)), gameType);
+            setMode(source, Collections.singleton(source.getServer().getPlayerList().getPlayer(targetUUID)), gameType);
             return 1;
         }
 
@@ -167,10 +168,10 @@ public class GamemodeCommand {
 
         literal.then(Commands.literal(gameType.getName().toLowerCase())
                 .requires(sourceStack -> sourceStack.hasPermission(2, permissionSelf))
-                .executes(context -> setMode(Collections.singleton(context.getSource().getPlayerOrException()), gameType))
+                .executes(context -> setMode(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), gameType))
                 .then(Commands.argument("players", EntityArgument.players())
                         .requires(sourceStack -> sourceStack.hasPermission(2, permissionOthers))
-                        .executes(context -> setMode(EntityArgument.getPlayers(context, "players"), gameType)))
+                        .executes(context -> setMode(context.getSource(), EntityArgument.getPlayers(context, "players"), gameType)))
 
                 .then(Commands.literal("offline")
                         .requires(sourceStack -> sourceStack.hasPermission(2, permissionOthersOffline))

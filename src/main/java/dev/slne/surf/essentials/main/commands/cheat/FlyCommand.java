@@ -40,7 +40,8 @@ public class FlyCommand {
                         .executes(context -> fly(context.getSource(), EntityArgument.getPlayers(context, "players"), false, false))));
     }
 
-    private static int fly(CommandSourceStack source, Collection<ServerPlayer> targets, boolean toggle, Boolean allowFly) throws CommandSyntaxException {
+    private static int fly(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, boolean toggle, Boolean allowFly) throws CommandSyntaxException {
+        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulChanges = 0;
 
         for (ServerPlayer target : targets) {

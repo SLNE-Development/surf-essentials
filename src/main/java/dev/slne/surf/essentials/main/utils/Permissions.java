@@ -38,6 +38,7 @@ public class Permissions {
     public static final String HAT_OTHER_PERMISSION = "surf.essentials.commands.hat.others";
     public static final String UNHAT_SELF_PERMISSION = "surf.essentials.commands.unhat";
     public static final String UNHAT_OTHER_PERMISSION = "surf.essentials.commands.unhat.others";
+    public static final String LIGHTING_PERMISSION = "surf.essentials.commands.lighting";
 
     /**
      * Permission for the recreated 'minecraft' commands
@@ -116,4 +117,6 @@ public class Permissions {
     public static final String CHAT_CLEAR_OTHER_PERMISSION = "surf.essentials.commands.chatclear.others";
     public static final String CHAT_CLEAR_BYPASS_PERMISSION = "surf.essentials.commands.chatclear.bypass";
     public static final String TELEPORT_PERMISSION = "surf.essentials.commands.teleport";
+    public static final String TELEPORT_TOP_SELF_PERMISSION = "surf.essentials.commands.tptop";
+    public static final String TELEPORT_TOP_OTHER_PERMISSION = "surf.essentials.commands.tptop.other";
 }

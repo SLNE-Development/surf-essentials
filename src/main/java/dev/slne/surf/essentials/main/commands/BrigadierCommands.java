@@ -10,10 +10,7 @@ import dev.slne.surf.essentials.main.commands.general.other.poll.PollCommand;
 import dev.slne.surf.essentials.main.commands.general.other.poll.VoteCommand;
 import dev.slne.surf.essentials.main.commands.general.other.troll.TrollManager;
 import dev.slne.surf.essentials.main.commands.minecraft.*;
-import dev.slne.surf.essentials.main.commands.tp.RandomTeleportCommand;
-import dev.slne.surf.essentials.main.commands.tp.TeleportCommand;
-import dev.slne.surf.essentials.main.commands.tp.TeleportBackCommand;
-import dev.slne.surf.essentials.main.commands.tp.TeleportOffline;
+import dev.slne.surf.essentials.main.commands.tp.*;
 
 public class BrigadierCommands {
     public void register(){
@@ -145,5 +142,7 @@ public class BrigadierCommands {
         new SpectateCommand();
         // summon command
         new SummonCommand();
+        // tptop command
+        new TeleportToTopCommand();
     }
 }

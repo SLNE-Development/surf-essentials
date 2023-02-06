@@ -9,6 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -19,6 +20,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -31,16 +33,17 @@ public class CageTroll {
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> cage(LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.cage"));
         return Commands.argument("player", EntityArgument.player())
-                .executes(context -> executeCage(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer(), 60, false))
+                .executes(context -> executeCage(context, EntityArgument.getPlayer(context, "player").getBukkitEntity(), 60, false))
                 .then(Commands.argument("time", IntegerArgumentType.integer(1, 6400))
-                        .executes(context -> executeCage(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer(),
+                        .executes(context -> executeCage(context, EntityArgument.getPlayer(context, "player").getBukkitEntity(),
                                 IntegerArgumentType.getInteger(context, "time"), false))
                         .then(Commands.argument("force", BoolArgumentType.bool())
-                                .executes(context -> executeCage(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer(),
+                                .executes(context -> executeCage(context, EntityArgument.getPlayer(context, "player").getBukkitEntity(),
                                         IntegerArgumentType.getInteger(context, "time"), BoolArgumentType.getBool(context, "force")))));
     }
 
     private static int executeCage(CommandContext<CommandSourceStack> context, Player target, int timeInSeconds, boolean force) throws CommandSyntaxException {
+        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), ((CraftPlayer) target).getHandle());
         CommandSourceStack source = context.getSource();
 
         if (isPlayerInCage(target.getUniqueId())){

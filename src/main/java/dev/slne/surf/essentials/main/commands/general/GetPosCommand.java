@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -34,7 +35,8 @@ public class GetPosCommand {
                 .executes(context -> getpos(context.getSource(), EntityArgument.getPlayer(context, "player"))));
     }
 
-    private static int getpos(CommandSourceStack source, ServerPlayer player) throws CommandSyntaxException {
+    private static int getpos(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException {
+        ServerPlayer player = EssentialsUtil.checkSinglePlayerSuggestion(source, playerUnchecked);
         double posX = Double.parseDouble(new DecimalFormat("#.#").format(player.getX()));
         double posY = Double.parseDouble(new DecimalFormat("#.#").format(player.getY()));
         double posZ = Double.parseDouble(new DecimalFormat("#.#").format(player.getZ()));

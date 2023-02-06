@@ -12,7 +12,6 @@ import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import dev.slne.surf.essentials.main.utils.Permissions;
-import net.kyori.adventure.nbt.*;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -23,17 +22,13 @@ import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.UUID;
-
-import static net.kyori.adventure.nbt.BinaryTagIO.Compression.GZIP;
 
 @PermissionTag(name = Permissions.OFFLINE_TELEPORT_PERMISSION, desc = "Allows you to teleport offline players")
 public class TeleportOffline {
@@ -78,7 +73,7 @@ public class TeleportOffline {
             SurfApi.getUser(player.getUUID()).thenAccept(user -> user.sendMessage(Component.text("Spielerdaten laden...", SurfColors.INFO)));
 
             try {
-                player.getBukkitEntity().teleportAsync(getLocation(uuid), PlayerTeleportEvent.TeleportCause.COMMAND);
+                player.getBukkitEntity().teleportAsync(EssentialsUtil.getLocation(profile), PlayerTeleportEvent.TeleportCause.COMMAND);
             } catch (IOException e) {
                 e.printStackTrace();
                 return 0;
@@ -116,7 +111,7 @@ public class TeleportOffline {
             SurfApi.getUser(player.getUUID()).thenAccept(user -> user.sendMessage(Component.text("Teleportiere Spieler...", SurfColors.INFO)));
 
             try {
-                setLocation(offlinePlayer, new Location(player.getLevel().getWorld(), newLocation.x(), newLocation.y(), newLocation.z()));
+                EssentialsUtil.setLocation(uuid, new Location(player.getLevel().getWorld(), newLocation.x(), newLocation.y(), newLocation.z()));
             } catch (IOException e) {
                 e.printStackTrace();
                 return 0;
@@ -134,45 +129,5 @@ public class TeleportOffline {
                 .append(Component.text(" teleportiert!", SurfColors.SUCCESS)));
 
         return 1;
-    }
-
-
-    private Location getLocation(UUID uuid) throws IOException {
-        File dataFile = EssentialsUtil.getPlayerFile(uuid);
-
-        if (dataFile == null) return null;
-        CompoundBinaryTag tag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), GZIP);
-        ListBinaryTag posTag = tag.getList("Pos");
-        ListBinaryTag rotTag = tag.getList("Rotation");
-
-        long worldUUIDMost = tag.getLong("WorldUUIDMost");
-        long worldUUIDLeast = tag.getLong("WorldUUIDLeast");
-
-        World world = Bukkit.getWorld(new UUID(worldUUIDMost, worldUUIDLeast));
-
-        return new Location(world, posTag.getDouble(0), posTag.getDouble(1), posTag.getDouble(2), rotTag.getFloat(0), rotTag.getFloat(1));
-    }
-
-    private void setLocation(OfflinePlayer player, Location location) throws IOException{
-        UUID uuid = player.getUniqueId();
-        File dataFile = EssentialsUtil.getPlayerFile(uuid);
-
-        if (dataFile == null) return;
-        CompoundBinaryTag rawTag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), GZIP);
-        CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder().put(rawTag);
-
-        ListBinaryTag.Builder<BinaryTag> posTag = ListBinaryTag.builder();
-        posTag.add(DoubleBinaryTag.of(location.getX()));
-        posTag.add(DoubleBinaryTag.of(location.getY()));
-        posTag.add(DoubleBinaryTag.of(location.getZ()));
-
-        ListBinaryTag.Builder<BinaryTag> rotTag = ListBinaryTag.builder();
-        rotTag.add(FloatBinaryTag.of(location.getYaw()));
-        rotTag.add(FloatBinaryTag.of(location.getPitch()));
-
-        builder.put("Pos", posTag.build());
-        builder.put("Rotation", rotTag.build());
-
-        BinaryTagIO.writer().write(builder.build(), dataFile.toPath(), GZIP);
     }
 }

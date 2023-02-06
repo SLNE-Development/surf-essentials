@@ -35,7 +35,8 @@ public class RepairCommand {
                 .executes(context -> repair(context.getSource(), EntityArgument.getPlayer(context, "players"))));
     }
 
-    private static int repair(CommandSourceStack source, ServerPlayer target)throws CommandSyntaxException{
+    private static int repair(CommandSourceStack source, ServerPlayer targetUnchecked) throws CommandSyntaxException{
+        ServerPlayer target = EssentialsUtil.checkSinglePlayerSuggestion(source, targetUnchecked);
         ItemStack item = target.getMainHandItem();
 
         if (!item.isDamageableItem()){

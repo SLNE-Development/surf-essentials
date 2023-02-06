@@ -10,6 +10,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -17,6 +18,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,6 +32,7 @@ public class DemoTroll {
     }
 
     private static int makeDemo(@NotNull CommandContext<CommandSourceStack> context, Player target) throws CommandSyntaxException {
+        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), ((CraftPlayer) target).getHandle());
         // Get the source of the command
         CommandSourceStack source = context.getSource();
         // Get the ProtocolManager instance

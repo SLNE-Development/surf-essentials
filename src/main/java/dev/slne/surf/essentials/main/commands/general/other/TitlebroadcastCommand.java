@@ -71,8 +71,10 @@ public class TitlebroadcastCommand {
                                                                 IntegerArgumentType.getInteger(context, "stayTicks"), IntegerArgumentType.getInteger(context, "fadeOutTicks")))))))));
     }
 
-    private static int broadcast(@NotNull CommandSourceStack source, @NotNull Collection<ServerPlayer> targets, @NotNull String title,
+    private static int broadcast(@NotNull CommandSourceStack source, @NotNull Collection<ServerPlayer> targetsUnchecked, @NotNull String title,
                                  @Nullable String subTitle, @Nullable Integer fadeInTicks, @Nullable Integer stayTicks, @Nullable Integer fadeOutTicks) throws CommandSyntaxException{
+
+        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
 
         int successfullyShowed = 0;
         fadeInTicks = (fadeInTicks == null) ? 10 : fadeInTicks;

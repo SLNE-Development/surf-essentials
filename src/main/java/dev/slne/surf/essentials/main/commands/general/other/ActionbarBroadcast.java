@@ -54,7 +54,8 @@ public class ActionbarBroadcast {
                                                 IntegerArgumentType.getInteger(context, "stayTicks"), IntegerArgumentType.getInteger(context, "fadeOutTicks")))))));
     }
 
-    private int broadcast(@NotNull CommandSourceStack source, @NotNull Collection<ServerPlayer> targets, @NotNull String actionbar, @Nullable Integer stayTicks, @Nullable Integer fadeOutTicks) throws CommandSyntaxException {
+    private int broadcast(@NotNull CommandSourceStack source, @NotNull Collection<ServerPlayer> targetsUnchecked, @NotNull String actionbar, @Nullable Integer stayTicks, @Nullable Integer fadeOutTicks) throws CommandSyntaxException {
+        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
 
         int successfullyShowed = 0;
         int fadeInTicks = 20;

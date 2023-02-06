@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandBuildContext;
@@ -20,9 +21,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.bukkit.Bukkit;
 
 import java.util.Collection;
 
@@ -53,7 +52,8 @@ public class GiveCommand {
                                         IntegerArgumentType.getInteger(context, "amount"))))));
     }
 
-    private static int give(CommandSourceStack source, Collection<? extends Player> targets, ItemInput item, int amount) throws CommandSyntaxException {
+    private static int give(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, ItemInput item, int amount) throws CommandSyntaxException {
+        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         // Calculate the maximum stack size and maximum give size
         int maxStackSize = item.getItem().getMaxStackSize();
         int maxGiveSize = maxStackSize*100;
@@ -70,9 +70,7 @@ public class GiveCommand {
         // Loop until countdownAmount is less than or equal to zero
         while (countdownAmount > 0) {
             // Loop through all targets
-            for (Player target : targets) {
-                ServerPlayer entityplayer = (ServerPlayer) target;
-
+            for (ServerPlayer target : targets) {
                 // Skip this iteration if countdownAmount is less than or equal to zero
                 if (countdownAmount <= 0) continue;
 
@@ -83,7 +81,7 @@ public class GiveCommand {
                 // Create the item stack to give
                 ItemStack itemStack = item.createItemStack(i1, false);
                 // Attempt to add the item stack to the target's inventory
-                boolean flag = entityplayer.getInventory().add(itemStack);
+                boolean flag = target.getInventory().add(itemStack);
                 ItemEntity entityitem;
 
                 // If the item stack was successfully added to the inventory, or if the item stack is empty
@@ -91,7 +89,7 @@ public class GiveCommand {
                     // Set the count of the item stack to 1
                     itemStack.setCount(1);
                     // Drop the item stack in the world
-                    entityitem = entityplayer.drop(itemStack, false, false, false);
+                    entityitem = target.drop(itemStack, false, false, false);
 
                     // If the item entity was created
                     if (entityitem != null) {
@@ -100,22 +98,22 @@ public class GiveCommand {
                     }
 
                     // Play the item pickup sound at the target's position
-                    entityplayer.level.playSound(null, entityplayer.getX(), entityplayer.getY(), entityplayer.getZ(), SoundEvents.ITEM_PICKUP,
-                            SoundSource.PLAYERS, 0.2F, ((entityplayer.getRandom().nextFloat() - entityplayer.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                    target.level.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ITEM_PICKUP,
+                            SoundSource.PLAYERS, 0.2F, ((target.getRandom().nextFloat() - target.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
                     // Broadcast changes to the target's container menu
-                    entityplayer.containerMenu.broadcastChanges();
+                    target.containerMenu.broadcastChanges();
 
                 // If the item stack was not successfully added to the inventory
                 } else {
                     // Drop the item stack in the world
-                    entityitem = entityplayer.drop(itemStack, false);
+                    entityitem = target.drop(itemStack, false);
 
                     // If the item entity was created
                     if (entityitem != null) {
                         // Set the no pick up delay of the item entity
                         entityitem.setNoPickUpDelay();
                         // Set the owner of the item entity
-                        entityitem.setOwner(entityplayer.getUUID());
+                        entityitem.setOwner(target.getUUID());
                     }
                 }
 
@@ -125,14 +123,14 @@ public class GiveCommand {
         // If the source is a player
         if (source.isPlayer()){
             // Get the Bukkit player from the source
-            org.bukkit.entity.Player player = Bukkit.getPlayer(source.getPlayer().getUUID());
+            org.bukkit.entity.Player player = source.getPlayerOrException().getBukkitEntity();
 
             // If there is only one target
             if (targets.size() == 1) {
                 SurfApi.getUser(player).thenAcceptAsync(user -> {
                     try {
                         user.sendMessage(SurfApi.getPrefix()
-                                .append(Bukkit.getPlayer(targets.iterator().next().getUUID()).displayName())
+                                .append(targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
                                 .append(Component.text(" hat ", SurfColors.SUCCESS))
                                 .append(Component.text(amount, SurfColors.TERTIARY))
                                 .append(Component.text(" "))

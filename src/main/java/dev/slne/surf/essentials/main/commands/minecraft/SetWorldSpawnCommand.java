@@ -53,7 +53,7 @@ public class SetWorldSpawnCommand extends BrigadierCommand {
                     .append(Component.text(angle, SurfColors.TERTIARY))
                     .append(Component.text(" gesetzt.", SurfColors.SUCCESS)));
         }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.setworldspawn.success", pos.getX(), pos.getY(), pos.getZ(), angle), true);
+            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.setworldspawn.success", pos.getX(), pos.getY(), pos.getZ(), angle), false);
         }
 
         return 1;

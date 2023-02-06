@@ -36,7 +36,8 @@ public class HealCommand {
                         .executes(context -> heal(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 
-    private static int heal(CommandSourceStack source, Collection<ServerPlayer> targets) throws CommandSyntaxException {
+    private static int heal(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
+        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulChanges = 0;
 
         for (ServerPlayer target : targets) {

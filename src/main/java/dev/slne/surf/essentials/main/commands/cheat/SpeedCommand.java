@@ -37,7 +37,8 @@ public class SpeedCommand {
                         .executes(context -> speed(context.getSource(), context.getSource().getPlayerOrException(), null)));
     }
 
-    private static int speed(CommandSourceStack source, ServerPlayer target, Float speed) throws CommandSyntaxException {
+    private static int speed(CommandSourceStack source, ServerPlayer targetUnchecked, Float speed) throws CommandSyntaxException {
+        ServerPlayer target = EssentialsUtil.checkSinglePlayerSuggestion(source, targetUnchecked);
         Player bukkitTarget = target.getBukkitEntity();
         if (speed == null){ //reset the speed to default
             bukkitTarget.setFlySpeed(0.1f);

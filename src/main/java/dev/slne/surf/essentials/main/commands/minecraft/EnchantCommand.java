@@ -10,6 +10,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandBuildContext;
@@ -58,7 +59,8 @@ public class EnchantCommand {
                                         ResourceArgument.getEnchantment(context, "enchantment") , IntegerArgumentType.getInteger(context, "level"))))));
     }
 
-    private static int enchant(CommandSourceStack source, Collection<? extends Entity> targets, Holder<Enchantment> enchantment, int level) throws CommandSyntaxException {
+    private static int enchant(CommandSourceStack source, Collection<? extends Entity> targetsUnchecked, Holder<Enchantment> enchantment, int level) throws CommandSyntaxException {
+        Collection<? extends Entity> targets = EssentialsUtil.checkEntitySuggestion(source, targetsUnchecked);
         // Get the enchantment from the argument
         Enchantment enchantment1 = enchantment.value();
 
@@ -103,7 +105,7 @@ public class EnchantCommand {
 
             // If the command source is a player, send a message to the player
             if (source.isPlayer()){
-                Player player = source.getPlayer().getBukkitEntity();
+                Player player = source.getPlayerOrException().getBukkitEntity();
 
                 // If there is only one target, send a message with the name of the target
                 if (targets.size() == 1){

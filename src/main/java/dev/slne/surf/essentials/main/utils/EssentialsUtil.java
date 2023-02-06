@@ -1,15 +1,18 @@
 package dev.slne.surf.essentials.main.utils;
 
 import com.destroystokyo.paper.event.brigadier.AsyncPlayerSendCommandsEvent;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.main.exceptions.BrigadierUnsupportedException;
+import net.kyori.adventure.nbt.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
@@ -21,9 +24,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import org.bukkit.Bukkit;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
@@ -32,12 +33,12 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+
+import static net.kyori.adventure.nbt.BinaryTagIO.Compression.GZIP;
 
 public abstract class EssentialsUtil {
     /**
@@ -46,6 +47,9 @@ public abstract class EssentialsUtil {
      */
     public static Sound[] scareSounds = new Sound[]{Sound.ENTITY_LIGHTNING_BOLT_THUNDER, Sound.ENTITY_WOLF_HOWL,
             Sound.ENTITY_BAT_DEATH, Sound.ENTITY_GHAST_SCREAM, Sound.ENTITY_GHAST_HURT};
+
+    private static final DynamicCommandExceptionType ERROR_POSITION_IN_UNLOADED_WORLD = new DynamicCommandExceptionType(gameProfile ->
+            net.minecraft.network.chat.Component.literal(((GameProfile) gameProfile).getName() + " has logged out in an unloaded world."));
 
     public static final int MAX_FOOD = 20;
 
@@ -436,6 +440,16 @@ public abstract class EssentialsUtil {
         return targets;
     }
 
+    public static <T extends ServerPlayer> ServerPlayer checkSinglePlayerSuggestion(CommandSourceStack source, T player) throws CommandSyntaxException {
+        Collection<ServerPlayer> players = checkPlayerSuggestion(source, Collections.singleton(player));
+        return players.iterator().next();
+    }
+
+    public static <T extends Entity> Entity checkSingleEntitySuggestion(CommandSourceStack source, T entity) throws CommandSyntaxException{
+        Collection<? extends Entity> entities = checkEntitySuggestion(source, Collections.singleton(entity));
+        return entities.iterator().next();
+    }
+
     public static Component deserialize(String toDeserialize){
         return LegacyComponentSerializer.legacyAmpersand().deserialize(toDeserialize);
     }
@@ -454,5 +468,50 @@ public abstract class EssentialsUtil {
             if (playerFile.exists()) return playerFile;
         }
         return null;
+    }
+
+    public static Location getLocation(GameProfile gameProfile) throws IOException, CommandSyntaxException {
+        File dataFile = getPlayerFile(gameProfile.getId());
+
+        if (dataFile == null) return null;
+        CompoundBinaryTag tag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), GZIP);
+        ListBinaryTag posTag = tag.getList("Pos");
+        ListBinaryTag rotTag = tag.getList("Rotation");
+
+        long worldUUIDMost = tag.getLong("WorldUUIDMost");
+        long worldUUIDLeast = tag.getLong("WorldUUIDLeast");
+
+        World world = Bukkit.getWorld(new UUID(worldUUIDMost, worldUUIDLeast));
+
+        if (world == null) throw ERROR_POSITION_IN_UNLOADED_WORLD.create(gameProfile);
+
+        return new Location(world, posTag.getDouble(0), posTag.getDouble(1), posTag.getDouble(2), rotTag.getFloat(0), rotTag.getFloat(1));
+    }
+
+    public static void setLocation(UUID uuid, Location location) throws IOException{
+        File dataFile = EssentialsUtil.getPlayerFile(uuid);
+
+        if (dataFile == null) return;
+        CompoundBinaryTag rawTag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), GZIP);
+        CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder().put(rawTag);
+
+        ListBinaryTag.Builder<BinaryTag> posTag = ListBinaryTag.builder();
+        posTag.add(DoubleBinaryTag.of(location.getX()));
+        posTag.add(DoubleBinaryTag.of(location.getY()));
+        posTag.add(DoubleBinaryTag.of(location.getZ()));
+
+        ListBinaryTag.Builder<BinaryTag> rotTag = ListBinaryTag.builder();
+        rotTag.add(FloatBinaryTag.of(location.getYaw()));
+        rotTag.add(FloatBinaryTag.of(location.getPitch()));
+
+        builder.put("Pos", posTag.build());
+        builder.put("Rotation", rotTag.build());
+
+        long worldUUIDLeast = location.getWorld().getUID().getLeastSignificantBits();
+        long worldUUIDMost = location.getWorld().getUID().getMostSignificantBits();
+        builder.putLong("WorldUUIDLeast", worldUUIDLeast);
+        builder.putLong("WorldUUIDMost", worldUUIDMost);
+
+        BinaryTagIO.writer().write(builder.build(), dataFile.toPath(), GZIP);
     }
 }

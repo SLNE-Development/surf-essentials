@@ -88,7 +88,8 @@ public class ParticleCommand {
                                                                         EntityArgument.getPlayers(context, "viewers"))))))))));
     }
 
-    private static int showParticles(CommandSourceStack source, ParticleOptions parameters, Vec3 pos, Vec3 delta, float speed, int count, boolean force, Collection<ServerPlayer> viewers) throws CommandSyntaxException{
+    private static int showParticles(CommandSourceStack source, ParticleOptions parameters, Vec3 pos, Vec3 delta, float speed, int count, boolean force, Collection<ServerPlayer> viewersUnchecked) throws CommandSyntaxException{
+        Collection<ServerPlayer> viewers = EssentialsUtil.checkPlayerSuggestion(source, viewersUnchecked);
         int countParticlesShown = 0;
 
         for (ServerPlayer serverPlayer : viewers) {

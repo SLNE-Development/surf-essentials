@@ -8,13 +8,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.world.entity.Entity;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -47,11 +47,12 @@ public class KillCommand {
      * Handles the logic for the "kill" command.
      *
      * @param context the command context
-     * @param targets the target entities to kill
+     * @param targetsUnchecked the target entities to kill
      * @return the result of the command
      * @throws CommandSyntaxException if the command was used incorrectly
      */
-    private static int kill(CommandContext<CommandSourceStack> context, Collection<? extends Entity> targets) throws CommandSyntaxException {
+    private static int kill(CommandContext<CommandSourceStack> context, Collection<? extends Entity> targetsUnchecked) throws CommandSyntaxException {
+        Collection<? extends Entity> targets = EssentialsUtil.checkEntitySuggestion(context.getSource(), targetsUnchecked);
         // Kill each target entity
         for (Entity entity : targets) {
             entity.kill();
@@ -59,7 +60,7 @@ public class KillCommand {
 
         if (context.getSource().isPlayer()){
             // If the command was issued by a player, send a message to the player
-            Player player = Bukkit.getPlayer(context.getSource().getPlayerOrException().getUUID());
+            Player player = context.getSource().getPlayerOrException().getBukkitEntity();
 
             if (targets.size() == 1){
                 SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()

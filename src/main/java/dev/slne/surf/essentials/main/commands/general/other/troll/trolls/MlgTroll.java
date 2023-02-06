@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -15,6 +16,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -24,8 +26,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class MlgTroll {
-    private static HashMap<UUID, ItemStack[]> saveInventory = new HashMap<>();
-    private static HashMap<UUID, Boolean> scheduledTasks = new HashMap<>();
+    private static final HashMap<UUID, ItemStack[]> saveInventory = new HashMap<>();
+    private static final HashMap<UUID, Boolean> scheduledTasks = new HashMap<>();
 
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> mlg(LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.mlg"));
@@ -47,6 +49,7 @@ public class MlgTroll {
     }
 
     private static int mlgTroll(CommandContext<CommandSourceStack> context, Player target, String mlgType) throws CommandSyntaxException {
+        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), ((CraftPlayer) target).getHandle());
         CommandSourceStack source = context.getSource();
 
         if (!saveInventory.containsKey(target.getUniqueId())) {
@@ -97,9 +100,10 @@ public class MlgTroll {
 
     public static void restoreInventoryFromMlgTroll(){
         saveInventory.forEach((uuid, itemStacks) -> {
-            if (Bukkit.getPlayer(uuid) != null){
-                Bukkit.getPlayer(uuid).getInventory().setContents(itemStacks);
-                Bukkit.getPlayer(uuid).setInvulnerable(false);
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null){
+                player.getInventory().setContents(itemStacks);
+                player.setInvulnerable(false);
             }
             saveInventory.remove(uuid);
         });

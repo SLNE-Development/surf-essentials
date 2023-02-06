@@ -18,6 +18,7 @@ import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.block.Blocks;
@@ -103,7 +104,7 @@ public class SpawnerChangeCommand{
 
     }
 
-    private static int modifySpawner(CommandSourceStack source, BlockPos blockPos, net.minecraft.world.entity.EntityType<?> type, Integer minSpawnDelay, Integer maxSpawnDelay, Integer spawnRange, Integer requiredPlayerRange) throws CommandSyntaxException {
+    private static int modifySpawner(CommandSourceStack source, BlockPos blockPos, EntityType<?> type, Integer minSpawnDelay, Integer maxSpawnDelay, Integer spawnRange, Integer requiredPlayerRange) throws CommandSyntaxException {
         if (!isSpawner(source, blockPos)) return 0;
 
         BlockEntity blockEntity = source.getLevel().getBlockEntity(blockPos);

@@ -48,7 +48,8 @@ public class UnhatCommand extends BrigadierCommand {
                 .executes(context -> hat(context.getSource(), EntityArgument.getPlayer(context, "player"))));
     }
 
-    private int hat(CommandSourceStack source, ServerPlayer player) throws CommandSyntaxException{
+    private int hat(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException{
+        ServerPlayer player = EssentialsUtil.checkSinglePlayerSuggestion(source, playerUnchecked);
         Inventory playerInventory = player.getInventory();
         ItemStack itemStackOnHead = playerInventory.getArmor(EquipmentSlot.HEAD.getIndex());
         int freeSlot = playerInventory.getFreeSlot();

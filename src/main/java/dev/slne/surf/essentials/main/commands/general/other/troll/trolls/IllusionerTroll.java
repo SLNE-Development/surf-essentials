@@ -9,6 +9,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -16,6 +17,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
@@ -37,6 +39,7 @@ public class IllusionerTroll implements Listener {
     }
 
     private static int makeIllusioner(CommandContext<CommandSourceStack> context, @NotNull Player target, int amount) throws CommandSyntaxException {
+        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), (ServerPlayer) target);
         BlockPos blockPosition = new BlockPos(target.blockPosition());
 
         // Check if position is valid spawn position
@@ -74,7 +77,7 @@ public class IllusionerTroll implements Listener {
         // Success messages
         if (context.getSource().isPlayer()){
             SurfApi.getUser(context.getSource().getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(Bukkit.getPlayer(target.getUUID()).displayName().colorIfAbsent(SurfColors.YELLOW))
+                    .append(((ServerPlayer) target).adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
                     .append(Component.text(" wird mit Illusioner getrollt!", SurfColors.SUCCESS))));
         }else{
             context.getSource().sendSuccess(target.getDisplayName()

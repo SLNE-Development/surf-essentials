@@ -38,6 +38,7 @@ public class HerobrineTroll {
     }
 
     private static int summonHerobrine(CommandContext<CommandSourceStack> context, Player target, boolean withParticles) throws CommandSyntaxException {
+        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), (ServerPlayer) target);
         CommandSourceStack source = context.getSource();
 
         GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "Herobrine");
@@ -66,7 +67,7 @@ public class HerobrineTroll {
 
         ps.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, herobrineNpc));
         ps.send(new ClientboundAddPlayerPacket(herobrineNpc));
-        EssentialsUtil.scarePlayer(Bukkit.getPlayer(target.getUUID()));
+        EssentialsUtil.scarePlayer(((ServerPlayer) target).getBukkitEntity());
 
         if (withParticles){
             Bukkit.getScheduler().runTaskTimerAsynchronously(SurfEssentials.getInstance(), bukkitTask -> herobrineNpc.getLevel().sendParticles(
@@ -78,7 +79,7 @@ public class HerobrineTroll {
         if (source.isPlayer()){
             SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
                     .append(Component.text("Bei ", SurfColors.SUCCESS))
-                    .append(Bukkit.getPlayer(target.getUUID()).displayName().colorIfAbsent(SurfColors.YELLOW))
+                    .append(((ServerPlayer) target).adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
                     .append(Component.text(" erscheint nun Herobrine!", SurfColors.SUCCESS))));
         }else{
             source.sendSuccess(net.minecraft.network.chat.Component.literal("Herobrine now appears at ")

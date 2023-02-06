@@ -7,15 +7,16 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
-import org.bukkit.Bukkit;
 
 import java.util.Collection;
 
@@ -35,7 +36,8 @@ public class HurtCommand {
                                 IntegerArgumentType.getInteger(context, "amount")))));
     }
 
-    private static int executeHurt(CommandSourceStack source, Collection<? extends Player> targets, int amount) throws CommandSyntaxException {
+    private static int executeHurt(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, int amount) throws CommandSyntaxException {
+        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         if (source.isPlayer()){
             for (Player target : targets) {
                 target.hurt(DamageSource.playerAttack(source.getPlayerOrException()), amount);
@@ -49,7 +51,7 @@ public class HurtCommand {
         if (targets.size() == 1){
             if (source.isPlayer()){
                 SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Bukkit.getPlayer(targets.iterator().next().getUUID()).displayName().colorIfAbsent(SurfColors.YELLOW))
+                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
                         .append(Component.text(" wurde verletzt!", SurfColors.SUCCESS))));
             }else {
                 source.sendSuccess(targets.iterator().next().getDisplayName()

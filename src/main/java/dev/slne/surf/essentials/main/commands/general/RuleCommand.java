@@ -38,7 +38,8 @@ public class RuleCommand {
                 .executes(context -> sendRules(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 
-    private static int sendRules(CommandSourceStack source, Collection<ServerPlayer> targets) throws CommandSyntaxException{
+    private static int sendRules(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException{
+        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulSends = 0;
 
         for (ServerPlayer player : targets) {

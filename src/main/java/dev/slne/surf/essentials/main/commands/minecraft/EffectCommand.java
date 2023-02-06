@@ -75,7 +75,8 @@ public class EffectCommand {
                                 .executes(context -> clearSingleEffect(context.getSource(), EntityArgument.getEntities(context, "targets"), ResourceArgument.getMobEffect(context, "effect"))))));
     }
 
-    private static int giveEffect(CommandSourceStack source, Collection<? extends Entity> targets, Holder<MobEffect> statusEffect, @Nullable Integer seconds, int amplifier, boolean showParticles) throws CommandSyntaxException{
+    private static int giveEffect(CommandSourceStack source, Collection<? extends Entity> targetsUnchecked, Holder<MobEffect> statusEffect, @Nullable Integer seconds, int amplifier, boolean showParticles) throws CommandSyntaxException{
+        Collection<? extends Entity> targets = EssentialsUtil.checkEntitySuggestion(source, targetsUnchecked);
         MobEffect mobEffectList = statusEffect.value();
         int successfulApplies = 0;
         int durationInTicks = calculateDurationInTicks(mobEffectList, seconds);
@@ -130,7 +131,8 @@ public class EffectCommand {
         return 0;
     }
 
-    private static int clearSingleEffect(CommandSourceStack source, Collection<? extends Entity> targets, Holder<MobEffect> statusEffect)throws CommandSyntaxException{
+    private static int clearSingleEffect(CommandSourceStack source, Collection<? extends Entity> targetsUnchecked, Holder<MobEffect> statusEffect)throws CommandSyntaxException{
+        Collection<? extends Entity> targets = EssentialsUtil.checkEntitySuggestion(source, targetsUnchecked);
         MobEffect mobEffectList = statusEffect.value();
         int successfullyRemoves = 0;
 
@@ -176,7 +178,8 @@ public class EffectCommand {
         return successfullyRemoves;
     }
 
-    private static int clearAllEffects(CommandSourceStack source, Collection<? extends Entity> targets) throws CommandSyntaxException{
+    private static int clearAllEffects(CommandSourceStack source, Collection<? extends Entity> targetsUnchecked) throws CommandSyntaxException{
+        Collection<? extends Entity> targets = EssentialsUtil.checkEntitySuggestion(source, targetsUnchecked);
         int successfullyRemoves = 0;
 
         for (Entity entity : targets) {

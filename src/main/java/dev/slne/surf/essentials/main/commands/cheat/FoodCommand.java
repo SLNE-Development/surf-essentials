@@ -35,7 +35,8 @@ public class FoodCommand {
                 .executes(context -> feed(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 
-    private static int feed(CommandSourceStack source, Collection<ServerPlayer> targets)throws CommandSyntaxException{
+    private static int feed(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked)throws CommandSyntaxException{
+        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulFeeds = 0;
 
         for (ServerPlayer target : targets) {

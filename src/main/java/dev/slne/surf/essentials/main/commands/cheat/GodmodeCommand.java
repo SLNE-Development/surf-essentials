@@ -43,7 +43,8 @@ public class GodmodeCommand {
                         .executes(context -> godmode(context.getSource(), EntityArgument.getPlayers(context, "players"), false))));
     }
 
-    private static int godmode(CommandSourceStack source, Collection<ServerPlayer> targets, boolean enable) throws CommandSyntaxException{
+    private static int godmode(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, boolean enable) throws CommandSyntaxException{
+        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulChanges = 0;
 
         for (ServerPlayer target : targets) {

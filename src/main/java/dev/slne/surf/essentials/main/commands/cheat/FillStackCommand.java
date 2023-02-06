@@ -34,7 +34,8 @@ public class FillStackCommand{
                 .executes(context -> more(context.getSource(), EntityArgument.getPlayer(context, "player"))));
     }
 
-    private static int more(CommandSourceStack source, ServerPlayer target) throws CommandSyntaxException{
+    private static int more(CommandSourceStack source, ServerPlayer targetUnchecked) throws CommandSyntaxException{
+        ServerPlayer target = EssentialsUtil.checkSinglePlayerSuggestion(source, targetUnchecked);
         ItemStack item = target.getMainHandItem();
 
         if (item.isEmpty()){

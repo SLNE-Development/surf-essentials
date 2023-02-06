@@ -12,6 +12,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import dev.slne.surf.essentials.main.utils.Permissions;
 import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.TextComponent;
@@ -34,6 +35,7 @@ import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.player.Player;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -461,11 +463,12 @@ public class BossbarCommand {
      *
      * @param source the command source
      * @param bossBar the bossbar
-     * @param players the players to set
+     * @param playersUnchecked the players to set
      * @return the number of players in the bossbar
      * @throws CommandSyntaxException if the bossbar does not exist
      */
-    private static int setPlayers(CommandSourceStack source, CustomBossEvent bossBar, Collection<ServerPlayer> players) throws CommandSyntaxException {
+    private static int setPlayers(CommandSourceStack source, CustomBossEvent bossBar, Collection<ServerPlayer> playersUnchecked) throws CommandSyntaxException {
+        Collection<ServerPlayer> players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
         boolean notSamePlayers = bossBar.setPlayers(players);
         if (!notSamePlayers) {
             if (source.isPlayer()) {
@@ -637,7 +640,7 @@ public class BossbarCommand {
      */
     public static CustomBossEvent getBossBar(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ResourceLocation resourceLocation = ResourceLocationArgument.getId(context, "id");
-        CustomBossEvent customBossEvent = (context.getSource()).getServer().getCustomBossEvents().get(resourceLocation);
+        @Nullable CustomBossEvent customBossEvent = (context.getSource()).getServer().getCustomBossEvents().get(resourceLocation);
         if (customBossEvent == null) {
             throw ERROR_DOESNT_EXIST.create(resourceLocation.toString());
         } else {

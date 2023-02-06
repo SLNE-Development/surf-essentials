@@ -15,7 +15,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
 
@@ -64,7 +63,8 @@ public class ExperienceCommand {
                                                 IntegerArgumentType.getInteger(context, "amount"), 1))))));
     }
 
-    private static int query(CommandSourceStack source, Player target, int whatToQuery)throws CommandSyntaxException{
+    private static int query(CommandSourceStack source, ServerPlayer targetUnchecked, int whatToQuery)throws CommandSyntaxException{
+        ServerPlayer target = EssentialsUtil.checkSinglePlayerSuggestion(source, targetUnchecked);
         if (whatToQuery != 0 && whatToQuery != 1) throw new IllegalArgumentException("'whatToQuery' can only be 0 or 1.");
         int result = (whatToQuery == 0) ? target.experienceLevel : Math.round(target.experienceProgress * (float) target.getXpNeededForNextLevel());
 
@@ -84,7 +84,8 @@ public class ExperienceCommand {
         return 1;
     }
 
-    private static int give(CommandSourceStack source, Collection<ServerPlayer> targets, int amount, int whatToGive) throws CommandSyntaxException{
+    private static int give(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, int amount, int whatToGive) throws CommandSyntaxException{
+        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         if (whatToGive != 0 && whatToGive != 1) throw new IllegalArgumentException("'whatToGive' can only be 0 or 1.");
 
         for (ServerPlayer player : targets) {
@@ -126,7 +127,8 @@ public class ExperienceCommand {
         return 1;
     }
 
-    private static int set(CommandSourceStack source, Collection<ServerPlayer> targets, int amount, int whatToSet) throws CommandSyntaxException{
+    private static int set(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, int amount, int whatToSet) throws CommandSyntaxException{
+        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         if (whatToSet != 0 && whatToSet != 1) throw new IllegalArgumentException("'whatToSet' can only be 0 or 1.");
 
         for (ServerPlayer player : targets) {

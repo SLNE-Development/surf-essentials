@@ -6,7 +6,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.brigadier.GeneralTabComplete;
-import dev.slne.surf.essentials.brigadier.TpTabComplete;
 import dev.slne.surf.essentials.main.commands.BrigadierCommands;
 import dev.slne.surf.essentials.main.commands.Commands;
 import dev.slne.surf.essentials.main.commands.general.other.TimerCommand;
@@ -72,11 +71,9 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
 
         listeners.registerListeners(this);
         commands.initializeGeneralCommands();
-        commands.initializeTpCommands();
         commodore = CommodoreProvider.getCommodore(this);
 
         new GeneralTabComplete().register(commodore);
-        new TpTabComplete().register(commodore);
 
         brigadierCommands.register();
 

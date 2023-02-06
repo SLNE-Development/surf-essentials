@@ -10,6 +10,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -18,6 +19,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -29,10 +31,11 @@ public class BoomTroll {
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> boom(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.boom"));
         return Commands.argument("player", EntityArgument.player())
-                .executes(context -> makeBoom(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer()));
+                .executes(context -> makeBoom(context, EntityArgument.getPlayer(context, "player").getBukkitEntity()));
     }
 
     private static int makeBoom(@NotNull CommandContext<CommandSourceStack> context, @NotNull Player target) throws CommandSyntaxException {
+        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), ((CraftPlayer) target).getHandle());
         CommandSourceStack source = context.getSource();
         ProtocolManager manager = SurfEssentials.manager();
         Location location = target.getLocation();

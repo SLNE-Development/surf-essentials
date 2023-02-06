@@ -36,7 +36,8 @@ public class InfoCommand{
                 .executes(context -> info(context.getSource(), EntityArgument.getPlayer(context, "player"))));
     }
 
-    private static int info(CommandSourceStack source, ServerPlayer player) throws CommandSyntaxException {
+    private static int info(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException {
+        ServerPlayer player = EssentialsUtil.checkSinglePlayerSuggestion(source, playerUnchecked);
         Component line = Component.newline().append(SurfApi.getPrefix());
         Component name = player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY);
         UUID uuid = player.getUUID();

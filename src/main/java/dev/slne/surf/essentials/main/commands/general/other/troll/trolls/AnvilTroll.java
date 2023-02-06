@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -17,6 +18,7 @@ import net.minecraft.commands.arguments.selector.EntitySelector;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -31,20 +33,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @DefaultQualifier(NotNull.class)
 public class AnvilTroll implements Listener {
-    private static HashMap<UUID, Boolean> playersInTroll = new HashMap<>();
+    private static final HashMap<UUID, Boolean> playersInTroll = new HashMap<>();
     private static final HashMap<Double, Double> anvilLocation = new HashMap<>();
     private static int anvilTaskID;
 
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> anvil(LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.anvil"));
         return Commands.argument("player", EntityArgument.player())
-                .executes(context -> dropAnvil(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer(), 60))
+                .executes(context -> dropAnvil(context, EntityArgument.getPlayer(context, "player").getBukkitEntity(), 60))
                 .then(Commands.argument("time", IntegerArgumentType.integer(1, 3600))
-                        .executes(context -> dropAnvil(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer(),
+                        .executes(context -> dropAnvil(context, EntityArgument.getPlayer(context, "player").getBukkitEntity(),
                                 IntegerArgumentType.getInteger(context, "time"))));
     }
 
     private static int dropAnvil(CommandContext<CommandSourceStack> context, Player target, int timeInSeconds) throws CommandSyntaxException {
+        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), ((CraftPlayer) target).getHandle());
         CommandSourceStack source = context.getSource();
 
         boolean isInTroll = playersInTroll.get(target.getUniqueId()) != null ? playersInTroll.get(target.getUniqueId()) : false;

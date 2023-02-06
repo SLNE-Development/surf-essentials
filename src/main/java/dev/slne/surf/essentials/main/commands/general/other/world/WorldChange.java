@@ -5,6 +5,7 @@ import dev.slne.surf.essentials.main.utils.EssentialsUtil;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 public class WorldChange {
@@ -24,7 +25,7 @@ public class WorldChange {
             return;
         }
         Player playerToChange = Bukkit.getPlayerExact(args[2]);
-        if (playerToChange == null){//check if specified player is valid
+        if (playerToChange == null || !EssentialsUtil.canPlayerSeePlayer(((CraftPlayer) player).getHandle(), ((CraftPlayer) player).getHandle())){//check if specified player is valid
             EssentialsUtil.somethingWentWrongAsync_DE(player, "Dieser Spieler existiert nicht!");
             return;
         }
