@@ -68,8 +68,5 @@ deploy:
     stage: deploy
     script:
         - "mvn $MAVEN_CLI_OPTS -s $MAVEN_SETTINGS deploy"
-    only:
-        variables:
-            - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     tags:
         - java
