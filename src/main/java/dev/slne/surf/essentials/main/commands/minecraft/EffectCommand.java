@@ -105,7 +105,6 @@ public class EffectCommand {
                                     .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Zeit: ", SurfColors.INFO)
                                             .append(net.kyori.adventure.text.Component.text(EssentialsUtil.ticksToString(durationInTicks), SurfColors.TERTIARY)))))
                             .append(net.kyori.adventure.text.Component.text(" wurde ", SurfColors.SUCCESS))
-                            //TODO: Verify the operation of color
                             .append(PaperAdventure.asAdventure(targets.iterator().next().getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
                             .append(net.kyori.adventure.text.Component.text(" gegeben!", SurfColors.SUCCESS))));
                 }else {
@@ -155,7 +154,6 @@ public class EffectCommand {
                             .append(net.kyori.adventure.text.Component.text("Der Effect ", SurfColors.SUCCESS))
                             .append(net.kyori.adventure.text.Component.text("[%s]".formatted(mobEffectList.getDisplayName().getString()), EffectColors.getEffectColor(mobEffectList)))
                             .append(net.kyori.adventure.text.Component.text(" wurde von ", SurfColors.SUCCESS))
-                            //TODO: Verify the operation of color
                             .append(PaperAdventure.asAdventure(targets.iterator().next().getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
                             .append(net.kyori.adventure.text.Component.text(" entfernt!", SurfColors.SUCCESS))));
                 }else {
@@ -198,7 +196,6 @@ public class EffectCommand {
             if (targets.size() == 1) {
                 if (source.isPlayer()){
                     EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Es wurden alle Effekte von ", SurfColors.SUCCESS)
-                            //TODO: Verify the operation of color
                             .append(PaperAdventure.asAdventure(targets.iterator().next().getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
                             .append(net.kyori.adventure.text.Component.text(" entfernt!", SurfColors.SUCCESS)));
                 }else {

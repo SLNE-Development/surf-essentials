@@ -50,7 +50,7 @@ public abstract class EssentialsUtil {
     public static Sound[] scareSounds = new Sound[]{Sound.ENTITY_LIGHTNING_BOLT_THUNDER, Sound.ENTITY_WOLF_HOWL,
             Sound.ENTITY_BAT_DEATH, Sound.ENTITY_GHAST_SCREAM, Sound.ENTITY_GHAST_HURT};
 
-    private static final DynamicCommandExceptionType ERROR_POSITION_IN_UNLOADED_WORLD = new DynamicCommandExceptionType(gameProfile ->
+    public static final DynamicCommandExceptionType ERROR_POSITION_IN_UNLOADED_WORLD = new DynamicCommandExceptionType(gameProfile ->
             net.minecraft.network.chat.Component.literal(((GameProfile) gameProfile).getName() + " has logged out in an unloaded world."));
 
     public static final int MAX_FOOD = 20;

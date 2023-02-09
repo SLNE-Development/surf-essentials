@@ -24,7 +24,6 @@ public class GameruleCommand {
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GAMERULE_PERMISSION));
 
-        //TODO: perhaps add a gamerule description when the user hovers over the suggested gamerule
         GameRules.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor() {
             public <T extends GameRules.Value<T>> void visit(GameRules.@NotNull Key<T> key, GameRules.@NotNull Type<T> type) {
                 literal.then((Commands.literal(key.getId())

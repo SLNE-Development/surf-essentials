@@ -21,8 +21,9 @@ import java.util.Map;
 public class TeleportListener implements Listener {
     private static final Map<Player, Location> playerTeleportLocationMap = new HashMap<>();
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
+        if (event.isCancelled()) return;
         Player player = event.getPlayer();
 
         if (EssentialsUtil.isVanished(player)) return;

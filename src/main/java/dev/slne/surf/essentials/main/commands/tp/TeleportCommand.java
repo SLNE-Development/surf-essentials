@@ -74,12 +74,18 @@ public class TeleportCommand extends BrigadierCommand {
         canSourceSeeEntity(source, entity);
         ServerPlayer sender = source.getPlayerOrException();
         Location targetLocation = entity.getBukkitEntity().getLocation();
+        PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(sender.getBukkitEntity(), sender.getBukkitEntity().getLocation(),
+                targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);
+        if (playerTeleportEvent.isCancelled()) return 0;
 
-        if (isLoaded(targetLocation)){
+        if (isLoaded(targetLocation)) {
+            SurfApi.callEvent(playerTeleportEvent);
+
             sender.teleportTo(targetLocation.getX(), targetLocation.getY(), targetLocation.getZ());
             EssentialsUtil.sendSuccess(source, teleportToEntity$adventure(entity));
 
         }else {
+            SurfApi.callEvent(playerTeleportEvent);
             waiting$adventure(source);
 
             sender.getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAcceptAsync(aBoolean -> {
@@ -96,12 +102,15 @@ public class TeleportCommand extends BrigadierCommand {
         canSourceSeeEntity(source, fromEntity);
         canSourceSeeEntity(source, toEntity);
         Location targetLocation = toEntity.getBukkitEntity().getLocation();
+        PlayerTeleportEvent playerTeleportEvent = null;
+        if (fromEntity instanceof ServerPlayer player) {
+            playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
+                    targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);
+            if (playerTeleportEvent.isCancelled()) return 0;
+        }
 
         if (isLoaded(targetLocation)){
-            if (fromEntity instanceof ServerPlayer player) {
-                PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
-                        targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);
-                if (playerTeleportEvent.isCancelled()) return 0;
+            if (playerTeleportEvent != null) {
                 SurfApi.callEvent(playerTeleportEvent);
             }
             fromEntity.teleportTo(targetLocation.getX(), targetLocation.getY(), targetLocation.getZ());
@@ -130,12 +139,15 @@ public class TeleportCommand extends BrigadierCommand {
     private int teleportEntityToLocation(CommandSourceStack source, Entity entity, Vec3 vec3) throws CommandSyntaxException{
         canSourceSeeEntity(source, entity);
         Location targetLocation = new Location(source.getLevel().getWorld(), vec3.x(), vec3.y(), vec3.z());
+        PlayerTeleportEvent playerTeleportEvent = null;
+        if (entity instanceof ServerPlayer player) {
+            playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
+                    targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);
+            if (playerTeleportEvent.isCancelled()) return 0;
+        }
 
         if (isLoaded(targetLocation)){
-            if (entity instanceof ServerPlayer player) {
-                PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
-                        targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);
-                if (playerTeleportEvent.isCancelled()) return 0;
+            if (playerTeleportEvent != null) {
                 SurfApi.callEvent(playerTeleportEvent);
             }
             entity.teleportTo(vec3.x(), vec3.y(), vec3.z());

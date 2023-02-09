@@ -16,11 +16,9 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.WeatherType;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
+import org.bukkit.event.weather.LightningStrikeEvent;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @PermissionTag(name = Permissions.LIGHTING_PERMISSION, desc = "Allows you to summon lighting")
@@ -44,22 +42,19 @@ public class LightningCommand {
 
         for (ServerPlayer serverPlayer : targets) {
 
-            Player target = serverPlayer.getBukkitEntity();
-            World world = target.getWorld();
-            target.setPlayerWeather(WeatherType.DOWNFALL);
+            serverPlayer.setPlayerWeather(WeatherType.DOWNFALL, true);
 
             Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), bukkitTask -> {
                 if (power.get() < 1) bukkitTask.cancel();
-                world.strikeLightning(target.getLocation());
+                serverPlayer.getLevel().strikeLightning(serverPlayer, LightningStrikeEvent.Cause.COMMAND);
                 power.getAndDecrement();
             }, 20, 5);
 
             Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), bukkitTask ->
-                    target.resetPlayerWeather(), 20L *power.get() + 40);
+                    serverPlayer.resetPlayerWeather(), 20L *power.get() + 40);
         }
 
         if (context.getSource().isPlayer()){
-            Player player = Objects.requireNonNull(context.getSource().getPlayer()).getBukkitEntity();
 
             if (targets.size() == 1){
                 EssentialsUtil.sendSuccess(context.getSource(), Component.text("Der Blitz hat ", SurfColors.SUCCESS)

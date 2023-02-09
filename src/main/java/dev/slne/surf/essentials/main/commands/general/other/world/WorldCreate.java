@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 import static dev.slne.surf.essentials.main.commands.general.other.world.WorldCommand.creatingWorld;
 import static dev.slne.surf.essentials.main.commands.general.other.world.WorldCommand.successCreate;
 
-//TODO: fix that you can also create other environments
+
 public class WorldCreate {
     public static void createFromArguments(Player player, String[] args) {
         if (args.length == 1) {//no world name specified
