@@ -18,7 +18,6 @@ import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.minecraft.commands.CommandSourceStack;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_19_R2.CraftServer;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,7 +33,7 @@ import static net.kyori.adventure.text.Component.text;
 @Authors({"Twisti_twixi", "SLNE Dev Team"})
 @Load(Load.LoadType.POST_WORLD)
 @Website("https://git.slne.dev/surf/surf-essentials")
-public final class SurfEssentials extends JavaPlugin implements Listener {
+public final class SurfEssentials extends JavaPlugin{
 
     private static SurfEssentials instance;
     ListenerManager listeners;
@@ -46,20 +45,14 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
         brigadierCommands = new BrigadierCommands();
     }
 
-    // Plugin startup logic
     @Override
     public void onEnable() {
         instance = this;
         loadMessage();
 
-        if (!getServer().getMinecraftVersion().equals("1.19.3")){
+        if (!EssentialsUtil.isNmsSupported()){
             getServer().getPluginManager().disablePlugin(instance);
             throw new UnsupportedServerVersionException("This Serverversion (" + getServer().getMinecraftVersion() +") is not supported by the plugin!");
-        }
-
-        if (!EssentialsUtil.isBrigadierSupported()) {
-            getServer().getPluginManager().disablePlugin(instance);
-            return;
         }
 
         listeners.registerListeners(this);
@@ -68,7 +61,6 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
         getLogger().info("The plugin has started successfully!");
     }
 
-    // Plugin shutdown logic
     @Override
     public void onDisable() {
         instance = null;

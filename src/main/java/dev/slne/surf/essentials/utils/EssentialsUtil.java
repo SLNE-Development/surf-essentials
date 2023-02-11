@@ -1,8 +1,6 @@
 package dev.slne.surf.essentials.utils;
 
-import com.destroystokyo.paper.event.brigadier.AsyncPlayerSendCommandsEvent;
 import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -11,7 +9,6 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.slne.surf.api.SurfApi;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.exceptions.BrigadierUnsupportedException;
 import net.kyori.adventure.nbt.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -28,6 +25,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_19_R2.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -324,25 +322,6 @@ public abstract class EssentialsUtil {
             MinecraftServer.getServer().getWorldData().getDataConfiguration().enabledFeatures());
     }
 
-    public static boolean checkForBrigadierClasses(){
-        try {
-            Class.forName(CommandDispatcher.class.getName());
-            Class.forName(AsyncPlayerSendCommandsEvent.class.getName());
-        } catch (Throwable e) {
-            return false;
-        }
-        return true;
-    }
-
-    public static boolean isBrigadierSupported(){
-        if (!checkForBrigadierClasses()){
-            throw new BrigadierUnsupportedException(
-                "Brigadier is not supported by the server. " +
-                "The plugin will not work without! " +
-                "Set -Dcommodore.debug=true for debug info.");
-        }else return true;
-    }
-
     public static boolean canPlayerSeePlayer(@NotNull ServerPlayer player, @NotNull ServerPlayer playerToCheck){
         if (!isVanished(playerToCheck.getBukkitEntity())) return true;
         return player.getBukkitEntity().canSee(playerToCheck.getBukkitEntity());
@@ -457,5 +436,14 @@ public abstract class EssentialsUtil {
         builder.putLong("WorldUUIDMost", worldUUIDMost);
 
         BinaryTagIO.writer().write(builder.build(), dataFile.toPath(), GZIP);
+    }
+
+    public static boolean isNmsSupported(){
+        try {
+            Class.forName(CraftWorld.class.getName());
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 }
