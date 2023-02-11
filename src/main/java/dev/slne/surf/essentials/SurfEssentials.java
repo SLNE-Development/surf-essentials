@@ -5,17 +5,13 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.brigadier.GeneralTabComplete;
-import dev.slne.surf.essentials.main.commands.BrigadierCommands;
-import dev.slne.surf.essentials.main.commands.Commands;
-import dev.slne.surf.essentials.main.commands.general.other.TimerCommand;
-import dev.slne.surf.essentials.main.commands.general.other.troll.trolls.MlgTroll;
-import dev.slne.surf.essentials.main.exceptions.UnsupportedServerVersionException;
-import dev.slne.surf.essentials.main.listeners.ListenerManager;
-import dev.slne.surf.essentials.main.utils.EssentialsUtil;
-import dev.slne.surf.essentials.main.utils.brigadier.PluginBrigadierCommand;
-import me.lucko.commodore.Commodore;
-import me.lucko.commodore.CommodoreProvider;
+import dev.slne.surf.essentials.commands.BrigadierCommands;
+import dev.slne.surf.essentials.commands.general.other.TimerCommand;
+import dev.slne.surf.essentials.commands.general.other.troll.trolls.MlgTroll;
+import dev.slne.surf.essentials.exceptions.UnsupportedServerVersionException;
+import dev.slne.surf.essentials.listeners.ListenerManager;
+import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.brigadier.PluginBrigadierCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
@@ -28,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-import static dev.slne.surf.essentials.main.utils.EssentialsUtil.gradientify;
+import static dev.slne.surf.essentials.utils.EssentialsUtil.gradientify;
 import static net.kyori.adventure.text.Component.text;
 
 @Plugin(name = "SurfEssentials", version = "1.0-SNAPSHOT")
@@ -41,14 +37,11 @@ import static net.kyori.adventure.text.Component.text;
 public final class SurfEssentials extends JavaPlugin implements Listener {
 
     private static SurfEssentials instance;
-    Commands commands;
     ListenerManager listeners;
-    Commodore commodore;
     BrigadierCommands brigadierCommands;
 
     @Override
     public void onLoad() {
-        commands = new Commands();
         listeners = new ListenerManager();
         brigadierCommands = new BrigadierCommands();
     }
@@ -70,13 +63,7 @@ public final class SurfEssentials extends JavaPlugin implements Listener {
         }
 
         listeners.registerListeners(this);
-        commands.initializeGeneralCommands();
-        commodore = CommodoreProvider.getCommodore(this);
-
-        new GeneralTabComplete().register(commodore);
-
         brigadierCommands.register();
-
 
         getLogger().info("The plugin has started successfully!");
     }

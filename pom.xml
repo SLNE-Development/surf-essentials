@@ -43,13 +43,6 @@
             <version>1.0.18</version>
             <scope>provided</scope>
         </dependency>
-        <!-- https://github.com/lucko/commodore#usage -->
-        <dependency>
-            <groupId>me.lucko</groupId>
-            <artifactId>commodore</artifactId>
-            <version>2.2</version>
-            <scope>compile</scope>
-        </dependency>
         <!-- https://github.com/Alvinn8/paper-nms-maven-plugin -->
         <dependency>
             <groupId>ca.bkaw</groupId>
@@ -254,20 +247,10 @@
                     <artifactSet>
                         <includes>
                             <include>net.kyori:adventure-nbt</include>
-                            <include>me.lucko:commodore</include>
-                            <include>me.lucko:commodore-file</include>
                             <include>com.github.stefvanschie.inventoryframework*</include>
                         </includes>
                     </artifactSet>
                     <relocations>
-                        <relocation>
-                            <pattern>me.lucko.commodore</pattern>
-                            <shadedPattern>dev.slne.surf.essentials.brigadier</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>me.lucko.commodore.file</pattern>
-                            <shadedPattern>dev.slne.surf.essentials.brigadier</shadedPattern>
-                        </relocation>
                         <relocation>
                             <pattern>net.kyori.adventure.nbt</pattern>
                             <shadedPattern>dev.slne.surf.essentials.kyori.adventure.nbt</shadedPattern>

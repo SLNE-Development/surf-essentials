@@ -1,0 +1,60 @@
+package dev.slne.surf.essentials.commands.general;
+
+import aetherial.spigot.plugin.annotation.permission.PermissionTag;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.slne.surf.api.utils.message.SurfColors;
+import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.Permissions;
+import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import io.papermc.paper.adventure.PaperAdventure;
+import net.kyori.adventure.text.Component;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+
+@PermissionTag(name = Permissions.SET_ITEM_NAME_PERMISSION, desc = "Allows you to change the name of the item you currently holding")
+public class SetItemNameCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"setname", "rename"};
+    }
+
+    @Override
+    public String usage() {
+        return "/setname <name>";
+    }
+
+    @Override
+    public String description() {
+        return "Sets the name of the item the sender is holding";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SET_ITEM_NAME_PERMISSION));
+
+        literal.then(Commands.argument("name", StringArgumentType.greedyString())
+                .suggests((context, builder) -> {
+                    EssentialsUtil.suggestAllColorCodes(builder);
+                    return builder.buildFuture();
+                })
+                .executes(context -> setName(context.getSource(), StringArgumentType.getString(context, "name"))));
+    }
+
+    private int setName(CommandSourceStack source, String name) throws CommandSyntaxException {
+        ItemStack itemStackInHand = source.getPlayerOrException().getItemInHand(InteractionHand.MAIN_HAND);
+        Component displayName = EssentialsUtil.deserialize(name).colorIfAbsent(SurfColors.WHITE);
+
+        itemStackInHand.setHoverName(PaperAdventure.asVanilla(displayName));
+
+        EssentialsUtil.sendSuccess(source, Component.text("Das Item ", SurfColors.SUCCESS)
+                .append(PaperAdventure.asAdventure(itemStackInHand.getDisplayName()))
+                .append(Component.text(" wurde umbenannt!", SurfColors.SUCCESS)));
+
+        return 1;
+    }
+
+}
