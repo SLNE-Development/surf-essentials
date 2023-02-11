@@ -39,9 +39,9 @@ public class WeatherCommand {
                         .executes(context -> setRain(context.getSource(), IntegerArgumentType.getInteger(context, "duration")))));
 
         literal.then(Commands.literal("thunder")
-                .executes(context -> setThunder(context.getSource(), IntegerArgumentType.getInteger(context, "duration")))
+                .executes(context -> setThunder(context.getSource(), 6000))
                 .then(Commands.argument("duration", IntegerArgumentType.integer(0, 1000000))
-                        .executes(context -> setThunder(context.getSource(), 6000))));
+                        .executes(context -> setThunder(context.getSource(), IntegerArgumentType.getInteger(context, "duration")))));
     }
 
     private static int queryWeather(CommandSourceStack source) throws CommandSyntaxException{

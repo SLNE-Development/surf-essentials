@@ -17,8 +17,10 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.TimeArgument;
+import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.event.world.TimeSkipEvent;
@@ -146,14 +148,22 @@ public class TimeCommand{
                 source.getServer().getAllLevels().iterator() : Iterators.singletonIterator(source.getLevel());
 
         iterator.forEachRemaining(level -> {
-            int dayDuration = 24000;
-            int currentTime = (int) level.getGameTime();
-            int newTime = currentTime + (dayDuration - currentTime) + addTime;
-            int timeSkipped = (newTime + dayDuration - currentTime) % dayDuration;
+            long timeDifference = (addTime - level.getDayTime()) % 24000;
+            if (timeDifference < 0) timeDifference += 24000;
+            long time = level.getDayTime() + timeDifference;
 
-            TimeSkipEvent timeSkipEvent = new TimeSkipEvent(level.getWorld(), TimeSkipEvent.SkipReason.COMMAND, timeSkipped);
-            Bukkit.getPluginManager().callEvent(timeSkipEvent);
-            if (!timeSkipEvent.isCancelled()) level.setDayTime(newTime);
+            TimeSkipEvent event = new TimeSkipEvent(level.getWorld(), TimeSkipEvent.SkipReason.CUSTOM, time - level.getDayTime());
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return;
+            }
+
+            level.setDayTime(level.getDayTime() + event.getSkipAmount());
+
+            level.getPlayers(player -> {
+                player.connection.send(new ClientboundSetTimePacket(player.level.getGameTime(), player.getPlayerTime(), player.level.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)));
+                return true;
+            });
         });
 
         if (source.isPlayer()) {
