@@ -1,12 +1,12 @@
 # Todo
 ## general
 
- - [ ] finish tp command
+ - [x] finish tp command
  - [x] Effect on teleport *(/particle minecraft:end_rod ~ ~ ~ 0.5 1 0.5 .1 700 normal @a*
  - [x] migrate old commands to brigadier
- - [ ] maybe add mysql support (e.g. poll saves, sign toggle...)
+ - [ ] add mysql support (e.g. poll saves, sign toggle...)
  - [x] customize most of the default minecraft commands
- - [ ] add gui option for several commands (e.g. troll, world, poll...)
+ - [x] add gui option for several commands (e.g. troll, world, poll...)
  - [x] more permissions
  
  ## New commands
