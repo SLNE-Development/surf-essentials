@@ -66,7 +66,9 @@ public class TeleportToTopCommand extends BrigadierCommand {
 
         if (player != null) {
             location = player.getBukkitEntity().getLocation();
-            location.setY(player.getLevel().getWorld().getHighestBlockYAt((int) location.x(), (int) location.z()));
+            location.setY((location.getWorld().getHighestBlockYAt(location.getBlockX(), location.getBlockZ())) + 1);
+            location.setX(location.getBlockX() + 0.5);
+            location.setZ(location.getBlockZ() + 0.5);
 
 
             PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
@@ -88,7 +90,9 @@ public class TeleportToTopCommand extends BrigadierCommand {
 
             try {
                 location = EssentialsUtil.getLocation(gameProfile);
-                location.setY(location.getWorld().getHighestBlockYAt((int) location.x(), (int) location.z()));
+                location.setY((location.getWorld().getHighestBlockYAt(location.getBlockX(), location.getBlockZ())) + 1);
+                location.setX(location.getBlockX() + 0.5);
+                location.setZ(location.getBlockZ() + 0.5);
                 EssentialsUtil.setLocation(uuid, location);
             } catch (IOException | NullPointerException e) {
                 e.printStackTrace();
