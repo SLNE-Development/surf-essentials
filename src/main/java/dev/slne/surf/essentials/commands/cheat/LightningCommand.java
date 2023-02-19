@@ -16,7 +16,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.WeatherType;
-import org.bukkit.event.weather.LightningStrikeEvent;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,7 +28,7 @@ public class LightningCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission(""));
+        literal.requires(stack -> stack.getBukkitSender().hasPermission(Permissions.LIGHTING_PERMISSION));
 
         literal.then(Commands.argument("players", EntityArgument.players())
                 .executes(context -> lightingCustom(context, EntityArgument.getPlayers(context, "players"), new AtomicInteger(1)))
@@ -41,17 +41,17 @@ public class LightningCommand {
         Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(context.getSource(), targetsUnchecked);
 
         for (ServerPlayer serverPlayer : targets) {
-
-            serverPlayer.setPlayerWeather(WeatherType.DOWNFALL, true);
+            Player player = serverPlayer.getBukkitEntity();
+            player.setPlayerWeather(WeatherType.DOWNFALL);
 
             Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), bukkitTask -> {
                 if (power.get() < 1) bukkitTask.cancel();
-                serverPlayer.getLevel().strikeLightning(serverPlayer, LightningStrikeEvent.Cause.COMMAND);
+                player.getWorld().strikeLightning(player.getLocation());
                 power.getAndDecrement();
             }, 20, 5);
 
             Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), bukkitTask ->
-                    serverPlayer.resetPlayerWeather(), 20L *power.get() + 40);
+                    player.resetPlayerWeather(), 20L * power.get() + 40);
         }
 
         if (context.getSource().isPlayer()){
