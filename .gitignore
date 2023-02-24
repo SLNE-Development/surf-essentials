@@ -111,6 +111,3 @@ buildNumber.properties
 
 # Common working directory
 run/
-
-# paperweight
-.paper-nms
