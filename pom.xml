@@ -34,14 +34,6 @@
             <groupId>net.kyori</groupId>
             <artifactId>adventure-nbt</artifactId>
             <version>4.12.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- https://github.com/Mojang/brigadier -->
-        <dependency>
-            <groupId>com.mojang</groupId>
-            <artifactId>brigadier</artifactId>
-            <version>1.0.18</version>
-            <scope>provided</scope>
         </dependency>
         <!-- https://github.com/Alvinn8/paper-nms-maven-plugin -->
         <dependency>
@@ -80,14 +72,6 @@
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-        </repository>
-        <repository>
-            <id>minecraft-libraries</id>
-            <url>https://libraries.minecraft.net</url>
-        </repository>
-        <repository>
-            <id>minecraft-repo</id>
-            <url>https://libraries.minecraft.net/</url>
         </repository>
         <repository>
             <id>papermc</id>
@@ -244,22 +228,6 @@
                 <version>3.4.0</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
-                    <artifactSet>
-                        <includes>
-                            <include>net.kyori:adventure-nbt</include>
-                            <include>com.github.stefvanschie.inventoryframework*</include>
-                        </includes>
-                    </artifactSet>
-                    <relocations>
-                        <relocation>
-                            <pattern>net.kyori.adventure.nbt</pattern>
-                            <shadedPattern>dev.slne.surf.essentials.kyori.adventure.nbt</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.github.stefvanschie.inventoryframework</pattern>
-                            <shadedPattern>dev.slne.surf.essentials.stefvanschie.inventoryframework</shadedPattern>
-                        </relocation>
-                    </relocations>
                 </configuration>
                 <executions>
                     <execution>
