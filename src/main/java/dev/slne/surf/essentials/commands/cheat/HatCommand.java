@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
@@ -19,9 +18,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-
-@PermissionTag(name = Permissions.HAT_SELF_PERMISSION, desc = "Allows you to put the item in your main hand on your head")
-@PermissionTag(name = Permissions.HAT_OTHER_PERMISSION, desc = "Allows you to put the item in the other player's main hand on their head")
 public class HatCommand extends BrigadierCommand {
     @Override
     public String[] names() {

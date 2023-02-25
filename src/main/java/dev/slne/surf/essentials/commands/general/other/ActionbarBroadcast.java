@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general.other;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -25,7 +24,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.ACTION_BAR_BROADCAST_PERMISSION, desc = "This is the permission for the 'actionbarbroadcast' command")
 public class ActionbarBroadcast {
     public ActionbarBroadcast(){
         SurfEssentials.registerPluginBrigadierCommand("actionbarbroadcast", this::literal).setUsage("/actionbarbroadcast <players> <actionbar> [<stay in ticks>] [fadeOut in ticks]")

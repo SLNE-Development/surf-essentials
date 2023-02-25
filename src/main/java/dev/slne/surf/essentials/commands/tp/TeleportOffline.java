@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.tp;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -30,7 +29,6 @@ import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.UUID;
 
-@PermissionTag(name = Permissions.OFFLINE_TELEPORT_PERMISSION, desc = "Allows you to teleport offline players")
 public class TeleportOffline {
     public static final SimpleCommandExceptionType ERROR_NOT_SINGLE_PLAYER = new SimpleCommandExceptionType(net.minecraft.network.chat.Component.translatable("argument.player.toomany"));
     public static final SimpleCommandExceptionType NO_PLAYERS_FOUND = new SimpleCommandExceptionType(net.minecraft.network.chat.Component.translatable("argument.entity.notfound.player"));

@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general.other;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -26,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.TITLE_BROADCAST_PERMISSION, desc = "This is the permission for the 'titlebroadcast' command")
 public class TitlebroadcastCommand {
 
     public static void register(){

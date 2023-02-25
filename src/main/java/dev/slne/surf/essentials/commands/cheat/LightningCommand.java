@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -21,7 +20,6 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@PermissionTag(name = Permissions.LIGHTING_PERMISSION, desc = "Allows you to summon lighting")
 public class LightningCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("lighting", LightningCommand::literal);

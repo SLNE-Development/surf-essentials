@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -14,7 +13,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerLevel;
 
-@PermissionTag(name = Permissions.WEATHER_PERMISSION, desc = "This is the permission for the 'weather' command")
 public class WeatherCommand {
 
     public static void register(){

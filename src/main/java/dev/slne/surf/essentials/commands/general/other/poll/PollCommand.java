@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general.other.poll;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -25,7 +24,6 @@ import org.bukkit.Sound;
 
 import java.util.*;
 
-@PermissionTag(name = Permissions.POLL_PERMISSION, desc = "This is the permission for the 'poll' command")
 public class PollCommand {
 
     private static final List<String> pollNames = new ArrayList<>();

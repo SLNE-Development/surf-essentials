@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
@@ -20,8 +19,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-@PermissionTag(name = Permissions.UNHAT_SELF_PERMISSION, desc = "Allows you to put the item on your head in your inventory")
-@PermissionTag(name = Permissions.UNHAT_OTHER_PERMISSION, desc = "Allows you to put the item on other player´s head in their inventory")
 public class UnhatCommand extends BrigadierCommand {
     @Override
     public String[] names() {

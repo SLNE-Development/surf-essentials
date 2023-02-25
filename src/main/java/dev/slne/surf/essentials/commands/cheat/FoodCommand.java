@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
@@ -18,8 +17,6 @@ import org.bukkit.Sound;
 import java.util.Collection;
 import java.util.Collections;
 
-@PermissionTag(name = Permissions.FEED_SELF_PERMISSION, desc = "Allows you to feed yourself")
-@PermissionTag(name = Permissions.FEED_OTHER_PERMISSION, desc = "Allows you to feed other players")
 public class FoodCommand {
 
     public static void register(){

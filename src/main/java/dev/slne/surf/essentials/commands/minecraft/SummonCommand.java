@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -29,7 +28,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-@PermissionTag(name = Permissions.SUMMON_PERMISSION, desc = "Allows you to summon an entity")
 public class SummonCommand extends BrigadierCommand {
     @Override
     public String[] names() {

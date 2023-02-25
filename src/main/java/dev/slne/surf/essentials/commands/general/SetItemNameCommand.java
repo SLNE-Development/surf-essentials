@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -15,7 +14,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
-@PermissionTag(name = Permissions.SET_ITEM_NAME_PERMISSION, desc = "Allows you to change the name of the item you currently holding")
 public class SetItemNameCommand extends BrigadierCommand {
     @Override
     public String[] names() {

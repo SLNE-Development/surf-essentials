@@ -15,10 +15,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 
-@PermissionTag(name = Permissions.REPAIR_SELF_PERMISSION, desc = "Allows you to repair the item in Hand for yourself")
-@PermissionTag(name = Permissions.REPAIR_OTHER_PERMISSION, desc = "Allows you to repair the item in Hand for others")
 public class RepairCommand {
 
     public static void register(){

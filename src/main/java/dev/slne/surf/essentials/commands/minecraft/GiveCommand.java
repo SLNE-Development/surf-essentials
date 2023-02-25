@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -26,7 +25,6 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Collection;
 
 
-@PermissionTag(name = Permissions.GIVE_PERMISSION, desc = "This is the permission for the 'give' command")
 public class GiveCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("give", GiveCommand::literal).setUsage("/give <targets> <item> [<amount>]")

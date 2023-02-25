@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -10,7 +9,6 @@ import dev.slne.surf.essentials.utils.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 
-@PermissionTag(name = Permissions.SUICIDE_PERMISSION, desc = "Allows you to kill yourself")
 public class SuicideCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("suicide", SuicideCommand::literal).setUsage("/suicide")

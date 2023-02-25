@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -14,7 +13,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.GameRules;
 import org.jetbrains.annotations.NotNull;
 
-@PermissionTag(name = Permissions.GAMERULE_PERMISSION, desc = "This is the permission for the 'gamerule' command")
 public class GameruleCommand {
 
     public static void register(){

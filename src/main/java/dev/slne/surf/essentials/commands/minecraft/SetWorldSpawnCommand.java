@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.utils.message.SurfColors;
@@ -14,7 +13,6 @@ import net.minecraft.commands.arguments.AngleArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
 
-@PermissionTag(name = Permissions.SET_WORLD_SPAWN_PERMISSION, desc = "Allows you to change the world spawn")
 public class SetWorldSpawnCommand extends BrigadierCommand {
     @Override
     public String[] names() {

@@ -12,13 +12,10 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 
 import java.util.Collection;
 import java.util.Collections;
 
-@PermissionTag(name = Permissions.GOD_MODE_SELF_PERMISSION, desc = "Allows you to make yourself invulnerable")
-@PermissionTag(name = Permissions.GOD_MODE_OTHER_PERMISSION, desc = "Allows you to make others invulnerable")
 public class GodmodeCommand {
 
     public static void register(){

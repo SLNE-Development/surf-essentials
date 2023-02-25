@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
@@ -20,8 +19,6 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.Collection;
 import java.util.Collections;
 
-@PermissionTag(name = Permissions.RULE_OTHER_PERMISSION, desc = "This is the permission for the 'rule' command")
-@PermissionTag(name = Permissions.RULE_SELF_PERMISSION, desc = "Allows the player to see the rules, but not send them to other players")
 public class RuleCommand {
 
     public static void register(){

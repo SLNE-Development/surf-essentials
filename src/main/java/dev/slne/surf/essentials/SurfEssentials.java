@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials;
 
-import aetherial.spigot.plugin.annotation.plugin.*;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -26,13 +25,6 @@ import java.util.function.Consumer;
 import static dev.slne.surf.essentials.utils.EssentialsUtil.gradientify;
 import static net.kyori.adventure.text.Component.text;
 
-@Plugin(name = "SurfEssentials", version = "1.0-SNAPSHOT")
-@ApiVersion("1.19")
-@Depend({"SurfAPI", "ProtocolLib"})
-@LoadBefore({"SurfAPI", "ProtocolLib"})
-@Authors({"Twisti_twixi", "SLNE Dev Team"})
-@Load(Load.LoadType.POST_WORLD)
-@Website("https://git.slne.dev/surf/surf-essentials")
 public final class SurfEssentials extends JavaPlugin{
 
     private static SurfEssentials instance;

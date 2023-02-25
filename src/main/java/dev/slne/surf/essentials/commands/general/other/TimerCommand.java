@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general.other;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -38,7 +37,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-@PermissionTag(name = Permissions.TIMER_PERMISSION, desc = "Allows you to show a timer to the targets")
 public class TimerCommand extends BrigadierCommand {
     private static final HashMap<CustomBossEvent, Boolean> isBossbarCanceled = new HashMap<>();
     private static final List<Integer> titleTaskIds = new ArrayList<>();

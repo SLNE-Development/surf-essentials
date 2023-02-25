@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -19,8 +18,6 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.KILL_SELF_PERMISSION, desc = "Allows you to kill yourself")
-@PermissionTag(name = Permissions.KILL_OTHER_PERMISSION, desc = "Allows you to kill other entities")
 public class KillCommand {
     public static void register() {
         SurfEssentials.registerPluginBrigadierCommand("kill", KillCommand::literal).setUsage("/kill [<targets>]")

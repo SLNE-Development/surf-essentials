@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general.sign;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -10,7 +9,6 @@ import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
-@PermissionTag(name = Permissions.TOGGLE_SIGN_PERMISSION, desc = "This is the permission for the 'signedit' command")
 public class SignToggleCommand extends BrigadierCommand {
     private static boolean editSigns;
 

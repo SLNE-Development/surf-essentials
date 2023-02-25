@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -30,7 +29,6 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.ENCHANT_PERMISSION, desc = "This is the permission for the 'enchant' command")
 public class EnchantCommand {
 
     public static void register() {

@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.utils.message.SurfColors;
@@ -13,7 +12,6 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 
-@PermissionTag(name = Permissions.SEED_PERMISSION, desc = "Allows you to get the world seed")
 public class SeedCommand extends BrigadierCommand {
     @Override
     public String[] names() {

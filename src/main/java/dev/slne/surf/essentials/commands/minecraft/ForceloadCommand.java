@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
@@ -34,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@PermissionTag(name = Permissions.FORCELOAD_PERMISSION, desc = "This is the permission for the 'forceload' command")
 public class ForceloadCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("forceload", ForceloadCommand::literal).setUsage("/forceload <query | add | remove>")

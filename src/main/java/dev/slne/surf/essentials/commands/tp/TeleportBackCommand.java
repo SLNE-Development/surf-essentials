@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.tp;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.listeners.TeleportListener;
@@ -12,7 +11,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-@PermissionTag(name = Permissions.TELEPORT_BACK_PERMISSION, desc = "Allows you to teleport")
 public class TeleportBackCommand extends BrigadierCommand {
     @Override
     public String[] names() {

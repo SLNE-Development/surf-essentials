@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.google.common.collect.Iterators;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -27,7 +26,6 @@ import org.bukkit.event.world.TimeSkipEvent;
 
 import java.util.Iterator;
 
-@PermissionTag(name = Permissions.TIME_PERMISSION, desc = "This is the permission for the 'time' command")
 public class TimeCommand{
 
     public static void register() {

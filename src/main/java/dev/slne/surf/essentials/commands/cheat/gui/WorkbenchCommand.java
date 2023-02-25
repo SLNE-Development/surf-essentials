@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.cheat.gui;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -19,8 +18,6 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.WORKBENCH_SELF_PERMISSION, desc = "Allows you to open the workbench gui for yourself")
-@PermissionTag(name = Permissions.WORKBENCH_OTHER_PERMISSION, desc = "Allows you to open the workbench gui for others")
 public class WorkbenchCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("workbench", WorkbenchCommand::literal).setUsage("/workbench [<players>]")

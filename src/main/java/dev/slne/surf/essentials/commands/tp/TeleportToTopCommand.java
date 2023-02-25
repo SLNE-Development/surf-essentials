@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.tp;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -28,8 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
 
-@PermissionTag(name = Permissions.TELEPORT_TOP_SELF_PERMISSION, desc = "Allows you to teleport you to the highest block at your location")
-@PermissionTag(name = Permissions.TELEPORT_TOP_OTHER_PERMISSION, desc = "Allows you to teleport others to the highest block at their location")
 public class TeleportToTopCommand extends BrigadierCommand {
     @Override
     public String[] names() {

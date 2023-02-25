@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
@@ -18,8 +17,6 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import java.util.Collection;
 import java.util.Collections;
 
-@PermissionTag(name = Permissions.HEAL_SELF_PERMISSION, desc = "Allows you to heal yourself")
-@PermissionTag(name = Permissions.HEAL_OTHER_PERMISSION, desc = "Allows you to heal others")
 public class HealCommand {
 
     public static void register(){

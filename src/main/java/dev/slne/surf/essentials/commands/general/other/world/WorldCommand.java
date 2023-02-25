@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general.other.world;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
@@ -46,13 +45,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
-@PermissionTag(name = Permissions.WORLD_GUI_PERMISSION , desc = "Allows you to access the gui")
-@PermissionTag(name = Permissions.WORLD_CHANGE_PERMISSION, desc = "Allows you to teleport in other dimensions")
-@PermissionTag(name = Permissions.WORLD_CREATE_PERMISSION, desc = "Allows you to create a world")
-@PermissionTag(name = Permissions.WORLD_LOAD_PERMISSION, desc = "Allows you to load a world")
-@PermissionTag(name = Permissions.WORLD_REMOVE_PERMISSION, desc = "Allows you to remove a world")
-@PermissionTag(name = Permissions.WORLD_UNLOAD_PERMISSION, desc = "Allows you to unload a world")
-@PermissionTag(name = Permissions.WORLD_QUERY_PERMISSION, desc = "Allows you to query the world you are in")
 public class WorldCommand extends BrigadierCommand {
     @Override
     public String[] names() {

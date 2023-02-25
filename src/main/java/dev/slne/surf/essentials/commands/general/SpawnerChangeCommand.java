@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -28,7 +27,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import static dev.slne.surf.api.utils.message.SurfColors.SUCCESS;
 
-@PermissionTag(name = Permissions.SPAWNER_PERMISSION, desc = "This is the permission for the 'spawner' command")
 public class SpawnerChangeCommand{
 
     public static void register(){

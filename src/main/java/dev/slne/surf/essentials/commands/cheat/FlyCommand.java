@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
@@ -17,8 +16,6 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.Collection;
 import java.util.Collections;
 
-@PermissionTag(name = Permissions.FLY_SELF_PERMISSION, desc = "Allows you to toggle the fly mode for yourself")
-@PermissionTag(name = Permissions.FLY_OTHER_PERMISSION, desc = "Allows you to toggle the fly mode for others")
 public class FlyCommand {
 
     public static void register(){

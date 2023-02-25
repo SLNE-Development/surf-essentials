@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.tp;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -23,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
-@PermissionTag(name = Permissions. TELEPORT_RANDOM_PERMISSION, desc = "Allows you to teleport to a random location")
 public class RandomTeleportCommand extends BrigadierCommand {
 
     private static final HashSet<Material> unsafeMaterials = new HashSet<>(List.of(Material.LAVA, Material.FIRE, Material.CACTUS,

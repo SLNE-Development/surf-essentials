@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -30,7 +29,6 @@ import java.util.Collection;
 import java.util.Objects;
 
 @DefaultQualifier(NotNull.class)
-@PermissionTag(name = Permissions.PARTICLE_PERMISSION, desc = "This is the permission for the 'particle' command")
 public class ParticleCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("particle", ParticleCommand::literal).setUsage("/particle <name> [<position>] [<delta>] [<speed>] [<amount>] [<force | normal>] [<viewers>]")

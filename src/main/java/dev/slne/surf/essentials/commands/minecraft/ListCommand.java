@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import dev.slne.surf.api.SurfApi;
@@ -24,7 +23,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@PermissionTag(name = Permissions.LIST_PERMISSION, desc = "This is the permission for the 'list' command")
 public class ListCommand {
     public static void register(){
         // Register the  command

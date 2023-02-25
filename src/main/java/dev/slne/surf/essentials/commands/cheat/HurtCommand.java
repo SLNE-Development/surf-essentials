@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -20,7 +19,6 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.HURT_PERMISSION, desc = "This is the permission for the 'hurt' command")
 public class HurtCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("hurt", HurtCommand::literal).setUsage("/hurt <players> <damage>")

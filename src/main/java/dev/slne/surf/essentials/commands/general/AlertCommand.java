@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.api.SurfApi;
@@ -17,7 +16,6 @@ import org.bukkit.Sound;
 
 import java.util.List;
 
-@PermissionTag(name = Permissions.ALERT_PERMISSION, desc = "This is the permission for the 'alert' command")
 public class AlertCommand{
     private static final List<String> aliases = List.of("alert", "broadcast", "al");
 

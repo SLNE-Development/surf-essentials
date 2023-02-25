@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -16,8 +15,6 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.entity.Player;
 
-@PermissionTag(name = Permissions.SPEED_SELF_PERMISSION, desc = "Allows you to change your walk and fly speed")
-@PermissionTag(name = Permissions.SPEED_SELF_PERMISSION, desc = "Allows you to change others walk and fly speed")
 public class SpeedCommand {
 
     public static void register(){

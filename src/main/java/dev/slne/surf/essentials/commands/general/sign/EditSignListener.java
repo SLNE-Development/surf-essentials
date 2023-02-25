@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general.sign;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import dev.slne.surf.essentials.utils.Permissions;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -19,7 +18,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-@PermissionTag(name = Permissions.EDIT_SIGN_PERMISSION, desc = "Allows the player to edit the sign via right click, when it´s enabled")
 public class EditSignListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onPlayerInteract(PlayerInteractEvent event) {

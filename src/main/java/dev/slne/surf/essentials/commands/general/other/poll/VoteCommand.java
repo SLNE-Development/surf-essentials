@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general.other.poll;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -10,7 +9,6 @@ import dev.slne.surf.essentials.utils.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
-@PermissionTag(name = Permissions.VOTE_PERMISSION, desc = "This is the permission for the 'vote' command")
 public class VoteCommand {
 
     public static void register(){

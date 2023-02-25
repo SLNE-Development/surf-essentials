@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general.other.troll;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
@@ -19,7 +18,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
-@PermissionTag(name = Permissions.TROLL_PERMISSION, desc = "This is the permission for the 'troll' command")
 public class TrollManager{
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("troll", TrollManager::literal);

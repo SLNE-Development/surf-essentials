@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.utils.message.SurfColors;
@@ -17,8 +16,6 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.Collection;
 import java.util.Collections;
 
-@PermissionTag(name = Permissions.CLEAR_SELF_PERMISSION, desc = "Allows you to clear your inventory")
-@PermissionTag(name = Permissions.CLEAR_OTHER_PERMISSION, desc = "Allows you to clear others inventories")
 public class ClearInventoryCommand extends BrigadierCommand {
     @Override
     public String[] names() {

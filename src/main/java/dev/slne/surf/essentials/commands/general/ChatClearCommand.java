@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
@@ -15,14 +14,10 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.server.level.ServerPlayer;
-import org.bukkit.permissions.PermissionDefault;
 
 import java.util.Collection;
 import java.util.Collections;
 
-@PermissionTag(name = Permissions.CHAT_CLEAR_SELF_PERMISSION, desc = "Allows you to clear your chat")
-@PermissionTag(name = Permissions.CHAT_CLEAR_OTHER_PERMISSION, desc = "Allows you to clear the chat from other players")
-@PermissionTag(name = Permissions.CHAT_CLEAR_BYPASS_PERMISSION, desc = "Allows you to bypass the chat clear", defaultValue = PermissionDefault.FALSE)
 public class ChatClearCommand extends BrigadierCommand {
     @Override
     public String[] names() {

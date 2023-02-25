@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -21,7 +20,6 @@ import org.bukkit.Bukkit;
 import java.util.Collection;
 import java.util.Objects;
 
-@PermissionTag(name = Permissions.DEOP_PERMISSION, desc = "This is the permission for the 'deop' command")
 public class DeopCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("deop", DeopCommand::literal).setUsage("/deop <player>")

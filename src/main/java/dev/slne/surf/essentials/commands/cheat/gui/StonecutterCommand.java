@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.cheat.gui;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -19,8 +18,6 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.STONECUTTER_SELF_PERMISSION, desc = "Allows you to open the stonecutter gui for yourself")
-@PermissionTag(name = Permissions.STONECUTTER_OTHER_PERMISSION, desc = "Allows you to open the stonecutter gui for others")
 public class StonecutterCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("stonecutter", StonecutterCommand::literal).setUsage("/stonecutter [<players>]")

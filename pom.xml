@@ -50,12 +50,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.AetherialMist</groupId>
-            <artifactId>SpigotPluginAnnotations</artifactId>
-            <version>1.0.3</version>
-        </dependency>
-
         <!-- https://github.com/stefvanschie/IF -->
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>

@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -22,7 +21,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-@PermissionTag(name = Permissions.BROADCAST_WORLD_PERMISSION, desc = "This is the permission for the 'broadcastworld' command")
 public class BroadcastWorldCommand {
     public static void register(){
         // Create a set of command aliases

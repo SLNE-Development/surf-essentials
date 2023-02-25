@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.utils.message.SurfColors;
@@ -24,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 
 @DefaultQualifier(NotNull.class)
-@PermissionTag(name = Permissions.DEFAULT_GAMEMODE_PERMISSION, desc = "This is the permission for the 'defaultgamemode' command")
 public class DefaultGamemodeCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("defaultgamemode", DefaultGamemodeCommand::literal).setUsage("/defaultgamemode [<gamemode>]")

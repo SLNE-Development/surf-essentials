@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -43,7 +42,6 @@ import java.util.Collections;
 import static dev.slne.surf.essentials.utils.EssentialsUtil.sendError;
 
 @DefaultQualifier(NotNull.class)
-@PermissionTag(name = Permissions.BOSSBAR_PERMISSION, desc = "This is the permission for the 'bossbar' command")
 public class BossbarCommand {
     /**
      * Registers the bossbar command.

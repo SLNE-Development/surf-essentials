@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -33,7 +32,6 @@ import org.bukkit.event.entity.EntityPotionEffectEvent;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.EFFECT_PERMISSION, desc = "This is the permission for the 'effect' command")
 public class EffectCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("effect", EffectCommand::literal).setUsage("/effect <give | clear>")

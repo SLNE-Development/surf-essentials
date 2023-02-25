@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
@@ -16,7 +15,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
 
-@PermissionTag(name = Permissions.DIFFICULTY_PERMISSION, desc = "This is the permission for the 'difficulty' command")
 public class DifficultyCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("difficulty", DifficultyCommand::literal).setUsage("/difficulty [<difficulty>]")

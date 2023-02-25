@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.api.SurfApi;
@@ -17,8 +16,6 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.text.DecimalFormat;
 
-@PermissionTag(name = Permissions.GET_POS_SELF_PERMISSION, desc = "Allows you to get your position")
-@PermissionTag(name = Permissions.GET_POS_OTHER_PERMISSION, desc = "Allows you to get others position")
 public class GetPosCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("getpos", GetPosCommand::literal).setUsage("/getpos [<player>]")

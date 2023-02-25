@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
@@ -12,7 +11,6 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.ArrayList;
 import java.util.List;
 
-@PermissionTag(name = Permissions.INFINITY_PERMISSION, desc = "Allows you to use the 'infinity' command")
 public class InfinityCommand extends BrigadierCommand {
     private static final List<ServerPlayer> playersInInfinity = new ArrayList<>();
 

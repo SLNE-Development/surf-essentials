@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -22,8 +21,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 import org.jetbrains.annotations.NotNull;
 
-@PermissionTag(name = Permissions.BOOK_PERMISSION, desc = "This is the permission for the 'book' command")
-@PermissionTag(name = Permissions.BOOK_PERMISSION_BYPASS, desc = "Allows you to edit books from other players")
 public class BookCommand {
 
     public static void register(){

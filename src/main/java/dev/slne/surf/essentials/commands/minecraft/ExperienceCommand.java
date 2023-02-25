@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -18,7 +17,6 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Collection;
 
-@PermissionTag(name = Permissions.EXPERIENCE_PERMISSION, desc = "This is the permission for the 'experience' command")
 public class ExperienceCommand {
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("experience", ExperienceCommand::literal).setUsage("/experience <query | add  set>")

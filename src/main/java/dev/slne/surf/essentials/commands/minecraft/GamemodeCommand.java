@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -31,18 +30,6 @@ import java.util.UUID;
 
 import static net.kyori.adventure.nbt.BinaryTagIO.Compression.GZIP;
 
-@PermissionTag(name = Permissions.GAMEMODE_CREATIVE_SELF_PERMISSION, desc = "Allows you to change your gamemode to creative")
-@PermissionTag(name = Permissions.GAMEMODE_CREATIVE_OTHER_PERMISSION, desc = "Allows you to change other´s gamemode to creative")
-@PermissionTag(name = Permissions.GAMEMODE_CREATIVE_OTHER_OFFLINE_PERMISSION, desc = "Allows you to change other´s gamemode to creative when they are offline")
-@PermissionTag(name = Permissions.GAMEMODE_SURVIVAL_SELF_PERMISSION, desc = "Allows you to change your gamemode to survival")
-@PermissionTag(name = Permissions.GAMEMODE_SURVIVAL_OTHER_PERMISSION, desc = "Allows you to change other´s gamemode to survival")
-@PermissionTag(name = Permissions.GAMEMODE_SURVIVAL_OTHER_OFFLINE_PERMISSION, desc = "Allows you to change other´s gamemode to survival when they are offline")
-@PermissionTag(name = Permissions.GAMEMODE_SPECTATOR_SELF_PERMISSION, desc = "Allows you to change your gamemode to spectator")
-@PermissionTag(name = Permissions.GAMEMODE_SPECTATOR_OTHER_PERMISSION, desc = "Allows you to change other´s gamemode to spectator")
-@PermissionTag(name = Permissions.GAMEMODE_SPECTATOR_OTHER_OFFLINE_PERMISSION, desc = "Allows you to change other´s gamemode to spectator when they are offline")
-@PermissionTag(name = Permissions.GAMEMODE_ADVENTURE_SELF_PERMISSION, desc = "Allows you to change your gamemode to adventure")
-@PermissionTag(name = Permissions.GAMEMODE_ADVENTURE_OTHER_PERMISSION, desc = "Allows you to change other´s gamemode to adventure")
-@PermissionTag(name = Permissions.GAMEMODE_ADVENTURE_OTHER_OFFLINE_PERMISSION, desc = "Allows you to change other´s gamemode to adventure when they are offline")
 public class GamemodeCommand {
 
     public static void register() {

@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -20,8 +19,6 @@ import net.minecraft.world.level.GameType;
 import javax.annotation.Nullable;
 import java.util.Collections;
 
-@PermissionTag(name = Permissions.SPECTATE_SELF_PERMISSION, desc = "Allows you to spectate other players")
-@PermissionTag(name = Permissions.SPECTATE_OTHER_PERMISSION, desc = "Allows you to spectate other players from other players")
 public class SpectateCommand extends BrigadierCommand {
     @Override
     public String[] names() {

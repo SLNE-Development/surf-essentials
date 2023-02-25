@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands.general;
 
-import aetherial.spigot.plugin.annotation.permission.PermissionTag;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -19,7 +18,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-@PermissionTag(name = Permissions.SET_ITEM_LORE_PERMISSION, desc = "Allows you to change the lore of the item you currently holding")
 public class SetItemLoreCommand extends BrigadierCommand {
     @Override
     public String[] names() {
