@@ -43,7 +43,7 @@ public class PollCommand {
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.TROLL_PERMISSION));
+        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.POLL_PERMISSION));
 
         literal.then(Commands.literal("create")
                 .then(Commands.argument("name", StringArgumentType.word())

@@ -13,16 +13,24 @@ public class SurfEssentialsLoader implements PluginLoader {
     public void classloader(@NotNull PluginClasspathBuilder classpathBuilder) {
         MavenLibraryResolver resolver = new MavenLibraryResolver();
 
-        resolver.addDependency(new Dependency(new DefaultArtifact("com.github.stefvanschie.inventoryframework:IF:0.10.8"), null));
-        resolver.addDependency(new Dependency(new DefaultArtifact("com.comphenix.protocol:ProtocolLib:4.8.0"), null));
-        resolver.addDependency(new Dependency(new DefaultArtifact("net.kyori:adventure-nbt:4.12.0"), null));
+        addDependency(resolver, "com.github.stefvanschie.inventoryframework", "IF", "0.10.8");
+        addDependency(resolver, "com.comphenix.protocol", "ProtocolLib", "4.8.0");
+        addDependency(resolver, "net.kyori", "adventure-nbt", "4.12.0");
+        addDependency(resolver, "io.papermc.paper", "paper-api", "1.19.3-R0.1-SNAPSHOT");
 
-        resolver.addRepository(new RemoteRepository.Builder("dmulloy2-repo", "default", "https://repo.dmulloy2.net/repository/public/").build());
-        resolver.addRepository(new RemoteRepository.Builder("jitpack.io", "default", "https://jitpack.io").build());
-        resolver.addRepository(new RemoteRepository.Builder("papermc", "default", "https://repo.papermc.io/repository/maven-public/").build());
-        resolver.addRepository(new RemoteRepository.Builder("slne-repository-snapshots", "default", "https://repo.slne.dev:2053/snapshots").build());
-
+        addRepository(resolver, "dmulloy2-repo", "https://repo.dmulloy2.net/repository/public/");
+        addRepository(resolver, "jitpack.io", "https://jitpack.io");
+        addRepository(resolver, "papermc", "https://repo.papermc.io/repository/maven-public/");
+        addRepository(resolver, "slne-repository-snapshots", "https://repo.slne.dev:2053/snapshots");
 
         classpathBuilder.addLibrary(resolver);
+    }
+
+    private void addDependency(MavenLibraryResolver resolver, String groupId, String artifactId, String version) {
+        resolver.addDependency(new Dependency(new DefaultArtifact("%s:%s:%s".formatted(groupId, artifactId, version)), null));
+    }
+
+    private void addRepository(MavenLibraryResolver resolver, String id, String url) {
+        resolver.addRepository(new RemoteRepository.Builder(id, "default", url).build());
     }
 }

@@ -10,6 +10,7 @@ import dev.slne.surf.essentials.commands.general.other.troll.trolls.MlgTroll;
 import dev.slne.surf.essentials.exceptions.UnsupportedServerVersionException;
 import dev.slne.surf.essentials.listeners.ListenerManager;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.PermissionManager;
 import dev.slne.surf.essentials.utils.brigadier.PluginBrigadierCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -30,11 +31,13 @@ public final class SurfEssentials extends JavaPlugin{
     private static SurfEssentials instance;
     ListenerManager listeners;
     BrigadierCommands brigadierCommands;
+    PermissionManager permissionManager;
 
     @Override
     public void onLoad() {
         listeners = new ListenerManager();
         brigadierCommands = new BrigadierCommands();
+        permissionManager = new PermissionManager(this);
     }
 
     @Override
@@ -47,6 +50,7 @@ public final class SurfEssentials extends JavaPlugin{
             throw new UnsupportedServerVersionException("This Serverversion (" + getServer().getMinecraftVersion() +") is not supported by the plugin!");
         }
 
+        permissionManager.initializePermissions();
         listeners.registerListeners(this);
         brigadierCommands.register();
 
@@ -82,7 +86,7 @@ public final class SurfEssentials extends JavaPlugin{
      */
     public void loadMessage() {
         ConsoleCommandSender console = instance.getServer().getConsoleSender();
-        String version = "v" + getDescription().getVersion();
+        String version = "v" + getPluginMeta().getVersion();
         console.sendMessage(Component.newline()
                 .append(text("  _____ _____ ", SurfColors.AQUA))
                 .append(Component.newline())
