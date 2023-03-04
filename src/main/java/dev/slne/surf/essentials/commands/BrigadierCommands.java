@@ -150,5 +150,9 @@ public class BrigadierCommands {
         new SignToggleCommand();
         // world command
         new WorldCommand();
+        // fill command
+        new FillCommand();
+        // set block command
+        new SetBlockCommand();
     }
 }

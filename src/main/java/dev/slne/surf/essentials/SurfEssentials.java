@@ -10,7 +10,7 @@ import dev.slne.surf.essentials.commands.general.other.troll.trolls.MlgTroll;
 import dev.slne.surf.essentials.exceptions.UnsupportedServerVersionException;
 import dev.slne.surf.essentials.listeners.ListenerManager;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.PermissionManager;
+import dev.slne.surf.essentials.utils.permission.PermissionManager;
 import dev.slne.surf.essentials.utils.brigadier.PluginBrigadierCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;

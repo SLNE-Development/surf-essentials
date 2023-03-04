@@ -1,0 +1,12 @@
+authors:
+  - twisti
+  - SLNE Dev Team
+version: 1.0-SNAPSHOT
+api-version: '1.19'
+main: dev.slne.surf.essentials.SurfEssentials
+depend:
+  - SurfAPI
+  - ProtocolLib
+website: 'https://git.slne.dev/surf/surf-essentials'
+description: '"Insert description here"'
+name: SurfEssentials

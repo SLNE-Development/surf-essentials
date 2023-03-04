@@ -11,7 +11,7 @@ import dev.slne.surf.essentials.commands.general.other.troll.gui.Boarders;
 import dev.slne.surf.essentials.commands.general.other.troll.gui.TrollGuiItems;
 import dev.slne.surf.essentials.commands.general.other.troll.listener.TrollListener;
 import dev.slne.surf.essentials.commands.general.other.troll.trolls.*;
-import dev.slne.surf.essentials.utils.Permissions;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;

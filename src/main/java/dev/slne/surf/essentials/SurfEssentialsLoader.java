@@ -21,7 +21,6 @@ public class SurfEssentialsLoader implements PluginLoader {
         addRepository(resolver, "dmulloy2-repo", "https://repo.dmulloy2.net/repository/public/");
         addRepository(resolver, "jitpack.io", "https://jitpack.io");
         addRepository(resolver, "papermc", "https://repo.papermc.io/repository/maven-public/");
-        addRepository(resolver, "slne-repository-snapshots", "https://repo.slne.dev:2053/snapshots");
 
         classpathBuilder.addLibrary(resolver);
     }

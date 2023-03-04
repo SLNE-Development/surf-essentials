@@ -1,6 +1,6 @@
 package dev.slne.surf.essentials.commands.general.sign;
 
-import dev.slne.surf.essentials.utils.Permissions;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
