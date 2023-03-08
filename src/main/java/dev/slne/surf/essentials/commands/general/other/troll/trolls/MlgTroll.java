@@ -4,10 +4,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -56,8 +55,7 @@ public class MlgTroll {
             saveInventory.put(target.getUniqueId(), target.getInventory().getContents());
         }
         target.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20,100, false, false, false));
-        SurfApi.getUser(target).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                .append(Component.text("Schaffst du den MLG?", SurfColors.GREEN))));
+        EssentialsUtil.sendSuccess(target, Component.text("Schaffst du den MLG?", Colors.GREEN));
         target.setInvulnerable(true);
         target.getInventory().clear();
 
@@ -86,9 +84,8 @@ public class MlgTroll {
 
         //success message
         if (source.isPlayer()){
-            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
-                    .append(Component.text(" versucht nun ein MLG!", SurfColors.SUCCESS))));
+            EssentialsUtil.sendSuccess(source, target.displayName().colorIfAbsent(Colors.YELLOW)
+                    .append(Component.text(" versucht nun ein MLG!", Colors.SUCCESS)));
         }else{
             source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
                     .copy().append(net.minecraft.network.chat.Component.literal(" now tries a MLG!")
@@ -117,5 +114,4 @@ public class MlgTroll {
         saveInventory.remove(player.getUniqueId());
 
     }
-
 }

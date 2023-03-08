@@ -2,10 +2,10 @@ package dev.slne.surf.essentials.commands.minecraft;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -45,11 +45,11 @@ public class SetWorldSpawnCommand extends BrigadierCommand {
         source.getLevel().setDefaultSpawnPos(pos, angle);
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Der Welt spawn wurde bei ", SurfColors.SUCCESS)
-                    .append(Component.text("%s %s %s".formatted(pos.getX(), pos.getY(), pos.getZ()), SurfColors.TERTIARY))
-                    .append(Component.text(" mit einem Winkel von ", SurfColors.SUCCESS))
-                    .append(Component.text(angle, SurfColors.TERTIARY))
-                    .append(Component.text(" gesetzt.", SurfColors.SUCCESS)));
+            EssentialsUtil.sendSuccess(source, Component.text("Der Welt spawn wurde bei ", Colors.SUCCESS)
+                    .append(Component.text("%s %s %s".formatted(pos.getX(), pos.getY(), pos.getZ()), Colors.TERTIARY))
+                    .append(Component.text(" mit einem Winkel von ", Colors.SUCCESS))
+                    .append(Component.text(angle, Colors.TERTIARY))
+                    .append(Component.text(" gesetzt.", Colors.SUCCESS)));
         }else {
             source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.setworldspawn.success", pos.getX(), pos.getY(), pos.getZ(), angle), false);
         }

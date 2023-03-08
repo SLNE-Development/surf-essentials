@@ -3,10 +3,9 @@ package dev.slne.surf.essentials.commands.cheat;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -48,9 +47,8 @@ public class HurtCommand {
 
         if (targets.size() == 1){
             if (source.isPlayer()){
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                        .append(Component.text(" wurde verletzt!", SurfColors.SUCCESS))));
+                EssentialsUtil.sendSuccess(source, (targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                        .append(Component.text(" wurde verletzt!", Colors.SUCCESS)));
             }else {
                 source.sendSuccess(targets.iterator().next().getDisplayName()
                         .copy().append(net.minecraft.network.chat.Component.literal(" was hurt!")
@@ -58,9 +56,8 @@ public class HurtCommand {
             }
         }else{
             if (source.isPlayer()){
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text(targets.size(), SurfColors.TERTIARY))
-                        .append(Component.text(" Spieler wurden verletzt!", SurfColors.SUCCESS))));
+                EssentialsUtil.sendSuccess(source, (Component.text(targets.size(), Colors.TERTIARY))
+                        .append(Component.text(" Spieler wurden verletzt!", Colors.SUCCESS)));
             }else {
                 source.sendSuccess(targets.iterator().next().getDisplayName()
                         .copy().append(net.minecraft.network.chat.Component.literal(" players were hurted!")

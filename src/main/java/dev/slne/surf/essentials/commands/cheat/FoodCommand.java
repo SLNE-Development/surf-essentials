@@ -2,10 +2,9 @@ package dev.slne.surf.essentials.commands.cheat;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -40,20 +39,19 @@ public class FoodCommand {
         for (ServerPlayer target : targets) {
             target.getFoodData().setFoodLevel(EssentialsUtil.MAX_FOOD);
             successfulFeeds ++;
-            SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> {
-                user.playSound(Sound.ENTITY_STRIDER_EAT, 1f, 0f);
-                user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Du wurdest gefüttert!", SurfColors.GREEN)));
-            });
+
+            target.getBukkitEntity().playSound(target.getBukkitEntity(), Sound.ENTITY_STRIDER_EAT, 1f, 0f);
+            EssentialsUtil.sendSuccess(target, (Component.text("Du wurdest gefüttert!", Colors.GREEN)));
+
         }
 
         if(source.isPlayer()){
             if (successfulFeeds == 1 && source.getPlayerOrException() != targets.iterator().next()){
-                EssentialsUtil.sendSuccess(source, targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
-                        .append(Component.text(" wurde gefüttert!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+                        .append(Component.text(" wurde gefüttert!", Colors.SUCCESS)));
             }else if (successfulFeeds >= 1 && source.getPlayerOrException() != targets.iterator().next()){
-                EssentialsUtil.sendSuccess(source, Component.text(successfulFeeds, SurfColors.TERTIARY)
-                        .append(Component.text(" Spieler wurden gefüttert!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, Component.text(successfulFeeds, Colors.TERTIARY)
+                        .append(Component.text(" Spieler wurden gefüttert!", Colors.SUCCESS)));
             }
         }else {
             if (successfulFeeds == 1){

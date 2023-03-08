@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.minecraft.commands.CommandSourceStack;
@@ -42,9 +42,9 @@ public class DifficultyCommand {
         } else {
             minecraftserver.setDifficulty(worldServer, difficulty, true);
             if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Schwierigkeit wurde auf ", SurfColors.SUCCESS)
-                        .append(PaperAdventure.asAdventure(difficulty.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                        .append(net.kyori.adventure.text.Component.text(" gesetzt!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Schwierigkeit wurde auf ", Colors.SUCCESS)
+                        .append(PaperAdventure.asAdventure(difficulty.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                        .append(net.kyori.adventure.text.Component.text(" gesetzt!", Colors.SUCCESS)));
             }else {
                 source.sendSuccess(Component.translatable("commands.difficulty.success", difficulty.getDisplayName()), false);
             }
@@ -56,9 +56,9 @@ public class DifficultyCommand {
         Difficulty difficulty = source.getServer().getWorldData().getDifficulty();
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Schwierigkeit ist ", SurfColors.INFO)
-                    .append(PaperAdventure.asAdventure(difficulty.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text("!", SurfColors.INFO)));
+            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Schwierigkeit ist ", Colors.INFO)
+                    .append(PaperAdventure.asAdventure(difficulty.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                    .append(net.kyori.adventure.text.Component.text("!", Colors.INFO)));
         }else {
             source.sendSuccess(Component.translatable("commands.difficulty.query", difficulty.getDisplayName()), false);
         }

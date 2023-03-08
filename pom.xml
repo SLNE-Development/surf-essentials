@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
     <name>Surf Essentials</name>
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -20,13 +20,6 @@
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.19.3-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- enter link -->
-        <dependency>
-            <groupId>dev.slne</groupId>
-            <artifactId>surf-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- https://docs.adventure.kyori.net/getting-started.html -->
@@ -60,14 +53,6 @@
 
     <repositories>
         <repository>
-            <id>slne-repository-snapshots</id>
-            <name>SLNE Repository</name>
-            <url>https://repo.slne.dev:2053/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
@@ -80,32 +65,14 @@
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
+
     <pluginRepositories>
-        <pluginRepository>
-            <id>slne-snapshot</id>
-            <name>SLNE Repository</name>
-            <url>https://repo.slne.dev/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
         <pluginRepository>
             <id>bytecode.space</id>
             <url>https://repo.bytecode.space/repository/maven-public/</url>
         </pluginRepository>
     </pluginRepositories>
-    <distributionManagement>
-        <repository>
-            <id>slne-snapshot</id>
-            <name>SLNE Repository</name>
-            <url>https://repo.slne.dev/snapshots</url>
-        </repository>
-        <snapshotRepository>
-            <id>slne-snapshot</id>
-            <name>SLNE Repository</name>
-            <url>https://repo.slne.dev/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
+
     <build>
         <resources>
             <resource>

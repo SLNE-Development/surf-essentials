@@ -6,10 +6,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandBuildContext;
@@ -25,7 +24,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
@@ -103,25 +101,21 @@ public class EnchantCommand {
 
             // If the command source is a player, send a message to the player
             if (source.isPlayer()){
-                Player player = source.getPlayerOrException().getBukkitEntity();
-
                 // If there is only one target, send a message with the name of the target
                 if (targets.size() == 1){
-                    SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                            .append(Component.text("Die Verzauberung ", SurfColors.SUCCESS))
-                            .append(Component.text(enchantment1.getFullname(level).getString(), SurfColors.TERTIARY))
-                            .append(Component.text(" wurde zu ", SurfColors.SUCCESS))
-                            .append(Component.text(targets.iterator().next().getDisplayName().getString(), SurfColors.TERTIARY))
-                            .append(Component.text("'s item hinzugefügt", SurfColors.SUCCESS))));
+                    EssentialsUtil.sendSuccess(source, (Component.text("Die Verzauberung ", Colors.SUCCESS))
+                            .append(Component.text(enchantment1.getFullname(level).getString(), Colors.TERTIARY))
+                            .append(Component.text(" wurde zu ", Colors.SUCCESS))
+                            .append(Component.text(targets.iterator().next().getDisplayName().getString(), Colors.TERTIARY))
+                            .append(Component.text("'s item hinzugefügt", Colors.SUCCESS)));
                 }
                 // If there is more than one target, send a message with the number of targets
                 else{
-                    SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                            .append(Component.text("Die Verzauberung ", SurfColors.SUCCESS))
-                            .append(Component.text(enchantment1.getFullname(level).getString(), SurfColors.TERTIARY))
-                            .append(Component.text(" wurde zu ", SurfColors.SUCCESS))
-                            .append(Component.text(targets.size(), SurfColors.TERTIARY))
-                            .append(Component.text(" entities hinzugefügt", SurfColors.SUCCESS))));
+                    EssentialsUtil.sendSuccess(source, (Component.text("Die Verzauberung ", Colors.SUCCESS))
+                            .append(Component.text(enchantment1.getFullname(level).getString(), Colors.TERTIARY))
+                            .append(Component.text(" wurde zu ", Colors.SUCCESS))
+                            .append(Component.text(targets.size(), Colors.TERTIARY))
+                            .append(Component.text(" entities hinzugefügt", Colors.SUCCESS)));
                 }
             }
             // If the command source is not a player, send a message to the command source
@@ -143,7 +137,6 @@ public class EnchantCommand {
     /**
      * Exception type for when the specified entity is not a living entity.
      *
-     * @param entityName the name of the entity
      */
     private static final DynamicCommandExceptionType ERROR_NOT_LIVING_ENTITY = new DynamicCommandExceptionType((entityName) ->
             net.minecraft.network.chat.Component.translatable("commands.enchant.failed.entity", entityName));
@@ -151,7 +144,6 @@ public class EnchantCommand {
     /**
      * Exception type for when the specified entity is not holding an item.
      *
-     * @param entityName the name of the entity
      */
     private static final DynamicCommandExceptionType ERROR_NO_ITEM = new DynamicCommandExceptionType((entityName) ->
             net.minecraft.network.chat.Component.translatable("commands.enchant.failed.itemless", entityName));
@@ -159,7 +151,6 @@ public class EnchantCommand {
     /**
      * Exception type for when the specified item is not compatible with the enchantments being applied.
      *
-     * @param itemName the name of the item
      */
     private static final DynamicCommandExceptionType ERROR_INCOMPATIBLE = new DynamicCommandExceptionType((itemName) ->
             net.minecraft.network.chat.Component.translatable("commands.enchant.failed.incompatible", itemName));
@@ -167,8 +158,6 @@ public class EnchantCommand {
     /**
      * Exception type for when the specified enchantment level is too high.
      *
-     * @param level the specified enchantement level
-     * @param maxLevel the maximum allowed enchantement level
      */
     private static final Dynamic2CommandExceptionType ERROR_LEVEL_TOO_HIGH = new Dynamic2CommandExceptionType((level, maxLevel) ->
             net.minecraft.network.chat.Component.translatable("commands.enchant.failed.level", level, maxLevel));

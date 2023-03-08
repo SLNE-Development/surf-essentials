@@ -12,12 +12,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.gui.GuiUtils;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.TriState;
 import net.minecraft.ChatFormatting;
@@ -138,9 +138,9 @@ public class WorldCommand extends BrigadierCommand {
 
 
     private int query(CommandSourceStack source) throws CommandSyntaxException{
-        EssentialsUtil.sendSuccess(source, Component.text("Du befindest dich in der Welt ", SurfColors.SUCCESS)
-                .append(Component.text(source.getLevel().dimension().location().toString(), SurfColors.TERTIARY))
-                .append(Component.text(".", SurfColors.SUCCESS)));
+        EssentialsUtil.sendSuccess(source, Component.text("Du befindest dich in der Welt ", Colors.SUCCESS)
+                .append(Component.text(source.getLevel().dimension().location().toString(), Colors.TERTIARY))
+                .append(Component.text(".", Colors.SUCCESS)));
         return 1;
     }
 
@@ -151,10 +151,10 @@ public class WorldCommand extends BrigadierCommand {
         target.teleportTo(level, spawn.getX(), spawn.getY(), spawn.getZ(), level.getSharedSpawnAngle(), 0.0F);
 
         if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
-                    .append(Component.text(" hat die Welt ", SurfColors.SUCCESS)
-                            .append(Component.text(level.dimension().location().toString(), SurfColors.TERTIARY))
-                            .append(Component.text(" betreten.", SurfColors.SUCCESS))));
+            EssentialsUtil.sendSuccess(source, target.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+                    .append(Component.text(" hat die Welt ", Colors.SUCCESS)
+                            .append(Component.text(level.dimension().location().toString(), Colors.TERTIARY))
+                            .append(Component.text(" betreten.", Colors.SUCCESS))));
         }else {
             source.sendSuccess(target.getDisplayName()
                     .copy().append(net.minecraft.network.chat.Component.literal(" has entered ")
@@ -187,9 +187,9 @@ public class WorldCommand extends BrigadierCommand {
         Bukkit.unloadWorld(level.getWorld(), true);
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", SurfColors.SUCCESS)
-                    .append(Component.text(level.dimension().location().toString(), SurfColors.TERTIARY))
-                    .append(Component.text(" wurde erfolgreich entladen.", SurfColors.SUCCESS)));
+            EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", Colors.SUCCESS)
+                    .append(Component.text(level.dimension().location().toString(), Colors.TERTIARY))
+                    .append(Component.text(" wurde erfolgreich entladen.", Colors.SUCCESS)));
         }else {
             source.sendSuccess(net.minecraft.network.chat.Component.literal("The world '" + level.dimension().location() + "' was successfully unloaded")
                     .withStyle(ChatFormatting.GREEN), false);
@@ -256,9 +256,9 @@ public class WorldCommand extends BrigadierCommand {
         Bukkit.createWorld(WorldCreator.name(file.getName()));
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", SurfColors.SUCCESS)
-                    .append(Component.text(file.getName(), SurfColors.TERTIARY))
-                    .append(Component.text(" wurde erfolgreich geladen.", SurfColors.SUCCESS)));
+            EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", Colors.SUCCESS)
+                    .append(Component.text(file.getName(), Colors.TERTIARY))
+                    .append(Component.text(" wurde erfolgreich geladen.", Colors.SUCCESS)));
         }else {
             source.sendSuccess(net.minecraft.network.chat.Component.literal("Loaded world '" + file.getName() + "'")
                     .withStyle(ChatFormatting.GREEN), false);
@@ -268,7 +268,7 @@ public class WorldCommand extends BrigadierCommand {
 
     private int gui(CommandSourceStack source) throws CommandSyntaxException{
         Player player = source.getPlayerOrException().getBukkitEntity();
-        ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("World GUI", SurfColors.SECONDARY)));
+        ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("World GUI", Colors.SECONDARY)));
 
         gui.setOnGlobalClick(event -> event.setCancelled(true));
         GuiUtils.setAllBoarders(gui);
@@ -310,9 +310,9 @@ public class WorldCommand extends BrigadierCommand {
         worldCreator.createWorld();
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", SurfColors.SUCCESS)
-                    .append(Component.text(worldName, SurfColors.TERTIARY))
-                    .append(Component.text(" wurde erfolgreich erstellt.", SurfColors.SUCCESS)));
+            EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", Colors.SUCCESS)
+                    .append(Component.text(worldName, Colors.TERTIARY))
+                    .append(Component.text(" wurde erfolgreich erstellt.", Colors.SUCCESS)));
         }else {
             source.sendSuccess(net.minecraft.network.chat.Component.literal("Created world '" + worldName + "'")
                     .withStyle(ChatFormatting.GREEN), false);

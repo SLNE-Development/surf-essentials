@@ -2,10 +2,9 @@ package dev.slne.surf.essentials.commands.cheat;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -40,18 +39,17 @@ public class HealCommand {
         for (ServerPlayer target : targets) {
             target.heal(target.getMaxHealth(), EntityRegainHealthEvent.RegainReason.EATING, true);
             successfulChanges ++;
-            SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Du wurdest geheilt! ", SurfColors.GREEN))));
+            EssentialsUtil.sendSuccess(target, (Component.text("Du wurdest geheilt! ", Colors.GREEN)));
         }
 
         ServerPlayer target = targets.iterator().next();
         if (source.isPlayer()){
             if (successfulChanges == 1 && source.getPlayerOrException() != targets.iterator().next()){
-                EssentialsUtil.sendSuccess(source, target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
-                        .append(Component.text(" wurde geheilt!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, target.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+                        .append(Component.text(" wurde geheilt!", Colors.SUCCESS)));
             }else if (successfulChanges >= 1 && source.getPlayerOrException() != targets.iterator().next()){
-                EssentialsUtil.sendSuccess(source, Component.text(successfulChanges, SurfColors.TERTIARY)
-                        .append(Component.text(" Spieler wurden geheilt!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, Component.text(successfulChanges, Colors.TERTIARY)
+                        .append(Component.text(" Spieler wurden geheilt!", Colors.SUCCESS)));
             }
         }else {
             if (successfulChanges == 1){

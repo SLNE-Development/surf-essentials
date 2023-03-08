@@ -6,11 +6,10 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
-import dev.slne.surf.essentials.utils.color.EffectColors;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.color.EffectColors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -97,28 +96,26 @@ public class EffectCommand {
         } else {
             if (targets.size() == 1) {
                 if (source.isPlayer()){
-                    SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                            .append(net.kyori.adventure.text.Component.text("Der Effect ", SurfColors.SUCCESS))
+                    EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Der Effect ", Colors.SUCCESS))
                             .append(net.kyori.adventure.text.Component.text("[%s]".formatted(mobEffectList.getDisplayName().getString()), EffectColors.getEffectColor(mobEffectList))
-                                    .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Zeit: ", SurfColors.INFO)
-                                            .append(net.kyori.adventure.text.Component.text(EssentialsUtil.ticksToString(durationInTicks), SurfColors.TERTIARY)))))
-                            .append(net.kyori.adventure.text.Component.text(" wurde ", SurfColors.SUCCESS))
-                            .append(PaperAdventure.asAdventure(targets.iterator().next().getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(" gegeben!", SurfColors.SUCCESS))));
+                                    .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Zeit: ", Colors.INFO)
+                                            .append(net.kyori.adventure.text.Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.TERTIARY)))))
+                            .append(net.kyori.adventure.text.Component.text(" wurde ", Colors.SUCCESS))
+                            .append(PaperAdventure.asAdventure(targets.iterator().next().getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                            .append(net.kyori.adventure.text.Component.text(" gegeben!", Colors.SUCCESS)));
                 }else {
                     source.sendSuccess(Component.translatable("commands.effect.give.success.single", mobEffectList.getDisplayName(), targets.iterator().next().getDisplayName(), durationInTicks / 20), false);
                 }
 
             } else {
                 if (source.isPlayer()){
-                    SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                            .append(net.kyori.adventure.text.Component.text("Der Effect ", SurfColors.SUCCESS))
+                    EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Der Effect ", Colors.SUCCESS))
                             .append(net.kyori.adventure.text.Component.text("[%s]".formatted(mobEffectList.getDisplayName().getString()), EffectColors.getEffectColor(mobEffectList))
-                                    .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Zeit: ", SurfColors.INFO)
-                                            .append(net.kyori.adventure.text.Component.text(EssentialsUtil.ticksToString(durationInTicks), SurfColors.TERTIARY)))))
-                            .append(net.kyori.adventure.text.Component.text(" wurde ", SurfColors.SUCCESS))
-                            .append(net.kyori.adventure.text.Component.text(targets.size(), SurfColors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(" Entities gegeben!", SurfColors.SUCCESS))));
+                                    .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Zeit: ", Colors.INFO)
+                                            .append(net.kyori.adventure.text.Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.TERTIARY)))))
+                            .append(net.kyori.adventure.text.Component.text(" wurde ", Colors.SUCCESS))
+                            .append(net.kyori.adventure.text.Component.text(targets.size(), Colors.TERTIARY))
+                            .append(net.kyori.adventure.text.Component.text(" Entities gegeben!", Colors.SUCCESS)));
                 }else {
                     source.sendSuccess(Component.translatable("commands.effect.give.success.multiple", mobEffectList.getDisplayName(), targets.size(), durationInTicks / 20), false);
                 }
@@ -148,24 +145,22 @@ public class EffectCommand {
         } else {
             if (targets.size() == 1) {
                 if (source.isPlayer()){
-                    SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                            .append(net.kyori.adventure.text.Component.text("Der Effect ", SurfColors.SUCCESS))
+                    EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Der Effect ", Colors.SUCCESS))
                             .append(net.kyori.adventure.text.Component.text("[%s]".formatted(mobEffectList.getDisplayName().getString()), EffectColors.getEffectColor(mobEffectList)))
-                            .append(net.kyori.adventure.text.Component.text(" wurde von ", SurfColors.SUCCESS))
-                            .append(PaperAdventure.asAdventure(targets.iterator().next().getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(" entfernt!", SurfColors.SUCCESS))));
+                            .append(net.kyori.adventure.text.Component.text(" wurde von ", Colors.SUCCESS))
+                            .append(PaperAdventure.asAdventure(targets.iterator().next().getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                            .append(net.kyori.adventure.text.Component.text(" entfernt!", Colors.SUCCESS)));
                 }else {
                     source.sendSuccess(Component.translatable("commands.effect.clear.specific.success.single", mobEffectList.getDisplayName(), targets.iterator().next().getDisplayName()), false);
                 }
 
             } else {
                 if (source.isPlayer()){
-                    SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                            .append(net.kyori.adventure.text.Component.text("Der Effect ", SurfColors.SUCCESS))
+                    EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Der Effect ", Colors.SUCCESS))
                             .append(net.kyori.adventure.text.Component.text("[%s]".formatted(mobEffectList.getDisplayName().getString()), EffectColors.getEffectColor(mobEffectList)))
-                            .append(net.kyori.adventure.text.Component.text(" wurde von ", SurfColors.SUCCESS))
-                            .append(net.kyori.adventure.text.Component.text(targets.size(), SurfColors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(" Entities entfernt!", SurfColors.SUCCESS))));
+                            .append(net.kyori.adventure.text.Component.text(" wurde von ", Colors.SUCCESS))
+                            .append(net.kyori.adventure.text.Component.text(targets.size(), Colors.TERTIARY))
+                            .append(net.kyori.adventure.text.Component.text(" Entities entfernt!", Colors.SUCCESS)));
                 }else {
                     source.sendSuccess(Component.translatable("commands.effect.clear.specific.success.multiple", mobEffectList.getDisplayName(), targets.size()), false);
                 }
@@ -193,17 +188,17 @@ public class EffectCommand {
         } else {
             if (targets.size() == 1) {
                 if (source.isPlayer()){
-                    EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Es wurden alle Effekte von ", SurfColors.SUCCESS)
-                            .append(PaperAdventure.asAdventure(targets.iterator().next().getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(" entfernt!", SurfColors.SUCCESS)));
+                    EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Es wurden alle Effekte von ", Colors.SUCCESS)
+                            .append(PaperAdventure.asAdventure(targets.iterator().next().getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                            .append(net.kyori.adventure.text.Component.text(" entfernt!", Colors.SUCCESS)));
                 }else {
                     source.sendSuccess(Component.translatable("commands.effect.clear.everything.success.single", targets.iterator().next().getDisplayName()), false);
                 }
             } else {
                 if (source.isPlayer()){
-                    EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Es wurden alle Effekte von ", SurfColors.SUCCESS)
-                            .append(net.kyori.adventure.text.Component.text(targets.size(), SurfColors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(" Entities entfernt!", SurfColors.SUCCESS)));
+                    EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Es wurden alle Effekte von ", Colors.SUCCESS)
+                            .append(net.kyori.adventure.text.Component.text(targets.size(), Colors.TERTIARY))
+                            .append(net.kyori.adventure.text.Component.text(" Entities entfernt!", Colors.SUCCESS)));
                 }else {
                     source.sendSuccess(Component.translatable("commands.effect.clear.everything.success.multiple", targets.size()), false);
                 }

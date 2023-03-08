@@ -3,10 +3,10 @@ package dev.slne.surf.essentials.commands.cheat;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -56,10 +56,10 @@ public class HatCommand extends BrigadierCommand {
         playerInventory.setItem(playerInventory.getContainerSize() - 2, itemStackInMainHand);
 
         if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
-                    .append(Component.text(" hat das Item ", SurfColors.SUCCESS)
-                            .append(PaperAdventure.asAdventure(itemStackInMainHand.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                            .append(Component.text(" aufgesetzt bekommen.", SurfColors.SUCCESS))));
+            EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+                    .append(Component.text(" hat das Item ", Colors.SUCCESS)
+                            .append(PaperAdventure.asAdventure(itemStackInMainHand.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                            .append(Component.text(" aufgesetzt bekommen.", Colors.SUCCESS))));
         }else {
             source.sendSuccess(player.getDisplayName()
                     .copy().append(net.minecraft.network.chat.Component.literal(" has put on the item ")

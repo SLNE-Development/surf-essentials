@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.utils.permission;
 
+import dev.slne.surf.essentials.SurfEssentials;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -9,15 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PermissionManager {
-    private final Plugin plugin;
     private final PluginManager pluginManager;
+    private static boolean initializedPermissions = false;
 
     public PermissionManager(Plugin plugin){
-        this.plugin = plugin;
         this.pluginManager = plugin.getServer().getPluginManager();
     }
 
     public void initializePermissions() {
+        if (initializedPermissions) return;
         Permission parentPermission = new Permission("surf.essentials.*", "Allows access to all essentials commands but also alerts (e.g. gamemode change)");
         pluginManager.addPermission(parentPermission);
 
@@ -25,6 +26,7 @@ public class PermissionManager {
         for (String permissionString : permissionList) {
             addPermission(permissionString, parentPermission);
         }
+        initializedPermissions = true;
     }
 
     private List<String> getPermissionList() {
@@ -51,12 +53,12 @@ public class PermissionManager {
             if (field.get(null) instanceof String permissionString){
                 return permissionString;
             }else {
-                plugin.getLogger().severe("Invalid type for field '%s' in Permissions class! Expected String, but found '%s'. See stacktrace below:".formatted(field.getName(), field.getType().getSimpleName()));
+                SurfEssentials.logger().error("Invalid type for field '%s' in Permissions class! Expected String, but found '%s'. See stacktrace below:".formatted(field.getName(), field.getType().getSimpleName()));
                 new IllegalArgumentException("").printStackTrace();
                 return null;
             }
         } catch (IllegalAccessException e) {
-            plugin.getLogger().severe("Could not register permissions! See stacktrace below: ");
+            SurfEssentials.logger().error("Could not register permissions! See stacktrace below: ");
             e.printStackTrace();
         }
         return null;

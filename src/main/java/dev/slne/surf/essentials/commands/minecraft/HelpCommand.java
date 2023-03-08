@@ -3,11 +3,10 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
@@ -57,10 +56,8 @@ public class HelpCommand extends BrigadierCommand {
                             .executes(context -> showPluginHelp(context.getSource(), plugin, IntegerArgumentType.getInteger(context, "page")))));
         }
 
-        Bukkit.getServer().getCommandMap().getKnownCommands().forEach((s, command) -> {
-            literal.then(Commands.literal(s)
-                    .executes(context -> showCommandHelp(context.getSource(), command)));
-        });
+        Bukkit.getServer().getCommandMap().getKnownCommands().forEach((s, command) -> literal.then(Commands.literal(s)
+                .executes(context -> showCommandHelp(context.getSource(), command))));
 
     }
 
@@ -92,7 +89,7 @@ public class HelpCommand extends BrigadierCommand {
         }
 
         if (source.isPlayer()){
-            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAccept(user -> user.sendMessage(builder.build()));
+            EssentialsUtil.sendSuccess(source, builder.build());
         }else {
             source.sendSuccess(PaperAdventure.asVanilla(builder.build()), false);
         }
@@ -109,34 +106,34 @@ public class HelpCommand extends BrigadierCommand {
                 .append(newLine()));
 
         for (String command : currentPageCommands) {
-            builder.append(EssentialsUtil.deserialize(command).colorIfAbsent(SurfColors.TERTIARY))
+            builder.append(EssentialsUtil.deserialize(command).colorIfAbsent(Colors.TERTIARY))
                     .append(newLine());
         }
 
         builder.append(newLine());
 
         if (page != 1){
-            builder.append(Component.text("⬅ Zurück", SurfColors.GREEN)
-                    .hoverEvent(HoverEvent.showText(Component.text("Gehe eine Seite zurück", SurfColors.INFO)))
+            builder.append(Component.text("⬅ Zurück", Colors.GREEN)
+                    .hoverEvent(HoverEvent.showText(Component.text("Gehe eine Seite zurück", Colors.INFO)))
                     .clickEvent(ClickEvent.runCommand("/help %s %d".formatted(plugin.getName(), page - 1)))
-                    .append(Component.text("──", SurfColors.GRAY)));
+                    .append(Component.text("──", Colors.GRAY)));
         }else {
-            builder.append(Component.text("────────", SurfColors.GRAY));
+            builder.append(Component.text("────────", Colors.GRAY));
         }
 
-        builder.append(Component.text("───────", SurfColors.GRAY));
+        builder.append(Component.text("───────", Colors.GRAY));
 
         if (allCommands.length >= page + 1){
-            builder.append(Component.text("➡ Weiter", SurfColors.GREEN)
-                    .hoverEvent(HoverEvent.showText(Component.text("Gehe eine Seite weiter", SurfColors.INFO)))
+            builder.append(Component.text("➡ Weiter", Colors.GREEN)
+                    .hoverEvent(HoverEvent.showText(Component.text("Gehe eine Seite weiter", Colors.INFO)))
                     .clickEvent(ClickEvent.runCommand("/help %s %d".formatted(plugin.getName(), page + 1))));
         }else {
-            builder.append(Component.text("────────", SurfColors.GRAY));
+            builder.append(Component.text("────────", Colors.GRAY));
         }
 
 
         if (source.isPlayer()) {
-            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(builder.build()));
+            EssentialsUtil.sendSuccess(source, builder.build());
         }else {
             source.sendSuccess(PaperAdventure.asVanilla(builder.build()), false);
         }
@@ -147,25 +144,25 @@ public class HelpCommand extends BrigadierCommand {
 
 
     private Component prefix(){
-        return Component.text(">> ", SurfColors.DARK_GRAY)
-                .append(Component.text("Help", SurfColors.GREEN))
-                .append(Component.text(" | ", SurfColors.DARK_GRAY));
+        return Component.text(">> ", Colors.DARK_GRAY)
+                .append(Component.text("Help", Colors.GREEN))
+                .append(Component.text(" | ", Colors.DARK_GRAY));
     }
 
     private Component header(){
-        return Component.text("╾────────── ", SurfColors.GRAY)
-                .append(Component.text("Help", SurfColors.GREEN))
-                .append(Component.text(" ──────────╼", SurfColors.GRAY));
+        return Component.text("╾────────── ", Colors.GRAY)
+                .append(Component.text("Help", Colors.GREEN))
+                .append(Component.text(" ──────────╼", Colors.GRAY));
     }
 
     private Component correctUsage(String usage){
         return Component.text("Korrekte Benutzung: ", TextColor.fromHexString("#e67e22"))
-                .append(Component.text(usage, SurfColors.TERTIARY)).colorIfAbsent(SurfColors.TERTIARY);
+                .append(Component.text(usage, Colors.TERTIARY)).colorIfAbsent(Colors.TERTIARY);
     }
 
     private Component description(String description){
         return Component.text("Beschreibung: ", TextColor.fromHexString("#e67e22"))
-                .append(Component.text(description, SurfColors.TERTIARY));
+                .append(Component.text(description, Colors.TERTIARY));
     }
 
     private Component aliases(List<String> aliases){
@@ -173,8 +170,8 @@ public class HelpCommand extends BrigadierCommand {
         builder.append(Component.text("Aliases: ", TextColor.fromHexString("#e67e22")));
 
         for (String alias : aliases) {
-            builder.append(Component.text(alias, SurfColors.TERTIARY)
-                    .append(Component.text(", ", SurfColors.INFO)));
+            builder.append(Component.text(alias, Colors.TERTIARY)
+                    .append(Component.text(", ", Colors.INFO)));
         }
 
         return builder.build();
@@ -182,7 +179,7 @@ public class HelpCommand extends BrigadierCommand {
 
     private Component permission(String permission){
         return Component.text("Permission: ", TextColor.fromHexString("#e67e22"))
-                .append(Component.text(permission, SurfColors.TERTIARY));
+                .append(Component.text(permission, Colors.TERTIARY));
     }
 
     private Component newLine(){

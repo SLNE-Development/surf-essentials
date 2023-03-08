@@ -4,11 +4,10 @@ import com.google.common.collect.Iterators;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.exceptions.InvalidStringTimeException;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.configuration.GlobalConfiguration;
 import net.kyori.adventure.text.Component;
@@ -78,14 +77,14 @@ public class TimeCommand{
                 case 2 -> timeName = "gesamte Zeit";
                 default -> timeName = "undefined";
             }
-            EssentialsUtil.sendSuccess(source, Component.text("Die ", SurfColors.INFO)
-                    .append(Component.text(timeName, SurfColors.TERTIARY))
-                    .append(Component.text(" in der Welt ", SurfColors.INFO))
-                    .append(Component.text(resourceKey.location().toString().replace("minecraft:", ""), SurfColors.TERTIARY))
-                    .append(Component.text(" beträgt ", SurfColors.INFO))
-                    .append(Component.text(time, SurfColors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), SurfColors.INFO))))
-                    .append(Component.text(" Ticks!", SurfColors.INFO)));
+            EssentialsUtil.sendSuccess(source, Component.text("Die ", Colors.INFO)
+                    .append(Component.text(timeName, Colors.TERTIARY))
+                    .append(Component.text(" in der Welt ", Colors.INFO))
+                    .append(Component.text(resourceKey.location().toString().replace("minecraft:", ""), Colors.TERTIARY))
+                    .append(Component.text(" beträgt ", Colors.INFO))
+                    .append(Component.text(time, Colors.TERTIARY)
+                            .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), Colors.INFO))))
+                    .append(Component.text(" Ticks!", Colors.INFO)));
         } else {
             source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.time.query", time), false);
         }
@@ -98,15 +97,15 @@ public class TimeCommand{
 
         iterator.forEachRemaining(level -> {
             TimeSkipEvent timeSkipEvent = new TimeSkipEvent(level.getWorld(), TimeSkipEvent.SkipReason.COMMAND, time - level.getDayTime());
-            SurfApi.callEvent(timeSkipEvent);
+            EssentialsUtil.callEvent(timeSkipEvent);
             if (!timeSkipEvent.isCancelled()) level.setDayTime(level.getDayTime() + timeSkipEvent.getSkipAmount());
         });
 
         if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, Component.text("Die Zeit wurde auf ", SurfColors.SUCCESS)
-                    .append(Component.text(time, SurfColors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), SurfColors.INFO))))
-                    .append(Component.text(" Ticks gesetzt!", SurfColors.SUCCESS)));
+            EssentialsUtil.sendSuccess(source, Component.text("Die Zeit wurde auf ", Colors.SUCCESS)
+                    .append(Component.text(time, Colors.TERTIARY)
+                            .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), Colors.INFO))))
+                    .append(Component.text(" Ticks gesetzt!", Colors.SUCCESS)));
         } else {
             source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.time.set", time), false);
         }
@@ -119,15 +118,15 @@ public class TimeCommand{
 
         iterator.forEachRemaining(level -> {
             TimeSkipEvent timeSkipEvent = new TimeSkipEvent(level.getWorld(), TimeSkipEvent.SkipReason.COMMAND, time);
-            SurfApi.callEvent(timeSkipEvent);
+            EssentialsUtil.callEvent(timeSkipEvent);
             if (!timeSkipEvent.isCancelled()) level.setDayTime(level.getDayTime() + timeSkipEvent.getSkipAmount());
         });
 
         if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, Component.text("Es wurden ", SurfColors.SUCCESS)
-                    .append(Component.text(time, SurfColors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), SurfColors.INFO))))
-                    .append(Component.text(" Ticks zur Zeit hinzugefügt!", SurfColors.SUCCESS)));
+            EssentialsUtil.sendSuccess(source, Component.text("Es wurden ", Colors.SUCCESS)
+                    .append(Component.text(time, Colors.TERTIARY)
+                            .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), Colors.INFO))))
+                    .append(Component.text(" Ticks zur Zeit hinzugefügt!", Colors.SUCCESS)));
         } else {
             source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.time.set", getDayTime(source.getLevel())), false);
         }
@@ -165,8 +164,8 @@ public class TimeCommand{
         });
 
         if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, Component.text("Die Zeit wurde auf ", SurfColors.SUCCESS)
-                    .append(Component.text(namedTime, SurfColors.TERTIARY))
+            EssentialsUtil.sendSuccess(source, Component.text("Die Zeit wurde auf ", Colors.SUCCESS)
+                    .append(Component.text(namedTime, Colors.TERTIARY))
                     .append(Component.text(" gesetzt!")));
         } else {
             source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.time.set", getDayTime(source.getLevel())), false);

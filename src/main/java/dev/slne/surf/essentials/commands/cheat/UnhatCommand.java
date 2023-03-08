@@ -3,10 +3,10 @@ package dev.slne.surf.essentials.commands.cheat;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -57,10 +57,10 @@ public class UnhatCommand extends BrigadierCommand {
         playerInventory.setItem(playerInventory.getContainerSize() - 2, Items.AIR.getDefaultInstance());
 
         if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
-                    .append(Component.text(" hat das Item ", SurfColors.SUCCESS)
-                            .append(PaperAdventure.asAdventure(itemStackOnHead.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                            .append(Component.text(" abgesetzt.", SurfColors.SUCCESS))));
+            EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+                    .append(Component.text(" hat das Item ", Colors.SUCCESS)
+                            .append(PaperAdventure.asAdventure(itemStackOnHead.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                            .append(Component.text(" abgesetzt.", Colors.SUCCESS))));
         }else {
             source.sendSuccess(player.getDisplayName()
                     .copy().append(net.minecraft.network.chat.Component.literal(" has unput the item ")
@@ -71,7 +71,7 @@ public class UnhatCommand extends BrigadierCommand {
         return 1;
     }
 
-    private static final DynamicCommandExceptionType NO_SPACE_IN_INVENTORY = new DynamicCommandExceptionType(player -> PaperAdventure.asVanilla(((ServerPlayer) player).adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
+    private static final DynamicCommandExceptionType NO_SPACE_IN_INVENTORY = new DynamicCommandExceptionType(player -> PaperAdventure.asVanilla(((ServerPlayer) player).adventure$displayName.colorIfAbsent(Colors.TERTIARY))
             .copy().append(net.minecraft.network.chat.Component.literal(" has no free inventory space!")
                     .withStyle(ChatFormatting.RED)));
 }

@@ -2,10 +2,9 @@ package dev.slne.surf.essentials.commands.cheat;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -51,27 +50,26 @@ public class FlyCommand {
             }
             target.onUpdateAbilities();
             successfulChanges++;
-            SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Du kannst nun ", SurfColors.GREEN)
-                            .append(Component.text((target.getAbilities().mayfly) ? "fliegen!" : "nicht mehr fliegen!", SurfColors.GREEN)))));
+            EssentialsUtil.sendSuccess(target.getBukkitEntity(), (Component.text("Du kannst nun ", Colors.GREEN)
+                            .append(Component.text((target.getAbilities().mayfly) ? "fliegen!" : "nicht mehr fliegen!", Colors.GREEN))));
         }
 
         if (source.isPlayer()) {
             if (successfulChanges == 1) {
                 if (source.getPlayerOrException() == targets.iterator().next()) return 1;
-                EssentialsUtil.sendSuccess(source, targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
+                EssentialsUtil.sendSuccess(source, targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY)
                         .append(Component.text(" kann nun " + ((targets.iterator().next().getAbilities().mayfly) ? "fliegen!" : "nicht mehr fliegen!"))));
             } else {
                 if (toggle) {
-                    EssentialsUtil.sendSuccess(source, Component.text("Die Flugfunktion wurde für ", SurfColors.SUCCESS)
-                            .append(Component.text(successfulChanges, SurfColors.TERTIARY))
-                            .append(Component.text(" Spieler umgeschaltet!", SurfColors.SUCCESS)));
+                    EssentialsUtil.sendSuccess(source, Component.text("Die Flugfunktion wurde für ", Colors.SUCCESS)
+                            .append(Component.text(successfulChanges, Colors.TERTIARY))
+                            .append(Component.text(" Spieler umgeschaltet!", Colors.SUCCESS)));
                 } else {
-                    EssentialsUtil.sendSuccess(source, Component.text("Die Flugfunktion wurde für ", SurfColors.SUCCESS)
-                            .append(Component.text(successfulChanges, SurfColors.TERTIARY))
-                            .append(Component.text(" Spieler ", SurfColors.SUCCESS))
-                            .append(Component.text((allowFly) ? "aktiviert" : "deaktiviert", SurfColors.TERTIARY))
-                            .append(Component.text("!", SurfColors.SUCCESS)));
+                    EssentialsUtil.sendSuccess(source, Component.text("Die Flugfunktion wurde für ", Colors.SUCCESS)
+                            .append(Component.text(successfulChanges, Colors.TERTIARY))
+                            .append(Component.text(" Spieler ", Colors.SUCCESS))
+                            .append(Component.text((allowFly) ? "aktiviert" : "deaktiviert", Colors.TERTIARY))
+                            .append(Component.text("!", Colors.SUCCESS)));
                 }
             }
         } else {

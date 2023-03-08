@@ -5,10 +5,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -53,11 +52,9 @@ public class VillagerAnnoyTroll {
 
             Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), bukkitTask -> {
                 if (timeLeft.get() < 1) bukkitTask.cancel();
-                SurfApi.getUser(target).thenAcceptAsync(user -> {
-                    user.playSound(Sound.ENTITY_VILLAGER_NO, 100.F, 1.0F);
-                    user.playSound(Sound.ENTITY_VILLAGER_CELEBRATE, 100.F, 1.0F);
-                    user.playSound(Sound.ENTITY_VILLAGER_AMBIENT, 100.F, 1.0F);
-                });
+                target.playSound(target, Sound.ENTITY_VILLAGER_NO, 100.F, 1.0F);
+                target.playSound(target, Sound.ENTITY_VILLAGER_CELEBRATE, 100.F, 1.0F);
+                target.playSound(target, Sound.ENTITY_VILLAGER_AMBIENT, 100.F, 1.0F);
                 timeLeft.getAndDecrement();
                 villagerTaskID = bukkitTask.getTaskId();
             },1,5);
@@ -68,9 +65,8 @@ public class VillagerAnnoyTroll {
             cancelVillagerTroll(target);
 
             if (source.isPlayer()){
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
-                        .append(Component.text(" wird nun nicht mehr mit Dorfbewohner-geräuschen gestört", SurfColors.INFO))));
+                EssentialsUtil.sendSuccess(source, target.displayName().colorIfAbsent(Colors.TERTIARY)
+                        .append(Component.text(" wird nun nicht mehr mit Dorfbewohner-geräuschen gestört", Colors.INFO)));
             }else {
                 source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
                         .copy().append(net.minecraft.network.chat.Component.literal(" is no longer disturbed with villager noises!")
@@ -80,9 +76,8 @@ public class VillagerAnnoyTroll {
         }
 
         if (source.isPlayer()){
-            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
-                    .append(Component.text(" wird nun mit Dorfbewohner-geräuschen gestört!", SurfColors.SUCCESS))));
+            EssentialsUtil.sendSuccess(source, target.displayName().colorIfAbsent(Colors.TERTIARY)
+                    .append(Component.text(" wird nun mit Dorfbewohner-geräuschen gestört!", Colors.SUCCESS)));
         }else{
             source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
                     .copy().append(net.minecraft.network.chat.Component.literal(" is now disturbed with villager noises!")

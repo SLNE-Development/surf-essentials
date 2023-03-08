@@ -6,11 +6,12 @@ import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.PatternPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
-import dev.slne.surf.api.utils.message.SurfColors;
+import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -23,25 +24,25 @@ public class GuiUtils {
      * A boarder {@link GuiItem} using {@link Material#GRAY_STAINED_GLASS_PANE}
      * @return the {@link GuiItem}
      */
-    public static final GuiItem boarder(){
+    public static GuiItem boarder(){
         GuiItem guiItem = new GuiItem(new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1));
         GuiUtils.rename(guiItem, "");
         return guiItem;
     }
 
     /** A page backward {@link GuiItem} */
-    public static final GuiItem BACKWARD_BUTTON() {
+    public static GuiItem BACKWARD_BUTTON() {
         ItemStack item = getHeadFromValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3Rl" +
                 "eHR1cmUvNzc4ZWY4ZDEzYWU1M2FhNDMxNDNhMWZlNzU5YjVjNjIwNDEwNDZiMTc0NmI1MGZhNDUyZGYwZDUzNGM2YTNkIn19fQ==");
 
         GuiItem guiItem = new GuiItem(item);
-        rename(guiItem, Component.text("Zurück", SurfColors.INFO));
+        rename(guiItem, Component.text("Zurück", Colors.INFO));
 
         return guiItem;
     }
 
     /** A page backward {@link GuiItem} with function */
-    public static final GuiItem BACKWARD_BUTTON(ChestGui gui, PaginatedPane paginatedPane){
+    public static GuiItem BACKWARD_BUTTON(ChestGui gui, PaginatedPane paginatedPane){
         GuiItem backwardButton = BACKWARD_BUTTON();
         backwardButton.setAction(inventoryClickEvent -> {
             if (0 > paginatedPane.getPage() - 1) return;
@@ -52,18 +53,18 @@ public class GuiUtils {
     }
 
     /** A page forward {@link GuiItem} */
-    public static final GuiItem FORWARD_BUTTON() {
+    public static GuiItem FORWARD_BUTTON() {
         ItemStack item = getHeadFromValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3Rl" +
                 "eHR1cmUvMmI0ZTM0ZDA0ZDNhNTY1ZjYxNjY4YzcwOTMwN2MzNTE5YTRmNzA2YTY5ZjBkZTIwZDJmMDNiZGJjMTdlOTIwNSJ9fX0=");
 
         GuiItem guiItem = new GuiItem(item);
-        rename(guiItem, Component.text("Weiter", SurfColors.INFO));
+        rename(guiItem, Component.text("Weiter", Colors.INFO));
 
         return guiItem;
     }
 
     /** A page forward {@link GuiItem} with function*/
-    public static final GuiItem FORWARD_BUTTON(ChestGui gui, PaginatedPane paginatedPane){
+    public static GuiItem FORWARD_BUTTON(ChestGui gui, PaginatedPane paginatedPane){
         GuiItem forwardButton = FORWARD_BUTTON();
         forwardButton.setAction(inventoryClickEvent -> {
             if (paginatedPane.getPages() <= paginatedPane.getPage() + 1) return;
@@ -74,11 +75,15 @@ public class GuiUtils {
     }
 
     /** A close {@link GuiItem} using {@link Material#BARRIER} */
-    public static final GuiItem CLOSE_BUTTON() {
+    public static GuiItem CLOSE_BUTTON() {
         GuiItem guiItem = new GuiItem(new ItemStack(Material.BARRIER, 1));
 
-        rename(guiItem, Component.text("Schließen", SurfColors.RED));
-        guiItem.setAction(inventoryClickEvent -> inventoryClickEvent.getClickedInventory().close());
+        rename(guiItem, Component.text("Schließen", Colors.RED));
+        guiItem.setAction(inventoryClickEvent ->{
+            Inventory inventory = inventoryClickEvent.getClickedInventory();
+            if (inventory == null) return;
+            inventory.close();
+        });
 
         return guiItem;
     }
@@ -93,7 +98,7 @@ public class GuiUtils {
         ItemStack itemStack = guiItem.getItem();
         ItemMeta itemMeta = itemStack.getItemMeta();
 
-        displayName = Component.empty().append(displayName.colorIfAbsent(SurfColors.TERTIARY)).decoration(TextDecoration.ITALIC, false);
+        displayName = Component.empty().append(displayName.colorIfAbsent(Colors.TERTIARY)).decoration(TextDecoration.ITALIC, false);
         itemMeta.displayName(displayName);
 
         itemStack.setItemMeta(itemMeta);
@@ -119,7 +124,7 @@ public class GuiUtils {
         ItemStack itemStack = guiItem.getItem();
         ItemMeta itemMeta = itemStack.getItemMeta();
 
-        lore = Component.empty().append(lore).colorIfAbsent(SurfColors.INFO);
+        lore = Component.empty().append(lore).colorIfAbsent(Colors.INFO);
         itemMeta.lore(Collections.singletonList(lore));
 
         itemStack.setItemMeta(itemMeta);
@@ -155,7 +160,7 @@ public class GuiUtils {
      *
      * @return the boarder
      */
-    public static final OutlinePane LEFT_BOARDER(){
+    public static OutlinePane LEFT_BOARDER(){
         OutlinePane pane = new OutlinePane(0, 0, 1, 6);
         pane.addItem(boarder());
         pane.setRepeat(true);
@@ -167,7 +172,7 @@ public class GuiUtils {
      *
      * @return the boarder
      */
-    public static final OutlinePane RIGHT_BOARDER(){
+    public static OutlinePane RIGHT_BOARDER(){
         OutlinePane pane = new OutlinePane(8, 0, 1, 6);
         pane.addItem(boarder());
         pane.setRepeat(true);
@@ -179,7 +184,7 @@ public class GuiUtils {
      *
      * @return the boarder
      */
-    public static final PatternPane BOTTOM_BOARDER(){
+    public static PatternPane BOTTOM_BOARDER(){
         Pattern pattern = new Pattern("0012300");
         PatternPane pane = new PatternPane(1, 5, 7, 1, pattern);
 
@@ -199,7 +204,7 @@ public class GuiUtils {
      *
      * @return the boarder
      */
-    public static final PatternPane BOTTOM_BOARDER(PaginatedPane paginatedPane, ChestGui gui){
+    public static PatternPane BOTTOM_BOARDER(PaginatedPane paginatedPane, ChestGui gui){
         Pattern pattern = new Pattern("0012300");
         PatternPane pane = new PatternPane(1, 5, 7, 1, pattern);
 
@@ -230,7 +235,7 @@ public class GuiUtils {
      *
      * @return the boarder
      */
-    public static final OutlinePane UPPER_BOARDER(){
+    public static OutlinePane UPPER_BOARDER(){
         OutlinePane pane = new OutlinePane(1, 0, 7, 1);
         pane.addItem(boarder());
         pane.setRepeat(true);

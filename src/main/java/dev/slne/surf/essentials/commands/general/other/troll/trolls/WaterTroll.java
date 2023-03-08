@@ -5,10 +5,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -42,9 +41,8 @@ public class WaterTroll {
             cancelWater(target);
 
             if (source.isPlayer()){
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
-                        .append(Component.text(" hat jetzt keine Wasserphobie mehr", SurfColors.SUCCESS))));
+                EssentialsUtil.sendSuccess(source, target.displayName().colorIfAbsent(Colors.TERTIARY)
+                        .append(Component.text(" hat jetzt keine Wasserphobie mehr", Colors.SUCCESS)));
             }else{
                 source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
                         .copy().append(net.minecraft.network.chat.Component.literal(" now no longer has water phobia")
@@ -59,9 +57,8 @@ public class WaterTroll {
 
         //success message
         if (source.isPlayer()){
-            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
-                    .append(Component.text(" hat nun Wasserphobie!", SurfColors.SUCCESS))));
+            EssentialsUtil.sendSuccess(source, target.displayName().colorIfAbsent(Colors.TERTIARY)
+                    .append(Component.text(" hat nun Wasserphobie!", Colors.SUCCESS)));
         }else{
             source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
                     .copy().append(net.minecraft.network.chat.Component.literal(" now has water phobia!")

@@ -4,9 +4,9 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -81,8 +81,8 @@ public class TitlebroadcastCommand {
 
         subTitle = (subTitle == null) ? "" : subTitle;
 
-        Component titleComponent = LegacyComponentSerializer.legacyAmpersand().deserialize(title).colorIfAbsent(SurfColors.TERTIARY);
-        Component subTitleComponent = LegacyComponentSerializer.legacyAmpersand().deserialize(subTitle).colorIfAbsent(SurfColors.SECONDARY);
+        Component titleComponent = LegacyComponentSerializer.legacyAmpersand().deserialize(title).colorIfAbsent(Colors.TERTIARY);
+        Component subTitleComponent = LegacyComponentSerializer.legacyAmpersand().deserialize(subTitle).colorIfAbsent(Colors.SECONDARY);
 
         ClientboundSetTitlesAnimationPacket animationPacket = new ClientboundSetTitlesAnimationPacket(fadeInTicks, stayTicks, fadeOutTicks);
         ClientboundSetTitleTextPacket titleTextPacket = new ClientboundSetTitleTextPacket(PaperAdventure.asVanilla(titleComponent));
@@ -97,45 +97,45 @@ public class TitlebroadcastCommand {
 
         if (source.isPlayer()){
             if (successfullyShowed == 1) {
-                EssentialsUtil.sendSuccess(source, Component.text("Der ", SurfColors.SUCCESS)
-                        .append(Component.text("Titel", SurfColors.TERTIARY)
-                                .hoverEvent(HoverEvent.showText(Component.text("Titel: ", SurfColors.INFO)
+                EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
+                        .append(Component.text("Titel", Colors.TERTIARY)
+                                .hoverEvent(HoverEvent.showText(Component.text("Titel: ", Colors.INFO)
                                         .append(titleComponent)
                                         .append(Component.newline())
-                                        .append(Component.text("Einblenden: ", SurfColors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(fadeInTicks), SurfColors.TERTIARY)))
+                                        .append(Component.text("Einblenden: ", Colors.INFO)
+                                                .append(Component.text(EssentialsUtil.ticksToString(fadeInTicks), Colors.TERTIARY)))
                                         .append(Component.newline())
-                                        .append(Component.text("Dauer: ", SurfColors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(stayTicks), SurfColors.TERTIARY)))
+                                        .append(Component.text("Dauer: ", Colors.INFO)
+                                                .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
                                         .append(Component.newline())
-                                        .append(Component.text("Ausblenden: ", SurfColors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), SurfColors.TERTIARY)))
+                                        .append(Component.text("Ausblenden: ", Colors.INFO)
+                                                .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
                                         .append(Component.newline())
-                                        .append(Component.text("Untertitel: ", SurfColors.INFO))
+                                        .append(Component.text("Untertitel: ", Colors.INFO))
                                         .append(subTitleComponent))))
-                        .append(Component.text(" wurde ", SurfColors.SUCCESS))
-                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                        .append(Component.text(" gezeigt!", SurfColors.SUCCESS)));
+                        .append(Component.text(" wurde ", Colors.SUCCESS))
+                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                        .append(Component.text(" gezeigt!", Colors.SUCCESS)));
             }else {
-                EssentialsUtil.sendSuccess(source, Component.text("Der ", SurfColors.SUCCESS)
-                        .append(Component.text("Titel", SurfColors.TERTIARY)
-                                .hoverEvent(HoverEvent.showText(Component.text("Titel: ", SurfColors.INFO)
+                EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
+                        .append(Component.text("Titel", Colors.TERTIARY)
+                                .hoverEvent(HoverEvent.showText(Component.text("Titel: ", Colors.INFO)
                                         .append(titleComponent)
                                         .append(Component.newline())
-                                        .append(Component.text("Einblenden: ", SurfColors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(fadeInTicks), SurfColors.TERTIARY)))
+                                        .append(Component.text("Einblenden: ", Colors.INFO)
+                                                .append(Component.text(EssentialsUtil.ticksToString(fadeInTicks), Colors.TERTIARY)))
                                         .append(Component.newline())
-                                        .append(Component.text("Dauer: ", SurfColors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(stayTicks), SurfColors.TERTIARY)))
+                                        .append(Component.text("Dauer: ", Colors.INFO)
+                                                .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
                                         .append(Component.newline())
-                                        .append(Component.text("Ausblenden: ", SurfColors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), SurfColors.TERTIARY)))
+                                        .append(Component.text("Ausblenden: ", Colors.INFO)
+                                                .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
                                         .append(Component.newline())
-                                        .append(Component.text("Untertitel: ", SurfColors.INFO))
+                                        .append(Component.text("Untertitel: ", Colors.INFO))
                                         .append(subTitleComponent))))
-                        .append(Component.text(" wurde ", SurfColors.SUCCESS))
-                        .append(Component.text(successfullyShowed, SurfColors.TERTIARY))
-                        .append(Component.text(" Spielern gezeigt!", SurfColors.SUCCESS)));
+                        .append(Component.text(" wurde ", Colors.SUCCESS))
+                        .append(Component.text(successfullyShowed, Colors.TERTIARY))
+                        .append(Component.text(" Spielern gezeigt!", Colors.SUCCESS)));
             }
         }else {
             if (successfullyShowed == 1) {

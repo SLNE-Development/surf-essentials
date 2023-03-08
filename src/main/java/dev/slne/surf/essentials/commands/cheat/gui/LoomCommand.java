@@ -3,10 +3,9 @@ package dev.slne.surf.essentials.commands.cheat.gui;
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -39,15 +38,13 @@ public class LoomCommand {
         }
         if (source.isPlayer()){
             if (targets.size() == 1){
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Der Webstuhl wurde für ", SurfColors.SUCCESS))
-                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                        .append(Component.text(" geöffnet", SurfColors.SUCCESS))));
+                EssentialsUtil.sendSuccess(source, Component.text("Der Webstuhl wurde für ", Colors.SUCCESS)
+                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                        .append(Component.text(" geöffnet", Colors.SUCCESS)));
             }else {
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Der Webstuhl wurde für ", SurfColors.SUCCESS))
-                        .append(Component.text(targets.size(), SurfColors.TERTIARY))
-                        .append(Component.text(" Spieler geöffnet", SurfColors.SUCCESS))));
+                EssentialsUtil.sendSuccess(source, Component.text("Der Webstuhl wurde für ", Colors.SUCCESS)
+                        .append(Component.text(targets.size(), Colors.TERTIARY))
+                        .append(Component.text(" Spieler geöffnet", Colors.SUCCESS)));
             }
         }else {
             if (targets.size() == 1){

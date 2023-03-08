@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.general;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-import static dev.slne.surf.api.utils.message.SurfColors.SUCCESS;
+import java.util.Objects;
 
 public class SpawnerChangeCommand{
 
@@ -77,27 +77,28 @@ public class SpawnerChangeCommand{
 
         BlockEntity blockEntity = source.getLevel().getBlockEntity(blockPos);
         SpawnerBlockEntity spawnerTileEntity = (SpawnerBlockEntity) blockEntity;
-        BaseSpawner baseSpawner = spawnerTileEntity.getSpawner();
+        BaseSpawner baseSpawner = Objects.requireNonNull(spawnerTileEntity).getSpawner();
 
-        String entityName = baseSpawner.nextSpawnData.getEntityToSpawn().getString("id");
 
-        EssentialsUtil.sendSuccess(source, Component.text("Spawner", SurfColors.TERTIARY)
-                .hoverEvent(HoverEvent.showText(Component.text("Entity: ", SurfColors.INFO)
-                        .append(Component.text(entityName, SurfColors.TERTIARY))
+        String entityName = Objects.requireNonNull(baseSpawner.nextSpawnData).getEntityToSpawn().getString("id");
+
+        EssentialsUtil.sendSuccess(source, Component.text("Spawner", Colors.TERTIARY)
+                .hoverEvent(HoverEvent.showText(Component.text("Entity: ", Colors.INFO)
+                        .append(Component.text(entityName, Colors.TERTIARY))
                         .append(Component.newline())
-                        .append(Component.text("minSpawnDelay: ", SurfColors.INFO)
-                                .append(Component.text(baseSpawner.minSpawnDelay, SurfColors.TERTIARY)))
+                        .append(Component.text("minSpawnDelay: ", Colors.INFO)
+                                .append(Component.text(baseSpawner.minSpawnDelay, Colors.TERTIARY)))
                         .append(Component.newline())
-                        .append(Component.text("maxSpawnDelay: ", SurfColors.INFO)
-                                .append(Component.text(baseSpawner.maxSpawnDelay, SurfColors.TERTIARY)))
+                        .append(Component.text("maxSpawnDelay: ", Colors.INFO)
+                                .append(Component.text(baseSpawner.maxSpawnDelay, Colors.TERTIARY)))
                         .append(Component.newline())
-                        .append(Component.text("spawnRange: ", SurfColors.INFO)
-                                .append(Component.text(baseSpawner.spawnRange, SurfColors.TERTIARY)))
+                        .append(Component.text("spawnRange: ", Colors.INFO)
+                                .append(Component.text(baseSpawner.spawnRange, Colors.TERTIARY)))
                         .append(Component.newline())
-                        .append(Component.text("requiredPlayerRange: ", SurfColors.INFO)
-                                .append(Component.text(baseSpawner.requiredPlayerRange, SurfColors.TERTIARY)))))
-                .append(Component.text(" bei ", SurfColors.INFO)
-                        .append(Component.text("%d %d %d".formatted(blockPos.getX(), blockPos.getY(), blockPos.getX()), SurfColors.TERTIARY))));
+                        .append(Component.text("requiredPlayerRange: ", Colors.INFO)
+                                .append(Component.text(baseSpawner.requiredPlayerRange, Colors.TERTIARY)))))
+                .append(Component.text(" bei ", Colors.INFO)
+                        .append(Component.text("%d %d %d".formatted(blockPos.getX(), blockPos.getY(), blockPos.getX()), Colors.TERTIARY))));
         return 1;
 
     }
@@ -106,7 +107,7 @@ public class SpawnerChangeCommand{
         if (!isSpawner(source, blockPos)) return 0;
 
         BlockEntity blockEntity = source.getLevel().getBlockEntity(blockPos);
-        BlockState oldState = blockEntity.getBlockState();
+        BlockState oldState = Objects.requireNonNull(blockEntity).getBlockState();
         SpawnerBlockEntity spawnerTileEntity = (SpawnerBlockEntity) blockEntity;
         BaseSpawner baseSpawner = spawnerTileEntity.getSpawner();
 
@@ -120,22 +121,22 @@ public class SpawnerChangeCommand{
         source.getLevel().sendBlockUpdated(blockEntity.getBlockPos(), oldState, blockEntity.getBlockState(), 0);
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Der ", SUCCESS)
-                    .append(Component.text("Spawner", SurfColors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text("Entity: ", SurfColors.INFO)
-                                    .append(PaperAdventure.asAdventure(type.getDescription()).colorIfAbsent(SurfColors.TERTIARY))
+            EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
+                    .append(Component.text("Spawner", Colors.TERTIARY)
+                            .hoverEvent(HoverEvent.showText(Component.text("Entity: ", Colors.INFO)
+                                    .append(PaperAdventure.asAdventure(type.getDescription()).colorIfAbsent(Colors.TERTIARY))
                                     .append(Component.newline())
-                                    .append(Component.text("minSpawnDelay: ", SurfColors.INFO)
-                                            .append(Component.text(baseSpawner.minSpawnDelay, SurfColors.TERTIARY)))
+                                    .append(Component.text("minSpawnDelay: ", Colors.INFO)
+                                            .append(Component.text(baseSpawner.minSpawnDelay, Colors.TERTIARY)))
                                     .append(Component.newline())
-                                    .append(Component.text("maxSpawnDelay: ", SurfColors.INFO)
-                                            .append(Component.text(baseSpawner.maxSpawnDelay, SurfColors.TERTIARY)))
+                                    .append(Component.text("maxSpawnDelay: ", Colors.INFO)
+                                            .append(Component.text(baseSpawner.maxSpawnDelay, Colors.TERTIARY)))
                                     .append(Component.newline())
-                                    .append(Component.text("spawnRange: ", SurfColors.INFO)
-                                            .append(Component.text(baseSpawner.spawnRange, SurfColors.TERTIARY)))
+                                    .append(Component.text("spawnRange: ", Colors.INFO)
+                                            .append(Component.text(baseSpawner.spawnRange, Colors.TERTIARY)))
                                     .append(Component.newline())
-                                    .append(Component.text("requiredPlayerRange: ", SurfColors.INFO)
-                                            .append(Component.text(baseSpawner.requiredPlayerRange, SurfColors.TERTIARY))))))
+                                    .append(Component.text("requiredPlayerRange: ", Colors.INFO)
+                                            .append(Component.text(baseSpawner.requiredPlayerRange, Colors.TERTIARY))))))
                     .append(Component.text(" wurde erfolgreich geändert!")));
         }else {
             source.sendSuccess(net.minecraft.network.chat.Component.literal("The spawner was successfully modified"), false);

@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.cheat;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -38,9 +38,9 @@ public class RepairCommand {
 
         if (!item.isDamageableItem()){
             if (source.isPlayer()){
-                EssentialsUtil.sendError(source, Component.text("Das Item ", SurfColors.ERROR)
+                EssentialsUtil.sendError(source, Component.text("Das Item ", Colors.ERROR)
                         .append(PaperAdventure.asAdventure(item.getDisplayName()))
-                        .append(Component.text(" kann nicht repariert werden!", SurfColors.ERROR)));
+                        .append(Component.text(" kann nicht repariert werden!", Colors.ERROR)));
 
             }else throw  ERROR_NOT_DAMAGEABLE.create(item);
             return 0;
@@ -50,9 +50,9 @@ public class RepairCommand {
 
         if (source.isPlayer()){
             EssentialsUtil.sendSuccess(source, PaperAdventure.asAdventure(item.getDisplayName())
-                    .append(Component.text(" von ", SurfColors.SUCCESS))
-                    .append(target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                    .append(Component.text(" wurde repariert!", SurfColors.SUCCESS)));
+                    .append(Component.text(" von ", Colors.SUCCESS))
+                    .append(target.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                    .append(Component.text(" wurde repariert!", Colors.SUCCESS)));
         }else {
             source.sendSuccess(net.minecraft.network.chat.Component.literal("The item ")
                     .append(item.getDisplayName())

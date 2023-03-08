@@ -8,10 +8,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.TextComponent;
@@ -169,10 +168,9 @@ public class BossbarCommand {
         } else {
             CustomBossEvent customBossEvent = customBossEvents.create(name, ComponentUtils.updateForEntity(source, displayName, null, 0));
             if (source.isPlayer()) {
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(net.kyori.adventure.text.Component.text("Die Bossbar", SurfColors.SUCCESS)
-                                .append(convertBossbar(customBossEvent))
-                                .append(net.kyori.adventure.text.Component.text("wurde erfolgreich erstellt!", SurfColors.SUCCESS)))));
+                EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.SUCCESS)
+                        .append(convertBossbar(customBossEvent))
+                        .append(net.kyori.adventure.text.Component.text("wurde erfolgreich erstellt!", Colors.SUCCESS))));
             } else {
                 source.sendSuccess(Component.translatable("commands.bossbar.create.success", customBossEvent.getDisplayName()), false);
             }
@@ -191,8 +189,7 @@ public class BossbarCommand {
         Collection<CustomBossEvent> collection = source.getServer().getCustomBossEvents().getEvents();
         if (collection.isEmpty()) {
             if (source.isPlayer()) {
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(net.kyori.adventure.text.Component.text("Es sind keine Bossbar´s aktiv!", SurfColors.INFO))));
+                EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Es sind keine Bossbar´s aktiv!", Colors.INFO)));
             } else {
                 source.sendSuccess(Component.translatable("commands.bossbar.list.bars.none"), false);
             }
@@ -200,17 +197,16 @@ public class BossbarCommand {
         } else {
             if (source.isPlayer()) {
                 ComponentBuilder<TextComponent, TextComponent.Builder> builder = net.kyori.adventure.text.Component.text();
-                builder.append(SurfApi.getPrefix()
-                        .append(net.kyori.adventure.text.Component.text("Es sind ", SurfColors.INFO))
-                        .append(net.kyori.adventure.text.Component.text(collection.size(), SurfColors.TERTIARY))
-                        .append(net.kyori.adventure.text.Component.text(" Bossbars aktiv:", SurfColors.INFO)));
+                builder.append(net.kyori.adventure.text.Component.text("Es sind ", Colors.INFO))
+                        .append(net.kyori.adventure.text.Component.text(collection.size(), Colors.TERTIARY))
+                        .append(net.kyori.adventure.text.Component.text(" Bossbars aktiv:", Colors.INFO));
 
                 for (CustomBossEvent bossBar : collection) {
                     builder.append(convertBossbar(bossBar))
-                            .append(net.kyori.adventure.text.Component.text(",", SurfColors.INFO));
+                            .append(net.kyori.adventure.text.Component.text(",", Colors.INFO));
                 }
 
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(builder.build()));
+                EssentialsUtil.sendSuccess(source, builder.build());
             } else {
                 source.sendSuccess(Component.translatable("commands.bossbar.list.bars.some", collection.size(),
                         ComponentUtils.formatList(collection, CustomBossEvent::getDisplayName)), false);
@@ -229,12 +225,11 @@ public class BossbarCommand {
      */
     private static int getValue(CommandSourceStack source, CustomBossEvent bossBar) throws CommandSyntaxException {
         if (source.isPlayer()) {
-            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(net.kyori.adventure.text.Component.text("Die Bossbar", SurfColors.INFO))
+            EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.INFO))
                     .append(convertBossbar(bossBar))
-                    .append(net.kyori.adventure.text.Component.text("hat einen Wert von ", SurfColors.INFO))
-                    .append(net.kyori.adventure.text.Component.text(bossBar.getValue(), SurfColors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text("!", SurfColors.INFO))));
+                    .append(net.kyori.adventure.text.Component.text("hat einen Wert von ", Colors.INFO))
+                    .append(net.kyori.adventure.text.Component.text(bossBar.getValue(), Colors.TERTIARY))
+                    .append(net.kyori.adventure.text.Component.text("!", Colors.INFO)));
         } else {
             source.sendSuccess(Component.translatable("commands.bossbar.get.value", bossBar.getDisplayName(), bossBar.getValue()), false);
         }
@@ -251,12 +246,11 @@ public class BossbarCommand {
      */
     private static int getMax(CommandSourceStack source, CustomBossEvent bossBar) throws CommandSyntaxException {
         if (source.isPlayer()) {
-            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(net.kyori.adventure.text.Component.text("Die Bossbar", SurfColors.INFO))
+            EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.INFO))
                     .append(convertBossbar(bossBar))
-                    .append(net.kyori.adventure.text.Component.text("kann maximal ", SurfColors.INFO))
-                    .append(net.kyori.adventure.text.Component.text(bossBar.getMax(), SurfColors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(" anzeigen!", SurfColors.INFO))));
+                    .append(net.kyori.adventure.text.Component.text("kann maximal ", Colors.INFO))
+                    .append(net.kyori.adventure.text.Component.text(bossBar.getMax(), Colors.TERTIARY))
+                    .append(net.kyori.adventure.text.Component.text(" anzeigen!", Colors.INFO)));
         } else {
             source.sendSuccess(Component.translatable("commands.bossbar.get.max", bossBar.getDisplayName(), bossBar.getMax()), false);
         }
@@ -274,10 +268,9 @@ public class BossbarCommand {
     private static int getPlayers(CommandSourceStack source, CustomBossEvent bossBar) throws CommandSyntaxException {
         if (bossBar.getPlayers().isEmpty()) {
             if (source.isPlayer()) {
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(net.kyori.adventure.text.Component.text("Bei der Bossbar", SurfColors.INFO))
+                EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Bei der Bossbar", Colors.INFO))
                         .append(convertBossbar(bossBar))
-                        .append(net.kyori.adventure.text.Component.text("sind derzeit keine Spieler online!", SurfColors.INFO))));
+                        .append(net.kyori.adventure.text.Component.text("sind derzeit keine Spieler online!", Colors.INFO)));
             } else {
                 source.sendSuccess(Component.translatable("commands.bossbar.get.players.none", bossBar.getDisplayName()), false);
             }
@@ -285,19 +278,18 @@ public class BossbarCommand {
             if (source.isPlayer()) {
                 ComponentBuilder<TextComponent, TextComponent.Builder> builder = net.kyori.adventure.text.Component.text();
 
-                builder.append(SurfApi.getPrefix()
-                        .append(net.kyori.adventure.text.Component.text("Bei der Bossbar", SurfColors.INFO))
+                builder.append((net.kyori.adventure.text.Component.text("Bei der Bossbar", Colors.INFO))
                         .append(convertBossbar(bossBar))
-                        .append(net.kyori.adventure.text.Component.text("sind derzeit ", SurfColors.INFO))
-                        .append(net.kyori.adventure.text.Component.text(bossBar.getPlayers().size(), SurfColors.TERTIARY))
-                        .append(net.kyori.adventure.text.Component.text(" Spieler online: ", SurfColors.INFO)));
+                        .append(net.kyori.adventure.text.Component.text("sind derzeit ", Colors.INFO))
+                        .append(net.kyori.adventure.text.Component.text(bossBar.getPlayers().size(), Colors.TERTIARY))
+                        .append(net.kyori.adventure.text.Component.text(" Spieler online: ", Colors.INFO)));
 
                 for (ServerPlayer bossBarPlayer : bossBar.getPlayers()) {
-                    builder.append(bossBarPlayer.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(", ", SurfColors.INFO));
+                    builder.append(bossBarPlayer.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                            .append(net.kyori.adventure.text.Component.text(", ", Colors.INFO));
                 }
 
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(builder.build()));
+                EssentialsUtil.sendSuccess(source, builder.build());
             } else {
                 source.sendSuccess(Component.translatable("commands.bossbar.get.players.some", bossBar.getDisplayName(),
                         bossBar.getPlayers().size(), ComponentUtils.formatList(bossBar.getPlayers(), Player::getDisplayName)), false);
@@ -317,10 +309,9 @@ public class BossbarCommand {
     private static int getVisible(CommandSourceStack source, CustomBossEvent bossBar) throws CommandSyntaxException {
         if (bossBar.isVisible()) {
             if (source.isPlayer()) {
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(net.kyori.adventure.text.Component.text("Die Bossbar", SurfColors.INFO))
+                EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.INFO))
                         .append(convertBossbar(bossBar))
-                        .append(net.kyori.adventure.text.Component.text("wird gerade gezeigt!", SurfColors.INFO))));
+                        .append(net.kyori.adventure.text.Component.text("wird gerade gezeigt!", Colors.INFO)));
             } else {
                 source.sendSuccess(Component.translatable("commands.bossbar.get.visible.visible", bossBar.getDisplayName()), false);
             }
@@ -328,10 +319,9 @@ public class BossbarCommand {
 
         } else {
             if (source.isPlayer()) {
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(net.kyori.adventure.text.Component.text("Die Bossbar", SurfColors.INFO))
+                EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.INFO))
                         .append(convertBossbar(bossBar))
-                        .append(net.kyori.adventure.text.Component.text("ist gerade unsichtbar!", SurfColors.INFO))));
+                        .append(net.kyori.adventure.text.Component.text("ist gerade unsichtbar!", Colors.INFO)));
             } else {
                 source.sendSuccess(Component.translatable("commands.bossbar.get.visible.hidden", bossBar.getDisplayName()), false);
             }
@@ -352,10 +342,9 @@ public class BossbarCommand {
         bossBar.removeAllPlayers();
         customBossEvents.remove(bossBar);
         if (source.isPlayer()) {
-            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(net.kyori.adventure.text.Component.text("Die Bossbar", SurfColors.SUCCESS))
+            EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.SUCCESS))
                     .append(convertBossbar(bossBar))
-                    .append(net.kyori.adventure.text.Component.text("wurde gelöscht!", SurfColors.SUCCESS))));
+                    .append(net.kyori.adventure.text.Component.text("wurde gelöscht!", Colors.SUCCESS)));
         } else {
             source.sendSuccess(Component.translatable("commands.bossbar.remove.success", bossBar.getDisplayName()), false);
         }
@@ -382,10 +371,9 @@ public class BossbarCommand {
         } else {
             bossBar.setColor(color);
             if (source.isPlayer()) {
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(net.kyori.adventure.text.Component.text("Die Bossbar", SurfColors.SUCCESS))
+                EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.SUCCESS))
                         .append(convertBossbar(bossBar))
-                        .append(net.kyori.adventure.text.Component.text("hat die Farbe geändert!", SurfColors.SUCCESS))));
+                        .append(net.kyori.adventure.text.Component.text("hat die Farbe geändert!", Colors.SUCCESS)));
             } else {
                 source.sendSuccess(Component.translatable("commands.bossbar.set.color.success", bossBar.getDisplayName()), false);
             }
@@ -412,12 +400,11 @@ public class BossbarCommand {
         } else {
             bossBar.setMax(value);
             if (source.isPlayer()) {
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(net.kyori.adventure.text.Component.text("Der Wert für die Bossbar", SurfColors.SUCCESS))
+                EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Der Wert für die Bossbar", Colors.SUCCESS))
                         .append(convertBossbar(bossBar))
-                        .append(net.kyori.adventure.text.Component.text("wurde auf ", SurfColors.SUCCESS))
-                        .append(net.kyori.adventure.text.Component.text(value, SurfColors.TERTIARY))
-                        .append(net.kyori.adventure.text.Component.text(" geändert!", SurfColors.SUCCESS))));
+                        .append(net.kyori.adventure.text.Component.text("wurde auf ", Colors.SUCCESS))
+                        .append(net.kyori.adventure.text.Component.text(value, Colors.TERTIARY))
+                        .append(net.kyori.adventure.text.Component.text(" geändert!", Colors.SUCCESS)));
             } else {
                 source.sendSuccess(Component.translatable("commands.bossbar.set.max.success", bossBar.getDisplayName(), value), false);
             }
@@ -445,10 +432,9 @@ public class BossbarCommand {
         } else {
             bossBar.setName(component);
             if (source.isPlayer()) {
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(net.kyori.adventure.text.Component.text("Die Bossbar", SurfColors.SUCCESS))
+                EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.SUCCESS))
                         .append(convertBossbar(bossBar))
-                        .append(net.kyori.adventure.text.Component.text("wurde umbenannt!", SurfColors.SUCCESS))));
+                        .append(net.kyori.adventure.text.Component.text("wurde umbenannt!", Colors.SUCCESS)));
             } else {
                 source.sendSuccess(Component.translatable("commands.bossbar.set.name.success", bossBar.getDisplayName()), false);
             }
@@ -478,10 +464,9 @@ public class BossbarCommand {
         } else {
             if (bossBar.getPlayers().isEmpty()) {
                 if (source.isPlayer()) {
-                    SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                            .append(net.kyori.adventure.text.Component.text("Die Bossbar", SurfColors.SUCCESS))
+                    EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.SUCCESS))
                             .append(convertBossbar(bossBar))
-                            .append(net.kyori.adventure.text.Component.text("hat keine Spieler mehr!", SurfColors.SUCCESS))));
+                            .append(net.kyori.adventure.text.Component.text("hat keine Spieler mehr!", Colors.SUCCESS)));
                 } else {
                     source.sendSuccess(Component.translatable("commands.bossbar.set.players.success.none", bossBar.getDisplayName()), false);
                 }
@@ -489,17 +474,16 @@ public class BossbarCommand {
             } else {
                 if (source.isPlayer()) {
                     ComponentBuilder<TextComponent, TextComponent.Builder> builder = net.kyori.adventure.text.Component.text();
-                    builder.append(SurfApi.getPrefix()
-                            .append(net.kyori.adventure.text.Component.text("Die Bossbar", SurfColors.SUCCESS))
+                    builder.append(net.kyori.adventure.text.Component.text("Die Bossbar", Colors.SUCCESS))
                             .append(convertBossbar(bossBar))
-                            .append(net.kyori.adventure.text.Component.text("hat jetzt ", SurfColors.SUCCESS))
-                            .append(net.kyori.adventure.text.Component.text(bossBar.getPlayers().size(), SurfColors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(" Spieler: ", SurfColors.SUCCESS)));
+                            .append(net.kyori.adventure.text.Component.text("hat jetzt ", Colors.SUCCESS))
+                            .append(net.kyori.adventure.text.Component.text(bossBar.getPlayers().size(), Colors.TERTIARY))
+                            .append(net.kyori.adventure.text.Component.text(" Spieler: ", Colors.SUCCESS));
                     for (ServerPlayer bossBarPlayer : bossBar.getPlayers()) {
-                        builder.append(bossBarPlayer.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                                .append(net.kyori.adventure.text.Component.text(", ", SurfColors.INFO));
+                        builder.append(bossBarPlayer.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                                .append(net.kyori.adventure.text.Component.text(", ", Colors.INFO));
                     }
-                    SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(builder.build()));
+                    EssentialsUtil.sendSuccess(source, builder.build());
                 } else {
                     source.sendSuccess(Component.translatable("commands.bossbar.set.players.success.some", bossBar.getDisplayName(),
                             players.size(), ComponentUtils.formatList(players, Player::getDisplayName)), false);
@@ -528,10 +512,9 @@ public class BossbarCommand {
         } else {
             bossBar.setOverlay(style);
             if (source.isPlayer()){
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(net.kyori.adventure.text.Component.text("Die Einteilung von der Bossbar", SurfColors.SUCCESS))
+                EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Einteilung von der Bossbar", Colors.SUCCESS))
                         .append(convertBossbar(bossBar))
-                        .append(net.kyori.adventure.text.Component.text("wurde geändert!", SurfColors.SUCCESS))));
+                        .append(net.kyori.adventure.text.Component.text("wurde geändert!", Colors.SUCCESS)));
             }else {
                 source.sendSuccess(Component.translatable("commands.bossbar.set.style.success", bossBar.getDisplayName()), true);
             }
@@ -559,12 +542,11 @@ public class BossbarCommand {
         } else {
             bossBar.setValue(value);
             if (source.isPlayer()){
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(net.kyori.adventure.text.Component.text("Der Wert von der Bossbar", SurfColors.SUCCESS))
+                EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Der Wert von der Bossbar", Colors.SUCCESS))
                         .append(convertBossbar(bossBar))
-                        .append(net.kyori.adventure.text.Component.text("wurde auf ", SurfColors.SUCCESS))
-                        .append(net.kyori.adventure.text.Component.text(value, SurfColors.TERTIARY))
-                        .append(net.kyori.adventure.text.Component.text(" geändert!", SurfColors.SUCCESS))));
+                        .append(net.kyori.adventure.text.Component.text("wurde auf ", Colors.SUCCESS))
+                        .append(net.kyori.adventure.text.Component.text(value, Colors.TERTIARY))
+                        .append(net.kyori.adventure.text.Component.text(" geändert!", Colors.SUCCESS)));
             }else {
                 source.sendSuccess(Component.translatable("commands.bossbar.set.value.success", bossBar.getDisplayName(), value), false);
             }
@@ -602,20 +584,18 @@ public class BossbarCommand {
             bossBar.setVisible(visible);
             if (visible) {
                 if (source.isPlayer()){
-                    SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                            .append(net.kyori.adventure.text.Component.text("Die Bossbar", SurfColors.SUCCESS))
+                    EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.SUCCESS))
                             .append(convertBossbar(bossBar))
-                            .append(net.kyori.adventure.text.Component.text("ist nun sichtbar!", SurfColors.SUCCESS))));
+                            .append(net.kyori.adventure.text.Component.text("ist nun sichtbar!", Colors.SUCCESS)));
                 }else {
                     source.sendSuccess(Component.translatable("commands.bossbar.set.visible.success.visible", bossBar.getDisplayName()), false);
                 }
 
             } else {
                 if (source.isPlayer()){
-                    SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                            .append(net.kyori.adventure.text.Component.text("Die Bossbar", SurfColors.SUCCESS))
+                    EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.SUCCESS))
                             .append(convertBossbar(bossBar))
-                            .append(net.kyori.adventure.text.Component.text("ist nun unsichtbar!", SurfColors.SUCCESS))));
+                            .append(net.kyori.adventure.text.Component.text("ist nun unsichtbar!", Colors.SUCCESS)));
                 }else {
                     source.sendSuccess(Component.translatable("commands.bossbar.set.visible.success.hidden", bossBar.getDisplayName()), false);
                 }
@@ -721,7 +701,7 @@ public class BossbarCommand {
             case WHITE -> builder.color(NamedTextColor.WHITE);
             case YELLOW -> builder.color(NamedTextColor.YELLOW);
             default -> builder.color(NamedTextColor.WHITE)
-                        .append(net.kyori.adventure.text.Component.text("add new Color to code (line 719 in BossbarCommand.java) ", SurfColors.DARK_GRAY)
+                        .append(net.kyori.adventure.text.Component.text("add new Color to code (line 719 in BossbarCommand.java) ", Colors.DARK_GRAY)
                                 .decorate(TextDecoration.ITALIC));
         }
         return builder.build();

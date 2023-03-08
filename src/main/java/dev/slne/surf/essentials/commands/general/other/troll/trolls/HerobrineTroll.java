@@ -7,10 +7,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -22,7 +21,6 @@ import net.minecraft.network.protocol.game.ClientboundAddPlayerPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.world.entity.player.Player;
 import org.bukkit.Bukkit;
 
 import java.util.UUID;
@@ -37,15 +35,14 @@ public class HerobrineTroll {
                                 BoolArgumentType.getBool(context, "showParticles"))));
     }
 
-    private static int summonHerobrine(CommandContext<CommandSourceStack> context, Player target, boolean withParticles) throws CommandSyntaxException {
-        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), (ServerPlayer) target);
+    private static int summonHerobrine(CommandContext<CommandSourceStack> context, ServerPlayer target, boolean withParticles) throws CommandSyntaxException {
+        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), target);
         CommandSourceStack source = context.getSource();
 
         GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "Herobrine");
-        ServerPlayer serverPlayer = (ServerPlayer) target;
 
         ServerPlayer herobrineNpc = new ServerPlayer(source.getServer(), target.level.getMinecraftWorld(), gameProfile);
-        herobrineNpc.setPos(serverPlayer.position());
+        herobrineNpc.setPos(target.position());
 
         //Herobrine skin from user "HER0BRINE"
         String signature = "eC7w2wiXxki/00GVlxGHSCc28W31xw52fghrCGwGznBiF0rbAwPrWJNu7oGFOnJEFjnM9yPQa7pRE6OwwAYpVHycOBe" +
@@ -63,24 +60,23 @@ public class HerobrineTroll {
 
         gameProfile.getProperties().put("textures", new Property("textures", texture, signature));
 
-        ServerGamePacketListenerImpl ps = serverPlayer.connection;
+        ServerGamePacketListenerImpl ps = target.connection;
 
         ps.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, herobrineNpc));
         ps.send(new ClientboundAddPlayerPacket(herobrineNpc));
-        EssentialsUtil.scarePlayer(((ServerPlayer) target).getBukkitEntity());
+        EssentialsUtil.scarePlayer(target.getBukkitEntity());
 
         if (withParticles){
             Bukkit.getScheduler().runTaskTimerAsynchronously(SurfEssentials.getInstance(), bukkitTask -> herobrineNpc.getLevel().sendParticles(
-                    serverPlayer, ParticleTypes.ASH, false, herobrineNpc.getEyePosition().x, herobrineNpc.getEyePosition().y,
+                    target, ParticleTypes.ASH, false, herobrineNpc.getEyePosition().x, herobrineNpc.getEyePosition().y,
                     herobrineNpc.getEyePosition().z, 10, 0.5, 0.5, 0.5, 1), 2, 5);
         }
 
         //success message
         if (source.isPlayer()){
-            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Bei ", SurfColors.SUCCESS))
-                    .append(((ServerPlayer) target).adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                    .append(Component.text(" erscheint nun Herobrine!", SurfColors.SUCCESS))));
+            EssentialsUtil.sendSuccess(source, Component.text("Bei ", Colors.SUCCESS)
+                    .append(target.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                    .append(Component.text(" erscheint nun Herobrine!", Colors.SUCCESS)));
         }else{
             source.sendSuccess(net.minecraft.network.chat.Component.literal("Herobrine now appears at ")
                             .withStyle(ChatFormatting.GREEN)

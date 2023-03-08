@@ -5,10 +5,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -83,30 +82,30 @@ public class ForceloadCommand {
         if (source.isPlayer()){
             if (forcedChunks > 0){
                 ComponentBuilder<TextComponent, TextComponent.Builder> forcedChunkListBuilder = Component.text();
-                forcedChunkListBuilder.append(Component.text("Es ", SurfColors.INFO)
-                        .append(Component.text((forcedChunks == 1) ? "wird " : "werden ", SurfColors.INFO))
-                        .append(Component.text(forcedChunks, SurfColors.TERTIARY))
-                        .append(Component.text((forcedChunks == 1) ? " Chunk" : " Chunks", SurfColors.INFO))
-                        .append(Component.text(" in ", SurfColors.INFO))
-                        .append(Component.text(resourceKey.location().toString(), SurfColors.TERTIARY))
-                        .append(Component.text(" dauerhaft geladen: ", SurfColors.INFO)));
+                forcedChunkListBuilder.append(Component.text("Es ", Colors.INFO)
+                        .append(Component.text((forcedChunks == 1) ? "wird " : "werden ", Colors.INFO))
+                        .append(Component.text(forcedChunks, Colors.TERTIARY))
+                        .append(Component.text((forcedChunks == 1) ? " Chunk" : " Chunks", Colors.INFO))
+                        .append(Component.text(" in ", Colors.INFO))
+                        .append(Component.text(resourceKey.location().toString(), Colors.TERTIARY))
+                        .append(Component.text(" dauerhaft geladen: ", Colors.INFO)));
 
                 for (Long aLong : longSet) {
                     int x = ChunkPos.getX(aLong);
                     int z = ChunkPos.getZ(aLong);
                     int y = serverLevel.getWorld().getHighestBlockYAt(x, z);
 
-                    forcedChunkListBuilder.append(Component.text(new ChunkPos(aLong).toString(), SurfColors.SECONDARY)
-                                    .hoverEvent(HoverEvent.showText(Component.text("Klicke zum teleportieren", SurfColors.INFO)))
+                    forcedChunkListBuilder.append(Component.text(new ChunkPos(aLong).toString(), Colors.SECONDARY)
+                                    .hoverEvent(HoverEvent.showText(Component.text("Klicke zum teleportieren", Colors.INFO)))
                                     .clickEvent(ClickEvent.suggestCommand("/teleport %d %d %d".formatted(x, y, z)))
-                            .append(Component.text(", ", SurfColors.INFO)));
+                            .append(Component.text(", ", Colors.INFO)));
                 }
 
                 EssentialsUtil.sendSuccess(source, forcedChunkListBuilder.build());
             }else {
-                EssentialsUtil.sendSuccess(source, Component.text("Es werden keine Chunks in ", SurfColors.INFO)
-                        .append(Component.text(resourceKey.location().toString(), SurfColors.TERTIARY))
-                        .append(Component.text(" dauerhaft geladen!", SurfColors.INFO)));
+                EssentialsUtil.sendSuccess(source, Component.text("Es werden keine Chunks in ", Colors.INFO)
+                        .append(Component.text(resourceKey.location().toString(), Colors.TERTIARY))
+                        .append(Component.text(" dauerhaft geladen!", Colors.INFO)));
             }
         }else {
             if (forcedChunks > 0) {
@@ -137,12 +136,12 @@ public class ForceloadCommand {
         boolean isForcedChunk = serverLevel.getForcedChunks().contains(chunkPosition.toLong());
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Der Chunk ", SurfColors.INFO)
-                    .append(Component.text(chunkPosition.toString(), SurfColors.TERTIARY))
-                    .append(Component.text(" in ", SurfColors.INFO))
-                    .append(Component.text(resourceKey.location().toString(), SurfColors.TERTIARY))
-                    .append(Component.text((isForcedChunk) ? " wird " : " wird nicht ", SurfColors.GOLD))
-                    .append(Component.text("dauerhaft geladen!", SurfColors.INFO)));
+            EssentialsUtil.sendSuccess(source, Component.text("Der Chunk ", Colors.INFO)
+                    .append(Component.text(chunkPosition.toString(), Colors.TERTIARY))
+                    .append(Component.text(" in ", Colors.INFO))
+                    .append(Component.text(resourceKey.location().toString(), Colors.TERTIARY))
+                    .append(Component.text((isForcedChunk) ? " wird " : " wird nicht ", Colors.GOLD))
+                    .append(Component.text("dauerhaft geladen!", Colors.INFO)));
         }else {
             if (isForcedChunk) {
                 source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.forceload.query.success",
@@ -167,9 +166,9 @@ public class ForceloadCommand {
         if (successfulRemoved == 0) throw (source.isPlayer() ? ERROR_NO_FORCE_LOADED_CHUNKS_DE : ERROR_NO_FORCE_LOADED_CHUNKS).create(resourceKey.location());
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Es wird kein Chunk mehr dauerhaft in ", SurfColors.SUCCESS)
-                    .append(Component.text(resourceKey.location().toString(), SurfColors.TERTIARY))
-                    .append(Component.text(" geladen!", SurfColors.SUCCESS)));
+            EssentialsUtil.sendSuccess(source, Component.text("Es wird kein Chunk mehr dauerhaft in ", Colors.SUCCESS)
+                    .append(Component.text(resourceKey.location().toString(), Colors.TERTIARY))
+                    .append(Component.text(" geladen!", Colors.SUCCESS)));
         }else {
             source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.forceload.removed.all", resourceKey.location()), false);
         }
@@ -213,24 +212,24 @@ public class ForceloadCommand {
                 throw (forceLoaded ? ERROR_ALL_ADDED_DE : ERROR_NONE_REMOVED_DE).create();
             } else {
                 if (numForced == 1) {
-                    EssentialsUtil.sendSuccess(source, Component.text("Der Chunk ", SurfColors.SUCCESS)
-                            .append(Component.text(chunkPos.toString(), SurfColors.TERTIARY))
-                            .append(Component.text(" in ", SurfColors.SUCCESS))
-                            .append(Component.text(resourceKey.location().toString(), SurfColors.TERTIARY))
-                            .append(Component.text(" wird nun ", SurfColors.SUCCESS)
-                                    .append(Component.text((forceLoaded) ? "dauerhaft geladen!" : "nicht mehr dauerhaft geladen!", SurfColors.SUCCESS))));
+                    EssentialsUtil.sendSuccess(source, Component.text("Der Chunk ", Colors.SUCCESS)
+                            .append(Component.text(chunkPos.toString(), Colors.TERTIARY))
+                            .append(Component.text(" in ", Colors.SUCCESS))
+                            .append(Component.text(resourceKey.location().toString(), Colors.TERTIARY))
+                            .append(Component.text(" wird nun ", Colors.SUCCESS)
+                                    .append(Component.text((forceLoaded) ? "dauerhaft geladen!" : "nicht mehr dauerhaft geladen!", Colors.SUCCESS))));
                 } else {
                     ChunkPos chunkPos2 = new ChunkPos(startX, startZ);
                     ChunkPos chunkPos3 = new ChunkPos(endX, endY);
-                    EssentialsUtil.sendSuccess(source, Component.text(numForced, SurfColors.GREEN)
-                            .append(Component.text(" Chunks werden von ", SurfColors.SUCCESS))
-                            .append(Component.text(chunkPos2.toString(), SurfColors.TERTIARY))
-                            .append(Component.text(" bis zu ", SurfColors.SUCCESS))
-                            .append(Component.text(chunkPos3.toString(), SurfColors.TERTIARY))
-                            .append(Component.text(" in ", SurfColors.SUCCESS))
-                            .append(Component.text(resourceKey.location().toString(), SurfColors.TERTIARY))
-                            .append(Component.text(forceLoaded ? " dauerhaft" : " nicht mehr dauerhaft", SurfColors.SUCCESS))
-                            .append(Component.text(" geladen!", SurfColors.SUCCESS)));
+                    EssentialsUtil.sendSuccess(source, Component.text(numForced, Colors.GREEN)
+                            .append(Component.text(" Chunks werden von ", Colors.SUCCESS))
+                            .append(Component.text(chunkPos2.toString(), Colors.TERTIARY))
+                            .append(Component.text(" bis zu ", Colors.SUCCESS))
+                            .append(Component.text(chunkPos3.toString(), Colors.TERTIARY))
+                            .append(Component.text(" in ", Colors.SUCCESS))
+                            .append(Component.text(resourceKey.location().toString(), Colors.TERTIARY))
+                            .append(Component.text(forceLoaded ? " dauerhaft" : " nicht mehr dauerhaft", Colors.SUCCESS))
+                            .append(Component.text(" geladen!", Colors.SUCCESS)));
                 }
             }
         }else {
@@ -264,11 +263,11 @@ public class ForceloadCommand {
     private static final Dynamic2CommandExceptionType ERROR_NOT_TICKING = new Dynamic2CommandExceptionType((chunkPos, registryKey) ->
             net.minecraft.network.chat.Component.translatable("commands.forceload.query.failure", chunkPos, registryKey));
 
-    private static final SimpleCommandExceptionType ERROR_ALL_ADDED_DE = new SimpleCommandExceptionType(PaperAdventure.asVanilla(SurfApi.getPrefix()
-            .append(Component.text("Die Chunks werden bereits dauerhaft geladen!", SurfColors.ERROR))));
+    private static final SimpleCommandExceptionType ERROR_ALL_ADDED_DE = new SimpleCommandExceptionType(PaperAdventure.asVanilla(EssentialsUtil.getPrefix()
+            .append(Component.text("Die Chunks werden bereits dauerhaft geladen!", Colors.ERROR))));
 
-    private static final SimpleCommandExceptionType ERROR_NONE_REMOVED_DE = new SimpleCommandExceptionType(PaperAdventure.asVanilla(SurfApi.getPrefix()
-            .append(Component.text("Die Chunks wurden auch vorher nicht dauerhaft geladen!", SurfColors.ERROR))));
+    private static final SimpleCommandExceptionType ERROR_NONE_REMOVED_DE = new SimpleCommandExceptionType(PaperAdventure.asVanilla(EssentialsUtil.getPrefix()
+            .append(Component.text("Die Chunks wurden auch vorher nicht dauerhaft geladen!", Colors.ERROR))));
 
     private static final DynamicCommandExceptionType ERROR_NO_FORCE_LOADED_CHUNKS = new DynamicCommandExceptionType(dimension ->
             net.minecraft.network.chat.Component.literal("There are no forceloaded chunks in ")

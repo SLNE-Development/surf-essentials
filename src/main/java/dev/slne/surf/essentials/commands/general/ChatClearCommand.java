@@ -2,11 +2,10 @@ package dev.slne.surf.essentials.commands.general;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -58,16 +57,15 @@ public class ChatClearCommand extends BrigadierCommand {
             }
             successfulClears++;
 
-            SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Dein Chat wurde gelöscht!", SurfColors.GREEN))));
+            EssentialsUtil.sendSuccess(target, "Dein Chat wurde gelöscht!");
         }
 
         if (successfulClears == 1){
             if (source.isPlayer()){
                 if (targets.iterator().next() != source.getPlayerOrException()){
-                    EssentialsUtil.sendSuccess(source, Component.text("Der Chat von ", SurfColors.SUCCESS)
-                            .append(targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                            .append(Component.text(" wurde gelöscht.", SurfColors.SUCCESS)));
+                    EssentialsUtil.sendSuccess(source, Component.text("Der Chat von ", Colors.SUCCESS)
+                            .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                            .append(Component.text(" wurde gelöscht.", Colors.SUCCESS)));
                 }
             }else {
                 source.sendSuccess(net.minecraft.network.chat.Component.literal("Cleared the chat from ")
@@ -76,9 +74,9 @@ public class ChatClearCommand extends BrigadierCommand {
             }
         }else {
             if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, Component.text("Der Chat von ", SurfColors.SUCCESS)
-                        .append(Component.text(successfulClears, SurfColors.TERTIARY))
-                        .append(Component.text(" Spielern wurde gelöscht.", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, Component.text("Der Chat von ", Colors.SUCCESS)
+                        .append(Component.text(successfulClears, Colors.TERTIARY))
+                        .append(Component.text(" Spielern wurde gelöscht.", Colors.SUCCESS)));
             }else {
                 source.sendSuccess(net.minecraft.network.chat.Component.literal("Cleared the chat from " + successfulClears + " players")
                         .withStyle(ChatFormatting.GREEN), false);

@@ -3,10 +3,10 @@ package dev.slne.surf.essentials.commands.general;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -44,13 +44,13 @@ public class SetItemNameCommand extends BrigadierCommand {
 
     private int setName(CommandSourceStack source, String name) throws CommandSyntaxException {
         ItemStack itemStackInHand = source.getPlayerOrException().getItemInHand(InteractionHand.MAIN_HAND);
-        Component displayName = EssentialsUtil.deserialize(name).colorIfAbsent(SurfColors.WHITE);
+        Component displayName = EssentialsUtil.deserialize(name).colorIfAbsent(Colors.WHITE);
 
         itemStackInHand.setHoverName(PaperAdventure.asVanilla(displayName));
 
-        EssentialsUtil.sendSuccess(source, Component.text("Das Item ", SurfColors.SUCCESS)
+        EssentialsUtil.sendSuccess(source, Component.text("Das Item ", Colors.SUCCESS)
                 .append(PaperAdventure.asAdventure(itemStackInHand.getDisplayName()))
-                .append(Component.text(" wurde umbenannt!", SurfColors.SUCCESS)));
+                .append(Component.text(" wurde umbenannt!", Colors.SUCCESS)));
 
         return 1;
     }

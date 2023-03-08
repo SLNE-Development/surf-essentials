@@ -3,10 +3,10 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -85,8 +85,8 @@ public class SummonCommand extends BrigadierCommand {
         if (!serverLevel.tryAddFreshEntityWithPassengers(entity, CreatureSpawnEvent.SpawnReason.COMMAND)) throw  ERROR_DUPLICATE_UUID.create();
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, PaperAdventure.asAdventure(entity.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY)
-                    .append(net.kyori.adventure.text.Component.text(" wurde gespawnt.", SurfColors.SUCCESS)));
+            EssentialsUtil.sendSuccess(source, PaperAdventure.asAdventure(entity.getDisplayName()).colorIfAbsent(Colors.TERTIARY)
+                    .append(net.kyori.adventure.text.Component.text(" wurde gespawnt.", Colors.SUCCESS)));
         }else {
             source.sendSuccess(Component.translatable("commands.summon.success", entity.getDisplayName()), false);
         }

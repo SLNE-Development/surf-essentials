@@ -2,10 +2,10 @@ package dev.slne.surf.essentials.commands.minecraft;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -39,13 +39,13 @@ public class SeedCommand extends BrigadierCommand {
         long seed = source.getLevel().getSeed();
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Der Seed in ", SurfColors.SUCCESS)
-                    .append(Component.text(source.getLevel().dimension().location().toString(), SurfColors.SECONDARY))
-                    .append(Component.text(" ist [", SurfColors.SUCCESS))
-                    .append(Component.text(seed, SurfColors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text("Klicke zum kopieren", SurfColors.INFO)))
+            EssentialsUtil.sendSuccess(source, Component.text("Der Seed in ", Colors.SUCCESS)
+                    .append(Component.text(source.getLevel().dimension().location().toString(), Colors.SECONDARY))
+                    .append(Component.text(" ist [", Colors.SUCCESS))
+                    .append(Component.text(seed, Colors.TERTIARY)
+                            .hoverEvent(HoverEvent.showText(Component.text("Klicke zum kopieren", Colors.INFO)))
                             .clickEvent(ClickEvent.copyToClipboard(String.valueOf(seed))))
-                    .append(Component.text("]", SurfColors.SUCCESS)));
+                    .append(Component.text("]", Colors.SUCCESS)));
         }else {
             source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.seed.success",
                     net.minecraft.network.chat.Component.literal(String.valueOf(seed)).withStyle(ChatFormatting.GREEN)), false);

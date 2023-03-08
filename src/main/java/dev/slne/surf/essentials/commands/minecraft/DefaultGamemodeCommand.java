@@ -2,9 +2,9 @@ package dev.slne.surf.essentials.commands.minecraft;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.minecraft.ChatFormatting;
@@ -61,9 +61,9 @@ public class DefaultGamemodeCommand {
                 }
             }
             if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Der standard Spielmodus wurde auf ", SurfColors.SUCCESS)
-                        .append(net.kyori.adventure.text.Component.text(newGameMode.getLongDisplayName().getString(), SurfColors.TERTIARY))
-                        .append(net.kyori.adventure.text.Component.text(" gesetzt!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Der standard Spielmodus wurde auf ", Colors.SUCCESS)
+                        .append(net.kyori.adventure.text.Component.text(newGameMode.getLongDisplayName().getString(), Colors.TERTIARY))
+                        .append(net.kyori.adventure.text.Component.text(" gesetzt!", Colors.SUCCESS)));
             }else {
                 source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.defaultgamemode.success",
                         newGameMode.getLongDisplayName()), false);
@@ -76,9 +76,9 @@ public class DefaultGamemodeCommand {
         GameType gameType = source.getServer().getDefaultGameType();
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Der standard Spielmodus ist ", SurfColors.INFO)
-                    .append(net.kyori.adventure.text.Component.text(gameType.getLongDisplayName().getString(), SurfColors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text("!", SurfColors.INFO)));
+            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Der standard Spielmodus ist ", Colors.INFO)
+                    .append(net.kyori.adventure.text.Component.text(gameType.getLongDisplayName().getString(), Colors.TERTIARY))
+                    .append(net.kyori.adventure.text.Component.text("!", Colors.INFO)));
         }else {
             source.sendSuccess(Component.literal("The default game mode is ")
                             .withStyle(ChatFormatting.GRAY)

@@ -4,17 +4,15 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.world.entity.Entity;
-import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
@@ -56,17 +54,12 @@ public class KillCommand {
         }
 
         if (context.getSource().isPlayer()){
-            // If the command was issued by a player, send a message to the player
-            Player player = context.getSource().getPlayerOrException().getBukkitEntity();
-
             if (targets.size() == 1){
-                SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text(targets.iterator().next().getDisplayName().getString(), SurfColors.TERTIARY))
-                        .append(Component.text(" wurde getötet!", SurfColors.SUCCESS))));
+                EssentialsUtil.sendSuccess(context.getSource(), (Component.text(targets.iterator().next().getDisplayName().getString(), Colors.TERTIARY))
+                        .append(Component.text(" wurde getötet!", Colors.SUCCESS)));
             }else {
-                SurfApi.getUser(player).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text(targets.size(), SurfColors.TERTIARY))
-                        .append(Component.text(" entities wurden getötet!", SurfColors.SUCCESS))));
+                EssentialsUtil.sendSuccess(context.getSource(), (Component.text(targets.size(), Colors.TERTIARY))
+                        .append(Component.text(" entities wurden getötet!", Colors.SUCCESS)));
             }
         }else {
             // If the command was not issued by a player, send the success message to the command source

@@ -3,10 +3,10 @@ package dev.slne.surf.essentials.commands.general;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -54,14 +54,14 @@ public class SetItemLoreCommand extends BrigadierCommand {
         List<Component> loresComponents = new ArrayList<>();
 
         for (String lore : lores) {
-            loresComponents.add(EssentialsUtil.deserialize(lore).colorIfAbsent(SurfColors.INFO));
+            loresComponents.add(EssentialsUtil.deserialize(lore).colorIfAbsent(Colors.INFO));
         }
 
         itemStack.lore(loresComponents);
 
-        EssentialsUtil.sendSuccess(source, Component.text("Die Beschreibung von ", SurfColors.SUCCESS)
+        EssentialsUtil.sendSuccess(source, Component.text("Die Beschreibung von ", Colors.SUCCESS)
                 .append(PaperAdventure.asAdventure(CraftItemStack.asNMSCopy(itemStack).getDisplayName()))
-                .append(Component.text(" wurde geändert!", SurfColors.SUCCESS)));
+                .append(Component.text(" wurde geändert!", Colors.SUCCESS)));
 
         return 1;
     }

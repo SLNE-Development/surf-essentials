@@ -6,10 +6,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -27,6 +26,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.UUID;
 
 public class TeleportOffline {
@@ -63,12 +63,12 @@ public class TeleportOffline {
         }
 
         if (offlinePlayer.isOnline()) {
-            ServerPlayer target = ((CraftPlayer) offlinePlayer.getPlayer()).getHandle();
+            ServerPlayer target = ((CraftPlayer) Objects.requireNonNull(offlinePlayer.getPlayer())).getHandle();
             player.teleportTo(target.getLevel(), target.getX(), target.getY(), target.getZ(), target.getBukkitYaw(), target.getRotationVector().y);
 
         }else {
 
-            SurfApi.getUser(player.getUUID()).thenAccept(user -> user.sendMessage(Component.text("Spielerdaten laden...", SurfColors.INFO)));
+            EssentialsUtil.sendInfo(player, "Spieler daten laden...");
 
             try {
                 player.getBukkitEntity().teleportAsync(EssentialsUtil.getLocation(profile), PlayerTeleportEvent.TeleportCause.COMMAND);
@@ -78,9 +78,9 @@ public class TeleportOffline {
             }
         }
 
-        EssentialsUtil.sendSuccess(source, Component.text("Du hast dich zu ", SurfColors.SUCCESS)
-                .append(Component.text(profile.getName(), SurfColors.TERTIARY))
-                .append(Component.text(" teleportiert!", SurfColors.SUCCESS)));
+        EssentialsUtil.sendSuccess(source, Component.text("Du hast dich zu ", Colors.SUCCESS)
+                .append(Component.text(profile.getName(), Colors.TERTIARY))
+                .append(Component.text(" teleportiert!", Colors.SUCCESS)));
 
         return 1;
     }
@@ -102,11 +102,11 @@ public class TeleportOffline {
         }
 
         if (offlinePlayer.isOnline()) {
-            offlinePlayer.getPlayer().teleportAsync(new Location(offlinePlayer.getPlayer().getWorld(), newLocation.x(), newLocation.y(), newLocation.z()));
+            Objects.requireNonNull(offlinePlayer.getPlayer()).teleportAsync(new Location(offlinePlayer.getPlayer().getWorld(), newLocation.x(), newLocation.y(), newLocation.z()));
 
         } else {
 
-            SurfApi.getUser(player.getUUID()).thenAccept(user -> user.sendMessage(Component.text("Teleportiere Spieler...", SurfColors.INFO)));
+            EssentialsUtil.sendInfo(player, "Teleportiere Spieler...");
 
             try {
                 EssentialsUtil.setLocation(uuid, new Location(player.getLevel().getWorld(), newLocation.x(), newLocation.y(), newLocation.z()));
@@ -120,11 +120,11 @@ public class TeleportOffline {
         double posY = Double.parseDouble(new DecimalFormat("#.##").format(newLocation.y()));
         double posZ = Double.parseDouble(new DecimalFormat("#.##").format(newLocation.z()));
 
-        EssentialsUtil.sendSuccess(source, Component.text("Der Spieler ", SurfColors.SUCCESS)
-                .append(Component.text(profile.getName(), SurfColors.TERTIARY))
-                .append(Component.text(" wurde zu ", SurfColors.SUCCESS))
-                .append(Component.text("%s %s %s".formatted(posX, posY, posZ), SurfColors.TERTIARY))
-                .append(Component.text(" teleportiert!", SurfColors.SUCCESS)));
+        EssentialsUtil.sendSuccess(source, Component.text("Der Spieler ", Colors.SUCCESS)
+                .append(Component.text(profile.getName(), Colors.TERTIARY))
+                .append(Component.text(" wurde zu ", Colors.SUCCESS))
+                .append(Component.text("%s %s %s".formatted(posX, posY, posZ), Colors.TERTIARY))
+                .append(Component.text(" teleportiert!", Colors.SUCCESS)));
 
         return 1;
     }

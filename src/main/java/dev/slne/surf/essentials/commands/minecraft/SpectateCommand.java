@@ -3,10 +3,10 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -61,13 +61,13 @@ public class SpectateCommand extends BrigadierCommand {
 
         if (source.isPlayer()){
             if (entity != null){
-                EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
-                        .append(Component.text(" beobachtet nun ", SurfColors.SUCCESS))
+                EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+                        .append(Component.text(" beobachtet nun ", Colors.SUCCESS))
                         .append(getEntityDisplayName(entity))
-                        .append(Component.text(".", SurfColors.SUCCESS)));
+                        .append(Component.text(".", Colors.SUCCESS)));
             }else {
-                EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
-                        .append(Component.text(" beobachtet nun niemanden mehr.", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+                        .append(Component.text(" beobachtet nun niemanden mehr.", Colors.SUCCESS)));
             }
         }else {
             if (entity != null) {
@@ -81,7 +81,7 @@ public class SpectateCommand extends BrigadierCommand {
 
     private Component getEntityDisplayName(Entity entity){
         if (entity instanceof ServerPlayer player){
-            return player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY);
+            return player.adventure$displayName.colorIfAbsent(Colors.TERTIARY);
         }else {
             return PaperAdventure.asAdventure(entity.getDisplayName());
         }

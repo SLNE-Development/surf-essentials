@@ -13,10 +13,6 @@ website: 'https://git.slne.dev/surf/surf-essentials'
 #                                                 Dependencies                                                         #
 ########################################################################################################################
 dependencies:
-  - name: SurfAPI
-    required: true
-    bootstrap: false
-
   - name: ProtocolLib
     required: true
     bootstrap: false
@@ -26,8 +22,5 @@ dependencies:
 #                                                     Load-order                                                       #
 ########################################################################################################################
 load-after:
-  - name: SurfAPI
-    bootstrap: false
-
   - name: ProtocolLib
     bootstrap: false

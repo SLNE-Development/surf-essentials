@@ -3,10 +3,9 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.nbt.BinaryTagIO;
@@ -62,19 +61,17 @@ public class GamemodeCommand {
 
         if (targets.size() == 1) {
             targets.iterator().next().setGameMode(gameMode);
-            SurfApi.getUser(targets.iterator().next().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(net.kyori.adventure.text.Component.text("Dein Gamemode wurde auf ", SurfColors.SUCCESS))
-                    .append(PaperAdventure.asAdventure(gameMode.getLongDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(" gesetzt!", SurfColors.SUCCESS))));
+            EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Dein Gamemode wurde auf ", Colors.SUCCESS))
+                    .append(PaperAdventure.asAdventure(gameMode.getLongDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                    .append(net.kyori.adventure.text.Component.text(" gesetzt!", Colors.SUCCESS)));
             logSingleChange(targets.iterator().next(), gameMode);
 
         } else {
             for (ServerPlayer target : targets) {
                 target.setGameMode(gameMode);
-                SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(net.kyori.adventure.text.Component.text("Dein Gamemode wurde auf ", SurfColors.SUCCESS))
-                        .append(PaperAdventure.asAdventure(gameMode.getLongDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                        .append(net.kyori.adventure.text.Component.text(" gesetzt!", SurfColors.SUCCESS))));
+                EssentialsUtil.sendSuccess(target, (net.kyori.adventure.text.Component.text("Dein Gamemode wurde auf ", Colors.SUCCESS))
+                        .append(PaperAdventure.asAdventure(gameMode.getLongDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                        .append(net.kyori.adventure.text.Component.text(" gesetzt!", Colors.SUCCESS)));
                 ++successfulChanges;
             }
             logMultiChange(gameMode, successfulChanges);
@@ -103,11 +100,11 @@ public class GamemodeCommand {
         }
 
         if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, Component.text("Der Gamemode von ", SurfColors.SUCCESS)
-                    .append(Component.text(gameProfile.getName(), SurfColors.TERTIARY))
-                    .append(Component.text(" wurde auf ", SurfColors.SUCCESS))
-                    .append(PaperAdventure.asAdventure(gameType.getLongDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                    .append(Component.text(" gesetzt!", SurfColors.SUCCESS)));
+            EssentialsUtil.sendSuccess(source, Component.text("Der Gamemode von ", Colors.SUCCESS)
+                    .append(Component.text(gameProfile.getName(), Colors.TERTIARY))
+                    .append(Component.text(" wurde auf ", Colors.SUCCESS))
+                    .append(PaperAdventure.asAdventure(gameType.getLongDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                    .append(Component.text(" gesetzt!", Colors.SUCCESS)));
         } else {
             source.sendSuccess(net.minecraft.network.chat.Component.literal("Set ")
                     .withStyle(ChatFormatting.GRAY)
@@ -124,30 +121,30 @@ public class GamemodeCommand {
     }
 
     private static void logSingleChange(ServerPlayer player, GameType gameType) {
-        Bukkit.broadcast(SurfApi.getPrefix()
-                .append(player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text(" hat in den Gamemode ", SurfColors.INFO))
-                .append(PaperAdventure.asAdventure(gameType.getShortDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text(" gewechselt!", SurfColors.INFO)), "surf.announce.gamemode");
+        Bukkit.broadcast(EssentialsUtil.getPrefix()
+                .append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text(" hat in den Gamemode ", Colors.INFO))
+                .append(PaperAdventure.asAdventure(gameType.getShortDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text(" gewechselt!", Colors.INFO)), "surf.announce.gamemode");
 
-        SurfEssentials.logger().info(net.kyori.adventure.text.Component.text("Set ", SurfColors.INFO)
-                .append(player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text("´s game mode to ", SurfColors.INFO))
-                .append(PaperAdventure.asAdventure(gameType.getLongDisplayName()).colorIfAbsent(SurfColors.TERTIARY)));
+        SurfEssentials.logger().info(net.kyori.adventure.text.Component.text("Set ", Colors.INFO)
+                .append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text("´s game mode to ", Colors.INFO))
+                .append(PaperAdventure.asAdventure(gameType.getLongDisplayName()).colorIfAbsent(Colors.TERTIARY)));
     }
 
     private static void logMultiChange(GameType gameType, int amount) {
-        Bukkit.broadcast(SurfApi.getPrefix()
-                .append(net.kyori.adventure.text.Component.text("Der Gamemode von ", SurfColors.INFO))
-                .append(net.kyori.adventure.text.Component.text(amount, SurfColors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text(" Spielern wurde auf ", SurfColors.INFO))
-                .append(PaperAdventure.asAdventure(gameType.getShortDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text(" gesetzt!", SurfColors.INFO)), "surf.announce.gamemode");
+        Bukkit.broadcast(EssentialsUtil.getPrefix()
+                .append(net.kyori.adventure.text.Component.text("Der Gamemode von ", Colors.INFO))
+                .append(net.kyori.adventure.text.Component.text(amount, Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text(" Spielern wurde auf ", Colors.INFO))
+                .append(PaperAdventure.asAdventure(gameType.getShortDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text(" gesetzt!", Colors.INFO)), "surf.announce.gamemode");
 
-        SurfEssentials.logger().info(net.kyori.adventure.text.Component.text("Set the game mode for ", SurfColors.INFO)
-                .append(net.kyori.adventure.text.Component.text(amount, SurfColors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text(" players to ", SurfColors.INFO))
-                .append(PaperAdventure.asAdventure(gameType.getLongDisplayName()).colorIfAbsent(SurfColors.TERTIARY)));
+        SurfEssentials.logger().info(net.kyori.adventure.text.Component.text("Set the game mode for ", Colors.INFO)
+                .append(net.kyori.adventure.text.Component.text(amount, Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text(" players to ", Colors.INFO))
+                .append(PaperAdventure.asAdventure(gameType.getLongDisplayName()).colorIfAbsent(Colors.TERTIARY)));
     }
 
     private static void registerGameModes(LiteralArgumentBuilder<CommandSourceStack> literal, GameType gameType,

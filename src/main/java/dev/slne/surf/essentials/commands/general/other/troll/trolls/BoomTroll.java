@@ -7,10 +7,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -64,9 +63,8 @@ public class BoomTroll {
                 target.setInvulnerable(false), 20*2);
 
         if (source.isPlayer()){
-            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
-                    .append(Component.text(" wurde gesprengt!", SurfColors.SUCCESS))));
+            EssentialsUtil.sendSuccess(source, (target.displayName().colorIfAbsent(Colors.YELLOW))
+                    .append(Component.text(" wurde gesprengt!", Colors.SUCCESS)));
         }else{
             source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
                     .copy().append(net.minecraft.network.chat.Component.literal(" was blown up!")

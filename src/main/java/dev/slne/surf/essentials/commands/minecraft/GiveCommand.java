@@ -3,10 +3,9 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandBuildContext;
@@ -120,36 +119,23 @@ public class GiveCommand {
 
         // If the source is a player
         if (source.isPlayer()){
-            // Get the Bukkit player from the source
-            org.bukkit.entity.Player player = source.getPlayerOrException().getBukkitEntity();
-
             // If there is only one target
             if (targets.size() == 1) {
-                SurfApi.getUser(player).thenAcceptAsync(user -> {
-                    try {
-                        user.sendMessage(SurfApi.getPrefix()
-                                .append(targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                                .append(Component.text(" hat ", SurfColors.SUCCESS))
-                                .append(Component.text(amount, SurfColors.TERTIARY))
-                                .append(Component.text(" "))
-                                .append(item.createItemStack(amount, false).getBukkitStack().displayName())
-                                .append(Component.text(" erhalten!", SurfColors.SUCCESS)));
-                    } catch (CommandSyntaxException ignored) {}
-                });
+                EssentialsUtil.sendSuccess(source, (targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                        .append(Component.text(" hat ", Colors.SUCCESS))
+                        .append(Component.text(amount, Colors.TERTIARY))
+                        .append(Component.text(" "))
+                        .append(item.createItemStack(amount, false).getBukkitStack().displayName())
+                        .append(Component.text(" erhalten!", Colors.SUCCESS)));
 
             // If there are multiple targets
             } else {
-                SurfApi.getUser(player).thenAcceptAsync(user -> {
-                    try {
-                        user.sendMessage(SurfApi.getPrefix()
-                                .append(Component.text(targets.size()))
-                                .append(Component.text(" Spieler haben ", SurfColors.SUCCESS))
-                                .append(Component.text(amount, SurfColors.TERTIARY))
-                                .append(Component.text(" "))
-                                .append(item.createItemStack(amount, false).getBukkitStack().displayName())
-                                .append(Component.text(" erhalten!", SurfColors.SUCCESS)));
-                    } catch (CommandSyntaxException ignored) {}
-                });
+                EssentialsUtil.sendSuccess(source, (Component.text(targets.size()))
+                        .append(Component.text(" Spieler haben ", Colors.SUCCESS))
+                        .append(Component.text(amount, Colors.TERTIARY))
+                        .append(Component.text(" "))
+                        .append(item.createItemStack(amount, false).getBukkitStack().displayName())
+                        .append(Component.text(" erhalten!", Colors.SUCCESS)));
             }
 
         // If the source is not a player

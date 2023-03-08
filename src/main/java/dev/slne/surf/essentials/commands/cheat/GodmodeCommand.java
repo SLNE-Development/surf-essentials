@@ -2,10 +2,9 @@ package dev.slne.surf.essentials.commands.cheat;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -47,21 +46,20 @@ public class GodmodeCommand {
         for (ServerPlayer target : targets) {
             target.setInvulnerable(enable);
             successfulChanges ++;
-            SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Du bist nun ", SurfColors.GREEN))
-                    .append(Component.text(target.isInvulnerable() ? "unverwundbar!" : "verwundbar!", SurfColors.GREEN))));
+            EssentialsUtil.sendSuccess(target, (Component.text("Du bist nun ", Colors.GREEN))
+                    .append(Component.text(target.isInvulnerable() ? "unverwundbar!" : "verwundbar!", Colors.GREEN)));
         }
 
         ServerPlayer target = targets.iterator().next();
         if (source.isPlayer()){
             if (successfulChanges == 1 && source.getPlayerOrException() != targets.iterator().next()){
-                EssentialsUtil.sendSuccess(source, target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
-                        .append(Component.text(" ist nun ", SurfColors.SUCCESS))
-                        .append(Component.text(target.isInvulnerable() ? "unverwundbar!" : "verwundbar!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, target.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+                        .append(Component.text(" ist nun ", Colors.SUCCESS))
+                        .append(Component.text(target.isInvulnerable() ? "unverwundbar!" : "verwundbar!", Colors.SUCCESS)));
             }else if (successfulChanges >= 1 && source.getPlayerOrException() != targets.iterator().next()){
-                EssentialsUtil.sendSuccess(source, Component.text(successfulChanges, SurfColors.TERTIARY)
-                        .append(Component.text(" Spieler sind nun ", SurfColors.SUCCESS))
-                        .append(Component.text(enable ? "unverwundbar!" : "verwundbar!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, Component.text(successfulChanges, Colors.TERTIARY)
+                        .append(Component.text(" Spieler sind nun ", Colors.SUCCESS))
+                        .append(Component.text(enable ? "unverwundbar!" : "verwundbar!", Colors.SUCCESS)));
             }
         }else {
             if (successfulChanges == 1){

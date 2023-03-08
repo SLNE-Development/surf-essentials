@@ -2,24 +2,25 @@ package dev.slne.surf.essentials.commands.minecraft;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
+import net.kyori.adventure.text.TextComponent;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,7 @@ public class ListCommand {
                 .executes(ListCommand::listPlayerUUID));
     }
 
-    private static int listPlayerName(CommandContext<CommandSourceStack> context){
+    private static int listPlayerName(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         // Create two lists to store player names and components
         ArrayList<String> visibleOnlinePlayerNoComponent = new ArrayList<>();
         ArrayList<Component> visibleOnlinePlayer = new ArrayList<>();
@@ -55,38 +56,35 @@ public class ListCommand {
 
         if (context.getSource().isPlayer()) {
             // If the command was executed by a player, send the player a message with the list of online players
-            Player player = Bukkit.getPlayer(context.getSource().getPlayer().getUUID());
-            ComponentBuilder builder = Component.text();
+            ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
 
             // Build the message using the ComponentBuilder
-            builder.append(SurfApi.getPrefix()
-                    .append(Component.text("Es sind gerade ", SurfColors.INFO)
-                            .append(Component.text(visibleOnlinePlayer.size(), SurfColors.TERTIARY))
-                            .append(Component.text(" von ", SurfColors.INFO))
-                            .append(Component.text(Bukkit.getServer().getMaxPlayers(), SurfColors.TERTIARY))
-                            .append(Component.text(" Spielern online: ", SurfColors.INFO))));
+            builder.append(Component.text("Es sind gerade ", Colors.INFO)
+                            .append(Component.text(visibleOnlinePlayer.size(), Colors.TERTIARY))
+                            .append(Component.text(" von ", Colors.INFO))
+                            .append(Component.text(Bukkit.getServer().getMaxPlayers(), Colors.TERTIARY))
+                            .append(Component.text(" Spielern online: ", Colors.INFO)));
             for (Component playerName : visibleOnlinePlayer) {
                 builder.append(playerName)
-                        .append(Component.text(", ", SurfColors.INFO));
+                        .append(Component.text(", ", Colors.INFO));
             }
-            player.sendMessage(builder.build());
+            EssentialsUtil.sendSuccess(context.getSource(), builder.build());
 
         }else{
             // If the command was executed by the server, send the server a message with the list of online players
             context.getSource().sendSuccess(net.minecraft.network.chat.Component.literal("There are " + visibleOnlinePlayer.size() + " of a max of "
-                    + Bukkit.getServer().getMaxPlayers() + " players online: " + Arrays.toString(visibleOnlinePlayerNoComponent.toArray())), false);
+                    + context.getSource().getServer().getPlayerList().getMaxPlayers() + " players online: " + Arrays.toString(visibleOnlinePlayerNoComponent.toArray())), false);
         }
         return 1;
     }
 
-    private static int listPlayerUUID(CommandContext<CommandSourceStack> context){
+    private static int listPlayerUUID(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         // Call the format method with a function that creates a component for each player with their name and UUID
-        return format(context.getSource(), (entityplayer) -> {
-            return net.minecraft.network.chat.Component.translatable("commands.list.nameAndId", entityplayer.getName(), entityplayer.getGameProfile().getId());
-        });
+        return format(context.getSource(), (entityPlayer) ->
+                net.minecraft.network.chat.Component.translatable("commands.list.nameAndId", entityPlayer.getName(), entityPlayer.getGameProfile().getId()));
     }
 
-    private static int format(CommandSourceStack source, Function<ServerPlayer, net.minecraft.network.chat.Component> nameProvider) {
+    private static int format(CommandSourceStack source, Function<ServerPlayer, net.minecraft.network.chat.Component> nameProvider) throws CommandSyntaxException {
         // Get the player list from the server
         PlayerList playerlist = source.getServer().getPlayerList();
         // Filter out vanished players
@@ -99,25 +97,21 @@ public class ListCommand {
         List<ServerPlayer> list = playerlist.getPlayers();
 
         if (source.isPlayer()) {
-            // If the command was executed by a player, send the player a message with the list of players and their UUIDs
-            Player sender = (Player)source.getBukkitSender();
-            // Filter the list of players to only include players that the sender can see
-            list = list.stream().filter((ep) -> sender.canSee(ep.getBukkitEntity())).collect(Collectors.toList());
+            list = list.stream().filter((ep) -> EssentialsUtil.canPlayerSeePlayer(Objects.requireNonNull(source.getPlayer()), ep)).collect(Collectors.toList());
 
             // Build the message using the ComponentBuilder
-            ComponentBuilder builder = Component.text();
+            ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
 
-            builder.append(SurfApi.getPrefix()
-                    .append(Component.text("Es sind gerade ", SurfColors.INFO)
-                            .append(Component.text(list.size(), SurfColors.TERTIARY))
-                            .append(Component.text(" von ", SurfColors.INFO))
-                            .append(Component.text(Bukkit.getServer().getMaxPlayers(), SurfColors.TERTIARY))
-                            .append(Component.text(" Spielern online: ", SurfColors.INFO))));
+            builder.append(Component.text("Es sind gerade ", Colors.INFO)
+                            .append(Component.text(list.size(), Colors.TERTIARY))
+                            .append(Component.text(" von ", Colors.INFO))
+                            .append(Component.text(Bukkit.getServer().getMaxPlayers(), Colors.TERTIARY))
+                            .append(Component.text(" Spielern online: ", Colors.INFO)));
             for (ServerPlayer serverPlayer : list) {
-                builder.append(Component.text("(%s)".formatted(serverPlayer.getBukkitEntity().getName()), SurfColors.TERTIARY))
-                        .append(Component.text(" %s, ".formatted(serverPlayer.getBukkitEntity().getUniqueId()), SurfColors.SECONDARY));
+                builder.append(Component.text("(%s)".formatted(serverPlayer.getBukkitEntity().getName()), Colors.TERTIARY))
+                        .append(Component.text(" %s, ".formatted(serverPlayer.getBukkitEntity().getUniqueId()), Colors.SECONDARY));
             }
-            sender.sendMessage(builder.build());
+            EssentialsUtil.sendSuccess(source, builder.build());
             return 1;
         }
         // If the command was executed by the server, send the server a message with the list of players and their UUIDs

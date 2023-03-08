@@ -3,11 +3,10 @@ package dev.slne.surf.essentials.commands.tp;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -61,8 +60,7 @@ public class RandomTeleportCommand extends BrigadierCommand {
         Player bukkitPlayer = playerToTeleport.getBukkitEntity();
         maxRadius = (maxRadius == null) ? 5000 : maxRadius;
 
-        SurfApi.getUser(playerToTeleport.getUUID()).thenAccept(user -> user.sendMessage(SurfApi.getPrefix()
-                .append(Component.text("Suche Ort...", SurfColors.INFO))));
+        EssentialsUtil.sendInfo(playerToTeleport, "Suche Ort...");
 
         Location randomLocation = generateLocation(bukkitPlayer, maxRadius);
 
@@ -80,9 +78,9 @@ public class RandomTeleportCommand extends BrigadierCommand {
             double playerZ = EssentialsUtil.makeDoubleReadable(randomLocation.getZ());
 
             try {
-                EssentialsUtil.sendSuccess(source, Component.text("Du wurdest zu ", SurfColors.SUCCESS)
-                        .append(Component.text("%s %s %s".formatted(playerX, playerY, playerZ), SurfColors.TERTIARY))
-                        .append(Component.text(" teleportiert!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, Component.text("Du wurdest zu ", Colors.SUCCESS)
+                        .append(Component.text("%s %s %s".formatted(playerX, playerY, playerZ), Colors.TERTIARY))
+                        .append(Component.text(" teleportiert!", Colors.SUCCESS)));
             } catch (CommandSyntaxException ignored) {}
         });
 

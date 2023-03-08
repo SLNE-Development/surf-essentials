@@ -5,10 +5,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -45,9 +44,9 @@ public class BellTroll {
             stopBellTroll(target);
 
             if (source.isPlayer()){
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
-                        .append(Component.text(" wird nun nicht mehr mit Glockengeräuschen gestört!", SurfColors.SUCCESS))));
+                EssentialsUtil.sendSuccess(source, EssentialsUtil.getPrefix()
+                        .append(target.displayName().colorIfAbsent(Colors.YELLOW))
+                        .append(Component.text(" wird nun nicht mehr mit Glockengeräuschen gestört!", Colors.SUCCESS)));
             }else {
                 source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
                         .copy().append(net.minecraft.network.chat.Component.literal(" will now no longer be annoyed with bell sounds!")
@@ -64,7 +63,7 @@ public class BellTroll {
                 bukkitTask.cancel();
                 tasksIds.remove(target.getUniqueId(), bukkitTask.getTaskId());
             }
-            SurfApi.getUser(target).thenAcceptAsync(user -> user.playSound(Sound.BLOCK_BELL_USE, 10.0F, 1));
+            target.playSound(target.getLocation(), Sound.BLOCK_BELL_USE, 10.0F, 1);
 
             timeLeft.getAndDecrement();
             tasksIds.put(targetUUID, bukkitTask.getTaskId());
@@ -72,9 +71,8 @@ public class BellTroll {
 
         //success message
         if (source.isPlayer()){
-            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
-                    .append(Component.text(" wird nun mit Glockengeräuschen genervt!", SurfColors.SUCCESS))));
+            EssentialsUtil.sendSuccess(source, (target.displayName().colorIfAbsent(Colors.YELLOW))
+                    .append(Component.text(" wird nun mit Glockengeräuschen genervt!", Colors.SUCCESS)));
         }else{
             source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
                     .copy().append(net.minecraft.network.chat.Component.literal(" is now annoyed with bell noises!")

@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -116,22 +116,22 @@ public class WeatherCommand {
 
 
     private static Component weatherComponent$adventure(String weather, ServerLevel serverLevel, int durationInTicks){
-        return Component.text("Das Wetter in der Welt ", SurfColors.INFO)
-                .append(Component.text(serverLevel.dimension().location().toString(), SurfColors.TERTIARY))
-                .append(Component.text(" ist ", SurfColors.INFO))
-                .append(Component.text(weather, SurfColors.TERTIARY))
-                .append(Component.text(" für ", SurfColors.INFO))
-                .append(Component.text(EssentialsUtil.ticksToString(durationInTicks), SurfColors.TERTIARY));
+        return Component.text("Das Wetter in der Welt ", Colors.INFO)
+                .append(Component.text(serverLevel.dimension().location().toString(), Colors.TERTIARY))
+                .append(Component.text(" ist ", Colors.INFO))
+                .append(Component.text(weather, Colors.TERTIARY))
+                .append(Component.text(" für ", Colors.INFO))
+                .append(Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.TERTIARY));
     }
 
     private static Component weatherSetComponent$adventure(String weather, ServerLevel serverLevel, int durationInTicks){
-        return Component.text("Das Wetter in der Welt ", SurfColors.INFO)
-                .append(Component.text(serverLevel.dimension().location().toString(), SurfColors.TERTIARY))
-                .append(Component.text(" wurde auf ", SurfColors.INFO))
-                .append(Component.text(weather, SurfColors.TERTIARY))
-                .append(Component.text(" für ", SurfColors.INFO))
-                .append(Component.text(EssentialsUtil.ticksToString(durationInTicks), SurfColors.TERTIARY))
-                .append(Component.text(" gesetzt.", SurfColors.INFO));
+        return Component.text("Das Wetter in der Welt ", Colors.INFO)
+                .append(Component.text(serverLevel.dimension().location().toString(), Colors.TERTIARY))
+                .append(Component.text(" wurde auf ", Colors.INFO))
+                .append(Component.text(weather, Colors.TERTIARY))
+                .append(Component.text(" für ", Colors.INFO))
+                .append(Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.TERTIARY))
+                .append(Component.text(" gesetzt.", Colors.INFO));
     }
 
     private static net.minecraft.network.chat.Component weatherComponent(String weather, ServerLevel serverLevel, int durationInTicks){

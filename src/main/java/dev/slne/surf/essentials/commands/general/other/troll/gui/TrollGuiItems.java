@@ -6,8 +6,8 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -182,7 +182,7 @@ public class TrollGuiItems {
                 "eHR1cmUvMmI0ZTM0ZDA0ZDNhNTY1ZjYxNjY4YzcwOTMwN2MzNTE5YTRmNzA2YTY5ZjBkZTIwZDJmMDNiZGJjMTdlOTIwNSJ9fX0=");
 
         GuiItem guiItem = new GuiItem(item);
-        rename(guiItem, Component.text("Weiter", SurfColors.INFO));
+        rename(guiItem, Component.text("Weiter", Colors.INFO));
 
         return guiItem;
     }
@@ -193,7 +193,7 @@ public class TrollGuiItems {
                 "eHR1cmUvNzc4ZWY4ZDEzYWU1M2FhNDMxNDNhMWZlNzU5YjVjNjIwNDEwNDZiMTc0NmI1MGZhNDUyZGYwZDUzNGM2YTNkIn19fQ==");
 
         GuiItem guiItem = new GuiItem(item);
-        rename(guiItem, Component.text("Zurück", SurfColors.INFO));
+        rename(guiItem, Component.text("Zurück", Colors.INFO));
 
         return guiItem;
     }
@@ -202,7 +202,7 @@ public class TrollGuiItems {
     public static final GuiItem CLOSE_BUTTON() {
         GuiItem guiItem = new GuiItem(new ItemStack(Material.BARRIER, 1));
 
-        rename(guiItem, Component.text("Schließen", SurfColors.RED));
+        rename(guiItem, Component.text("Schließen", Colors.RED));
         guiItem.setAction(inventoryClickEvent -> inventoryClickEvent.getClickedInventory().close());
 
         return guiItem;
@@ -216,7 +216,7 @@ public class TrollGuiItems {
     public static final Consumer<InventoryClickEvent> clickAndShowOnlinePlayers(String[] trollName){
         return clickEvent ->{
             Player player = (Player) clickEvent.getWhoClicked();
-            ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("Spieler Auswählen", SurfColors.SECONDARY)));
+            ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("Spieler Auswählen", Colors.SECONDARY)));
             gui.setOnGlobalClick(event -> event.setCancelled(true));
 
 
@@ -299,7 +299,7 @@ public class TrollGuiItems {
         ItemStack itemStack = guiItem.getItem();
         ItemMeta itemMeta = itemStack.getItemMeta();
 
-        displayName = Component.empty().append(displayName.colorIfAbsent(SurfColors.TERTIARY)).decoration(TextDecoration.ITALIC, false);
+        displayName = Component.empty().append(displayName.colorIfAbsent(Colors.TERTIARY)).decoration(TextDecoration.ITALIC, false);
         itemMeta.displayName(displayName);
 
         itemStack.setItemMeta(itemMeta);
@@ -325,7 +325,7 @@ public class TrollGuiItems {
         ItemStack itemStack = guiItem.getItem();
         ItemMeta itemMeta = itemStack.getItemMeta();
 
-        lore = Component.empty().append(lore).colorIfAbsent(SurfColors.INFO);
+        lore = Component.empty().append(lore).colorIfAbsent(Colors.INFO);
         itemMeta.lore(Collections.singletonList(lore));
 
         itemStack.setItemMeta(itemMeta);

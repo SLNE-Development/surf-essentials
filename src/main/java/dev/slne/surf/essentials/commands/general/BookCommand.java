@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.general;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -56,7 +56,7 @@ public class BookCommand {
         ItemStack book = new ItemStack(Material.WRITABLE_BOOK);
         BookMeta mbook = (BookMeta) book.getItemMeta();
 
-        if (!hasPerm(source, net.minecraft.world.item.ItemStack.fromBukkitCopy(originalBook))) return 0;
+        if (hasNotPerm(source, net.minecraft.world.item.ItemStack.fromBukkitCopy(originalBook))) return 0;
 
         setBookMeta(originalBookMeta, mbook);
         book.setItemMeta(mbook);
@@ -75,7 +75,7 @@ public class BookCommand {
             EssentialsUtil.sendError(source, "Du musst ein Buch in deiner Hand halten!");
             return 0;
         }
-        if (!hasPerm(source, mainHandItem)) return 0;
+        if (hasNotPerm(source, mainHandItem)) return 0;
 
         CompoundTag compoundTag = mainHandItem.getTag();
         if (compoundTag == null){
@@ -83,9 +83,9 @@ public class BookCommand {
         }
         compoundTag.putString("title", title);
         mainHandItem.setTag(compoundTag);
-        EssentialsUtil.sendSuccess(source, Component.text("Der Title vom Buch ", SurfColors.SUCCESS)
-                .append(PaperAdventure.asAdventure(mainHandItem.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                .append(Component.text(" wurde geändert!", SurfColors.SUCCESS)));
+        EssentialsUtil.sendSuccess(source, Component.text("Der Title vom Buch ", Colors.SUCCESS)
+                .append(PaperAdventure.asAdventure(mainHandItem.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                .append(Component.text(" wurde geändert!", Colors.SUCCESS)));
         return 1;
     }
 
@@ -97,7 +97,7 @@ public class BookCommand {
             return 0;
         }
 
-        if (!hasPerm(source, mainHandItem)) return 0;
+        if (hasNotPerm(source, mainHandItem)) return 0;
 
         CompoundTag compoundTag = mainHandItem.getTag();
         if (compoundTag == null){
@@ -105,9 +105,9 @@ public class BookCommand {
         }
         compoundTag.putString("author", author);
         mainHandItem.setTag(compoundTag);
-        EssentialsUtil.sendSuccess(source, Component.text("Der Autor vom Buch ", SurfColors.SUCCESS)
-                .append(PaperAdventure.asAdventure(mainHandItem.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                .append(Component.text(" wurde geändert!", SurfColors.SUCCESS)));
+        EssentialsUtil.sendSuccess(source, Component.text("Der Autor vom Buch ", Colors.SUCCESS)
+                .append(PaperAdventure.asAdventure(mainHandItem.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                .append(Component.text(" wurde geändert!", Colors.SUCCESS)));
         return 1;
     }
 
@@ -121,19 +121,17 @@ public class BookCommand {
         if (originalBookMeta.hasPlaceableKeys()) mbook.setPlaceableKeys(originalBookMeta.getPlaceableKeys());
         if (originalBookMeta.hasLore()) mbook.lore(originalBookMeta.lore());
         mbook.setUnbreakable(originalBookMeta.isUnbreakable());
-        if (originalBookMeta.hasEnchants()) originalBookMeta.getEnchants().forEach((enchantment, integer) -> {
-            mbook.addEnchant(enchantment, integer, true);
-        });
+        if (originalBookMeta.hasEnchants()) originalBookMeta.getEnchants().forEach((enchantment, integer) -> mbook.addEnchant(enchantment, integer, true));
         for (Component page : originalBookMeta.pages()) {
             mbook.addPages(page);
         }
     }
 
-    private static boolean hasPerm(@NotNull CommandSourceStack source, net.minecraft.world.item.@NotNull ItemStack mainHandItem) throws CommandSyntaxException {
-        if (!(mainHandItem.getTag().getString("author").equals(source.getPlayerOrException().getName().getString())) && !source.hasPermission(4, Permissions.BOOK_PERMISSION_BYPASS)){
+    private static boolean hasNotPerm(@NotNull CommandSourceStack source, net.minecraft.world.item.@NotNull ItemStack mainHandItem) throws CommandSyntaxException {
+        if (mainHandItem.getTag() != null && !(mainHandItem.getTag().getString("author").equals(source.getPlayerOrException().getName().getString())) && !source.hasPermission(4, Permissions.BOOK_PERMISSION_BYPASS)) {
             EssentialsUtil.sendError(source, "Du hast keine Berechtigung, Bücher von anderen Spielern zu bearbeiten!");
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 }

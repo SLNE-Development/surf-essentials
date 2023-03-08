@@ -2,10 +2,9 @@ package dev.slne.surf.essentials.commands.general;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -39,11 +38,10 @@ public class GetPosCommand {
         double posZ = Double.parseDouble(new DecimalFormat("#.#").format(player.getZ()));
 
         if (source.isPlayer()){
-            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Die Position von ", SurfColors.INFO))
-                    .append(player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                    .append(Component.text(" ist: ", SurfColors.INFO))
-                    .append(Component.text("%s, %s, %s".formatted(posX, posY, posZ), SurfColors.TERTIARY))));
+            EssentialsUtil.sendSuccess(source, Component.text("Die Position von ", Colors.INFO)
+                    .append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                    .append(Component.text(" ist: ", Colors.INFO))
+                    .append(Component.text("%s, %s, %s".formatted(posX, posY, posZ), Colors.TERTIARY)));
         }else {
             source.sendSuccess(player.getDisplayName()
                     .copy().append(net.minecraft.network.chat.Component.literal("'s position: ")

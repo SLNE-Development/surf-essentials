@@ -4,12 +4,11 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -28,10 +27,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.bossevents.CustomBossEvent;
 import net.minecraft.server.bossevents.CustomBossEvents;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,7 +40,6 @@ public class TimerCommand extends BrigadierCommand {
     private static final HashMap<CustomBossEvent, Boolean> isBossbarCanceled = new HashMap<>();
     private static final List<Integer> titleTaskIds = new ArrayList<>();
     private static final List<Integer> actionbarTaskIds = new ArrayList<>();
-    private static int count = 1;
 
     @Override
     public String[] names() {
@@ -108,8 +106,8 @@ public class TimerCommand extends BrigadierCommand {
             if (!actionbarTaskIds.contains(bukkitTask.getTaskId())) actionbarTaskIds.add(bukkitTask.getTaskId());
 
             ClientboundSetActionBarTextPacket actionBarTextPacket = new ClientboundSetActionBarTextPacket(PaperAdventure
-                    .asVanilla(Component.text("%s:".formatted(timerName), SurfColors.INFO)
-                            .append(Component.text(" %s".formatted(EssentialsUtil.ticksToString(timeInSeconds.get() * 20)), SurfColors.GREEN))));
+                    .asVanilla(Component.text("%s:".formatted(timerName), Colors.INFO)
+                            .append(Component.text(" %s".formatted(EssentialsUtil.ticksToString(timeInSeconds.get() * 20)), Colors.GREEN))));
 
             sendTimerPacket(targetUUIDS, actionBarTextPacket);
             playSounds(targets, timeInSeconds.get());
@@ -133,7 +131,7 @@ public class TimerCommand extends BrigadierCommand {
             if (!titleTaskIds.contains(bukkitTask.getTaskId())) titleTaskIds.add(bukkitTask.getTaskId());
 
             ClientboundSetSubtitleTextPacket subtitleTextPacket = new ClientboundSetSubtitleTextPacket(PaperAdventure
-                    .asVanilla(Component.text(EssentialsUtil.ticksToString(timeInSeconds.get() * 20), SurfColors.GREEN)));
+                    .asVanilla(Component.text(EssentialsUtil.ticksToString(timeInSeconds.get() * 20), Colors.GREEN)));
 
             sendTimerPacket(targetUUIDS, titleTextPacket, subtitleTextPacket);
             playSounds(targets, timeInSeconds.get());
@@ -151,7 +149,7 @@ public class TimerCommand extends BrigadierCommand {
         CustomBossEvents customBossEvents = source.getServer().getCustomBossEvents();
 
         CustomBossEvent customBossEvent = customBossEvents.create(new ResourceLocation("timer", UUID.randomUUID().toString()),
-                ComponentUtils.updateForEntity(source, PaperAdventure.asVanilla(Component.text(timerName, SurfColors.TERTIARY)), null, 0));
+                ComponentUtils.updateForEntity(source, PaperAdventure.asVanilla(Component.text(timerName, Colors.TERTIARY)), null, 0));
 
         customBossEvent.setVisible(true);
         customBossEvent.setProgress(100f);
@@ -163,7 +161,9 @@ public class TimerCommand extends BrigadierCommand {
 
         playStartSound(targets);
         for (UUID targetUUID : targetUUIDS) {
-            customBossEvent.addPlayer(source.getServer().getPlayerList().getPlayer(targetUUID));
+            ServerPlayer player = source.getServer().getPlayerList().getPlayer(targetUUID);
+            if (player == null) continue;
+            customBossEvent.addPlayer(player);
         }
 
         Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), bukkitTask -> {
@@ -242,7 +242,7 @@ public class TimerCommand extends BrigadierCommand {
         switch (timeInSeconds){
             case 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 -> {
                 for (ServerPlayer target : targets) {
-                    SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.playSound(Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f));
+                    target.playSound(SoundEvents.NOTE_BLOCK_PLING.value(), 1f, 2f);
                 }
             }
         }
@@ -250,14 +250,14 @@ public class TimerCommand extends BrigadierCommand {
 
     private void playStartSound(Collection<ServerPlayer> targets){
         for (ServerPlayer target : targets) {
-            SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.playSound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 0.9f));
+            target.playSound(SoundEvents.PLAYER_LEVELUP, 1f, 0.9f);
         }
     }
 
     private int sendSuccess(CommandSourceStack source, int timeInTicks) throws CommandSyntaxException {
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Ein ", SurfColors.SUCCESS)
-                    .append(Component.text(EssentialsUtil.ticksToString(timeInTicks), SurfColors.TERTIARY))
+            EssentialsUtil.sendSuccess(source, Component.text("Ein ", Colors.SUCCESS)
+                    .append(Component.text(EssentialsUtil.ticksToString(timeInTicks), Colors.TERTIARY))
                     .append(Component.text(" Timer wurde gestartet!")));
         }else {
             source.sendSuccess(net.minecraft.network.chat.Component.literal("A " + EssentialsUtil.ticksToString(timeInTicks) + " timer was started")
@@ -268,12 +268,6 @@ public class TimerCommand extends BrigadierCommand {
 
     private boolean isCanceled(CustomBossEvent customBossEvent){
         return isBossbarCanceled.getOrDefault(customBossEvent, false);
-    }
-
-    private int getCountAndIncrease(){
-        int currentCount = count;
-        count = count + 1;
-        return currentCount;
     }
 
     public static void removeRemainingBossbars(){

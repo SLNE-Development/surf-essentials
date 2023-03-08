@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -69,11 +69,11 @@ public class ExperienceCommand {
         if (source.isPlayer()){
             String whatToQueryName = (whatToQuery == 0) ? " Erfahrungslevel" : " Erfahrungspunkte";
 
-            EssentialsUtil.sendSuccess(source, PaperAdventure.asAdventure(target.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY)
-                    .append(Component.text(" hat ", SurfColors.INFO))
-                    .append(Component.text(result, SurfColors.GREEN))
-                    .append(Component.text(whatToQueryName, SurfColors.TERTIARY))
-                    .append(Component.text("!", SurfColors.INFO)));
+            EssentialsUtil.sendSuccess(source, PaperAdventure.asAdventure(target.getDisplayName()).colorIfAbsent(Colors.TERTIARY)
+                    .append(Component.text(" hat ", Colors.INFO))
+                    .append(Component.text(result, Colors.GREEN))
+                    .append(Component.text(whatToQueryName, Colors.TERTIARY))
+                    .append(Component.text("!", Colors.INFO)));
         }else {
             String whatToQueryName = (whatToQuery == 0) ? "levels" : "points";
             source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.experience.query." + whatToQueryName,
@@ -98,19 +98,19 @@ public class ExperienceCommand {
                 ServerPlayer target = targets.iterator().next();
                 int experience = (whatToGive == 0) ? target.experienceLevel : Math.round(target.experienceProgress * (float) target.getXpNeededForNextLevel());
 
-                EssentialsUtil.sendSuccess(source, targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
-                        .append(Component.text(" hat ", SurfColors.SUCCESS))
-                        .append(Component.text(amount, SurfColors.GREEN))
-                        .append(Component.text(whatToGiveName, SurfColors.TERTIARY))
-                        .append(Component.text(" erhalten!", SurfColors.SUCCESS))
-                        .hoverEvent(HoverEvent.showText(Component.text("Insgesamt: ", SurfColors.INFO)
-                                .append(Component.text(experience, SurfColors.GREEN)))));
+                EssentialsUtil.sendSuccess(source, targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+                        .append(Component.text(" hat ", Colors.SUCCESS))
+                        .append(Component.text(amount, Colors.GREEN))
+                        .append(Component.text(whatToGiveName, Colors.TERTIARY))
+                        .append(Component.text(" erhalten!", Colors.SUCCESS))
+                        .hoverEvent(HoverEvent.showText(Component.text("Insgesamt: ", Colors.INFO)
+                                .append(Component.text(experience, Colors.GREEN)))));
             }else {
-                EssentialsUtil.sendSuccess(source, Component.text(targets.size(), SurfColors.TERTIARY)
-                        .append(Component.text(" Spieler haben ", SurfColors.SUCCESS))
-                        .append(Component.text(amount, SurfColors.GREEN))
-                        .append(Component.text(whatToGiveName, SurfColors.TERTIARY))
-                        .append(Component.text(" erhalten!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, Component.text(targets.size(), Colors.TERTIARY)
+                        .append(Component.text(" Spieler haben ", Colors.SUCCESS))
+                        .append(Component.text(amount, Colors.GREEN))
+                        .append(Component.text(whatToGiveName, Colors.TERTIARY))
+                        .append(Component.text(" erhalten!", Colors.SUCCESS)));
             }
         }else {
             String whatToGiveName = (whatToGive == 0) ? "levels" : "points";
@@ -138,21 +138,21 @@ public class ExperienceCommand {
             String whatToSetName = (whatToSet == 0) ? " Erfahrungslevel" : " Erfahrungspunkte";
 
             if (targets.size() == 1){
-                EssentialsUtil.sendSuccess(source, Component.text("Die", SurfColors.SUCCESS)
-                        .append(Component.text(whatToSetName, SurfColors.TERTIARY))
-                        .append(Component.text(" von ", SurfColors.SUCCESS))
-                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                        .append(Component.text(" wurden auf ", SurfColors.SUCCESS))
-                        .append(Component.text(amount, SurfColors.GREEN))
-                        .append(Component.text(" gesetzt!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, Component.text("Die", Colors.SUCCESS)
+                        .append(Component.text(whatToSetName, Colors.TERTIARY))
+                        .append(Component.text(" von ", Colors.SUCCESS))
+                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                        .append(Component.text(" wurden auf ", Colors.SUCCESS))
+                        .append(Component.text(amount, Colors.GREEN))
+                        .append(Component.text(" gesetzt!", Colors.SUCCESS)));
             }else {
-                EssentialsUtil.sendSuccess(source, Component.text("Die", SurfColors.SUCCESS)
-                        .append(Component.text(whatToSetName, SurfColors.TERTIARY))
-                        .append(Component.text(" von ", SurfColors.SUCCESS))
-                        .append(Component.text(targets.size(), SurfColors.TERTIARY))
-                        .append(Component.text(" Spielern wurden auf ", SurfColors.SUCCESS))
-                        .append(Component.text(amount, SurfColors.GREEN))
-                        .append(Component.text(" gesetzt!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, Component.text("Die", Colors.SUCCESS)
+                        .append(Component.text(whatToSetName, Colors.TERTIARY))
+                        .append(Component.text(" von ", Colors.SUCCESS))
+                        .append(Component.text(targets.size(), Colors.TERTIARY))
+                        .append(Component.text(" Spielern wurden auf ", Colors.SUCCESS))
+                        .append(Component.text(amount, Colors.GREEN))
+                        .append(Component.text(" gesetzt!", Colors.SUCCESS)));
             }
         }else {
             String whatToSetName = (whatToSet == 0) ? "levels" : "points";

@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -39,11 +39,11 @@ public class GameruleCommand {
         value.setFromArgument(context, "value", key);
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Spielregel ", SurfColors.SUCCESS)
-                    .append(net.kyori.adventure.text.Component.text(key.getId(), SurfColors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(" wurde auf ", SurfColors.SUCCESS))
-                    .append(net.kyori.adventure.text.Component.text(value.toString(), SurfColors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(" gesetzt!", SurfColors.SUCCESS)));
+            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Spielregel ", Colors.SUCCESS)
+                    .append(net.kyori.adventure.text.Component.text(key.getId(), Colors.TERTIARY))
+                    .append(net.kyori.adventure.text.Component.text(" wurde auf ", Colors.SUCCESS))
+                    .append(net.kyori.adventure.text.Component.text(value.toString(), Colors.TERTIARY))
+                    .append(net.kyori.adventure.text.Component.text(" gesetzt!", Colors.SUCCESS)));
         }else {
             source.sendSuccess(Component.translatable("commands.gamerule.set", key.getId(), value.toString()), false);
         }
@@ -54,11 +54,11 @@ public class GameruleCommand {
         T value = source.getLevel().getGameRules().getRule(key);
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Spielregel ", SurfColors.INFO)
-                    .append(net.kyori.adventure.text.Component.text(key.getId(), SurfColors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(" ist momentan auf ", SurfColors.INFO))
-                    .append(net.kyori.adventure.text.Component.text(value.toString(), SurfColors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(" gesetzt!", SurfColors.INFO)));
+            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Spielregel ", Colors.INFO)
+                    .append(net.kyori.adventure.text.Component.text(key.getId(), Colors.TERTIARY))
+                    .append(net.kyori.adventure.text.Component.text(" ist momentan auf ", Colors.INFO))
+                    .append(net.kyori.adventure.text.Component.text(value.toString(), Colors.TERTIARY))
+                    .append(net.kyori.adventure.text.Component.text(" gesetzt!", Colors.INFO)));
         }else{
             source.sendSuccess(Component.translatable("commands.gamerule.query", key.getId(), value.toString()), false);
         }

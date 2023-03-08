@@ -3,15 +3,15 @@ package dev.slne.surf.essentials;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.commands.BrigadierCommands;
 import dev.slne.surf.essentials.commands.general.other.TimerCommand;
 import dev.slne.surf.essentials.commands.general.other.troll.trolls.MlgTroll;
 import dev.slne.surf.essentials.exceptions.UnsupportedServerVersionException;
 import dev.slne.surf.essentials.listeners.ListenerManager;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.PermissionManager;
 import dev.slne.surf.essentials.utils.brigadier.PluginBrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.PermissionManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
@@ -88,27 +88,31 @@ public final class SurfEssentials extends JavaPlugin{
         ConsoleCommandSender console = instance.getServer().getConsoleSender();
         String version = "v" + getPluginMeta().getVersion();
         console.sendMessage(Component.newline()
-                .append(text("  _____ _____ ", SurfColors.AQUA))
+                .append(text("  _____ _____ ", Colors.AQUA))
                 .append(Component.newline())
-                .append(text("|  ___/  ___|", SurfColors.AQUA))
+                .append(text("|  ___/  ___|", Colors.AQUA))
                 .append(Component.newline())
-                .append(text("| |__ \\ `--. ", SurfColors.AQUA))
+                .append(text("| |__ \\ `--. ", Colors.AQUA))
                         .append(gradientify("  SurfEssentials ", "#009245", "#FCEE21"))
                         .append(gradientify(version, "#FC4A1A", "#F7B733"))
                 .append(Component.newline())
-                .append(text("|  __| `--. \\", SurfColors.AQUA)
+                .append(text("|  __| `--. \\", Colors.AQUA)
                         .append(gradientify("  Running on %s ".formatted(instance.getServer().getName()), "#fdfcfb", "#e2d1c3")))
                         .append(gradientify(instance.getServer().getVersion(), "#93a5cf", "#e4efe9").decorate(TextDecoration.ITALIC))
                 .append(Component.newline())
-                .append(text("| |___/\\__/ /", SurfColors.AQUA))
+                .append(text("| |___/\\__/ /", Colors.AQUA))
                 .append(Component.newline())
-                .append(text("\\____/\\____/ ", SurfColors.AQUA)));
+                .append(text("\\____/\\____/ ", Colors.AQUA)));
     }
 
     /**
      * Component Logger
      */
     public static @NotNull ComponentLogger logger(){
+        ComponentLogger bootStrapLogger = SurfEssentialsBootstrap.getLogger();
+        if (bootStrapLogger != null){
+            return bootStrapLogger;
+        }
         return instance.getComponentLogger();
     }
 

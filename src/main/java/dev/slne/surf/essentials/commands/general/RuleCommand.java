@@ -2,10 +2,9 @@ package dev.slne.surf.essentials.commands.general;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -40,27 +39,26 @@ public class RuleCommand {
         int successfulSends = 0;
 
         for (ServerPlayer player : targets) {
-            SurfApi.getUser(player.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Alle ", SurfColors.SUCCESS))
-                    .append(Component.text("Regeln", SurfColors.GOLD))
-                    .append(Component.text(" und", SurfColors.SUCCESS))
-                    .append(Component.text(" Informationen", SurfColors.GOLD))
-                    .append(Component.text(" findest du ", SurfColors.SUCCESS))
-                    .append(Component.text("Hier", SurfColors.RED)
+            EssentialsUtil.sendSuccess(player, Component.text("Alle ", Colors.SUCCESS)
+                    .append(Component.text("Regeln", Colors.GOLD))
+                    .append(Component.text(" und", Colors.SUCCESS))
+                    .append(Component.text(" Informationen", Colors.GOLD))
+                    .append(Component.text(" findest du ", Colors.SUCCESS))
+                    .append(Component.text("Hier", Colors.RED)
                             .decorate(TextDecoration.BOLD)
-                            .hoverEvent(Component.text("Klicke um zu der Website zu kommen", SurfColors.GRAY))
-                            .clickEvent(ClickEvent.openUrl("https://castcrafter.de/subserver")))));
+                            .hoverEvent(Component.text("Klicke um zu der Website zu kommen", Colors.GRAY))
+                            .clickEvent(ClickEvent.openUrl("https://castcrafter.de/subserver"))));
             successfulSends++;
         }
         if (source.isPlayer()){
             if (successfulSends == 1 && !(targets.iterator().next() == source.getPlayerOrException())){
-                EssentialsUtil.sendSuccess(source, Component.text("Die Regeln wurden an ", SurfColors.SUCCESS)
-                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                        .append(Component.text(" gesendet!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, Component.text("Die Regeln wurden an ", Colors.SUCCESS)
+                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                        .append(Component.text(" gesendet!", Colors.SUCCESS)));
             }else if (!(targets.iterator().next() == source.getPlayerOrException())){
-                EssentialsUtil.sendSuccess(source, Component.text("Die Regeln wurden an ", SurfColors.SUCCESS)
-                        .append(Component.text(successfulSends, SurfColors.TERTIARY))
-                        .append(Component.text(" Spieler gesendet!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, Component.text("Die Regeln wurden an ", Colors.SUCCESS)
+                        .append(Component.text(successfulSends, Colors.TERTIARY))
+                        .append(Component.text(" Spieler gesendet!", Colors.SUCCESS)));
             }
         }else {
             if (successfulSends == 1){

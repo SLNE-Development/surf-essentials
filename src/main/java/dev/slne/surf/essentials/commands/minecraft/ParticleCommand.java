@@ -5,9 +5,9 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -118,32 +118,32 @@ public class ParticleCommand {
 
             String forceString = (force) ? "Ja" : "Nein";
 
-            EssentialsUtil.sendSuccess(source, Component.text("Partikel ", SurfColors.SUCCESS)
-                    .append(Component.text(particleName, SurfColors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text("Partikel: ", SurfColors.TERTIARY)
+            EssentialsUtil.sendSuccess(source, Component.text("Partikel ", Colors.SUCCESS)
+                    .append(Component.text(particleName, Colors.TERTIARY)
+                            .hoverEvent(HoverEvent.showText(Component.text("Partikel: ", Colors.TERTIARY)
                                     .append(Component.text(particleName, TextColor.fromCSSHexString("#f2b179")))
                                     .append(Component.newline())
-                                    .append(Component.text("Position: ", SurfColors.TERTIARY)
+                                    .append(Component.text("Position: ", Colors.TERTIARY)
                                             .append(Component.text(position, TextColor.fromCSSHexString("#6699cc"))))
                                     .append(Component.newline())
-                                    .append(Component.text("Delta: ", SurfColors.TERTIARY)
+                                    .append(Component.text("Delta: ", Colors.TERTIARY)
                                             .append(Component.text(deltaString, TextColor.fromCSSHexString("#ff9900"))))
                                     .append(Component.newline())
-                                    .append(Component.text("Anzahl: ", SurfColors.TERTIARY)
+                                    .append(Component.text("Anzahl: ", Colors.TERTIARY)
                                             .append(Component.text(count, TextColor.fromCSSHexString("#339933"))))
                                     .append(Component.newline())
-                                    .append(Component.text("Geschwindigkeit: ", SurfColors.TERTIARY)
+                                    .append(Component.text("Geschwindigkeit: ", Colors.TERTIARY)
                                             .append(Component.text(speed, TextColor.fromCSSHexString("#00cc00"))))
                                     .append(Component.newline())
-                                    .append(Component.text("Erzwungen: ", SurfColors.TERTIARY)
+                                    .append(Component.text("Erzwungen: ", Colors.TERTIARY)
                                             .append(Component.text(forceString, (force) ? TextColor.fromHexString("#009933") : TextColor.fromCSSHexString("#cc0000"))))
                                     .append(Component.newline())
-                                    .append(Component.text("Betrachter: ", SurfColors.TERTIARY)
+                                    .append(Component.text("Betrachter: ", Colors.TERTIARY)
                                             .append(Component.text(viewers.size(), TextColor.fromCSSHexString("#ffcc00")))))))
-                    .append(Component.text(" wird ", SurfColors.SUCCESS))
-                    .append(Component.text(viewers.size(), SurfColors.TERTIARY))
-                    .append(Component.text((viewers.size() == 1) ? " Spieler" : " Spielern", SurfColors.SUCCESS))
-                    .append(Component.text(" gezeigt!", SurfColors.SUCCESS)));
+                    .append(Component.text(" wird ", Colors.SUCCESS))
+                    .append(Component.text(viewers.size(), Colors.TERTIARY))
+                    .append(Component.text((viewers.size() == 1) ? " Spieler" : " Spielern", Colors.SUCCESS))
+                    .append(Component.text(" gezeigt!", Colors.SUCCESS)));
         }else {
             source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.particle.success",
                     Objects.requireNonNull(BuiltInRegistries.PARTICLE_TYPE.getKey(parameters.getType())).toString()), true);

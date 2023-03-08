@@ -4,10 +4,9 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
@@ -19,8 +18,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 
 import java.util.*;
 
@@ -35,7 +34,7 @@ public class PollCommand {
     private static final HashMap<String, Integer> yesCounts = new HashMap<>();
     private static final HashMap<String, Integer> noCounts = new HashMap<>();
 
-    private static final Component line = Component.newline().append(SurfApi.getPrefix());
+    private static final Component line = Component.newline().append(EssentialsUtil.getPrefix());
 
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("poll", PollCommand::literal).setUsage("/poll <create | list | end | remove>")
@@ -80,14 +79,14 @@ public class PollCommand {
         // check if the poll already exists
         if (pollNames.contains(name)){
             if (source.isPlayer()){
-                EssentialsUtil.sendError(source, Component.text("Es läuft bereits eine Umfrage mit dem Namen ", SurfColors.ERROR)
-                        .append(Component.text(name, SurfColors.TERTIARY)
-                                .hoverEvent(HoverEvent.showText(Component.text("Zeit: ", SurfColors.INFO)
-                                        .append(Component.text(EssentialsUtil.ticksToString(getDurationInSeconds(name)), SurfColors.GREEN))
-                                        .append(Component.text("Frage: ", SurfColors.INFO))
+                EssentialsUtil.sendError(source, Component.text("Es läuft bereits eine Umfrage mit dem Namen ", Colors.ERROR)
+                        .append(Component.text(name, Colors.TERTIARY)
+                                .hoverEvent(HoverEvent.showText(Component.text("Zeit: ", Colors.INFO)
+                                        .append(Component.text(EssentialsUtil.ticksToString(getDurationInSeconds(name)), Colors.GREEN))
+                                        .append(Component.text("Frage: ", Colors.INFO))
                                         .append(Component.newline())
-                                        .append(Component.text(getQuestion(name), SurfColors.TERTIARY)))))
-                        .append(Component.text("!", SurfColors.ERROR)));
+                                        .append(Component.text(getQuestion(name), Colors.TERTIARY)))))
+                        .append(Component.text("!", Colors.ERROR)));
             }else {
                 source.sendFailure(net.minecraft.network.chat.Component.literal("The poll ")
                         .withStyle(ChatFormatting.RED)
@@ -105,10 +104,8 @@ public class PollCommand {
 
         // send poll to online players
         for (ServerPlayer player : source.getServer().getPlayerList().getPlayers()) {
-            SurfApi.getUser(player.getUUID()).thenAcceptAsync(user -> {
-                user.sendMessage(startPollMessage(name, durationInSeconds, question));
-                user.playSound(Sound.BLOCK_BEACON_ACTIVATE, 0.5F, 0);
-            });
+            EssentialsUtil.sendSuccess(player, startPollMessage(name, durationInSeconds, question));
+            player.playSound(SoundEvents.BEACON_ACTIVATE, 0.5F, 0);
         }
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(SurfEssentials.getInstance(), bukkitTask -> { // runs every second
@@ -117,10 +114,8 @@ public class PollCommand {
                 // send results to online players
                 for (ServerPlayer player : source.getServer().getPlayerList().getPlayers()) {
                     if (!pollsToRemove.contains(name)){
-                        SurfApi.getUser(player.getUUID()).thenAcceptAsync(user -> {
-                            user.sendMessage(pollResultMessage(name));
-                            user.playSound(Sound.BLOCK_BEACON_DEACTIVATE, 0.5F, 0);
-                        });
+                        EssentialsUtil.sendSuccess(player, pollResultMessage(name));
+                        player.playSound(SoundEvents.BEACON_DEACTIVATE, 0.5F,0);
                     }
                     votedPlayer.remove(player, name);
                 }
@@ -148,8 +143,8 @@ public class PollCommand {
     private static int endPoll(CommandSourceStack source, String name) throws CommandSyntaxException{
         if (!isValidPoll(name)){
             if (source.isPlayer()){
-                EssentialsUtil.sendError(source, Component.text("Die Umfrage ", SurfColors.ERROR)
-                        .append(Component.text(name, SurfColors.TERTIARY))
+                EssentialsUtil.sendError(source, Component.text("Die Umfrage ", Colors.ERROR)
+                        .append(Component.text(name, Colors.TERTIARY))
                         .append(Component.text(" existiert nicht!")));
             }else {
                 source.sendFailure(net.minecraft.network.chat.Component.literal("The poll ")
@@ -175,8 +170,8 @@ public class PollCommand {
     private static int removePoll(CommandSourceStack source, String name) throws CommandSyntaxException {
         if (!isValidPoll(name)){
             if (source.isPlayer()){
-                EssentialsUtil.sendError(source, Component.text("Die Umfrage ", SurfColors.ERROR)
-                        .append(Component.text(name, SurfColors.TERTIARY))
+                EssentialsUtil.sendError(source, Component.text("Die Umfrage ", Colors.ERROR)
+                        .append(Component.text(name, Colors.TERTIARY))
                         .append(Component.text(" existiert nicht!")));
             }else {
                 source.sendFailure(net.minecraft.network.chat.Component.literal("The poll ")
@@ -212,17 +207,17 @@ public class PollCommand {
 
         if (source.isPlayer()){
             ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
-            builder.append((Component.text("Aktuelle Umfragen: ", SurfColors.INFO)));
+            builder.append((Component.text("Aktuelle Umfragen: ", Colors.INFO)));
             for (String poll : pollNames) {
                 builder.append(Component.newline()
-                        .append(SurfApi.getPrefix()
-                                .append(Component.text("                      - ", SurfColors.INFO)))
-                        .append(Component.text(poll, SurfColors.TERTIARY)
-                                .hoverEvent(HoverEvent.showText(Component.text("Dauer: ", SurfColors.INFO)
-                                        .append(Component.text(EssentialsUtil.ticksToString(getDurationInSeconds(poll) * 20), SurfColors.GREEN))
+                        .append(EssentialsUtil.getPrefix()
+                                .append(Component.text("                      - ", Colors.INFO)))
+                        .append(Component.text(poll, Colors.TERTIARY)
+                                .hoverEvent(HoverEvent.showText(Component.text("Dauer: ", Colors.INFO)
+                                        .append(Component.text(EssentialsUtil.ticksToString(getDurationInSeconds(poll) * 20), Colors.GREEN))
                                         .append(Component.newline())
-                                        .append(Component.text("Frage: ", SurfColors.INFO))
-                                        .append(Component.text(getQuestion(poll), SurfColors.TERTIARY))))));
+                                        .append(Component.text("Frage: ", Colors.INFO))
+                                        .append(Component.text(getQuestion(poll), Colors.TERTIARY))))));
             }
 
             EssentialsUtil.sendSuccess(source, builder.build());
@@ -292,83 +287,81 @@ public class PollCommand {
     private static void sendReminder(CommandSourceStack source, String name){
         for (ServerPlayer player : source.getServer().getPlayerList().getPlayers()) {
             if (votedPlayer.containsKey(player)) continue;
-            SurfApi.getUser(player.getUUID()).thenAcceptAsync(user -> {
-                user.sendMessage(pollReminderMessage(name));
-                user.playSound(Sound.BLOCK_BEACON_POWER_SELECT, 0.5F, 0);
-            });
+            EssentialsUtil.sendSuccess(player, pollReminderMessage(name));
+            player.playSound(SoundEvents.BEACON_POWER_SELECT, 0.5F,0);
         }
     }
 
 
     private static Component startPollMessage(String name, int durationInSeconds, String question){
         return line
-                .append(Component.text("----------------------------------------", SurfColors.DARK_GRAY))
+                .append(Component.text("----------------------------------------", Colors.DARK_GRAY))
                 .append(line)
-                .append(Component.text("Neue Umfrage: %s".formatted(name), SurfColors.SECONDARY))
+                .append(Component.text("Neue Umfrage: %s".formatted(name), Colors.SECONDARY))
                 .append(line)
                 .append(line)
                 .append(Component.text(question, TextColor.fromHexString("#eea990")))
                 .append(line)
                 .append(line)
-                .append(Component.text("Verbleibende Zeit: ", SurfColors.INFO))
+                .append(Component.text("Verbleibende Zeit: ", Colors.INFO))
                 .append(Component.text(EssentialsUtil.ticksToString(durationInSeconds * 20), TextColor.fromHexString("#FF7F50")))
                 .append(line)
                 .append(line)
-                .append(Component.text("Ja ", SurfColors.GREEN)
-                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Abstimmen", SurfColors.DARK_GRAY)))
+                .append(Component.text("Ja ", Colors.GREEN)
+                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Abstimmen", Colors.DARK_GRAY)))
                         .clickEvent(ClickEvent.runCommand("/vote %s yes".formatted(name))))
-                .append(Component.text("|", SurfColors.GRAY))
-                .append(Component.text(" Nein", SurfColors.RED)
-                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Abstimmen", SurfColors.DARK_GRAY)))
+                .append(Component.text("|", Colors.GRAY))
+                .append(Component.text(" Nein", Colors.RED)
+                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Abstimmen", Colors.DARK_GRAY)))
                         .clickEvent(ClickEvent.runCommand("/vote %s no".formatted(name))))
                 .append(line)
-                .append(Component.text("----------------------------------------", SurfColors.DARK_GRAY))
+                .append(Component.text("----------------------------------------", Colors.DARK_GRAY))
                 .append(Component.newline());
     }
 
     private static Component pollReminderMessage(String name){
-        return SurfApi.getPrefix()
+        return EssentialsUtil.getPrefix()
                 .append(line)
-                .append(Component.text("----------------------------------------", SurfColors.DARK_GRAY))
+                .append(Component.text("----------------------------------------", Colors.DARK_GRAY))
                 .append(line)
-                .append(Component.text("Vergiss nicht zu voten: %s".formatted(name), SurfColors.SECONDARY))
+                .append(Component.text("Vergiss nicht zu voten: %s".formatted(name), Colors.SECONDARY))
                 .append(line)
                 .append(line)
                 .append(Component.text(getQuestion(name), TextColor.fromHexString("#eea990")))
                 .append(line)
                 .append(line)
-                .append(Component.text("Verbleibende Zeit: ", SurfColors.INFO))
-                .append(Component.text(EssentialsUtil.ticksToString(getDurationInSeconds(name) * 20), SurfColors.TERTIARY))
+                .append(Component.text("Verbleibende Zeit: ", Colors.INFO))
+                .append(Component.text(EssentialsUtil.ticksToString(getDurationInSeconds(name) * 20), Colors.TERTIARY))
                 .append(line)
                 .append(line)
-                .append(Component.text("Ja ", SurfColors.GREEN)
-                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Abstimmen", SurfColors.DARK_GRAY)))
+                .append(Component.text("Ja ", Colors.GREEN)
+                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Abstimmen", Colors.DARK_GRAY)))
                         .clickEvent(ClickEvent.runCommand("/vote %s yes".formatted(name))))
-                .append(Component.text("|", SurfColors.GRAY))
-                .append(Component.text(" Nein", SurfColors.RED)
-                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Abstimmen", SurfColors.DARK_GRAY)))
+                .append(Component.text("|", Colors.GRAY))
+                .append(Component.text(" Nein", Colors.RED)
+                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Abstimmen", Colors.DARK_GRAY)))
                         .clickEvent(ClickEvent.runCommand("/vote %s no".formatted(name))))
                 .append(line)
-                .append(Component.text("----------------------------------------", SurfColors.DARK_GRAY))
+                .append(Component.text("----------------------------------------", Colors.DARK_GRAY))
                 .append(Component.newline());
     }
 
     private static Component pollResultMessage(String name) {
-        return line.append(Component.text("----------------------------------------", SurfColors.DARK_GRAY))
+        return line.append(Component.text("----------------------------------------", Colors.DARK_GRAY))
                 .append(line)
-                .append(Component.text("Ergebnisse von: %s".formatted(name), SurfColors.SECONDARY))
+                .append(Component.text("Ergebnisse von: %s".formatted(name), Colors.SECONDARY))
                 .append(line)
                 .append(line)
                 .append(Component.text(getQuestion(name), TextColor.fromHexString("#eea990")))
                 .append(line)
                 .append(line)
-                .append(Component.text("Ja ", SurfColors.GREEN)
+                .append(Component.text("Ja ", Colors.GREEN)
                         .append(Component.text("%dx".formatted(getYesCount(name)))))
-                .append(Component.text(" | ", SurfColors.GRAY))
-                .append(Component.text("Nein ", SurfColors.RED)
-                        .append(Component.text("%dx".formatted(getNoCount(name)), SurfColors.RED)))
+                .append(Component.text(" | ", Colors.GRAY))
+                .append(Component.text("Nein ", Colors.RED)
+                        .append(Component.text("%dx".formatted(getNoCount(name)), Colors.RED)))
                 .append(line)
-                .append(Component.text("----------------------------------------", SurfColors.DARK_GRAY))
+                .append(Component.text("----------------------------------------", Colors.DARK_GRAY))
                 .append(Component.newline());
     }
 }

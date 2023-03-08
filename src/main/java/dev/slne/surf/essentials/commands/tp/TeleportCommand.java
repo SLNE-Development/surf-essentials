@@ -2,11 +2,10 @@ package dev.slne.surf.essentials.commands.tp;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
@@ -78,14 +77,14 @@ public class TeleportCommand extends BrigadierCommand {
         if (playerTeleportEvent.isCancelled()) return 0;
 
         if (isLoaded(targetLocation)) {
-            SurfApi.callEvent(playerTeleportEvent);
+            EssentialsUtil.callEvent(playerTeleportEvent);
 
             ServerLevel level = ((CraftWorld) targetLocation.getWorld()).getHandle();
             sender.teleportTo(level, targetLocation.getX(), targetLocation.getY(), targetLocation.getZ(),targetLocation.getYaw(), targetLocation.getPitch());
             EssentialsUtil.sendSuccess(source, teleportToEntity$adventure(entity));
 
         }else {
-            SurfApi.callEvent(playerTeleportEvent);
+            EssentialsUtil.callEvent(playerTeleportEvent);
             waiting$adventure(source);
 
             sender.getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAcceptAsync(aBoolean -> {
@@ -111,7 +110,7 @@ public class TeleportCommand extends BrigadierCommand {
 
         if (isLoaded(targetLocation)){
             if (playerTeleportEvent != null) {
-                SurfApi.callEvent(playerTeleportEvent);
+                EssentialsUtil.callEvent(playerTeleportEvent);
             }
 
             ServerLevel level = ((CraftWorld) targetLocation.getWorld()).getHandle();
@@ -151,7 +150,7 @@ public class TeleportCommand extends BrigadierCommand {
 
         if (isLoaded(targetLocation)){
             if (playerTeleportEvent != null) {
-                SurfApi.callEvent(playerTeleportEvent);
+                EssentialsUtil.callEvent(playerTeleportEvent);
             }
             ServerLevel level = ((CraftWorld) targetLocation.getWorld()).getHandle();
             PositionImpl position = new PositionImpl(vec3.x(), vec3.y(), vec3.z());
@@ -191,7 +190,7 @@ public class TeleportCommand extends BrigadierCommand {
                     PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
                             targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);
                     if (playerTeleportEvent.isCancelled()) continue;
-                    SurfApi.callEvent(playerTeleportEvent);
+                    EssentialsUtil.callEvent(playerTeleportEvent);
                 }
                 ServerLevel level = ((CraftWorld) targetLocation.getWorld()).getHandle();
                 PositionImpl position = new PositionImpl(targetLocation.getX(), targetLocation.getY(), targetLocation.getZ());
@@ -236,7 +235,7 @@ public class TeleportCommand extends BrigadierCommand {
                     PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
                             targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);
                     if (playerTeleportEvent.isCancelled()) continue;
-                    SurfApi.callEvent(playerTeleportEvent);
+                    EssentialsUtil.callEvent(playerTeleportEvent);
                 }
                 ServerLevel level = ((CraftWorld) targetLocation.getWorld()).getHandle();
                 PositionImpl position = new PositionImpl(vec3.x(), vec3.y(), vec3.z());
@@ -288,46 +287,45 @@ public class TeleportCommand extends BrigadierCommand {
 
     private void waiting$adventure(CommandSourceStack source) throws CommandSyntaxException {
         if (source.isPlayer()){
-            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAccept(user -> user.sendMessage(SurfApi.getPrefix()
-                    .append(Component.text("Teleportiere...", SurfColors.INFO))));
+            EssentialsUtil.sendInfo(source, "Teleportiere...");
         }
     }
 
     private Component teleportToEntity$adventure(Entity entity){
         ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
-        builder.append(Component.text("Du hast dich zu ", SurfColors.SUCCESS));
+        builder.append(Component.text("Du hast dich zu ", Colors.SUCCESS));
 
         if (entity instanceof ServerPlayer player){
-            builder.append(player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY));
+            builder.append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY));
         }else {
-            builder.append(PaperAdventure.asAdventure(entity.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY));
+            builder.append(PaperAdventure.asAdventure(entity.getDisplayName()).colorIfAbsent(Colors.TERTIARY));
         }
 
-        return builder.append(Component.text(" teleportiert!", SurfColors.SUCCESS)).build();
+        return builder.append(Component.text(" teleportiert!", Colors.SUCCESS)).build();
     }
 
     private Component teleportEntityToEntity$adventure(Entity fromEntity, Entity toEntity){
         ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
 
         if (fromEntity instanceof ServerPlayer player){
-            builder.append(player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY));
+            builder.append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY));
         }else {
-            builder.append(PaperAdventure.asAdventure(fromEntity.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY));
+            builder.append(PaperAdventure.asAdventure(fromEntity.getDisplayName()).colorIfAbsent(Colors.TERTIARY));
         }
 
-        builder.append(Component.text(" wurde zu ", SurfColors.SUCCESS));
+        builder.append(Component.text(" wurde zu ", Colors.SUCCESS));
 
         if (toEntity instanceof ServerPlayer player) {
-            builder.append(player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
+            builder.append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
                     .hoverEvent(HoverEvent.showText(Component.text("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(player.getX()),
-                            EssentialsUtil.makeDoubleReadable(player.getY()), EssentialsUtil.makeDoubleReadable(player.getZ())), SurfColors.INFO))));
+                            EssentialsUtil.makeDoubleReadable(player.getY()), EssentialsUtil.makeDoubleReadable(player.getZ())), Colors.INFO))));
         }else {
-            builder.append(PaperAdventure.asAdventure(toEntity.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY)
+            builder.append(PaperAdventure.asAdventure(toEntity.getDisplayName()).colorIfAbsent(Colors.TERTIARY)
                     .hoverEvent(HoverEvent.showText(Component.text("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(toEntity.getX()),
-                            EssentialsUtil.makeDoubleReadable(toEntity.getY()), EssentialsUtil.makeDoubleReadable(toEntity.getZ())), SurfColors.INFO))));
+                            EssentialsUtil.makeDoubleReadable(toEntity.getY()), EssentialsUtil.makeDoubleReadable(toEntity.getZ())), Colors.INFO))));
         }
 
-        return builder.append(Component.text(" teleportiert!", SurfColors.SUCCESS)).build();
+        return builder.append(Component.text(" teleportiert!", Colors.SUCCESS)).build();
     }
 
     private net.minecraft.network.chat.Component teleportEntityToEntity(Entity fromEntity, Entity toEntity){
@@ -343,15 +341,15 @@ public class TeleportCommand extends BrigadierCommand {
         ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
 
         if (entity instanceof ServerPlayer player){
-            builder.append(player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY));
+            builder.append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY));
         }else {
-            builder.append(PaperAdventure.asAdventure(entity.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY));
+            builder.append(PaperAdventure.asAdventure(entity.getDisplayName()).colorIfAbsent(Colors.TERTIARY));
         }
 
-        return builder.append(Component.text(" wurde zu ", SurfColors.SUCCESS)
+        return builder.append(Component.text(" wurde zu ", Colors.SUCCESS)
                 .append(Component.text("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(location.getX()),
-                        EssentialsUtil.makeDoubleReadable(location.getY()), EssentialsUtil.makeDoubleReadable(location.getZ())), SurfColors.TERTIARY))
-                .append(Component.text(" teleportiert!", SurfColors.SUCCESS))).build();
+                        EssentialsUtil.makeDoubleReadable(location.getY()), EssentialsUtil.makeDoubleReadable(location.getZ())), Colors.TERTIARY))
+                .append(Component.text(" teleportiert!", Colors.SUCCESS))).build();
     }
 
     private net.minecraft.network.chat.Component teleportEntityToLocation(Entity entity, Location location){
@@ -365,16 +363,16 @@ public class TeleportCommand extends BrigadierCommand {
     private Component teleportEntitiesToEntity$adventure(int successfulTeleports, Entity toEntity){
         ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
 
-        builder.append(Component.text(successfulTeleports, SurfColors.TERTIARY)
-                .append(Component.text(" Entities wurden zu ", SurfColors.SUCCESS)));
+        builder.append(Component.text(successfulTeleports, Colors.TERTIARY)
+                .append(Component.text(" Entities wurden zu ", Colors.SUCCESS)));
 
         if (toEntity instanceof ServerPlayer player){
-            builder.append(player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY));
+            builder.append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY));
         }else {
-            builder.append(PaperAdventure.asAdventure(toEntity.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY));
+            builder.append(PaperAdventure.asAdventure(toEntity.getDisplayName()).colorIfAbsent(Colors.TERTIARY));
         }
 
-        return builder.append(Component.text(" teleportiert!", SurfColors.SUCCESS)).build();
+        return builder.append(Component.text(" teleportiert!", Colors.SUCCESS)).build();
     }
 
     private net.minecraft.network.chat.Component teleportEntitiesToEntity(int successfulTeleports, Entity toEntity){
@@ -386,13 +384,13 @@ public class TeleportCommand extends BrigadierCommand {
     private Component teleportEntitiesToLocation$adventure(int successfulTeleports, Location location){
         ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
 
-        builder.append(Component.text(successfulTeleports, SurfColors.TERTIARY)
-                .append(Component.text(" Entities wurden zu ", SurfColors.SUCCESS)));
+        builder.append(Component.text(successfulTeleports, Colors.TERTIARY)
+                .append(Component.text(" Entities wurden zu ", Colors.SUCCESS)));
 
         builder.append(Component.text("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(location.getX()),
-                EssentialsUtil.makeDoubleReadable(location.getY()), EssentialsUtil.makeDoubleReadable(location.getZ())), SurfColors.TERTIARY));
+                EssentialsUtil.makeDoubleReadable(location.getY()), EssentialsUtil.makeDoubleReadable(location.getZ())), Colors.TERTIARY));
 
-        return builder.append(Component.text(" teleportiert!", SurfColors.SUCCESS)).build();
+        return builder.append(Component.text(" teleportiert!", Colors.SUCCESS)).build();
     }
 
     private net.minecraft.network.chat.Component teleportEntitiesToLocation(int successfulTeleports, Location location){

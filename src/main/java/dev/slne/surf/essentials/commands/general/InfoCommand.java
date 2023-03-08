@@ -2,10 +2,9 @@ package dev.slne.surf.essentials.commands.general;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -36,32 +35,32 @@ public class InfoCommand{
 
     private static int info(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException {
         ServerPlayer player = EssentialsUtil.checkSinglePlayerSuggestion(source, playerUnchecked);
-        Component line = Component.newline().append(SurfApi.getPrefix());
-        Component name = player.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY);
+        Component line = Component.newline().append(EssentialsUtil.getPrefix());
+        Component name = player.adventure$displayName.colorIfAbsent(Colors.TERTIARY);
         UUID uuid = player.getUUID();
         String nameMc = "https://de.namemc.com/profile/" + uuid;
         float health = player.getHealth();
         float food = player.getFoodData().getFoodLevel();
 
         EssentialsUtil.sendSuccess(source, Component.empty().append(name
-                .append(Component.text(":", SurfColors.INFO)).decorate(TextDecoration.UNDERLINED))
+                .append(Component.text(":", Colors.INFO)).decorate(TextDecoration.UNDERLINED))
                 .append(line)
                 .append(line)
-                .append(Component.text("UUID: ", SurfColors.INFO))
-                .append(Component.text(uuid.toString(), SurfColors.TERTIARY)
-                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Kopieren", SurfColors.INFO)))
+                .append(Component.text("UUID: ", Colors.INFO))
+                .append(Component.text(uuid.toString(), Colors.TERTIARY)
+                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Kopieren", Colors.INFO)))
                         .clickEvent(ClickEvent.copyToClipboard(uuid.toString())))
                 .append(line)
-                .append(Component.text("Name Mc: ", SurfColors.INFO)
-                        .append(Component.text("Hier", SurfColors.SECONDARY)
-                                .hoverEvent(HoverEvent.showText(Component.text("Klicke zum öffnen", SurfColors.INFO)))
+                .append(Component.text("Name Mc: ", Colors.INFO)
+                        .append(Component.text("Hier", Colors.SECONDARY)
+                                .hoverEvent(HoverEvent.showText(Component.text("Klicke zum öffnen", Colors.INFO)))
                                 .clickEvent(ClickEvent.openUrl(nameMc))))
                 .append(line)
-                .append(Component.text("Leben: ", SurfColors.INFO)
-                        .append(Component.text(health, SurfColors.GREEN)))
+                .append(Component.text("Leben: ", Colors.INFO)
+                        .append(Component.text(health, Colors.GREEN)))
                 .append(line)
-                .append(Component.text("Essen: ", SurfColors.INFO)
-                        .append(Component.text(food, SurfColors.GREEN))));
+                .append(Component.text("Essen: ", Colors.INFO)
+                        .append(Component.text(food, Colors.GREEN))));
         return 1;
     }
 }

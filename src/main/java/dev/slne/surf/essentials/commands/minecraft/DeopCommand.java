@@ -4,10 +4,9 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -16,9 +15,9 @@ import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.players.PlayerList;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
-import java.util.Objects;
 
 public class DeopCommand {
     public static void register(){
@@ -43,11 +42,14 @@ public class DeopCommand {
                 playerList.deop(gameProfile);
                 ++i;
                 if (source.isPlayer()){
-                    Bukkit.broadcast(SurfApi.getPrefix()
-                            .append(Objects.requireNonNull(Bukkit.getPlayer(gameProfile.getId())).displayName())
-                            .append(net.kyori.adventure.text.Component.text(" ist durch ", SurfColors.INFO))
-                            .append(source.getPlayerOrException().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(" kein Operator mehr!", SurfColors.INFO)), "surf.essentials.announce.op");
+                    Player player = Bukkit.getPlayer(gameProfile.getId());
+                    net.kyori.adventure.text.Component displayName = (player == null) ? net.kyori.adventure.text.Component.text(gameProfile.getName()) : player.displayName();
+
+                    Bukkit.broadcast(EssentialsUtil.getPrefix()
+                            .append(displayName.colorIfAbsent(Colors.TERTIARY))
+                            .append(net.kyori.adventure.text.Component.text(" ist durch ", Colors.INFO))
+                            .append(source.getPlayerOrException().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                            .append(net.kyori.adventure.text.Component.text(" kein Operator mehr!", Colors.INFO)), "surf.essentials.announce.op");
                 }else {
                     source.sendSuccess(Component.translatable("commands.op.success", gameProfile.getName()), true);
                 }

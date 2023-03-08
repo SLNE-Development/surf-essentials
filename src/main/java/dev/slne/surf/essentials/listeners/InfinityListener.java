@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class InfinityListener implements Listener {
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         if (InfinityCommand.getPlayersInInfinity().contains(((CraftPlayer) event.getPlayer()).getHandle())) {
             Player player = event.getPlayer();
@@ -38,7 +38,7 @@ public class InfinityListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
         if (InfinityCommand.getPlayersInInfinity().contains(((CraftPlayer) event.getPlayer()).getHandle())) {
             Player player = event.getPlayer();

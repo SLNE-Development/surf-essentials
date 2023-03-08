@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.cheat;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -38,8 +38,8 @@ public class FillStackCommand{
 
         if (item.isEmpty()){
             if (source.isPlayer()){
-                EssentialsUtil.sendError(source, target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY)
-                        .append(Component.text(" hält nichts in der Haupthand!", SurfColors.ERROR)));
+                EssentialsUtil.sendError(source, target.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+                        .append(Component.text(" hält nichts in der Haupthand!", Colors.ERROR)));
             }else {
                 throw ERROR_HOLDS_NOTHING.create(target);
             }
@@ -47,9 +47,9 @@ public class FillStackCommand{
         }
         if (item.getMaxStackSize() == 1){
             if (source.isPlayer()){
-                EssentialsUtil.sendError(source, Component.text("Das Item ", SurfColors.ERROR)
-                        .append(PaperAdventure.asAdventure(item.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                        .append(Component.text(" kann nicht gestackt werden!", SurfColors.ERROR)));
+                EssentialsUtil.sendError(source, Component.text("Das Item ", Colors.ERROR)
+                        .append(PaperAdventure.asAdventure(item.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                        .append(Component.text(" kann nicht gestackt werden!", Colors.ERROR)));
             }else {
                 throw ERROR_CANNOT_STACK.create(item);
             }
@@ -59,13 +59,13 @@ public class FillStackCommand{
         item.setCount(item.getMaxStackSize());
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Das Item ", SurfColors.SUCCESS)
-                    .append(PaperAdventure.asAdventure(item.getDisplayName()).colorIfAbsent(SurfColors.TERTIARY))
-                    .append(Component.text(" wurde ", SurfColors.SUCCESS))
-                    .append(Component.text("%dx".formatted(item.getMaxStackSize()), SurfColors.TERTIARY))
-                    .append(Component.text(" für ", SurfColors.SUCCESS))
-                    .append(target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                    .append(Component.text(" gestackt!", SurfColors.SUCCESS)));
+            EssentialsUtil.sendSuccess(source, Component.text("Das Item ", Colors.SUCCESS)
+                    .append(PaperAdventure.asAdventure(item.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                    .append(Component.text(" wurde ", Colors.SUCCESS))
+                    .append(Component.text("%dx".formatted(item.getMaxStackSize()), Colors.TERTIARY))
+                    .append(Component.text(" für ", Colors.SUCCESS))
+                    .append(target.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                    .append(Component.text(" gestackt!", Colors.SUCCESS)));
         }else {
             source.sendSuccess(net.minecraft.network.chat.Component.literal("The item ")
                     .withStyle(ChatFormatting.GREEN)

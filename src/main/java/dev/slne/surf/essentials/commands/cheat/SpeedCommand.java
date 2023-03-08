@@ -3,10 +3,9 @@ package dev.slne.surf.essentials.commands.cheat;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -45,12 +44,12 @@ public class SpeedCommand {
                 if (source.getPlayerOrException() == target){
                     EssentialsUtil.sendSuccess(source, "Deine Geh- und Fluggeschwindigkeit wurde zurückgesetzt!");
                 }else {
-                    SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                            .append(Component.text("Deine Geh- und Fluggeschwindigkeit wurde zurückgesetzt!", SurfColors.INFO))));
+                    EssentialsUtil.sendSuccess(target.getBukkitEntity(), EssentialsUtil.getPrefix()
+                            .append(Component.text("Deine Geh- und Fluggeschwindigkeit wurde zurückgesetzt!", Colors.INFO)));
 
-                    EssentialsUtil.sendSuccess(source, Component.text("Die Geh- und Fluggeschwindigkeit von ", SurfColors.SUCCESS)
-                            .append(target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                            .append(Component.text(" wurde zurückgesetzt!", SurfColors.SUCCESS)));
+                    EssentialsUtil.sendSuccess(source, Component.text("Die Geh- und Fluggeschwindigkeit von ", Colors.SUCCESS)
+                            .append(target.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                            .append(Component.text(" wurde zurückgesetzt!", Colors.SUCCESS)));
                 }
             }else {
                 source.sendSuccess(target.getDisplayName()
@@ -64,20 +63,19 @@ public class SpeedCommand {
 
         if (source.isPlayer()){
             if (source.getPlayerOrException() == target){
-                EssentialsUtil.sendSuccess(source, Component.text("Deine Geh- und Fluggeschwindigkeit wurde auf ", SurfColors.SUCCESS)
-                        .append(Component.text(speed, SurfColors.TERTIARY))
-                        .append(Component.text(" gesetzt!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, Component.text("Deine Geh- und Fluggeschwindigkeit wurde auf ", Colors.SUCCESS)
+                        .append(Component.text(speed, Colors.TERTIARY))
+                        .append(Component.text(" gesetzt!", Colors.SUCCESS)));
             }else {
-                SurfApi.getUser(target.getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(Component.text("Deine Geh- und Fluggeschwindigkeit wurde auf ", SurfColors.INFO))
-                        .append(Component.text(speed, SurfColors.TERTIARY))
-                        .append(Component.text(" gesetzt!", SurfColors.INFO))));
+                EssentialsUtil.sendSuccess(target, (Component.text("Deine Geh- und Fluggeschwindigkeit wurde auf ", Colors.INFO))
+                        .append(Component.text(speed, Colors.TERTIARY))
+                        .append(Component.text(" gesetzt!", Colors.INFO)));
 
-                EssentialsUtil.sendSuccess(source, Component.text("Die Geh- und Fluggeschwindigkeit von ", SurfColors.SUCCESS)
-                        .append(target.adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                        .append(Component.text(" wurde auf ", SurfColors.SUCCESS))
-                        .append(Component.text(speed, SurfColors.TERTIARY))
-                        .append(Component.text(" gesetzt!", SurfColors.SUCCESS)));
+                EssentialsUtil.sendSuccess(source, Component.text("Die Geh- und Fluggeschwindigkeit von ", Colors.SUCCESS)
+                        .append(target.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                        .append(Component.text(" wurde auf ", Colors.SUCCESS))
+                        .append(Component.text(speed, Colors.TERTIARY))
+                        .append(Component.text(" gesetzt!", Colors.SUCCESS)));
             }
         }else {
             source.sendSuccess(target.getDisplayName()

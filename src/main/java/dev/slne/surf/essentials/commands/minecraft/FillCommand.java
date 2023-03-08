@@ -4,11 +4,11 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.utils.blocks.BlockStatePos;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
+import dev.slne.surf.essentials.utils.blocks.BlockStatePos;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -158,9 +158,9 @@ public class FillCommand extends BrigadierCommand {
         if (filledBlocks.get() == 0) throw ERROR_FAILED.create();
 
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Es " + ((filledBlocks.get() == 1) ? "wurde " : "wurden "), SurfColors.SUCCESS)
-                    .append(net.kyori.adventure.text.Component.text(filledBlocks.get(), SurfColors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(((filledBlocks.get() == 1) ? " Block " : " Blöcke ") + "platziert.", SurfColors.SUCCESS)));
+            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Es " + ((filledBlocks.get() == 1) ? "wurde " : "wurden "), Colors.SUCCESS)
+                    .append(net.kyori.adventure.text.Component.text(filledBlocks.get(), Colors.TERTIARY))
+                    .append(net.kyori.adventure.text.Component.text(((filledBlocks.get() == 1) ? " Block " : " Blöcke ") + "platziert.", Colors.SUCCESS)));
             BLOCKS.put(source.getPlayerOrException().getUUID(), blockStatePos);
         }else {
             source.sendSuccess(Component.translatable("commands.fill.success", filledBlocks.get()), false);
@@ -193,9 +193,9 @@ public class FillCommand extends BrigadierCommand {
 
         if (undoneBlocks.get() == 0) throw ERROR_NOTHING_TO_UNDO.create();
 
-        EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Es " + ((undoneBlocks.get() == 1) ? "wurde " : "wurden "), SurfColors.SUCCESS)
-                .append(net.kyori.adventure.text.Component.text(undoneBlocks.get(), SurfColors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text(((undoneBlocks.get() == 1) ? " Block " : " Blöcke ") + "zurückgesetzt.", SurfColors.SUCCESS)));
+        EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Es " + ((undoneBlocks.get() == 1) ? "wurde " : "wurden "), Colors.SUCCESS)
+                .append(net.kyori.adventure.text.Component.text(undoneBlocks.get(), Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text(((undoneBlocks.get() == 1) ? " Block " : " Blöcke ") + "zurückgesetzt.", Colors.SUCCESS)));
 
         return undoneBlocks.get();
     }

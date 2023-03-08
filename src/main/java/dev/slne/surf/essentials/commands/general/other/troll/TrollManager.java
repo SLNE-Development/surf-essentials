@@ -5,12 +5,12 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.commands.general.other.troll.gui.Boarders;
 import dev.slne.surf.essentials.commands.general.other.troll.gui.TrollGuiItems;
 import dev.slne.surf.essentials.commands.general.other.troll.listener.TrollListener;
 import dev.slne.surf.essentials.commands.general.other.troll.trolls.*;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -74,7 +74,7 @@ public class TrollManager{
 
     private static int gui(CommandSourceStack source) throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
-        ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("Troll GUI", SurfColors.SECONDARY)));
+        ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("Troll GUI", Colors.SECONDARY)));
 
         gui.setOnGlobalClick(event -> event.setCancelled(true));
         Boarders.setAllBoarders(gui);

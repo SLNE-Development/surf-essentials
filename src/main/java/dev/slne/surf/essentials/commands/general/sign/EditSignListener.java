@@ -19,7 +19,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 public class EditSignListener implements Listener {
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 

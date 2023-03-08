@@ -5,10 +5,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -77,9 +76,9 @@ public class AnvilTroll implements Listener {
             cancelAnvilTroll(target);
 
             if (source.isPlayer()){
-                SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                        .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
-                        .append(Component.text(" wird nun nicht mehr mit Ambossen beworfen", SurfColors.INFO))));
+                EssentialsUtil.sendSuccess(source, (target.displayName().colorIfAbsent(Colors.YELLOW))
+                        .append(Component.text(" wird nun nicht mehr mit Ambossen beworfen", Colors.INFO)));
+
             }else {
                 source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
                         .copy().append(net.minecraft.network.chat.Component.literal(" is no longer thrown with anvils!")
@@ -89,10 +88,9 @@ public class AnvilTroll implements Listener {
         }
 
         if (source.isPlayer()){
-            SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                            .append(Component.text("Bei ", SurfColors.SUCCESS))
-                    .append(target.displayName().colorIfAbsent(SurfColors.YELLOW))
-                    .append(Component.text(" regnet es jetzt Ambosse!", SurfColors.SUCCESS))));
+            EssentialsUtil.sendSuccess(source, (Component.text("Bei ", Colors.SUCCESS))
+                    .append(target.displayName().colorIfAbsent(Colors.YELLOW))
+                    .append(Component.text(" regnet es jetzt Ambosse!", Colors.SUCCESS)));
         }else{
             source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
                     .copy().append(net.minecraft.network.chat.Component.literal(" is thrown with anvils!")

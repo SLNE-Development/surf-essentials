@@ -3,11 +3,11 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.api.utils.message.SurfColors;
-import dev.slne.surf.essentials.utils.blocks.BlockStatePos;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
+import dev.slne.surf.essentials.utils.blocks.BlockStatePos;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -121,13 +121,13 @@ public class SetBlockCommand extends BrigadierCommand {
         if (source.isPlayer()){
             BLOCK.put(source.getPlayerOrException().getUUID(), new BlockStatePos(oldBlockState, blockPos, serverLevel));
 
-            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Der Block ", SurfColors.SUCCESS)
-                    .append(PaperAdventure.asAdventure(oldBlockState.getBlock().getName()).colorIfAbsent(SurfColors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(" bei ", SurfColors.SUCCESS))
+            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Der Block ", Colors.SUCCESS)
+                    .append(PaperAdventure.asAdventure(oldBlockState.getBlock().getName()).colorIfAbsent(Colors.TERTIARY))
+                    .append(net.kyori.adventure.text.Component.text(" bei ", Colors.SUCCESS))
                     .append(net.kyori.adventure.text.Component.text("%s %s %s".formatted(blockPos.getX(), blockPos.getY(), blockPos.getZ())))
-                    .append(net.kyori.adventure.text.Component.text(" wurde zu ", SurfColors.SUCCESS))
-                    .append(PaperAdventure.asAdventure(blockInput.getState().getBlock().getName()).colorIfAbsent(SurfColors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(" geändert.", SurfColors.SUCCESS)));
+                    .append(net.kyori.adventure.text.Component.text(" wurde zu ", Colors.SUCCESS))
+                    .append(PaperAdventure.asAdventure(blockInput.getState().getBlock().getName()).colorIfAbsent(Colors.TERTIARY))
+                    .append(net.kyori.adventure.text.Component.text(" geändert.", Colors.SUCCESS)));
         } else {
             source.sendSuccess(Component.translatable("commands.setblock.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), false);
         }

@@ -7,8 +7,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import dev.slne.surf.api.SurfApi;
-import dev.slne.surf.api.utils.message.SurfColors;
+import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.utils.color.Colors;
+import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.nbt.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -27,6 +28,7 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -112,37 +114,6 @@ public abstract class EssentialsUtil {
         seconds = totalSeconds % 60;
         // </editor-fold>
         return String.format("%dd %02dh %02dm %02ds", days, hours, minutes, seconds);
-    }
-
-    /**
-     *
-     * Sends an error message to the sender.
-     *
-     * @param sender  the sender
-     * @param error  the error
-     */
-    public static void somethingWentWrongAsync_DE(@NotNull Player sender, @NotNull String error){
-        SurfApi.getUser(sender).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                .append(gradientify("Es ist ein Fehler aufgetreten:", "#eb3349", "#f45c43"))
-                .append(Component.newline())
-                .append(SurfApi.getPrefix())
-                .append(gradientify(error, "#EA98DA", "#5B6CF9"))));
-    }
-
-    /**
-     *
-     * sorts the tab completion suggestion
-     *
-     * @param list  the list
-     * @param currentarg  the currentarg
-     * @param completions  the completions
-     */
-    public static void sortedSuggestions(@NotNull List<String> list, @NotNull String currentarg, @NotNull List<String> completions){
-        for (String s : list) {
-            if (s.toLowerCase().startsWith(currentarg)) {
-                completions.add(s);
-            }
-        }
     }
 
     /**
@@ -262,8 +233,8 @@ public abstract class EssentialsUtil {
      @throws CommandSyntaxException if an error occurs while sending the message
      */
     public static void sendError(CommandSourceStack source, String error) throws CommandSyntaxException {
-        SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                .append(net.kyori.adventure.text.Component.text(error, SurfColors.ERROR))));
+       source.getPlayerOrException().getBukkitEntity().sendMessage(getPrefix()
+                .append(net.kyori.adventure.text.Component.text(error, Colors.ERROR)));
     }
 
     /**
@@ -273,8 +244,8 @@ public abstract class EssentialsUtil {
      @throws CommandSyntaxException if an error occurs while sending the message
      */
     public static void sendError(CommandSourceStack source, Component error) throws CommandSyntaxException {
-        SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                .append(error)));
+        source.getPlayerOrException().getBukkitEntity().sendMessage(getPrefix()
+                .append(error));
     }
 
     /**
@@ -285,8 +256,25 @@ public abstract class EssentialsUtil {
      * @throws CommandSyntaxException if the player cannot be found
      */
     public static void sendSuccess(CommandSourceStack source, String success) throws CommandSyntaxException {
-        SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                .append(Component.text(success, SurfColors.SUCCESS))));
+        source.getPlayerOrException().getBukkitEntity().sendMessage(getPrefix()
+                .append(Component.text(success, Colors.SUCCESS)));
+    }
+
+    public static<T extends Player> void sendSuccess(T player, String success) {
+        player.sendMessage(getPrefix()
+                .append(Component.text(success, Colors.SUCCESS)));
+    }
+    public static<T extends Player>  void sendSuccess(T player, Component success) {
+        player.sendMessage(getPrefix()
+                .append(success));
+    }
+    public static<T extends net.minecraft.world.entity.player.Player> void sendSuccess(T player, Component success){
+        player.sendSystemMessage(PaperAdventure.asVanilla(getPrefix()
+                .append(success.colorIfAbsent(Colors.SUCCESS))));
+    }
+
+    public static<T extends net.minecraft.world.entity.player.Player> void sendSuccess(T player, String success){
+        sendSuccess(player, Component.text(success, Colors.SUCCESS));
     }
 
     /**
@@ -297,17 +285,33 @@ public abstract class EssentialsUtil {
      * @throws CommandSyntaxException if the player cannot be found
      */
     public static void sendSuccess(CommandSourceStack source, Component success) throws CommandSyntaxException {
-        SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                .append(success)));
+        source.getPlayerOrException().getBukkitEntity().sendMessage(getPrefix()
+                .append(success));
     }
 
     public static void sendInfo(CommandSourceStack source, Component info) throws CommandSyntaxException {
-        SurfApi.getUser(source.getPlayerOrException().getUUID()).thenAcceptAsync(user -> user.sendMessage(SurfApi.getPrefix()
-                .append(info)));
+        source.getPlayerOrException().getBukkitEntity().sendMessage(getPrefix()
+                .append(info));
     }
 
     public static void sendInfo(CommandSourceStack source, String info) throws CommandSyntaxException {
-        sendInfo(source, Component.text(info, SurfColors.INFO));
+        sendInfo(source, Component.text(info, Colors.INFO));
+    }
+
+    public static<T extends net.minecraft.world.entity.player.Player> void sendInfo(T player, Component info){
+        player.sendSystemMessage(PaperAdventure.asVanilla(info.colorIfAbsent(Colors.INFO)));
+    }
+
+    public static<T extends net.minecraft.world.entity.player.Player> void sendInfo(T player, String info){
+        sendInfo(player, Component.text(info));
+    }
+
+    public static<T extends Player> void sendInfo(T player, Component info){
+        player.sendMessage(info.colorIfAbsent(Colors.INFO));
+    }
+
+    public static<T extends Player> void sendInfo(T player, String info){
+        sendInfo(player, Component.text(info));
     }
 
 
@@ -445,5 +449,15 @@ public abstract class EssentialsUtil {
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+
+    public static Component getPrefix(){
+        return Component.text(">> ", Colors.DARK_GRAY)
+                .append(gradientify("SurfEssentials", "#46B5C9", "#3A7FF2")
+                .append(Component.text(" | ",Colors.DARK_GRAY)));
+    }
+
+    public static void callEvent(@NotNull Event event){
+        SurfEssentials.getInstance().getServer().getPluginManager().callEvent(event);
     }
 }

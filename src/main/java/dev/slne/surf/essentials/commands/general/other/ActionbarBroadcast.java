@@ -4,9 +4,9 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.api.utils.message.SurfColors;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -61,7 +61,7 @@ public class ActionbarBroadcast {
         fadeOutTicks = (fadeOutTicks == null) ? 10 : fadeOutTicks;
 
 
-        Component actionBarText = LegacyComponentSerializer.legacyAmpersand().deserialize(actionbar).colorIfAbsent(SurfColors.TERTIARY);
+        Component actionBarText = LegacyComponentSerializer.legacyAmpersand().deserialize(actionbar).colorIfAbsent(Colors.TERTIARY);
 
         ClientboundSetTitlesAnimationPacket animationPacket = new ClientboundSetTitlesAnimationPacket(fadeInTicks, stayTicks, fadeOutTicks);
         ClientboundSetActionBarTextPacket actionBarTextPacket = new ClientboundSetActionBarTextPacket(PaperAdventure.asVanilla(actionBarText));
@@ -74,35 +74,35 @@ public class ActionbarBroadcast {
 
         if (source.isPlayer()){
             if (successfullyShowed == 1) {
-                EssentialsUtil.sendSuccess(source, Component.text("Die ", SurfColors.SUCCESS)
-                        .append(Component.text("Actionbar", SurfColors.TERTIARY)
-                                .hoverEvent(HoverEvent.showText(Component.text("Text: ", SurfColors.INFO)
+                EssentialsUtil.sendSuccess(source, Component.text("Die ", Colors.SUCCESS)
+                        .append(Component.text("Actionbar", Colors.TERTIARY)
+                                .hoverEvent(HoverEvent.showText(Component.text("Text: ", Colors.INFO)
                                         .append(actionBarText)
                                         .append(Component.newline())
-                                        .append(Component.text("Dauer: ", SurfColors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(stayTicks), SurfColors.TERTIARY)))
+                                        .append(Component.text("Dauer: ", Colors.INFO)
+                                                .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
                                         .append(Component.newline())
-                                        .append(Component.text("Ausblenden: ", SurfColors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), SurfColors.TERTIARY)))
+                                        .append(Component.text("Ausblenden: ", Colors.INFO)
+                                                .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
                                         .append(Component.newline()))))
-                        .append(Component.text(" wurde ", SurfColors.SUCCESS))
-                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(SurfColors.TERTIARY))
-                        .append(Component.text(" gezeigt!", SurfColors.SUCCESS)));
+                        .append(Component.text(" wurde ", Colors.SUCCESS))
+                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                        .append(Component.text(" gezeigt!", Colors.SUCCESS)));
             }else {
-                EssentialsUtil.sendSuccess(source, Component.text("Die ", SurfColors.SUCCESS)
-                        .append(Component.text("Actionbar", SurfColors.TERTIARY)
-                                .hoverEvent(HoverEvent.showText(Component.text("Text: ", SurfColors.INFO)
+                EssentialsUtil.sendSuccess(source, Component.text("Die ", Colors.SUCCESS)
+                        .append(Component.text("Actionbar", Colors.TERTIARY)
+                                .hoverEvent(HoverEvent.showText(Component.text("Text: ", Colors.INFO)
                                         .append(actionBarText)
                                         .append(Component.newline())
-                                        .append(Component.text("Dauer: ", SurfColors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(stayTicks), SurfColors.TERTIARY)))
+                                        .append(Component.text("Dauer: ", Colors.INFO)
+                                                .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
                                         .append(Component.newline())
-                                        .append(Component.text("Ausblenden: ", SurfColors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), SurfColors.TERTIARY)))
+                                        .append(Component.text("Ausblenden: ", Colors.INFO)
+                                                .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
                                         .append(Component.newline()))))
-                        .append(Component.text(" wurde ", SurfColors.SUCCESS))
-                        .append(Component.text(successfullyShowed, SurfColors.TERTIARY))
-                        .append(Component.text(" Spielern gezeigt!", SurfColors.SUCCESS)));
+                        .append(Component.text(" wurde ", Colors.SUCCESS))
+                        .append(Component.text(successfullyShowed, Colors.TERTIARY))
+                        .append(Component.text(" Spielern gezeigt!", Colors.SUCCESS)));
             }
         }else {
             if (successfullyShowed == 1) {
