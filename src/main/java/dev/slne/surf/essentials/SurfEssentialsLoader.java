@@ -14,11 +14,9 @@ public class SurfEssentialsLoader implements PluginLoader {
         MavenLibraryResolver resolver = new MavenLibraryResolver();
 
         addDependency(resolver, "com.github.stefvanschie.inventoryframework", "IF", "0.10.8");
-        addDependency(resolver, "com.comphenix.protocol", "ProtocolLib", "4.8.0");
         addDependency(resolver, "net.kyori", "adventure-nbt", "4.12.0");
         addDependency(resolver, "io.papermc.paper", "paper-api", "1.19.3-R0.1-SNAPSHOT");
 
-        addRepository(resolver, "dmulloy2-repo", "https://repo.dmulloy2.net/repository/public/");
         addRepository(resolver, "jitpack.io", "https://jitpack.io");
         addRepository(resolver, "papermc", "https://repo.papermc.io/repository/maven-public/");
 

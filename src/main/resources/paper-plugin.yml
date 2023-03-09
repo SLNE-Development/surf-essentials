@@ -8,19 +8,3 @@ loader: dev.slne.surf.essentials.SurfEssentialsLoader
 has-open-classloader: true
 authors: ['twisti', 'SLNE Dev Team']
 website: 'https://git.slne.dev/surf/surf-essentials'
-
-########################################################################################################################
-#                                                 Dependencies                                                         #
-########################################################################################################################
-dependencies:
-  - name: ProtocolLib
-    required: true
-    bootstrap: false
-
-
-########################################################################################################################
-#                                                     Load-order                                                       #
-########################################################################################################################
-load-after:
-  - name: ProtocolLib
-    bootstrap: false

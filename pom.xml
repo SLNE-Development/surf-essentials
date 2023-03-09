@@ -36,13 +36,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>4.8.0</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- https://github.com/stefvanschie/IF -->
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
@@ -55,10 +48,6 @@
         <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
-        </repository>
-        <repository>
-            <id>dmulloy2-repo</id>
-            <url>https://repo.dmulloy2.net/repository/public/</url>
         </repository>
         <repository>
             <id>jitpack.io</id>

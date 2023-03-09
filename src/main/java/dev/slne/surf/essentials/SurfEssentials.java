@@ -1,7 +1,5 @@
 package dev.slne.surf.essentials;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.essentials.commands.BrigadierCommands;
 import dev.slne.surf.essentials.commands.general.other.TimerCommand;
@@ -75,10 +73,6 @@ public final class SurfEssentials extends JavaPlugin{
 
     public static SurfEssentials getInstance() {
         return instance;
-    }
-
-    public static ProtocolManager manager(){
-        return ProtocolLibrary.getProtocolManager();
     }
 
     /**

@@ -1,8 +1,5 @@
 package dev.slne.surf.essentials.commands.general.other.troll.trolls;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -16,42 +13,32 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.network.protocol.game.ClientboundExplodePacket;
+import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 
 public class BoomTroll {
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> boom(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.boom"));
         return Commands.argument("player", EntityArgument.player())
-                .executes(context -> makeBoom(context, EntityArgument.getPlayer(context, "player").getBukkitEntity()));
+                .executes(context -> makeBoom(context, EntityArgument.getPlayer(context, "player")));
     }
 
-    private static int makeBoom(@NotNull CommandContext<CommandSourceStack> context, @NotNull Player target) throws CommandSyntaxException {
-        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), ((CraftPlayer) target).getHandle());
+    private static int makeBoom(@NotNull CommandContext<CommandSourceStack> context, @NotNull ServerPlayer serverPlayer) throws CommandSyntaxException {
+        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), serverPlayer);
         CommandSourceStack source = context.getSource();
-        ProtocolManager manager = SurfEssentials.manager();
+        Player target = serverPlayer.getBukkitEntity();
         Location location = target.getLocation();
-        PacketContainer packet = manager.createPacket(PacketType.Play.Server.EXPLOSION);
+        ClientboundExplodePacket explodePacket = new ClientboundExplodePacket(location.getX(), location.getY(), location.getZ(), 2F, Collections.emptyList(), null);
 
-        packet.getDoubles().write(0, location.getX());
-        packet.getDoubles().write(1, location.getY());
-        packet.getDoubles().write(2, location.getZ());
-
-        packet.getFloat().write(0, 2F);
-
-
-        try {
-            manager.sendServerPacket(target, packet);
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        serverPlayer.connection.send(explodePacket);
 
         target.setInvulnerable(true);
         target.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20, 127, false, false, false));

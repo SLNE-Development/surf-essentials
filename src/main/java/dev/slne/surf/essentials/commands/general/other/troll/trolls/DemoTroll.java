@@ -1,13 +1,9 @@
 package dev.slne.surf.essentials.commands.general.other.troll.trolls;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
@@ -16,41 +12,30 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-
-import java.lang.reflect.InvocationTargetException;
 
 public class DemoTroll {
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> demo(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.demo"));
         return Commands.argument("player", EntityArgument.player())
-                .executes(context -> makeDemo(context, EntityArgument.getPlayer(context, "player").getBukkitEntity()));
+                .executes(context -> makeDemo(context, EntityArgument.getPlayer(context, "player")));
     }
 
-    private static int makeDemo(@NotNull CommandContext<CommandSourceStack> context, Player target) throws CommandSyntaxException {
-        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), ((CraftPlayer) target).getHandle());
+    private static int makeDemo(@NotNull CommandContext<CommandSourceStack> context, ServerPlayer targetPlayer) throws CommandSyntaxException {
+        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), targetPlayer);
         // Get the source of the command
         CommandSourceStack source = context.getSource();
-        // Get the ProtocolManager instance
-        ProtocolManager manager = SurfEssentials.manager();
-        // Create a PacketContainer object
-        PacketContainer packet = manager.createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
+        Player target = targetPlayer.getBukkitEntity();
+        ClientboundGameEventPacket packet = new ClientboundGameEventPacket(ClientboundGameEventPacket.DEMO_EVENT, 0f);
 
-        // Set the game state ID to 5 and the value to 0
-        packet.getGameStateIDs().write(0, 5);
-        packet.getFloat().write(0, 0F);
+        targetPlayer.connection.send(packet);
 
         // Play a sound for the target player
         target.playSound(target.getLocation(), Sound.ENTITY_ITEM_PICKUP, 2F, 1F);
-        // Send the packet to the target player
-        try {
-            manager.sendServerPacket(target, packet);
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
 
         // Send a message to the source of the command
         if (source.isPlayer()){
