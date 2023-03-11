@@ -113,9 +113,7 @@ public class TeleportCommand extends BrigadierCommand {
                 EssentialsUtil.callEvent(playerTeleportEvent);
             }
 
-            ServerLevel level = ((CraftWorld) targetLocation.getWorld()).getHandle();
-            PositionImpl position = new PositionImpl(targetLocation.getX(), targetLocation.getY(), targetLocation.getZ());
-            fromEntity.teleportTo(level, position);
+            fromEntity.getBukkitEntity().teleport(targetLocation);
 
             if (source.isPlayer()){
                 EssentialsUtil.sendSuccess(source, teleportEntityToEntity$adventure(fromEntity, toEntity));
