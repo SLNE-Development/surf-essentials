@@ -12,7 +12,6 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.world.InteractionHand;
-import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -60,7 +59,7 @@ public class SetItemLoreCommand extends BrigadierCommand {
         itemStack.lore(loresComponents);
 
         EssentialsUtil.sendSuccess(source, Component.text("Die Beschreibung von ", Colors.SUCCESS)
-                .append(PaperAdventure.asAdventure(CraftItemStack.asNMSCopy(itemStack).getDisplayName()))
+                .append(PaperAdventure.asAdventure(net.minecraft.world.item.ItemStack.fromBukkitCopy(itemStack).getDisplayName()))
                 .append(Component.text(" wurde geändert!", Colors.SUCCESS)));
 
         return 1;

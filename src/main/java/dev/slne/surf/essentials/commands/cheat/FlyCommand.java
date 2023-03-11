@@ -42,13 +42,12 @@ public class FlyCommand {
 
         for (ServerPlayer target : targets) {
             if (toggle) {
-                target.getAbilities().mayfly = !target.getAbilities().mayfly;
-                target.getAbilities().flying = !target.getAbilities().flying;
+                target.getBukkitEntity().setAllowFlight(!target.getBukkitEntity().getAllowFlight());
+                target.getBukkitEntity().setFlying(!target.getBukkitEntity().isFlying());
             } else {
-                target.getAbilities().mayfly = allowFly;
-                target.getAbilities().flying = allowFly;
+                target.getBukkitEntity().setAllowFlight(allowFly);
+                target.getBukkitEntity().setFlying(allowFly);
             }
-            target.onUpdateAbilities();
             successfulChanges++;
             EssentialsUtil.sendSuccess(target.getBukkitEntity(), (Component.text("Du kannst nun ", Colors.GREEN)
                             .append(Component.text((target.getAbilities().mayfly) ? "fliegen!" : "nicht mehr fliegen!", Colors.GREEN))));
