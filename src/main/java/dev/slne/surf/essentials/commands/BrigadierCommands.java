@@ -154,5 +154,9 @@ public class BrigadierCommands {
         new FillCommand();
         // set block command
         new SetBlockCommand();
+        // ride commands
+        new RideCommand();
+        // damage command
+        new DamageCommand();
     }
 }

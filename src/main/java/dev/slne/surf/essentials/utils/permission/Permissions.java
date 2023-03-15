@@ -84,6 +84,8 @@ public class Permissions {
     public static final String SUMMON_PERMISSION = "surf.essentials.commands.summon";
     public static final String FILL_PERMISSION = "surf.essentials.commands.fill";
     public static final String SET_BLOCK_PERMISSION = "surf.essentials.commands.setblock";
+    public static final String RIDE_PERMISSION = "surf.essentials.commands.ride";
+    public static final String DAMAGE_PERMISSION = "surf.essentials.commands.damage";
 
 
     /**
