@@ -110,7 +110,7 @@ public class GiveCommand {
                         // Set the no pick up delay of the item entity
                         entityitem.setNoPickUpDelay();
                         // Set the owner of the item entity
-                        entityitem.setOwner(target.getUUID());
+                        entityitem.setTarget(target.getUUID());
                     }
                 }
 

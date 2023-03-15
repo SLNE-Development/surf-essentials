@@ -1,10 +1,9 @@
 name: SurfEssentials
-version: '1.0-SNAPSHOT'
+version: '1.0.1-SNAPSHOT'
 main: dev.slne.surf.essentials.SurfEssentials
 description: '"Insert description here"'
 api-version: '1.19'
 bootstrapper: dev.slne.surf.essentials.SurfEssentialsBootstrap
 loader: dev.slne.surf.essentials.SurfEssentialsLoader
-has-open-classloader: true
 authors: ['twisti', 'SLNE Dev Team']
 website: 'https://git.slne.dev/surf/surf-essentials'

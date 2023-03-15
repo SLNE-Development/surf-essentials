@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>dev.slne</groupId>
     <artifactId>surf-essentials</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Surf Essentials</name>
     <properties>
@@ -19,20 +19,25 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.19.3-R0.1-SNAPSHOT</version>
+            <version>1.19.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- https://docs.adventure.kyori.net/getting-started.html -->
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-nbt</artifactId>
-            <version>4.12.0</version>
+            <version>4.13.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-minimessage</artifactId>
+            <version>4.13.0</version>
         </dependency>
         <!-- https://github.com/Alvinn8/paper-nms-maven-plugin -->
         <dependency>
             <groupId>ca.bkaw</groupId>
             <artifactId>paper-nms</artifactId>
-            <version>1.19.3-SNAPSHOT</version>
+            <version>1.19.4-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -177,8 +182,21 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
+                    <artifactSet>
+                        <includes>
+                            <include>com.github.stefvanschie.inventoryframework</include>
+                        </includes>
+                    </artifactSet>
+
                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <relocations>
+                        <relocation>
+                            <pattern>com.github.stefvanschie.inventoryframework</pattern>
+                            <shadedPattern>dev.slne.surf.essentials.inventoryFramework</shadedPattern>
+                        </relocation>
+                    </relocations>
                 </configuration>
+
                 <executions>
                     <execution>
                         <phase>package</phase>

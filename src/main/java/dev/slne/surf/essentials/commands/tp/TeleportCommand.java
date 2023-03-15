@@ -23,7 +23,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_19_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.Collection;
@@ -268,7 +268,7 @@ public class TeleportCommand extends BrigadierCommand {
 
     private boolean isLoaded(Location location){
         ServerLevel level = ((CraftWorld) location.getWorld()).getHandle();
-        return level.isLoaded(new BlockPos(location.getX(), location.getY(), location.getZ()));
+        return level.isLoaded(new BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
     }
 
     private void canSourceSeeEntity(CommandSourceStack source, Entity entity) throws CommandSyntaxException {

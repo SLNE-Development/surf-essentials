@@ -14,6 +14,7 @@ import net.kyori.adventure.nbt.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
@@ -26,7 +27,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_19_R2.CraftWorld;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.metadata.MetadataValue;
@@ -37,12 +39,17 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import static net.kyori.adventure.nbt.BinaryTagIO.Compression.GZIP;
 
 public abstract class EssentialsUtil {
+    private static Component prefix;
+
     /**
      * An array of {@link Sound} objects representing the sounds that can be played to
      * scare the player.
@@ -452,9 +459,20 @@ public abstract class EssentialsUtil {
     }
 
     public static Component getPrefix(){
-        return Component.text(">> ", Colors.DARK_GRAY)
-                .append(gradientify("SurfEssentials", "#46B5C9", "#3A7FF2")
-                .append(Component.text(" | ",Colors.DARK_GRAY)));
+        if (prefix == null) {
+            return Component.text(">> ", Colors.DARK_GRAY)
+                    .append(gradientify("SurfEssentials", "#46B5C9", "#3A7FF2")
+                            .append(Component.text(" | ", Colors.DARK_GRAY)));
+        }
+        return prefix;
+    }
+
+    public static void setPrefix(){
+        FileConfiguration config = SurfEssentials.getInstance().getConfig();
+        String prefixString = config.getString("prefix");
+        if(prefixString == null || prefixString.isBlank() || prefixString.isEmpty()) return;
+
+        prefix = MiniMessage.miniMessage().deserialize(prefixString);
     }
 
     public static void callEvent(@NotNull Event event){

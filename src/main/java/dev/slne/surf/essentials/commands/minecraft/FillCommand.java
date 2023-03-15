@@ -21,6 +21,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Clearable;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -35,8 +36,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 public class FillCommand extends BrigadierCommand {
-    // TODO: Update this with the new gamerule in 1.20
-    private static final int MAX_FILL_AREA = 32768;
     private static final Dynamic2CommandExceptionType ERROR_AREA_TOO_LARGE = new Dynamic2CommandExceptionType((maxCount, count) ->
             Component.translatable("commands.fill.toobig", maxCount, count));
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.fill.failed"));
@@ -121,8 +120,9 @@ public class FillCommand extends BrigadierCommand {
     private int fill(@NotNull CommandSourceStack source, @NotNull BlockPos from, @NotNull BlockPos to, @NotNull BlockInput block, @NotNull Mode fillMode, @Nullable Predicate<BlockInWorld> filter) throws CommandSyntaxException {
         BoundingBox boundingBox = BoundingBox.fromCorners(from, to);
         int totalBlocks = boundingBox.getXSpan() * boundingBox.getYSpan() * boundingBox.getZSpan();
+        int maxFillArea = source.getLevel().getGameRules().getInt(GameRules.RULE_COMMAND_MODIFICATION_BLOCK_LIMIT);
 
-        if (totalBlocks > MAX_FILL_AREA) throw ERROR_AREA_TOO_LARGE.create(MAX_FILL_AREA, totalBlocks);
+        if (totalBlocks > maxFillArea) throw ERROR_AREA_TOO_LARGE.create(maxFillArea, totalBlocks);
 
         List<BlockPos> blockPosList = new ArrayList<>();
         ServerLevel serverLevel = source.getLevel();

@@ -15,7 +15,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.minecraft.commands.CommandSourceStack;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_19_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,6 +36,7 @@ public final class SurfEssentials extends JavaPlugin{
         listeners = new ListenerManager();
         brigadierCommands = new BrigadierCommands();
         permissionManager = new PermissionManager(this);
+        saveDefaultConfig();
     }
 
     @Override
@@ -48,6 +49,7 @@ public final class SurfEssentials extends JavaPlugin{
             throw new UnsupportedServerVersionException("This Serverversion (" + getServer().getMinecraftVersion() +") is not supported by the plugin!");
         }
 
+        EssentialsUtil.setPrefix();
         permissionManager.initializePermissions();
         listeners.registerListeners(this);
         brigadierCommands.register();

@@ -12,8 +12,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
@@ -37,11 +38,11 @@ public class HurtCommand {
         Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         if (source.isPlayer()){
             for (Player target : targets) {
-                target.hurt(DamageSource.playerAttack(source.getPlayerOrException()), amount);
+                target.hurt(new DamageSources(MinecraftServer.getServer().registryAccess()).playerAttack(source.getPlayerOrException()), amount);
             }
         }else {
             for (Player target : targets) {
-                target.hurt(DamageSource.MAGIC, amount);
+                target.hurt(new DamageSources(MinecraftServer.getServer().registryAccess()).magic(), amount);
             }
         }
 

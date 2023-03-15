@@ -34,7 +34,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
-import org.bukkit.craftbukkit.v1_19_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
 public class WorldCommand extends BrigadierCommand {
@@ -175,10 +174,7 @@ public class WorldCommand extends BrigadierCommand {
             EssentialsUtil.sendInfo(source, "Teleportiere Spieler in overworld...");
         }
 
-        level.getPlayers(player -> {
-            player.teleportTo(overworld, overworldSpawn.getX(), overworldSpawn.getY(), overworldSpawn.getZ(), overworld.getSharedSpawnAngle(), 0.0F);
-            return true;
-        });
+        level.players().forEach(serverPlayer -> serverPlayer.teleportTo(overworld, overworldSpawn.getX(), overworldSpawn.getY(), overworldSpawn.getZ(), overworld.getSharedSpawnAngle(), 0.0F));
 
         if (source.isPlayer()){
             EssentialsUtil.sendInfo(source, "Entlade Welt...");
@@ -287,6 +283,7 @@ public class WorldCommand extends BrigadierCommand {
         return 1;
     }
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private int create(CommandSourceStack source, String worldName, Optional<World.Environment> environment, Optional<WorldType> worldType,
                        Optional<Boolean> generateStructures, Optional<Boolean> hardcore, Optional<Long> seed) throws CommandSyntaxException{
 
@@ -296,11 +293,11 @@ public class WorldCommand extends BrigadierCommand {
 
         WorldCreator worldCreator = new WorldCreator(worldName);
 
-        worldCreator.environment(environment.orElse(World.Environment.NORMAL));
-        worldCreator.type(worldType.orElse(WorldType.NORMAL));
-        worldCreator.generateStructures(generateStructures.orElse(true));
-        worldCreator.seed(seed.orElse(new Random().nextLong()));
-        worldCreator.hardcore(hardcore.orElse(false));
+        environment.ifPresent(worldCreator::environment);
+        worldType.ifPresent(worldCreator::type);
+        generateStructures.ifPresent(worldCreator::generateStructures);
+        seed.ifPresent(worldCreator::seed);
+        hardcore.ifPresent(worldCreator::hardcore);
         worldCreator.keepSpawnLoaded(TriState.TRUE);
 
         if (source.isPlayer()){

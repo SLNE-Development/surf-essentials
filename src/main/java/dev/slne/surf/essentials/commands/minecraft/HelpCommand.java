@@ -2,7 +2,6 @@ package dev.slne.surf.essentials.commands.minecraft;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.color.Colors;
@@ -61,7 +60,7 @@ public class HelpCommand extends BrigadierCommand {
 
     }
 
-    private int showCommandHelp(CommandSourceStack source, Command command) throws CommandSyntaxException {
+    private int showCommandHelp(CommandSourceStack source, Command command) {
         ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
 
         builder.append(header()
@@ -88,16 +87,12 @@ public class HelpCommand extends BrigadierCommand {
                     .append(newLine()));
         }
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, builder.build());
-        }else {
-            source.sendSuccess(PaperAdventure.asVanilla(builder.build()), false);
-        }
+        source.sendSuccess(PaperAdventure.asVanilla(builder.build()), false);
 
         return 1;
     }
 
-    private int showPluginHelp(CommandSourceStack source, Plugin plugin, int page) throws CommandSyntaxException {
+    private int showPluginHelp(CommandSourceStack source, Plugin plugin, int page) {
         String[] allCommands = getAllCommandsFromPlugin(source, plugin);
         String[] currentPageCommands = allCommands[page - 1].translateEscapes().split("\n");
         ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
@@ -112,32 +107,26 @@ public class HelpCommand extends BrigadierCommand {
 
         builder.append(newLine());
 
-        if (page != 1){
+        if (page != 1) {
             builder.append(Component.text("⬅ Zurück", Colors.GREEN)
                     .hoverEvent(HoverEvent.showText(Component.text("Gehe eine Seite zurück", Colors.INFO)))
                     .clickEvent(ClickEvent.runCommand("/help %s %d".formatted(plugin.getName(), page - 1)))
                     .append(Component.text("──", Colors.GRAY)));
-        }else {
+        } else {
             builder.append(Component.text("────────", Colors.GRAY));
         }
 
         builder.append(Component.text("───────", Colors.GRAY));
 
-        if (allCommands.length >= page + 1){
+        if (allCommands.length >= page + 1) {
             builder.append(Component.text("➡ Weiter", Colors.GREEN)
                     .hoverEvent(HoverEvent.showText(Component.text("Gehe eine Seite weiter", Colors.INFO)))
                     .clickEvent(ClickEvent.runCommand("/help %s %d".formatted(plugin.getName(), page + 1))));
-        }else {
+        } else {
             builder.append(Component.text("────────", Colors.GRAY));
         }
 
-
-        if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, builder.build());
-        }else {
-            source.sendSuccess(PaperAdventure.asVanilla(builder.build()), false);
-        }
-
+        source.sendSuccess(PaperAdventure.asVanilla(builder.build()), false);
 
         return 1;
     }

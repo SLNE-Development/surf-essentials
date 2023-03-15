@@ -13,7 +13,6 @@ public class SurfEssentialsLoader implements PluginLoader {
     public void classloader(@NotNull PluginClasspathBuilder classpathBuilder) {
         MavenLibraryResolver resolver = new MavenLibraryResolver();
 
-        addDependency(resolver, "com.github.stefvanschie.inventoryframework", "IF", "0.10.8");
         addDependency(resolver, "net.kyori", "adventure-nbt", "4.12.0");
         addDependency(resolver, "io.papermc.paper", "paper-api", "1.19.3-R0.1-SNAPSHOT");
 

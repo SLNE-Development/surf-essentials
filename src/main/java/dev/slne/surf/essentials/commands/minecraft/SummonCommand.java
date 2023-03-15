@@ -61,7 +61,7 @@ public class SummonCommand extends BrigadierCommand {
     }
 
     private int summon(CommandSourceStack source, Holder.Reference<EntityType<?>> entityType, Vec3 pos, CompoundTag compoundTag, boolean initialize)throws CommandSyntaxException {
-        BlockPos blockPos = new BlockPos(pos);
+        BlockPos blockPos = new BlockPos((int) pos.x(), (int) pos.y(), (int) pos.z());
 
         if (!Level.isInSpawnableBounds(blockPos)) throw INVALID_POSITION.create();
 
