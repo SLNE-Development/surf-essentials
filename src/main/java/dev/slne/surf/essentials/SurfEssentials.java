@@ -54,7 +54,7 @@ public final class SurfEssentials extends JavaPlugin{
         listeners.registerListeners(this);
         brigadierCommands.register();
 
-        getLogger().info("The plugin has started successfully!");
+        logger().info(text("The plugin has started successfully!", Colors.INFO));
     }
 
     @Override
@@ -62,7 +62,7 @@ public final class SurfEssentials extends JavaPlugin{
         instance = null;
         MlgTroll.restoreInventoryFromMlgTroll();
         TimerCommand.removeRemainingBossbars();
-        getLogger().info("The plugin has stopped!");
+        logger().info(text("The plugin has stopped!", Colors.INFO));
     }
 
 
@@ -105,7 +105,7 @@ public final class SurfEssentials extends JavaPlugin{
      * Component Logger
      */
     public static @NotNull ComponentLogger logger(){
-        ComponentLogger bootStrapLogger = SurfEssentialsBootstrap.getLogger();
+        var bootStrapLogger = SurfEssentialsBootstrap.getLogger();
         if (bootStrapLogger != null){
             return bootStrapLogger;
         }

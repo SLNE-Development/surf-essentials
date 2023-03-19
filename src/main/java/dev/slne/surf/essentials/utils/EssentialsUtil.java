@@ -5,7 +5,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.color.Colors;
@@ -43,7 +42,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import static net.kyori.adventure.nbt.BinaryTagIO.Compression.GZIP;
 
@@ -142,9 +140,8 @@ public abstract class EssentialsUtil {
      * Suggests all possible color codes to the given {@link SuggestionsBuilder}.
      *
      * @param builder the {@link SuggestionsBuilder} to which the color codes will be added
-     * @return a {@link CompletableFuture} containing the {@link Suggestions}
      */
-    public static CompletableFuture<Suggestions> suggestAllColorCodes(@NotNull SuggestionsBuilder builder) {
+    public static void suggestAllColorCodes(@NotNull SuggestionsBuilder builder) {
         // <editor-fold defaultstate="collapsed" desc="allColorCodes">
         builder.suggest("&0", net.minecraft.network.chat.Component.literal("Black").withStyle(ChatFormatting.BLACK));
         builder.suggest("&2", net.minecraft.network.chat.Component.literal("Dark Green").withStyle(ChatFormatting.DARK_GREEN));
@@ -170,18 +167,17 @@ public abstract class EssentialsUtil {
         builder.suggest("&n", net.minecraft.network.chat.Component.literal("Underline").withStyle(ChatFormatting.UNDERLINE));
         builder.suggest("&r", net.minecraft.network.chat.Component.literal("Reset").withStyle(ChatFormatting.RESET));
         // </editor-fold>
-        return builder.buildFuture();
+        builder.buildFuture();
     }
 
     /**
      * Suggests all possible color codes to the given {@link SuggestionsBuilder} with the {@link StringArgumentType} input.
      *
-     * @param builder the {@link SuggestionsBuilder} to which the color codes will be added
-     * @param context the {@link CommandContext<CommandSourceStack>}
+     * @param builder            the {@link SuggestionsBuilder} to which the color codes will be added
+     * @param context            the {@link CommandContext<CommandSourceStack>}
      * @param stringArgumentType the {@link StringArgumentType} from the current argument
-     * @return a {@link CompletableFuture} containing the {@link Suggestions}
      */
-    public static CompletableFuture<Suggestions> suggestAllColorCodes(@NotNull SuggestionsBuilder builder, @NotNull CommandContext<CommandSourceStack> context, @NotNull String stringArgumentType) {
+    public static void suggestAllColorCodes(@NotNull SuggestionsBuilder builder, @NotNull CommandContext<CommandSourceStack> context, @NotNull String stringArgumentType) {
         String input;
         try {
             input = context.getArgument(stringArgumentType, String.class);
@@ -214,7 +210,7 @@ public abstract class EssentialsUtil {
         builder.suggest("\"" + input + "&n", net.minecraft.network.chat.Component.literal("Underline").withStyle(ChatFormatting.UNDERLINE));
         builder.suggest("\"" + input + "&r", net.minecraft.network.chat.Component.literal("Reset").withStyle(ChatFormatting.RESET));
         // </editor-fold>
-        return builder.buildFuture();
+        builder.buildFuture();
     }
 
     /**
@@ -453,7 +449,7 @@ public abstract class EssentialsUtil {
         try {
             Class.forName(CraftWorld.class.getName());
             return true;
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
             return false;
         }
     }

@@ -61,26 +61,27 @@ public class DamageCommand extends BrigadierCommand {
                                                 .executes(context -> damage(context.getSource(), EntityArgument.getEntity(context, "target"),
                                                         FloatArgumentType.getFloat(context, "amount"),
                                                         new DamageSource(ResourceArgument.getResource(context, "damageType", Registries.DAMAGE_TYPE),
-                                                                EntityArgument.getEntity(context, "entity"))))))
-                                .then(Commands.literal("from")
-                                        .then(Commands.argument("cause", EntityArgument.entity())
-                                                .executes(context -> damage(context.getSource(), EntityArgument.getEntity(context, "target"),
-                                                        FloatArgumentType.getFloat(context, "amount"),
-                                                        new DamageSource(ResourceArgument.getResource(context, "damageType", Registries.DAMAGE_TYPE),
-                                                                EntityArgument.getEntity(context, "entity"), EntityArgument.getEntity(context, "cause")))))))));
+                                                                EntityArgument.getEntity(context, "entity"))))
+                                                .then(Commands.literal("from")
+                                                        .then(Commands.argument("cause", EntityArgument.entity())
+                                                                .executes(context -> damage(context.getSource(), EntityArgument.getEntity(context, "target"),
+                                                                        FloatArgumentType.getFloat(context, "amount"),
+                                                                        new DamageSource(ResourceArgument.getResource(context, "damageType", Registries.DAMAGE_TYPE),
+                                                                                EntityArgument.getEntity(context, "entity"), EntityArgument.getEntity(context, "cause")))))))))));
     }
 
     private static int damage(CommandSourceStack source, Entity target, float amount, DamageSource damageSource) throws CommandSyntaxException {
-        if (!target.hurt(damageSource, amount)) throw ERROR_INVULNERABLE.create();
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, PaperAdventure.asAdventure(target.getDisplayName()).colorIfAbsent(Colors.TERTIARY)
-                    .append(net.kyori.adventure.text.Component.text(" wurde ", Colors.SUCCESS))
-                    .append(net.kyori.adventure.text.Component.text(amount, Colors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(" verletzt.", Colors.SUCCESS)));
-        }else {
-            source.sendSuccess(Component.translatable("commands.damage.success", amount, target.getDisplayName()), false);
-        }
-        return 1;
+        if (target.hurt(damageSource, amount)){
+            if (source.isPlayer()){
+                EssentialsUtil.sendSuccess(source, PaperAdventure.asAdventure(target.getDisplayName()).colorIfAbsent(Colors.TERTIARY)
+                        .append(net.kyori.adventure.text.Component.text(" wurde ", Colors.SUCCESS))
+                        .append(net.kyori.adventure.text.Component.text(amount, Colors.TERTIARY))
+                        .append(net.kyori.adventure.text.Component.text(" verletzt.", Colors.SUCCESS)));
+            }else {
+                source.sendSuccess(Component.translatable("commands.damage.success", amount, target.getDisplayName()), false);
+            }
+            return 1;
+        }else throw ERROR_INVULNERABLE.create();
     }
 
     private static final SimpleCommandExceptionType ERROR_INVULNERABLE = new SimpleCommandExceptionType(Component.translatable("commands.damage.invulnerable"));

@@ -42,8 +42,9 @@ public class FlyCommand {
 
         for (ServerPlayer target : targets) {
             if (toggle) {
-                target.getBukkitEntity().setAllowFlight(!target.getBukkitEntity().getAllowFlight());
-                target.getBukkitEntity().setFlying(!target.getBukkitEntity().isFlying());
+                var shouldFly = target.getBukkitEntity().getAllowFlight();
+                target.getBukkitEntity().setAllowFlight(!shouldFly);
+                target.getBukkitEntity().setFlying(!shouldFly);
             } else {
                 target.getBukkitEntity().setAllowFlight(allowFly);
                 target.getBukkitEntity().setFlying(allowFly);

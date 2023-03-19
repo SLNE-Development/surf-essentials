@@ -27,11 +27,7 @@ public final class PluginBrigadierCommand extends Command implements PluginIdent
     private final Consumer<LiteralArgumentBuilder<CommandSourceStack>> command;
     private final Plugin plugin;
 
-    public PluginBrigadierCommand(
-            final Plugin plugin,
-            final String name,
-            final Consumer<LiteralArgumentBuilder<CommandSourceStack>> command
-    ) {
+    public PluginBrigadierCommand(final Plugin plugin, final String name, final Consumer<LiteralArgumentBuilder<CommandSourceStack>> command) {
         super(name);
         this.plugin = plugin;
         this.command = command;
@@ -50,7 +46,7 @@ public final class PluginBrigadierCommand extends Command implements PluginIdent
     }
 
     @Override
-    public List<String> tabComplete(final CommandSender sender, final String alias, final String[] args, final @Nullable Location location){
+    public @NotNull List<String> tabComplete(final CommandSender sender, final String alias, final String[] args, final @Nullable Location location){
         final String joined = String.join(" ", args);
         final String argsString = joined.isBlank() ? "" : joined;
         final CommandDispatcher<CommandSourceStack> dispatcher = ((CraftServer) Bukkit.getServer()).getServer().getCommands().getDispatcher();
