@@ -6,6 +6,8 @@ import dev.slne.surf.essentials.commands.minecraft.HelpCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import io.papermc.paper.adventure.PaperAdventure;
+import net.kyori.adventure.text.ComponentBuilder;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.ChatFormatting;
@@ -28,7 +30,22 @@ public class CommandRegisterListener implements Listener {
 
     @EventHandler
     public void onUnknownCommand(UnknownCommandEvent event) {
-        if (event.message() != null && !LegacyComponentSerializer.builder().build().serialize(event.message()).equalsIgnoreCase("Unknown command. Type \"/help\" for help.")) return;
+        if (event.message() != null && !LegacyComponentSerializer.builder().build().serialize(event.message()).equalsIgnoreCase("Unknown command. Type \"/help\" for help.")){
+            String[] lines = LegacyComponentSerializer.legacySection().serialize(event.message()).split("\\n");
+            ComponentBuilder<TextComponent, TextComponent.Builder> builder = net.kyori.adventure.text.Component.text();
+
+            if (lines[0] == null) return;
+            builder.append(EssentialsUtil.getPrefix().append(LegacyComponentSerializer.legacySection().deserialize(lines[0])
+                    .colorIfAbsent(Colors.GRAY)));
+
+            for (int i = 1; i < lines.length; i++) {
+                builder.append(net.kyori.adventure.text.Component.newline()
+                        .append(EssentialsUtil.getPrefix().append(LegacyComponentSerializer.legacySection().deserialize(lines[i]))
+                                .colorIfAbsent(Colors.GRAY)));
+            }
+            event.message(builder.build());
+            return;
+        }
 
         event.message(EssentialsUtil.getPrefix()
                 .append(PaperAdventure.asAdventure(Component.translatable("command.unknown.command")
@@ -39,4 +56,6 @@ public class CommandRegisterListener implements Listener {
                         .clickEvent(ClickEvent.suggestCommand("/%s".formatted(event.getCommandLine()))))
                 .append(PaperAdventure.asAdventure(Component.translatable("command.context.here").withStyle(ChatFormatting.RED))));
     }
+
+
 }
