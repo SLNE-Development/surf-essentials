@@ -21,8 +21,7 @@ import java.util.Collection;
 
 public class HurtCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("hurt", HurtCommand::literal).setUsage("/hurt <players> <damage>")
-                .setDescription("Hurts the targets with the given amount of damage");
+        SurfEssentials.registerPluginBrigadierCommand("hurt", HurtCommand::literal);
     }
 
     public static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

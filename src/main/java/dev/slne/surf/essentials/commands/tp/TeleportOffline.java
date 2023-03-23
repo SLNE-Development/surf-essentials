@@ -34,7 +34,7 @@ public class TeleportOffline {
     public static final SimpleCommandExceptionType NO_PLAYERS_FOUND = new SimpleCommandExceptionType(net.minecraft.network.chat.Component.translatable("argument.entity.notfound.player"));
 
     public TeleportOffline() {
-        SurfEssentials.registerPluginBrigadierCommand("tpoff", this::literal).setUsage("/tpoff <player> [<location>]");
+        SurfEssentials.registerPluginBrigadierCommand("tpoff", this::literal);
     }
 
     private void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

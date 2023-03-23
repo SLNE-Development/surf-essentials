@@ -19,10 +19,8 @@ import java.util.Collection;
 
 public class ExperienceCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("experience", ExperienceCommand::literal).setUsage("/experience <query | add  set>")
-                .setDescription("Query, add or set the experience of the targets");
-        SurfEssentials.registerPluginBrigadierCommand("xp", ExperienceCommand::literal).setUsage("/experience <query | add  set>")
-                .setDescription("Query, add or set the experience of the targets");
+        SurfEssentials.registerPluginBrigadierCommand("experience", ExperienceCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("xp", ExperienceCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

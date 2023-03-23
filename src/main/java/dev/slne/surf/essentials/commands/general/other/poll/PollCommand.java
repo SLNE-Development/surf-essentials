@@ -37,8 +37,7 @@ public class PollCommand {
     private static final Component line = Component.newline().append(EssentialsUtil.getPrefix());
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("poll", PollCommand::literal).setUsage("/poll <create | list | end | remove>")
-                .setDescription("Manage polls");
+        SurfEssentials.registerPluginBrigadierCommand("poll", PollCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

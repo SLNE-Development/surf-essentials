@@ -18,8 +18,7 @@ import java.util.Collection;
 
 public class KillCommand {
     public static void register() {
-        SurfEssentials.registerPluginBrigadierCommand("kill", KillCommand::literal).setUsage("/kill [<targets>]")
-                .setDescription("Kills the sender or the targets");
+        SurfEssentials.registerPluginBrigadierCommand("kill", KillCommand::literal);
     }
 
     /**

@@ -17,8 +17,7 @@ import net.minecraft.world.Difficulty;
 
 public class DifficultyCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("difficulty", DifficultyCommand::literal).setUsage("/difficulty [<difficulty>]")
-                .setDescription("Query or set a level difficulty");
+        SurfEssentials.registerPluginBrigadierCommand("difficulty", DifficultyCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

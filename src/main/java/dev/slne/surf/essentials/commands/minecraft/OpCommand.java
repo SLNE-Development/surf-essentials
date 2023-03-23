@@ -21,8 +21,7 @@ import java.util.Collection;
 
 public class OpCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("op", OpCommand::literal).setUsage("/op <player>")
-                .setDescription("Makes the player a Serveroperator");
+        SurfEssentials.registerPluginBrigadierCommand("op", OpCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {

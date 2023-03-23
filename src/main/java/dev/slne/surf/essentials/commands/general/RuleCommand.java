@@ -21,8 +21,7 @@ import java.util.Collections;
 public class RuleCommand {
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("rule", RuleCommand::literal).setUsage("/rule [<players>]")
-                .setDescription("Sends you or the targets the server rules");
+        SurfEssentials.registerPluginBrigadierCommand("rule", RuleCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

@@ -17,10 +17,8 @@ import java.text.DecimalFormat;
 
 public class GetPosCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("getpos", GetPosCommand::literal).setUsage("/getpos [<player>]")
-                .setDescription("Gets the position from the target");
-        SurfEssentials.registerPluginBrigadierCommand("position", GetPosCommand::literal).setUsage("/getpos [<player>]")
-                .setDescription("Gets the position from the target");
+        SurfEssentials.registerPluginBrigadierCommand("getpos", GetPosCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("position", GetPosCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

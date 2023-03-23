@@ -19,8 +19,7 @@ import java.util.Collection;
 
 public class StonecutterCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("stonecutter", StonecutterCommand::literal).setUsage("/stonecutter [<players>]")
-                .setDescription("Opens the stonecutter gui for the targets");
+        SurfEssentials.registerPluginBrigadierCommand("stonecutter", StonecutterCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

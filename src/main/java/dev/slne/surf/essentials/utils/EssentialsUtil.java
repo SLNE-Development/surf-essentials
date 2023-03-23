@@ -1,11 +1,13 @@
 package dev.slne.surf.essentials.utils;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.mojang.brigadier.tree.RootCommandNode;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.color.Colors;
 import io.papermc.paper.adventure.PaperAdventure;
@@ -27,6 +29,7 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -42,6 +45,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static net.kyori.adventure.nbt.BinaryTagIO.Compression.GZIP;
 
@@ -473,5 +477,24 @@ public abstract class EssentialsUtil {
 
     public static void callEvent(@NotNull Event event){
         SurfEssentials.getInstance().getServer().getPluginManager().callEvent(event);
+    }
+
+    public static CommandDispatcher<CommandSourceStack> getDispatcher(){
+        return SurfEssentials.getMinecraftServer().getCommands().getDispatcher();
+    }
+
+    public static RootCommandNode<CommandSourceStack> getRoot(){
+        return getDispatcher().getRoot();
+    }
+    public static <T extends String> void unregisterDispatcherCommand(T name){
+        getRoot().removeCommand(name);
+    }
+    public static <T> T make(T object, Consumer<T> initializer) {
+        initializer.accept(object);
+        return object;
+    }
+
+    public static void syncCommands(){
+        ((CraftServer)Bukkit.getServer()).syncCommands();
     }
 }

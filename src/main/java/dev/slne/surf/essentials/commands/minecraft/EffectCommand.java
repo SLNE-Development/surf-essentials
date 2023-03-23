@@ -32,8 +32,7 @@ import java.util.Collection;
 
 public class EffectCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("effect", EffectCommand::literal).setUsage("/effect <give | clear>")
-                .setDescription("Give or clear the effects of the entities");
+        SurfEssentials.registerPluginBrigadierCommand("effect", EffectCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

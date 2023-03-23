@@ -26,8 +26,7 @@ import java.util.Collection;
 
 public class GiveCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("give", GiveCommand::literal).setUsage("/give <targets> <item> [<amount>]")
-                .setDescription("Gives the targets the specified item");
+        SurfEssentials.registerPluginBrigadierCommand("give", GiveCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

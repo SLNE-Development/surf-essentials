@@ -19,8 +19,7 @@ import java.util.Collection;
 
 public class WorkbenchCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("workbench", WorkbenchCommand::literal).setUsage("/workbench [<players>]")
-                .setDescription("Opens the workbench gui for the targets");
+        SurfEssentials.registerPluginBrigadierCommand("workbench", WorkbenchCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

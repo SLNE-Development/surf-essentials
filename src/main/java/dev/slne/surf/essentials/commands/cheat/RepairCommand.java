@@ -19,8 +19,7 @@ import net.minecraft.world.item.ItemStack;
 public class RepairCommand {
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("repair", RepairCommand::literal).setUsage("/repair [<player>]")
-                .setDescription("the player's item is repaired");
+        SurfEssentials.registerPluginBrigadierCommand("repair", RepairCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

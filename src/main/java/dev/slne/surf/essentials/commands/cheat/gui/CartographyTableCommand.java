@@ -19,8 +19,7 @@ import java.util.Collection;
 
 public class CartographyTableCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("cartographytable", CartographyTableCommand::literal).setUsage("/cartographytable [<players>]")
-                .setDescription("Opens the cartographytable gui for the targets");
+        SurfEssentials.registerPluginBrigadierCommand("cartographytable", CartographyTableCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

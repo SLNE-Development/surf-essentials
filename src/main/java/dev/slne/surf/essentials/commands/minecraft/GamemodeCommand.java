@@ -32,8 +32,7 @@ import static net.kyori.adventure.nbt.BinaryTagIO.Compression.GZIP;
 public class GamemodeCommand {
 
     public static void register() {
-        SurfEssentials.registerPluginBrigadierCommand("gamemode", GamemodeCommand::literal).setDescription("Change the gamemode of players")
-                .setUsage("/gamemode <gamemode> [<players> | offline] [<offlinePlayer>]");
+        SurfEssentials.registerPluginBrigadierCommand("gamemode", GamemodeCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {

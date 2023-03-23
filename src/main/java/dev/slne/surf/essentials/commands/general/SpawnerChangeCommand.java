@@ -30,8 +30,7 @@ import java.util.Objects;
 public class SpawnerChangeCommand{
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("spawner", SpawnerChangeCommand::literal).setUsage("/spawner [<location>] [<entity>] [<minSpawnDelay>] [<maxSpawnDelay>] [<spawnRange>] [<requiredPlayerRange>]")
-                .setDescription("Allows you to change the type, speed, radius, etc. of a spawner.");
+        SurfEssentials.registerPluginBrigadierCommand("spawner", SpawnerChangeCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {

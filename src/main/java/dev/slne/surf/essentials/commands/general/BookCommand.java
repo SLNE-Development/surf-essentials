@@ -24,8 +24,7 @@ import org.jetbrains.annotations.NotNull;
 public class BookCommand {
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("book", BookCommand::literal).setUsage("/book [title|author <name>]")
-                .setDescription("Allows reopening and editing of sealed books.");
+        SurfEssentials.registerPluginBrigadierCommand("book", BookCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

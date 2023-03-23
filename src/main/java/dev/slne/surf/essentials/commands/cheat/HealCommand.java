@@ -19,8 +19,7 @@ import java.util.Collections;
 public class HealCommand {
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("heal", HealCommand::literal).setUsage("/heal [<players>]")
-                .setDescription("heals the targets");
+        SurfEssentials.registerPluginBrigadierCommand("heal", HealCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {

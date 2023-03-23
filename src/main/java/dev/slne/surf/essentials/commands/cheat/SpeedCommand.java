@@ -17,8 +17,7 @@ import org.bukkit.entity.Player;
 public class SpeedCommand {
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("speed", SpeedCommand::literal).setUsage("/speed [<target>]")
-                .setDescription("changes the walk and fly speed of the target");
+        SurfEssentials.registerPluginBrigadierCommand("speed", SpeedCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

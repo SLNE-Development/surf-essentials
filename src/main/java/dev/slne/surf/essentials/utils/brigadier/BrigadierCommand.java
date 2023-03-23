@@ -8,8 +8,7 @@ public abstract class BrigadierCommand {
 
     public BrigadierCommand(){
         for (String name : names()) {
-            SurfEssentials.registerPluginBrigadierCommand(name, this::literal).setUsage(usage())
-                    .setDescription(description());
+            SurfEssentials.registerPluginBrigadierCommand(name, this::literal);
         }
     }
 

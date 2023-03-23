@@ -18,10 +18,8 @@ import java.util.Collections;
 public class GodmodeCommand {
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("godmode", GodmodeCommand::literal).setUsage("/godmode [<enable | disable>] [<players>]")
-                .setDescription("makes the targets invulnerable");
-        SurfEssentials.registerPluginBrigadierCommand("god", GodmodeCommand::literal).setUsage("/godmode [<enable | disable>] [<players>]")
-                .setDescription("makes the targets invulnerable");
+        SurfEssentials.registerPluginBrigadierCommand("godmode", GodmodeCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("god", GodmodeCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {

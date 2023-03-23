@@ -19,10 +19,8 @@ import java.util.Collection;
 
 public class SmithingTableCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("smithingtable", SmithingTableCommand::literal).setUsage("/smithingtable [<targets>]")
-                .setDescription("Opens the smithingtable gui for the targets");
-        SurfEssentials.registerPluginBrigadierCommand("smithing", SmithingTableCommand::literal).setUsage("/smithingtable [<targets>]")
-                .setDescription("Opens the smithingtable gui for the targets");
+        SurfEssentials.registerPluginBrigadierCommand("smithingtable", SmithingTableCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("smithing", SmithingTableCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

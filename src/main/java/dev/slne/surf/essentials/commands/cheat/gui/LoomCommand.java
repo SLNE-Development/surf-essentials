@@ -19,8 +19,7 @@ import java.util.Collection;
 
 public class LoomCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("loom", LoomCommand::literal).setUsage("/loom [<targets]")
-                .setDescription("Opens the loom gui for the targets");
+        SurfEssentials.registerPluginBrigadierCommand("loom", LoomCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

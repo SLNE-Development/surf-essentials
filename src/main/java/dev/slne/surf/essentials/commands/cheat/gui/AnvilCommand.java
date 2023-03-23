@@ -19,8 +19,7 @@ import java.util.Collection;
 
 public class AnvilCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("anvil", AnvilCommand::literal).setUsage("/anvil [<targets>]")
-                .setDescription("Opens the anvil gui for the targets");
+        SurfEssentials.registerPluginBrigadierCommand("anvil", AnvilCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

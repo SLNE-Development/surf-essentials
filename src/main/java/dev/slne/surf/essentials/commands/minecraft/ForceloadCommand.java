@@ -34,8 +34,7 @@ import java.util.List;
 
 public class ForceloadCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("forceload", ForceloadCommand::literal).setUsage("/forceload <query | add | remove>")
-                .setDescription("Query, add or remove force loaded chunks");
+        SurfEssentials.registerPluginBrigadierCommand("forceload", ForceloadCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

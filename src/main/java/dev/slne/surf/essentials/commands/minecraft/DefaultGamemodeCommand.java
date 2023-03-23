@@ -25,8 +25,7 @@ import java.util.Iterator;
 @DefaultQualifier(NotNull.class)
 public class DefaultGamemodeCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("defaultgamemode", DefaultGamemodeCommand::literal).setUsage("/defaultgamemode [<gamemode>]")
-                .setDescription("Set or query the default game mode");
+        SurfEssentials.registerPluginBrigadierCommand("defaultgamemode", DefaultGamemodeCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

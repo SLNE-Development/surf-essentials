@@ -28,8 +28,7 @@ import java.util.Collection;
 public class TitlebroadcastCommand {
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("titlebroadcast", TitlebroadcastCommand::literal).setUsage("/titlebroadcast <players> <title> [<subtitle>] [<fadeIn in ticks>] [<stay in ticks>] [fadeOut in ticks]")
-                .setDescription("Broadcast a title to the targets");
+        SurfEssentials.registerPluginBrigadierCommand("titlebroadcast", TitlebroadcastCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

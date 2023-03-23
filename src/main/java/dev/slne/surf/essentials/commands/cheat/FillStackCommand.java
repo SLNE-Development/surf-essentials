@@ -19,8 +19,7 @@ import net.minecraft.world.item.ItemStack;
 public class FillStackCommand{
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("more", FillStackCommand::literal).setUsage("/more [<player>]")
-                .setDescription("Fills the item stack in hand to maximum size.");
+        SurfEssentials.registerPluginBrigadierCommand("more", FillStackCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

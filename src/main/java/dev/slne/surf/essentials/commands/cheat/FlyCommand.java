@@ -18,8 +18,7 @@ import java.util.Collections;
 public class FlyCommand {
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("fly", FlyCommand::literal).setUsage("/fly [<players>] [<enable | disable>]")
-                .setDescription("Toggles the fly mode for the targets");
+        SurfEssentials.registerPluginBrigadierCommand("fly", FlyCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

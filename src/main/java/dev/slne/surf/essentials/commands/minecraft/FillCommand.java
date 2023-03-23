@@ -110,6 +110,11 @@ public class FillCommand extends BrigadierCommand {
                                                         BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                         Mode.DESTROY, BlockPredicateArgument.getBlockPredicate(context, "filter")))))
 
+                                .then(Commands.literal("keep")
+                                        .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
+                                                BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
+                                                Mode.REPLACE, blockInWorld -> blockInWorld.getLevel().isEmptyBlock(blockInWorld.getPos()))))
+
                                 .then(Commands.literal("filter")
                                         .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
                                                 .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),

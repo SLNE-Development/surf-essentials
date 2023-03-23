@@ -8,7 +8,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.commands.general.other.troll.gui.Boarders;
 import dev.slne.surf.essentials.commands.general.other.troll.gui.TrollGuiItems;
-import dev.slne.surf.essentials.commands.general.other.troll.listener.TrollListener;
 import dev.slne.surf.essentials.commands.general.other.troll.trolls.*;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
@@ -21,8 +20,6 @@ import org.jetbrains.annotations.NotNull;
 public class TrollManager{
     public static void register(){
         SurfEssentials.registerPluginBrigadierCommand("troll", TrollManager::literal);
-        //Listener
-        TrollListener.register();
     }
 
     private static void literal(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){

@@ -26,8 +26,7 @@ public class BroadcastWorldCommand {
         Set<String> aliases = new HashSet<>(Arrays.asList("worldbroadcast", "worldalert", "broadcastworld"));
         // Register the commands
         for (String command : aliases) {
-            SurfEssentials.registerPluginBrigadierCommand(command, BroadcastWorldCommand::literal).setUsage("/broadcastworld <world> <broadcast message (supports color codes)>")
-                    .setDescription("Broadcasts a message to all players in a certain world");
+            SurfEssentials.registerPluginBrigadierCommand(command, BroadcastWorldCommand::literal);
         }
     }
 

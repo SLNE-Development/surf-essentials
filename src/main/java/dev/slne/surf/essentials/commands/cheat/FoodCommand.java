@@ -19,8 +19,7 @@ import java.util.Collections;
 public class FoodCommand {
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("feed", FoodCommand::literal).setUsage("/feed [<players>]")
-                .setDescription("feeds the players");
+        SurfEssentials.registerPluginBrigadierCommand("feed", FoodCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

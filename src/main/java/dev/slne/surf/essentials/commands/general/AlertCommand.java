@@ -20,8 +20,7 @@ public class AlertCommand{
 
     public static void register(){
         for (String alias : aliases) {
-            SurfEssentials.registerPluginBrigadierCommand(alias, AlertCommand::literal).setUsage("/alert <message>")
-                    .setDescription("Sends a message to all online players");
+            SurfEssentials.registerPluginBrigadierCommand(alias, AlertCommand::literal);
         }
     }
 

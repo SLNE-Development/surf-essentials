@@ -31,8 +31,7 @@ import java.util.Objects;
 @DefaultQualifier(NotNull.class)
 public class ParticleCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("particle", ParticleCommand::literal).setUsage("/particle <name> [<position>] [<delta>] [<speed>] [<amount>] [<force | normal>] [<viewers>]")
-                .setDescription("Creates particles");
+        SurfEssentials.registerPluginBrigadierCommand("particle", ParticleCommand::literal);
     }
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.PARTICLE_PERMISSION));

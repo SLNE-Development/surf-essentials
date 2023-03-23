@@ -7,15 +7,15 @@ import dev.slne.surf.essentials.commands.general.other.troll.trolls.MlgTroll;
 import dev.slne.surf.essentials.exceptions.UnsupportedServerVersionException;
 import dev.slne.surf.essentials.listeners.ListenerManager;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.brigadier.PluginBrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.RecodedCommands;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.PermissionManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.MinecraftServer;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,15 +27,19 @@ import static net.kyori.adventure.text.Component.text;
 public final class SurfEssentials extends JavaPlugin{
 
     private static SurfEssentials instance;
-    ListenerManager listeners;
-    BrigadierCommands brigadierCommands;
-    PermissionManager permissionManager;
+    private ListenerManager listeners;
+    private RecodedCommands recodedCommands;
+    private BrigadierCommands brigadierCommands;
+    private PermissionManager permissionManager;
+    private static MinecraftServer minecraftServer;
 
     @Override
     public void onLoad() {
         listeners = new ListenerManager();
+        recodedCommands = new RecodedCommands();
         brigadierCommands = new BrigadierCommands();
         permissionManager = new PermissionManager(this);
+        minecraftServer = MinecraftServer.getServer();
         saveDefaultConfig();
     }
 
@@ -52,9 +56,15 @@ public final class SurfEssentials extends JavaPlugin{
         EssentialsUtil.setPrefix();
         permissionManager.initializePermissions();
         listeners.registerListeners(this);
+        recodedCommands.unregisterVanillaCommands();
         brigadierCommands.register();
 
         logger().info(text("The plugin has started successfully!", Colors.INFO));
+
+        getServer().getScheduler().runTask(this, () -> {
+            logger().info(text("Running delayed tasks...", Colors.INFO));
+            EssentialsUtil.syncCommands();
+        });
     }
 
     @Override
@@ -112,10 +122,13 @@ public final class SurfEssentials extends JavaPlugin{
         return instance.getComponentLogger();
     }
 
-    public static @NotNull PluginBrigadierCommand registerPluginBrigadierCommand(final String label, final Consumer<LiteralArgumentBuilder<CommandSourceStack>> command) {
-        final PluginBrigadierCommand pluginBrigadierCommand = new PluginBrigadierCommand(instance, label, command);
-        instance.getServer().getCommandMap().register(instance.getName(), pluginBrigadierCommand);
-        ((CraftServer) instance.getServer()).syncCommands();
-        return pluginBrigadierCommand;
+    public static MinecraftServer getMinecraftServer() {
+        return minecraftServer;
+    }
+
+    public static void registerPluginBrigadierCommand(final String label, final Consumer<LiteralArgumentBuilder<CommandSourceStack>> command) {
+        var builder = LiteralArgumentBuilder.<CommandSourceStack>literal(label);
+        command.accept(builder);
+        EssentialsUtil.getDispatcher().register(builder);
     }
 }

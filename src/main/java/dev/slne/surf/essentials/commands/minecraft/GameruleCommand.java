@@ -16,8 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public class GameruleCommand {
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("gamerule", GameruleCommand::literal).setDescription("Change the server gamerules")
-                .setUsage("/gamerule <gamerule> [<value>]");
+        SurfEssentials.registerPluginBrigadierCommand("gamerule", GameruleCommand::literal);
     }
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GAMERULE_PERMISSION));

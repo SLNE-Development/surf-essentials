@@ -11,8 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class SuicideCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("suicide", SuicideCommand::literal).setUsage("/suicide")
-                .setDescription("Makes you commit suicide");
+        SurfEssentials.registerPluginBrigadierCommand("suicide", SuicideCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

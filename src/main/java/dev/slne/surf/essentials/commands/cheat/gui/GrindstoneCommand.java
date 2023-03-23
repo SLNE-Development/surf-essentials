@@ -19,8 +19,7 @@ import java.util.Collection;
 
 public class GrindstoneCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("grindstone", GrindstoneCommand::literal).setUsage("/grindstone [<players>]")
-                .setDescription("Opens the grindstone gui for the targets");
+        SurfEssentials.registerPluginBrigadierCommand("grindstone", GrindstoneCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

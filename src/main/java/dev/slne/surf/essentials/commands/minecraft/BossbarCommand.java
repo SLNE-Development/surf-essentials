@@ -46,8 +46,7 @@ public class BossbarCommand {
      * Registers the bossbar command.
      */
     public static void register() {
-        SurfEssentials.registerPluginBrigadierCommand("bossbar", BossbarCommand::literal).setUsage("/bossbar <add | get | remove | list | set>")
-                .setDescription("Change, list or create a bossbar");
+        SurfEssentials.registerPluginBrigadierCommand("bossbar", BossbarCommand::literal);
     }
 
     /**

@@ -26,8 +26,7 @@ import java.util.Collection;
 
 public class ActionbarBroadcast {
     public ActionbarBroadcast(){
-        SurfEssentials.registerPluginBrigadierCommand("actionbarbroadcast", this::literal).setUsage("/actionbarbroadcast <players> <actionbar> [<stay in ticks>] [fadeOut in ticks]")
-                .setDescription("Broadcast a text in the action bar to the targets");
+        SurfEssentials.registerPluginBrigadierCommand("actionbarbroadcast", this::literal);
     }
 
 

@@ -20,10 +20,8 @@ import java.util.UUID;
 public class InfoCommand{
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("information", InfoCommand::literal).setUsage("/information <player>")
-                .setUsage("Get some information about the player");
-        SurfEssentials.registerPluginBrigadierCommand("info", InfoCommand::literal).setUsage("/information <player>")
-                .setUsage("Get some information about the player");
+        SurfEssentials.registerPluginBrigadierCommand("information", InfoCommand::literal);
+        SurfEssentials.registerPluginBrigadierCommand("info", InfoCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

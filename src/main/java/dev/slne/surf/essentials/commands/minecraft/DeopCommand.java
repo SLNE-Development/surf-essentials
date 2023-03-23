@@ -21,8 +21,7 @@ import java.util.Collection;
 
 public class DeopCommand {
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("deop", DeopCommand::literal).setUsage("/deop <player>")
-                .setDescription("Deop a player");
+        SurfEssentials.registerPluginBrigadierCommand("deop", DeopCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

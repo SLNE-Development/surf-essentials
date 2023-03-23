@@ -28,8 +28,7 @@ import java.util.Iterator;
 public class TimeCommand{
 
     public static void register() {
-        SurfEssentials.registerPluginBrigadierCommand("time", TimeCommand::literal).setUsage("/time [<set | add]")
-                .setDescription("Get set or add time in time in the current world");
+        SurfEssentials.registerPluginBrigadierCommand("time", TimeCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {

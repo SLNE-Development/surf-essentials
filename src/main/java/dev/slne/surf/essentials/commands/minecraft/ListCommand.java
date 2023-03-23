@@ -27,8 +27,7 @@ import java.util.stream.Collectors;
 public class ListCommand {
     public static void register(){
         // Register the  command
-        SurfEssentials.registerPluginBrigadierCommand("list", ListCommand::literal).setUsage("/list [<uuids>]")
-                .setDescription("Lists all visible online players and if specified with their uuid");
+        SurfEssentials.registerPluginBrigadierCommand("list", ListCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {

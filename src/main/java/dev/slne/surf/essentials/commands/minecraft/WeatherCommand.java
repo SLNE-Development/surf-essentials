@@ -16,8 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 public class WeatherCommand {
 
     public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("weather", WeatherCommand::literal).setUsage("/weather [<clear | rain | thunder>]")
-                .setDescription("Change or get the current weather");
+        SurfEssentials.registerPluginBrigadierCommand("weather", WeatherCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){

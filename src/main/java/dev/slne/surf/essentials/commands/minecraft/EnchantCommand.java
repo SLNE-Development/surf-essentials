@@ -30,8 +30,7 @@ import java.util.Collection;
 public class EnchantCommand {
 
     public static void register() {
-        SurfEssentials.registerPluginBrigadierCommand("enchant", EnchantCommand::literal).setUsage("/enchant <targets> <enchantment> [<level>]")
-                .setDescription("Enchant the items of the targets");
+        SurfEssentials.registerPluginBrigadierCommand("enchant", EnchantCommand::literal);
     }
 
     private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
