@@ -39,9 +39,7 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class WorldCommand extends BrigadierCommand {
@@ -85,7 +83,7 @@ public class WorldCommand extends BrigadierCommand {
         literal.then(Commands.literal("remove")
                         .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.WORLD_REMOVE_PERMISSION))
                 .then(Commands.argument("world", StringArgumentType.greedyString())
-                        .suggests(this::offlineWorldSuggestions)
+                        .suggests(this::allWorldsSuggestions)
                         .executes(context -> remove(context.getSource(), StringArgumentType.getString(context, "world")))));
 
         literal.then(Commands.literal("load")
@@ -199,7 +197,7 @@ public class WorldCommand extends BrigadierCommand {
         ServerLevel overworld = source.getServer().overworld();
         File file = new File(Bukkit.getServer().getWorldContainer(), levelName);
 
-        if (!file.exists()) throw ERROR_FILE_NOT_EXISTS.create(file.getName());
+        if (!worlds().contains(levelName)) throw ERROR_FILE_NOT_EXISTS.create(levelName);
 
         if (world != null){
             if (world == overworld.getWorld() || ((CraftWorld) world).getHandle().dimension() == Level.NETHER || ((CraftWorld) world).getHandle().dimension() == Level.END){
@@ -216,7 +214,7 @@ public class WorldCommand extends BrigadierCommand {
         }
 
         if (source.isPlayer()){
-            EssentialsUtil.sendInfo(source, "Lösche Dateien");
+            EssentialsUtil.sendInfo(source, "Lösche Dateien...");
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(SurfEssentials.getInstance(), bukkitTask -> {
@@ -287,8 +285,8 @@ public class WorldCommand extends BrigadierCommand {
     private int create(CommandSourceStack source, String worldName, Optional<World.Environment> environment, Optional<WorldType> worldType,
                        Optional<Boolean> generateStructures, Optional<Boolean> hardcore, Optional<Long> seed) throws CommandSyntaxException{
 
-        for (World world : Bukkit.getWorlds()) {
-            if (world.getName().equals(worldName)) throw ERROR_WORLD_ALREADY_CREATED.create(world.getName());
+        for (String world : worlds()) {
+            if (world.equals(worldName)) throw ERROR_WORLD_ALREADY_CREATED.create(world);
         }
 
         WorldCreator worldCreator = new WorldCreator(worldName);
@@ -328,12 +326,28 @@ public class WorldCommand extends BrigadierCommand {
     }
 
     private CompletableFuture<Suggestions> offlineWorldSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder){
+        for (String world : worlds()) {
+            if (Bukkit.getWorld(world) != null) continue;
+            builder.suggest(world);
+        }
+        return builder.buildFuture();
+    }
+
+    private CompletableFuture<Suggestions> allWorldsSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder){
+        for (String world : worlds()) {
+            builder.suggest(world);
+        }
+        return builder.buildFuture();
+    }
+
+    private List<String> worlds(){
+        List<String> world = new ArrayList<>();
         for (File file : Objects.requireNonNull(SurfEssentials.getInstance().getServer().getWorldContainer().listFiles())) {
             if (!file.isDirectory()) continue;
             if (!Arrays.asList(Objects.requireNonNull(file.list())).contains("level.dat") || !Arrays.asList(Objects.requireNonNull(file.list())).contains("paper-world.yml")) continue;
-            builder.suggest(file.getName());
+            world.add(file.getName());
         }
-        return builder.buildFuture();
+        return world;
     }
 
     private static final DynamicCommandExceptionType ERROR_CANNOT_UNLOAD_WORLD = new DynamicCommandExceptionType(worldName ->
