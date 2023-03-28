@@ -8,10 +8,20 @@
     <artifactId>surf-essentials</artifactId>
     <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Surf Essentials</name>
+    <name>SurfEssentials</name>
+    <url>https://git.slne.dev/surf/surf-essentials</url>
+    <description>Good Plugin</description>
+
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.mainPackage>surf.essentials</project.mainPackage>
+
+        <project.apiVersion>1.19</project.apiVersion>
+        <project.authors>'twisti', 'SLNE Dev Team'</project.authors>
+        <project.mainClass>${groupId}.${project.mainPackage}.SurfEssentials</project.mainClass>
+        <project.bootstrapper>${groupId}.${project.mainPackage}.SurfEssentialsBootstrap</project.bootstrapper>
+        <project.loader>${groupId}.${project.mainPackage}.SurfEssentialsLoader</project.loader>
     </properties>
 
     <dependencies>
@@ -170,9 +180,9 @@
                     <archive>
                         <manifestEntries>
                             <mode>development</mode>
-                            <url>https://git.slne.dev/surf/surf-essentials</url>
+                            <url>${project.url}</url>
                             <Built-By>SLNE Dev Team</Built-By>
-                            <mainClass>dev.slne.surf.essentials.SurfEssentials</mainClass>
+                            <mainClass>${project.mainClass}</mainClass>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -192,7 +202,7 @@
                     <relocations>
                         <relocation>
                             <pattern>com.github.stefvanschie.inventoryframework</pattern>
-                            <shadedPattern>dev.slne.surf.essentials.inventoryFramework</shadedPattern>
+                            <shadedPattern>${groupId}.${project.mainPackage}.libs.inventoryFramework</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

@@ -1,11 +1,14 @@
 package dev.slne.surf.essentials.utils.brigadier;
 
+import com.mojang.brigadier.tree.CommandNode;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import net.minecraft.commands.CommandSourceStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RecodedCommands {
+    List<CommandNode<CommandSourceStack>> REMOVED_COMMAND_NODE = new ArrayList<>();
     private static final List<String> COMMANDS = EssentialsUtil.make(new ArrayList<>(), strings -> {
         strings.add("bossbar");
         strings.add("clear");
@@ -44,10 +47,19 @@ public class RecodedCommands {
 
     public synchronized void unregisterVanillaCommands(){
         for (String s : COMMANDS) {
-            EssentialsUtil.unregisterDispatcherCommand(s);
+            REMOVED_COMMAND_NODE.add(EssentialsUtil.unregisterDispatcherCommand(s));
         }
     }
 
+    public synchronized void addVanillaCommands(){
+        var copy = REMOVED_COMMAND_NODE;
+        for (CommandNode<CommandSourceStack> commandNode : copy) {
+            EssentialsUtil.registerCommand(commandNode);
+        }
+        REMOVED_COMMAND_NODE = new ArrayList<>();
+    }
+
+    @SuppressWarnings("unused")
     public List<String> getRecodedCommands() {
         return COMMANDS;
     }

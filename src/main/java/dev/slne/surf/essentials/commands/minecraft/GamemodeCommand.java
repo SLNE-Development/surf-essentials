@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.UUID;
 
 import static net.kyori.adventure.nbt.BinaryTagIO.Compression.GZIP;
@@ -40,6 +41,7 @@ public class GamemodeCommand {
                 sourceStack.hasPermission(2, Permissions.GAMEMODE_SPECTATOR_SELF_PERMISSION) ||
                 sourceStack.hasPermission(2, Permissions.GAMEMODE_SURVIVAL_SELF_PERMISSION) ||
                 sourceStack.hasPermission(2, Permissions.GAMEMODE_ADVENTURE_SELF_PERMISSION));
+
 
         registerGameModes(literal, GameType.SURVIVAL, Permissions.GAMEMODE_SURVIVAL_SELF_PERMISSION, Permissions.GAMEMODE_SURVIVAL_OTHER_PERMISSION,
                 Permissions.GAMEMODE_SURVIVAL_OTHER_OFFLINE_PERMISSION);
@@ -120,11 +122,15 @@ public class GamemodeCommand {
     }
 
     private static void logSingleChange(ServerPlayer player, GameType gameType) {
-        Bukkit.broadcast(EssentialsUtil.getPrefix()
-                .append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text(" hat in den Gamemode ", Colors.INFO))
-                .append(PaperAdventure.asAdventure(gameType.getShortDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text(" gewechselt!", Colors.INFO)), "surf.announce.gamemode");
+        for (ServerPlayer serverPlayer : Objects.requireNonNull(player.getServer()).getPlayerList().getPlayers()) {
+            if (serverPlayer.getUUID() == player.getUUID()) continue;
+            if (!serverPlayer.getBukkitEntity().hasPermission("surf.announce.gamemode")) continue;
+            serverPlayer.sendSystemMessage(PaperAdventure.asVanilla(EssentialsUtil.getPrefix()
+                    .append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                    .append(net.kyori.adventure.text.Component.text(" hat in den Gamemode ", Colors.INFO))
+                    .append(PaperAdventure.asAdventure(gameType.getShortDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                    .append(net.kyori.adventure.text.Component.text(" gewechselt!", Colors.INFO))));
+        }
 
         SurfEssentials.logger().info(net.kyori.adventure.text.Component.text("Set ", Colors.INFO)
                 .append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY))

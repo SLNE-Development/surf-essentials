@@ -1,9 +1,9 @@
-name: SurfEssentials
-version: '1.0.1-SNAPSHOT'
-main: dev.slne.surf.essentials.SurfEssentials
-description: '"Insert description here"'
-api-version: '1.19'
-bootstrapper: dev.slne.surf.essentials.SurfEssentialsBootstrap
-loader: dev.slne.surf.essentials.SurfEssentialsLoader
-authors: ['twisti', 'SLNE Dev Team']
-website: 'https://git.slne.dev/surf/surf-essentials'
+name: '${name}'
+version: '${project.version}'
+main: ${project.mainClass}
+description: '${project.description}'
+api-version: '${project.apiVersion}'
+bootstrapper: ${project.bootstrapper}
+loader: ${project.loader}
+authors: [${project.authors}]
+website: '${project.url}'

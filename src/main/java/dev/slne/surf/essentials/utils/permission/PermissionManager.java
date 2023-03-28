@@ -1,6 +1,7 @@
 package dev.slne.surf.essentials.utils.permission;
 
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.utils.EssentialsUtil;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -19,11 +20,15 @@ public class PermissionManager {
 
     public void initializePermissions() {
         if (initializedPermissions) return;
+        EssentialsUtil.sendDebug("Initializing permissions...");
         Permission parentPermission = new Permission("surf.essentials.*", "Allows access to all essentials commands but also alerts (e.g. gamemode change)");
+        EssentialsUtil.sendDebug("Adding parent permission: " + parentPermission.getName());
         pluginManager.addPermission(parentPermission);
 
+        EssentialsUtil.sendDebug("Getting permission list...");
         List<String> permissionList = getPermissionList();
         for (String permissionString : permissionList) {
+            EssentialsUtil.sendDebug("Linking permissions: " + permissionString +  " -> " + parentPermission.getName());
             addPermission(permissionString, parentPermission);
         }
         initializedPermissions = true;
@@ -36,6 +41,7 @@ public class PermissionManager {
         for (Field field : fields) {
             String permission = getPermissionFromField(field);
             if (permission != null){
+                EssentialsUtil.sendDebug("Getting permission: " + permission);
                 permissions.add(permission);
             }
         }

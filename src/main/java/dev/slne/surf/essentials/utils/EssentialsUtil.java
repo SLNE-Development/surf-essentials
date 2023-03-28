@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.color.Colors;
@@ -41,14 +42,12 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static net.kyori.adventure.nbt.BinaryTagIO.Compression.GZIP;
 
+@SuppressWarnings({"unused"})
 public abstract class EssentialsUtil {
     private static Component prefix;
 
@@ -61,6 +60,8 @@ public abstract class EssentialsUtil {
 
     public static final DynamicCommandExceptionType ERROR_POSITION_IN_UNLOADED_WORLD = new DynamicCommandExceptionType(gameProfile ->
             net.minecraft.network.chat.Component.literal(((GameProfile) gameProfile).getName() + " has logged out in an unloaded world."));
+
+    private static final List<CommandNode<CommandSourceStack>> REGISTERED_COMMANDS = new ArrayList<>();
 
     public static final int MAX_FOOD = 20;
 
@@ -476,6 +477,7 @@ public abstract class EssentialsUtil {
     }
 
     public static void callEvent(@NotNull Event event){
+        sendDebug("Calling event: " + event.getEventName());
         SurfEssentials.getInstance().getServer().getPluginManager().callEvent(event);
     }
 
@@ -486,15 +488,51 @@ public abstract class EssentialsUtil {
     public static RootCommandNode<CommandSourceStack> getRoot(){
         return getDispatcher().getRoot();
     }
-    public static <T extends String> void unregisterDispatcherCommand(T name){
+    public static <T extends String> CommandNode<CommandSourceStack> unregisterDispatcherCommand(T name){
+        var command = getRoot().getChild(name);
+        sendDebug("Removing command: " + name);
         getRoot().removeCommand(name);
+        return command;
     }
+    public static void syncCommands(){
+        sendDebug("Syncing commands...");
+        ((CraftServer)Bukkit.getServer()).syncCommands();
+    }
+
     public static <T> T make(T object, Consumer<T> initializer) {
         initializer.accept(object);
         return object;
     }
 
-    public static void syncCommands(){
-        ((CraftServer)Bukkit.getServer()).syncCommands();
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public static boolean isDebugging(){
+        return SurfEssentials.getInstance().getConfig().getBoolean("debug");
+    }
+
+    public static void sendDebug(CommandSourceStack sourceStack, Component debug){
+        if (!isDebugging()) return;
+        sourceStack.getBukkitSender().sendMessage(debug.colorIfAbsent(Colors.DEBUG));
+    }
+
+    public static void sendDebug(CommandSourceStack sourceStack, String debug){
+        sendDebug(sourceStack, Component.text(debug));
+    }
+
+    public static void sendDebug(Component debug){
+        if (!isDebugging()) return;
+        SurfEssentials.logger().info(debug.colorIfAbsent(Colors.DEBUG));
+    }
+
+    public static void sendDebug(String debug){
+        sendDebug(Component.text(debug));
+    }
+
+    public static <T extends CommandNode<CommandSourceStack>> void registerCommand(T command){
+        getRoot().addChild(command);
+        REGISTERED_COMMANDS.add(command);
+    }
+
+    public static List<CommandNode<CommandSourceStack>> getRegisteredCommands(){
+        return REGISTERED_COMMANDS;
     }
 }

@@ -5,12 +5,18 @@ import dev.slne.surf.essentials.commands.general.other.troll.listener.MlgTrollLi
 import dev.slne.surf.essentials.commands.general.other.troll.listener.WaterTrollListener;
 import dev.slne.surf.essentials.commands.general.other.troll.trolls.AnvilTroll;
 import dev.slne.surf.essentials.commands.general.sign.EditSignListener;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 public class ListenerManager {
-    public void registerListeners(Plugin plugin){
-        PluginManager pluginManager = plugin.getServer().getPluginManager();
+    private final Plugin plugin;
+
+    public ListenerManager(Plugin plugin){
+        this.plugin = plugin;
+    }
+    public void registerListeners(){
+        PluginManager pluginManager = this.plugin.getServer().getPluginManager();
 
         pluginManager.registerEvents(new TeleportListener(), plugin);
         pluginManager.registerEvents(new EditSignListener(), plugin);
@@ -20,5 +26,10 @@ public class ListenerManager {
         pluginManager.registerEvents(new CageTrollListener(), plugin);
         pluginManager.registerEvents(new AnvilTroll(), plugin);
         pluginManager.registerEvents(new CommandRegisterListener(), plugin);
+        pluginManager.registerEvents(new JoinListener(), plugin);
+    }
+
+    public void unregisterListeners(){
+        HandlerList.unregisterAll(this.plugin);
     }
 }

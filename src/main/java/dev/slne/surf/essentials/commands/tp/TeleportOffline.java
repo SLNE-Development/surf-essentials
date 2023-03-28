@@ -20,7 +20,6 @@ import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.io.IOException;
@@ -63,8 +62,7 @@ public class TeleportOffline {
         }
 
         if (offlinePlayer.isOnline()) {
-            ServerPlayer target = ((CraftPlayer) Objects.requireNonNull(offlinePlayer.getPlayer())).getHandle();
-            player.teleportTo(target.getLevel(), target.getX(), target.getY(), target.getZ(), target.getBukkitYaw(), target.getRotationVector().y);
+            player.getBukkitEntity().teleport(Objects.requireNonNull(offlinePlayer.getPlayer()).getLocation());
 
         }else {
 

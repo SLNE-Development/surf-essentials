@@ -19,6 +19,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static dev.slne.surf.essentials.utils.EssentialsUtil.gradientify;
@@ -35,7 +36,7 @@ public final class SurfEssentials extends JavaPlugin{
 
     @Override
     public void onLoad() {
-        listeners = new ListenerManager();
+        listeners = new ListenerManager(this);
         recodedCommands = new RecodedCommands();
         brigadierCommands = new BrigadierCommands();
         permissionManager = new PermissionManager(this);
@@ -55,7 +56,7 @@ public final class SurfEssentials extends JavaPlugin{
 
         EssentialsUtil.setPrefix();
         permissionManager.initializePermissions();
-        listeners.registerListeners(this);
+        listeners.registerListeners();
         recodedCommands.unregisterVanillaCommands();
         brigadierCommands.register();
 
@@ -69,10 +70,13 @@ public final class SurfEssentials extends JavaPlugin{
 
     @Override
     public void onDisable() {
-        instance = null;
         MlgTroll.restoreInventoryFromMlgTroll();
         TimerCommand.removeRemainingBossbars();
+        listeners.unregisterListeners();
+        brigadierCommands.unregister();
+        recodedCommands.addVanillaCommands();
         logger().info(text("The plugin has stopped!", Colors.INFO));
+        instance = null;
     }
 
 
@@ -90,9 +94,10 @@ public final class SurfEssentials extends JavaPlugin{
     /**
      * A message that prints  a logo of the plugin to the console
      */
+    @SuppressWarnings("UnstableApiUsage")
     public void loadMessage() {
         ConsoleCommandSender console = instance.getServer().getConsoleSender();
-        String version = "v" + getPluginMeta().getVersion();
+        String version = "v" + Objects.requireNonNull(getPluginMeta()).getVersion();
         console.sendMessage(Component.newline()
                 .append(text("  _____ _____ ", Colors.AQUA))
                 .append(Component.newline())
@@ -127,8 +132,9 @@ public final class SurfEssentials extends JavaPlugin{
     }
 
     public static void registerPluginBrigadierCommand(final String label, final Consumer<LiteralArgumentBuilder<CommandSourceStack>> command) {
+        EssentialsUtil.sendDebug("Registering command: " + label);
         var builder = LiteralArgumentBuilder.<CommandSourceStack>literal(label);
         command.accept(builder);
-        EssentialsUtil.getDispatcher().register(builder);
+        EssentialsUtil.registerCommand(builder.build());
     }
 }

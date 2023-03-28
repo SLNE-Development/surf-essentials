@@ -17,18 +17,42 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class RandomTeleportCommand extends BrigadierCommand {
 
-    private static final HashSet<Material> unsafeMaterials = new HashSet<>(List.of(Material.LAVA, Material.FIRE, Material.CACTUS,
-            Material.MAGMA_BLOCK, Material.POWDER_SNOW, Material.CAMPFIRE, Material.SOUL_CAMPFIRE, Material.SPAWNER, Material.SCULK_SHRIEKER,
-            Material.SCULK_SENSOR, Material.COBWEB, Material.LAVA_CAULDRON, Material.OAK_PRESSURE_PLATE, Material.SPRUCE_PRESSURE_PLATE, Material.BIRCH_PRESSURE_PLATE,
-            Material.JUNGLE_PRESSURE_PLATE, Material.ACACIA_PRESSURE_PLATE, Material.DARK_OAK_PRESSURE_PLATE, Material.MANGROVE_PRESSURE_PLATE, Material.CRIMSON_PRESSURE_PLATE,
-            Material.WARPED_PRESSURE_PLATE, Material.STONE_PRESSURE_PLATE, Material.POLISHED_BLACKSTONE_PRESSURE_PLATE, Material.HEAVY_WEIGHTED_PRESSURE_PLATE,
-            Material.LIGHT_WEIGHTED_PRESSURE_PLATE, Material.TNT));
+    @SuppressWarnings("UnstableApiUsage")
+    private static final List<Material> unsafeMaterials = EssentialsUtil.make(new ArrayList<>(), materials -> {
+        materials.add(Material.LAVA);
+        materials.add(Material.FIRE);
+        materials.add(Material.CACTUS);
+        materials.add(Material.MAGMA_BLOCK);
+        materials.add(Material.POWDER_SNOW);
+        materials.add(Material.CAMPFIRE);
+        materials.add(Material.SOUL_CAMPFIRE);
+        materials.add(Material.SPAWNER);
+        materials.add(Material.SCULK_SHRIEKER);
+        materials.add(Material.SCULK_SENSOR);
+        materials.add(Material.COBWEB);
+        materials.add(Material.LAVA_CAULDRON);
+        materials.add(Material.OAK_PRESSURE_PLATE);
+        materials.add(Material.SPRUCE_PRESSURE_PLATE);
+        materials.add(Material.BIRCH_PRESSURE_PLATE);
+        materials.add(Material.JUNGLE_PRESSURE_PLATE);
+        materials.add(Material.CHERRY_PRESSURE_PLATE);
+        materials.add(Material.ACACIA_PRESSURE_PLATE);
+        materials.add(Material.DARK_OAK_PRESSURE_PLATE);
+        materials.add(Material.MANGROVE_PRESSURE_PLATE);
+        materials.add(Material.BIRCH_PRESSURE_PLATE);
+        materials.add(Material.WARPED_PRESSURE_PLATE);
+        materials.add(Material.STONE_PRESSURE_PLATE);
+        materials.add(Material.POLISHED_BLACKSTONE_PRESSURE_PLATE);
+        materials.add(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
+        materials.add(Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
+        materials.add(Material.TNT);
+    });
 
     @Override
     public String[] names() {
@@ -107,7 +131,7 @@ public class RandomTeleportCommand extends BrigadierCommand {
         return randomLocation;
     }
 
-    private boolean isLocationSafe(Location location){
+    private boolean isLocationSafe(Location location) {
         int x = location.getBlockX(),
                 y = location.getBlockY(),
                 z = location.getBlockZ();

@@ -8,22 +8,16 @@ import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentBuilder;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.PositionImpl;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.Collection;
@@ -79,8 +73,7 @@ public class TeleportCommand extends BrigadierCommand {
         if (isLoaded(targetLocation)) {
             EssentialsUtil.callEvent(playerTeleportEvent);
 
-            ServerLevel level = ((CraftWorld) targetLocation.getWorld()).getHandle();
-            sender.teleportTo(level, targetLocation.getX(), targetLocation.getY(), targetLocation.getZ(),targetLocation.getYaw(), targetLocation.getPitch());
+            sender.getBukkitEntity().teleport(targetLocation);
             EssentialsUtil.sendSuccess(source, teleportToEntity$adventure(entity));
 
         }else {
@@ -138,7 +131,7 @@ public class TeleportCommand extends BrigadierCommand {
 
     private int teleportEntityToLocation(CommandSourceStack source, Entity entity, Vec3 vec3) throws CommandSyntaxException{
         canSourceSeeEntity(source, entity);
-        Location targetLocation = new Location(source.getLevel().getWorld(), vec3.x(), vec3.y(), vec3.z());
+        var targetLocation = new Location(source.getLevel().getWorld(), vec3.x(), vec3.y(), vec3.z());
         PlayerTeleportEvent playerTeleportEvent = null;
         if (entity instanceof ServerPlayer player) {
             playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
@@ -150,9 +143,7 @@ public class TeleportCommand extends BrigadierCommand {
             if (playerTeleportEvent != null) {
                 EssentialsUtil.callEvent(playerTeleportEvent);
             }
-            ServerLevel level = ((CraftWorld) targetLocation.getWorld()).getHandle();
-            PositionImpl position = new PositionImpl(vec3.x(), vec3.y(), vec3.z());
-            entity.teleportTo(level, position);
+            entity.getBukkitEntity().teleport(targetLocation);
 
             if (source.isPlayer()){
                 EssentialsUtil.sendSuccess(source, teleportEntityToLocation$adventure(entity, targetLocation));
@@ -176,28 +167,18 @@ public class TeleportCommand extends BrigadierCommand {
     }
 
     private int teleportEntitiesToEntity(CommandSourceStack source, Collection<? extends Entity> entitiesUnchecked, Entity toEntity) throws CommandSyntaxException{
-        Collection<? extends Entity> entities = EssentialsUtil.checkEntitySuggestion(source, entitiesUnchecked);
+        var entities = EssentialsUtil.checkEntitySuggestion(source, entitiesUnchecked);
         canSourceSeeEntity(source, toEntity);
 
-        Location targetLocation = toEntity.getBukkitEntity().getLocation();
-        AtomicInteger successfulTeleports = new AtomicInteger();
+        var targetLocation = toEntity.getBukkitEntity().getLocation();
+        var successfulTeleports = new AtomicInteger();
 
-        if (isLoaded(targetLocation)){
-            for (Entity entity : entities) {
-                if (entity instanceof ServerPlayer player) {
-                    PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
-                            targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);
-                    if (playerTeleportEvent.isCancelled()) continue;
-                    EssentialsUtil.callEvent(playerTeleportEvent);
-                }
-                ServerLevel level = ((CraftWorld) targetLocation.getWorld()).getHandle();
-                PositionImpl position = new PositionImpl(targetLocation.getX(), targetLocation.getY(), targetLocation.getZ());
-                entity.teleportTo(level, position);
-                successfulTeleports.getAndIncrement();
-            }
-            if (source.isPlayer()){
+        if (isLoaded(targetLocation)) {
+            teleportEntities(entities, targetLocation, successfulTeleports);
+
+            if (source.isPlayer()) {
                 EssentialsUtil.sendSuccess(source, teleportEntitiesToEntity$adventure(successfulTeleports.get(), toEntity));
-            }else {
+            } else {
                 source.sendSuccess(teleportEntitiesToEntity(successfulTeleports.get(), toEntity), false);
             }
         }else {
@@ -205,9 +186,7 @@ public class TeleportCommand extends BrigadierCommand {
 
             entities.iterator().next().getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAccept(aBoolean -> {
                 for (Entity entity : entities) {
-                    ServerLevel level = ((CraftWorld) targetLocation.getWorld()).getHandle();
-                    PositionImpl position = new PositionImpl(targetLocation.getX(), targetLocation.getY(), targetLocation.getZ());
-                    entity.teleportTo(level, position);
+                    entity.getBukkitEntity().teleport(targetLocation);
                     successfulTeleports.getAndIncrement();
                 }
                 if (source.isPlayer()){
@@ -223,23 +202,12 @@ public class TeleportCommand extends BrigadierCommand {
     }
 
     private int teleportEntitiesToLocation(CommandSourceStack source, Collection<? extends Entity> entitiesUnchecked, Vec3 vec3) throws CommandSyntaxException{
-        Collection<? extends Entity> entities = EssentialsUtil.checkEntitySuggestion(source, entitiesUnchecked);
-        Location targetLocation = new Location(source.getLevel().getWorld(), vec3.x(), vec3.y(), vec3.z());
-        AtomicInteger successfulTeleports = new AtomicInteger();
+        var entities = EssentialsUtil.checkEntitySuggestion(source, entitiesUnchecked);
+        var targetLocation = new Location(source.getLevel().getWorld(), vec3.x(), vec3.y(), vec3.z());
+        var successfulTeleports = new AtomicInteger();
 
         if (isLoaded(targetLocation)){
-            for (Entity entity : entities) {
-                if (entity instanceof ServerPlayer player) {
-                    PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
-                            targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);
-                    if (playerTeleportEvent.isCancelled()) continue;
-                    EssentialsUtil.callEvent(playerTeleportEvent);
-                }
-                ServerLevel level = ((CraftWorld) targetLocation.getWorld()).getHandle();
-                PositionImpl position = new PositionImpl(vec3.x(), vec3.y(), vec3.z());
-                entity.teleportTo(level, position);
-                successfulTeleports.getAndIncrement();
-            }
+            teleportEntities(entities, targetLocation, successfulTeleports);
             if (source.isPlayer()){
                 EssentialsUtil.sendSuccess(source, teleportEntitiesToLocation$adventure(successfulTeleports.get(), targetLocation));
             }else {
@@ -250,7 +218,7 @@ public class TeleportCommand extends BrigadierCommand {
 
             entities.iterator().next().getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAccept(aBoolean -> {
                 for (Entity entity : entities) {
-                    entity.teleportTo(vec3.x(), vec3.y(), vec3.z());
+                    entity.getBukkitEntity().teleport(targetLocation);
                     successfulTeleports.getAndIncrement();
                 }
                 if (source.isPlayer()){
@@ -267,8 +235,7 @@ public class TeleportCommand extends BrigadierCommand {
 
 
     private boolean isLoaded(Location location){
-        ServerLevel level = ((CraftWorld) location.getWorld()).getHandle();
-        return level.isLoaded(new BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+        return location.isChunkLoaded();
     }
 
     private void canSourceSeeEntity(CommandSourceStack source, Entity entity) throws CommandSyntaxException {
@@ -290,7 +257,7 @@ public class TeleportCommand extends BrigadierCommand {
     }
 
     private Component teleportToEntity$adventure(Entity entity){
-        ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
+        var builder = Component.text();
         builder.append(Component.text("Du hast dich zu ", Colors.SUCCESS));
 
         if (entity instanceof ServerPlayer player){
@@ -303,7 +270,7 @@ public class TeleportCommand extends BrigadierCommand {
     }
 
     private Component teleportEntityToEntity$adventure(Entity fromEntity, Entity toEntity){
-        ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
+        var builder = Component.text();
 
         if (fromEntity instanceof ServerPlayer player){
             builder.append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY));
@@ -336,7 +303,7 @@ public class TeleportCommand extends BrigadierCommand {
     }
 
     private Component teleportEntityToLocation$adventure(Entity entity, Location location){
-        ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
+        var builder = Component.text();
 
         if (entity instanceof ServerPlayer player){
             builder.append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY));
@@ -359,7 +326,7 @@ public class TeleportCommand extends BrigadierCommand {
     }
 
     private Component teleportEntitiesToEntity$adventure(int successfulTeleports, Entity toEntity){
-        ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
+        var builder = Component.text();
 
         builder.append(Component.text(successfulTeleports, Colors.TERTIARY)
                 .append(Component.text(" Entities wurden zu ", Colors.SUCCESS)));
@@ -380,7 +347,7 @@ public class TeleportCommand extends BrigadierCommand {
     }
 
     private Component teleportEntitiesToLocation$adventure(int successfulTeleports, Location location){
-        ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
+        var builder = Component.text();
 
         builder.append(Component.text(successfulTeleports, Colors.TERTIARY)
                 .append(Component.text(" Entities wurden zu ", Colors.SUCCESS)));
@@ -397,5 +364,17 @@ public class TeleportCommand extends BrigadierCommand {
                 .append(net.minecraft.network.chat.Component.literal("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(location.getX()),
                         EssentialsUtil.makeDoubleReadable(location.getY()), EssentialsUtil.makeDoubleReadable(location.getZ())))
                         .withStyle(ChatFormatting.GRAY));
+    }
+
+    private <T extends Entity, S extends Location, M extends AtomicInteger> void teleportEntities(Collection<T> entities, S targetLocation, M atomicInteger){
+        for (Entity entity : entities) {
+            if (entity instanceof ServerPlayer player) {
+                var playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(), targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);
+                if (playerTeleportEvent.isCancelled()) continue;
+                EssentialsUtil.callEvent(playerTeleportEvent);
+            }
+            entity.getBukkitEntity().teleport(targetLocation);
+            atomicInteger.getAndIncrement();
+        }
     }
 }

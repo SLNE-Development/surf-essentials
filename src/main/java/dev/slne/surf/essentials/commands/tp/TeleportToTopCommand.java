@@ -63,7 +63,7 @@ public class TeleportToTopCommand extends BrigadierCommand {
 
         if (player != null) {
             location = player.getBukkitEntity().getLocation();
-            location.setY((location.getWorld().getHighestBlockYAt(location.getBlockX(), location.getBlockZ())) + 1);
+            location.setY((location.getWorld().getHighestBlockYAt(location.getBlockX(), location.getBlockZ())) + 2);
             location.setX(location.getBlockX() + 0.5);
             location.setZ(location.getBlockZ() + 0.5);
 
@@ -73,7 +73,7 @@ public class TeleportToTopCommand extends BrigadierCommand {
             if (playerTeleportEvent.isCancelled()) return 0;
             EssentialsUtil.callEvent(playerTeleportEvent);
 
-            player.teleportTo(location.x(), location.getY() + 1, location.z());
+            player.getBukkitEntity().teleport(location);
         }else {
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
 

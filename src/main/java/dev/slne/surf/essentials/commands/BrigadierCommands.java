@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.commands;
 
+import com.mojang.brigadier.tree.CommandNode;
 import dev.slne.surf.essentials.commands.cheat.*;
 import dev.slne.surf.essentials.commands.cheat.gui.*;
 import dev.slne.surf.essentials.commands.general.*;
@@ -13,9 +14,11 @@ import dev.slne.surf.essentials.commands.general.other.world.WorldCommand;
 import dev.slne.surf.essentials.commands.general.sign.SignToggleCommand;
 import dev.slne.surf.essentials.commands.minecraft.*;
 import dev.slne.surf.essentials.commands.tp.*;
+import dev.slne.surf.essentials.utils.EssentialsUtil;
+import net.minecraft.commands.CommandSourceStack;
 
 public class BrigadierCommands {
-    public void register(){
+    public synchronized void register(){
         //world-broadcast command
         BroadcastWorldCommand.register();
         //list command
@@ -158,5 +161,12 @@ public class BrigadierCommands {
         new RideCommand();
         // damage command
         new DamageCommand();
+    }
+
+    public synchronized void unregister() {
+        for (CommandNode<CommandSourceStack> registeredCommand : EssentialsUtil.getRegisteredCommands()) {
+            EssentialsUtil.sendDebug("Unregistering command: " + registeredCommand.getName());
+            EssentialsUtil.getRoot().removeCommand(registeredCommand.getName());
+        }
     }
 }
