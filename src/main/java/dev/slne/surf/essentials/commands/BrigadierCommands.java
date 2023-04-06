@@ -92,8 +92,7 @@ public class BrigadierCommands {
         new LatestDeathCommand();
         new PlayerHeadCommand();
         new TrashCommand();
-        new WalkSpeedCommand();
-        new FlySpeedCommand();
+        new SpeedCommand();
     }
 
     public synchronized void unregister() {

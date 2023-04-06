@@ -39,10 +39,8 @@ public interface Permissions {
     String LIGHTING_PERMISSION = "surf.essentials.commands.lighting";
     String TRASH_PERMISSION_SELF = "surf.essentials.commands.trash.self";
     String TRASH_PERMISSION_OTHER = "surf.essentials.commands.trash.others";
-    String FLY_SPEED_PERMISSION_SELF = "surf.essentials.commands.flyspeed.self";
-    String FLY_SPEED_PERMISSION_OTHER = "surf.essentials.commands.flyspeed.others";
-    String WALK_SPEED_PERMISSION_SELF = "surf.essentials.commands.walkspeed.self";
-    String WALK_SPEED_PERMISSION_OTHER = "surf.essentials.commands.walkspeed.others";
+    String SPEED_PERMISSION_SELF = "surf.essentials.commands.speed.self";
+    String SPEED_PERMISSION_OTHER = "surf.essentials.commands.speed.others";
 
 
     /**
