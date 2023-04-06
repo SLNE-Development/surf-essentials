@@ -4,9 +4,9 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -25,20 +25,31 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-public class TitlebroadcastCommand {
-
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("titlebroadcast", TitlebroadcastCommand::literal);
+public class TitlebroadcastCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"titlebroadcast"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.TITLE_BROADCAST_PERMISSION));
+    @Override
+    public String usage() {
+        return "/titlebroadcast <players> <message>";
+    }
+
+    @Override
+    public String description() {
+        return "Broadcast a title to the players";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.TITLE_BROADCAST_PERMISSION));
 
         literal.then(Commands.argument("players", EntityArgument.players())
                 .then(Commands.argument("title", StringArgumentType.string())
                         .suggests((context, builder) -> {
                             builder.suggest("\"!&cExample &atitle\"");
-                            EssentialsUtil.suggestAllColorCodes(builder, context, "title");
+                            EssentialsUtil.suggestAllColorCodes(builder, context);
                             return builder.buildFuture();
                         })
                         .executes(context -> broadcast(context.getSource(), EntityArgument.getPlayers(context, "players"), StringArgumentType.getString(context, "title"),
@@ -47,7 +58,7 @@ public class TitlebroadcastCommand {
                         .then(Commands.argument("subtitle", StringArgumentType.string())
                                 .suggests((context, builder) -> {
                                     builder.suggest("\"!&cExample &asub-title\"");
-                                    EssentialsUtil.suggestAllColorCodes(builder, context, "subtitle");
+                                    EssentialsUtil.suggestAllColorCodes(builder, context);
                                     return builder.buildFuture();
                                 })
                                 .executes(context -> broadcast(context.getSource(), EntityArgument.getPlayers(context, "players"), StringArgumentType.getString(context, "title"),

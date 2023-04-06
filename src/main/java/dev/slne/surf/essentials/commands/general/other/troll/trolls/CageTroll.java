@@ -8,6 +8,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -19,7 +20,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -30,7 +30,6 @@ public class CageTroll {
     public static ArrayList<UUID> playersInCage = new ArrayList<>();
 
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> cage(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.cage"));
         return Commands.argument("player", EntityArgument.player())
                 .executes(context -> executeCage(context, EntityArgument.getPlayer(context, "player").getBukkitEntity(), 60, false))
                 .then(Commands.argument("time", IntegerArgumentType.integer(1, 6400))
@@ -42,7 +41,7 @@ public class CageTroll {
     }
 
     private static int executeCage(CommandContext<CommandSourceStack> context, Player target, int timeInSeconds, boolean force) throws CommandSyntaxException {
-        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), ((CraftPlayer) target).getHandle());
+        EssentialsUtil.checkPlayerSuggestion(context.getSource(), CraftUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();
 
         if (isPlayerInCage(target.getUniqueId())){

@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -15,7 +16,6 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -29,7 +29,6 @@ public class MlgTroll {
     private static final HashMap<UUID, Boolean> scheduledTasks = new HashMap<>();
 
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> mlg(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.mlg"));
         return Commands.argument("player", EntityArgument.player())
                 .then(Commands.literal("water")
                         .executes(context -> mlgTroll(context, EntityArgument.getPlayer(context, "player").getBukkitEntity(), "water")))
@@ -48,7 +47,7 @@ public class MlgTroll {
     }
 
     private static int mlgTroll(CommandContext<CommandSourceStack> context, Player target, String mlgType) throws CommandSyntaxException {
-        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), ((CraftPlayer) target).getHandle());
+        EssentialsUtil.checkPlayerSuggestion(context.getSource(), CraftUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();
 
         if (!saveInventory.containsKey(target.getUniqueId())) {

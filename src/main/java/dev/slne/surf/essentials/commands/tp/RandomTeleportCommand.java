@@ -4,8 +4,8 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -17,14 +17,13 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Random;
 
 public class RandomTeleportCommand extends BrigadierCommand {
 
     @SuppressWarnings("UnstableApiUsage")
-    private static final List<Material> unsafeMaterials = EssentialsUtil.make(new ArrayList<>(), materials -> {
+    private static final HashSet<Material> unsafeMaterials = EssentialsUtil.make(new HashSet<>(), materials -> {
         materials.add(Material.LAVA);
         materials.add(Material.FIRE);
         materials.add(Material.CACTUS);
@@ -45,7 +44,6 @@ public class RandomTeleportCommand extends BrigadierCommand {
         materials.add(Material.ACACIA_PRESSURE_PLATE);
         materials.add(Material.DARK_OAK_PRESSURE_PLATE);
         materials.add(Material.MANGROVE_PRESSURE_PLATE);
-        materials.add(Material.BIRCH_PRESSURE_PLATE);
         materials.add(Material.WARPED_PRESSURE_PLATE);
         materials.add(Material.STONE_PRESSURE_PLATE);
         materials.add(Material.POLISHED_BLACKSTONE_PRESSURE_PLATE);

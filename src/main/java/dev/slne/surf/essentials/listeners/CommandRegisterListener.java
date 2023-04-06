@@ -9,11 +9,13 @@ import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -33,7 +35,7 @@ public class CommandRegisterListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onUnknownCommand(@NotNull UnknownCommandEvent event) {
-        if (event.getSender() instanceof ConsoleCommandSender) return;
+        if (event.getSender() instanceof ConsoleCommandSender || event.getSender() instanceof RemoteConsoleCommandSender) return;
         if (event.message() == null || LegacyComponentSerializer.builder().build().serialize(event.message()).equalsIgnoreCase("Unknown command. Type \"/help\" for help.")){
             event.message(null);
             event.getSender().sendMessage(EssentialsUtil.getPrefix()
@@ -41,7 +43,7 @@ public class CommandRegisterListener implements Listener {
                             .withStyle(ChatFormatting.RED)))
                     .appendNewline()
                     .append(EssentialsUtil.getPrefix())
-                    .append(net.kyori.adventure.text.Component.text(event.getCommandLine(), Colors.GRAY)
+                    .append(net.kyori.adventure.text.Component.text(event.getCommandLine(), Colors.RED, TextDecoration.UNDERLINED)
                             .clickEvent(ClickEvent.suggestCommand("/%s".formatted(event.getCommandLine()))))
                     .append(PaperAdventure.asAdventure(Component.translatable("command.context.here").withStyle(ChatFormatting.RED))));
             return;

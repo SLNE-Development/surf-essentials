@@ -5,9 +5,9 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -29,12 +29,24 @@ import java.util.Collection;
 import java.util.Objects;
 
 @DefaultQualifier(NotNull.class)
-public class ParticleCommand {
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("particle", ParticleCommand::literal);
+public class ParticleCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"particle"};
     }
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.PARTICLE_PERMISSION));
+
+    @Override
+    public String usage() {
+        return "/particle";
+    }
+
+    @Override
+    public String description() {
+        return "Particle command";
+    }
+
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.PARTICLE_PERMISSION));
 
         literal.then(Commands.argument("name", ParticleArgument.particle(EssentialsUtil.buildContext()))
                 .executes(context -> showParticles(context.getSource(), ParticleArgument.getParticle(context, "name"),
@@ -85,7 +97,7 @@ public class ParticleCommand {
                                                                         EntityArgument.getPlayers(context, "viewers"))))))))));
     }
 
-    private static int showParticles(CommandSourceStack source, ParticleOptions parameters, Vec3 pos, Vec3 delta, float speed, int count, boolean force, Collection<ServerPlayer> viewersUnchecked) throws CommandSyntaxException{
+    private int showParticles(CommandSourceStack source, ParticleOptions parameters, Vec3 pos, Vec3 delta, float speed, int count, boolean force, Collection<ServerPlayer> viewersUnchecked) throws CommandSyntaxException{
         Collection<ServerPlayer> viewers = EssentialsUtil.checkPlayerSuggestion(source, viewersUnchecked);
         int countParticlesShown = 0;
 
@@ -105,14 +117,14 @@ public class ParticleCommand {
         if (source.isPlayer()){
             String particleName = Objects.requireNonNull(BuiltInRegistries.PARTICLE_TYPE.getKey(parameters.getType())).toLanguageKey();
 
-            String positionX = new DecimalFormat("#.#").format(pos.x);
-            String positionY = new DecimalFormat("#.#").format(pos.y);
-            String positionZ = new DecimalFormat("#.#").format(pos.z);
+            String positionX = format(pos.x);
+            String positionY = format(pos.y);
+            String positionZ = format(pos.z);
             String position = positionX + " " + positionY + " " + positionZ;
 
-            String deltaX = new DecimalFormat("#.#").format(delta.x);
-            String deltaY = new DecimalFormat("#.#").format(delta.y);
-            String deltaZ = new DecimalFormat("#.#").format(delta.z);
+            String deltaX = format(delta.x);
+            String deltaY = format(delta.y);
+            String deltaZ = format(delta.z);
             String deltaString = deltaX + " " + deltaY + " " + deltaZ;
 
             String forceString = (force) ? "Ja" : "Nein";
@@ -151,5 +163,9 @@ public class ParticleCommand {
     }
 
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(net.minecraft.network.chat.Component.translatable("commands.particle.failed"));
+
+    private String format(double input){
+        return new DecimalFormat("#.#").format(input);
+    }
 }
 

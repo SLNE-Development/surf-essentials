@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -16,7 +17,6 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +31,6 @@ public class VillagerAnnoyTroll {
     private static int villagerTaskID;
 
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> villager(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.villager"));
         return Commands.argument("player", EntityArgument.player())
                 .executes(context -> annoyVillager(context, EntityArgument.getPlayer(context, "player").getBukkitEntity(), 60))
                 .then(Commands.argument("time", IntegerArgumentType.integer(1, 3600))
@@ -40,7 +39,7 @@ public class VillagerAnnoyTroll {
     }
 
     private static int annoyVillager(CommandContext<CommandSourceStack> context, Player target, int timeInSeconds) throws CommandSyntaxException {
-        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), ((CraftPlayer) target).getHandle());
+        EssentialsUtil.checkPlayerSuggestion(context.getSource(), CraftUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();
 
         boolean isInTroll = playersInTroll.get(target.getUniqueId()) != null ? playersInTroll.get(target.getUniqueId()) : false;

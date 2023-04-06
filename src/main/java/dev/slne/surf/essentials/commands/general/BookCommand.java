@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.general;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -21,13 +21,24 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 import org.jetbrains.annotations.NotNull;
 
-public class BookCommand {
-
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("book", BookCommand::literal);
+public class BookCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"book"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    @Override
+    public String usage() {
+        return "/book [<title | author>]";
+    }
+
+    @Override
+    public String description() {
+        return "Reopens the book or change the title / author";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.BOOK_PERMISSION));
 
         literal.executes(context -> reopenBook(context.getSource()));

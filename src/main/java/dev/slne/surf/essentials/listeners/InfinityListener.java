@@ -1,7 +1,7 @@
 package dev.slne.surf.essentials.listeners;
 
 import dev.slne.surf.essentials.commands.cheat.InfinityCommand;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
+import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,7 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class InfinityListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (InfinityCommand.getPlayersInInfinity().contains(((CraftPlayer) event.getPlayer()).getHandle())) {
+        if (InfinityCommand.getPlayersInInfinity().contains(CraftUtil.toServerPlayer(event.getPlayer()))) {
             Player player = event.getPlayer();
             PlayerInventory inventory = player.getInventory();
             ItemStack itemStack = inventory.getItemInMainHand();
@@ -28,7 +28,7 @@ public class InfinityListener implements Listener {
 
     @EventHandler
     public void onSpawnEggPlace(PlayerInteractEvent event) {
-        if (InfinityCommand.getPlayersInInfinity().contains(((CraftPlayer) event.getPlayer()).getHandle())) {
+        if (InfinityCommand.getPlayersInInfinity().contains(CraftUtil.toServerPlayer(event.getPlayer()))) {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getInventory().getItemInMainHand().getItemMeta() instanceof SpawnEggMeta) {
                 Player player = event.getPlayer();
                 PlayerInventory inventory = player.getInventory();
@@ -40,7 +40,7 @@ public class InfinityListener implements Listener {
 
     @EventHandler
     public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
-        if (InfinityCommand.getPlayersInInfinity().contains(((CraftPlayer) event.getPlayer()).getHandle())) {
+        if (InfinityCommand.getPlayersInInfinity().contains(CraftUtil.toServerPlayer(event.getPlayer()))) {
             Player player = event.getPlayer();
             PlayerInventory inventory = player.getInventory();
             inventory.getItemInMainHand().setAmount(1);

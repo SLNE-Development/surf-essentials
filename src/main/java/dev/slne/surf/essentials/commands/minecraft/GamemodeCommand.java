@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.nbt.BinaryTagIO;
@@ -30,17 +31,26 @@ import java.util.UUID;
 
 import static net.kyori.adventure.nbt.BinaryTagIO.Compression.GZIP;
 
-public class GamemodeCommand {
-
-    public static void register() {
-        SurfEssentials.registerPluginBrigadierCommand("gamemode", GamemodeCommand::literal);
+public class GamemodeCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"gamemode"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GAMEMODE_CREATIVE_SELF_PERMISSION) ||
-                sourceStack.hasPermission(2, Permissions.GAMEMODE_SPECTATOR_SELF_PERMISSION) ||
-                sourceStack.hasPermission(2, Permissions.GAMEMODE_SURVIVAL_SELF_PERMISSION) ||
-                sourceStack.hasPermission(2, Permissions.GAMEMODE_ADVENTURE_SELF_PERMISSION));
+    @Override
+    public String usage() {
+        return "/gamemode <creative | survival | adventure | spectator> [<players>]";
+    }
+
+    @Override
+    public String description() {
+        return "Change the gamemode of the targets";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.GAMEMODE_CREATIVE_SELF_PERMISSION, Permissions.GAMEMODE_SPECTATOR_SELF_PERMISSION,
+                Permissions.GAMEMODE_SURVIVAL_SELF_PERMISSION, Permissions.GAMEMODE_ADVENTURE_SELF_PERMISSION));
 
 
         registerGameModes(literal, GameType.SURVIVAL, Permissions.GAMEMODE_SURVIVAL_SELF_PERMISSION, Permissions.GAMEMODE_SURVIVAL_OTHER_PERMISSION,
@@ -156,14 +166,14 @@ public class GamemodeCommand {
                                           String permissionSelf, String permissionOthers, String permissionOthersOffline) {
 
         literal.then(Commands.literal(gameType.getName().toLowerCase())
-                .requires(sourceStack -> sourceStack.hasPermission(2, permissionSelf))
+                .requires(EssentialsUtil.checkPermissions(permissionSelf))
                 .executes(context -> setMode(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), gameType))
                 .then(Commands.argument("players", EntityArgument.players())
-                        .requires(sourceStack -> sourceStack.hasPermission(2, permissionOthers))
+                        .requires(EssentialsUtil.checkPermissions(permissionOthers))
                         .executes(context -> setMode(context.getSource(), EntityArgument.getPlayers(context, "players"), gameType)))
 
                 .then(Commands.literal("offline")
-                        .requires(sourceStack -> sourceStack.hasPermission(2, permissionOthersOffline))
+                        .requires(EssentialsUtil.checkPermissions(permissionOthersOffline))
                         .then(Commands.argument("offlinePlayer", GameProfileArgument.gameProfile())
                                 .executes(context -> setOfflineMode(context.getSource(), gameType, GameProfileArgument.getGameProfiles(context, "offlinePlayer"))))));
     }

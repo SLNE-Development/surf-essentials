@@ -27,6 +27,8 @@ public class ListenerManager {
         pluginManager.registerEvents(new AnvilTroll(), plugin);
         pluginManager.registerEvents(new CommandRegisterListener(), plugin);
         pluginManager.registerEvents(new JoinListener(), plugin);
+        pluginManager.registerEvents(new AdvancementListener(), plugin);
+        pluginManager.registerEvents(new DeathListener(), plugin);
     }
 
     public void unregisterListeners(){

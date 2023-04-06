@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class IllusionerTroll implements Listener {
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> illusioner(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.illusioner"));
         return Commands.argument("player", EntityArgument.player())
                 .executes(context -> makeIllusioner(context, EntityArgument.getPlayer(context, "player"), 1))
                 .then(Commands.argument("amount", IntegerArgumentType.integer(1, 20))
@@ -37,7 +36,7 @@ public class IllusionerTroll implements Listener {
     }
 
     private static int makeIllusioner(CommandContext<CommandSourceStack> context, @NotNull ServerPlayer target, int amount) throws CommandSyntaxException {
-        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), target);
+        EssentialsUtil.checkPlayerSuggestion(context.getSource(), target);
         BlockPos blockPosition = new BlockPos(target.blockPosition());
 
         // Check if position is valid spawn position

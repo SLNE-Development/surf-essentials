@@ -5,9 +5,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -32,13 +32,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ForceloadCommand {
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("forceload", ForceloadCommand::literal);
+public class ForceloadCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"forceload"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.FORCELOAD_PERMISSION));
+    @Override
+    public String usage() {
+        return "/forceload <query | remove>";
+    }
+
+    @Override
+    public String description() {
+        return "Manage forceloaded Chunks";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.FORCELOAD_PERMISSION));
 
         literal.then(Commands.literal("query")
                 .executes(context -> list(context.getSource()))

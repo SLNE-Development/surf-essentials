@@ -14,9 +14,10 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.gui.GuiUtils;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.TriState;
@@ -34,7 +35,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
-import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -142,7 +142,7 @@ public class WorldCommand extends BrigadierCommand {
     }
 
     private int join(CommandSourceStack source, ServerLevel level, ServerPlayer targetUnchecked) throws CommandSyntaxException{
-        ServerPlayer target = EssentialsUtil.checkSinglePlayerSuggestion(source, targetUnchecked);
+        ServerPlayer target = EssentialsUtil.checkPlayerSuggestion(source, targetUnchecked);
         BlockPos spawn = level.getSharedSpawnPos();
 
         target.teleportTo(level, spawn.getX(), spawn.getY(), spawn.getZ(), level.getSharedSpawnAngle(), 0.0F);
@@ -194,14 +194,15 @@ public class WorldCommand extends BrigadierCommand {
 
     private int remove(CommandSourceStack source, String levelName) throws CommandSyntaxException{
         World world = Bukkit.getWorld(levelName);
+        var serverDimension = EssentialsUtil.toServerLevel(world).dimension();
         ServerLevel overworld = source.getServer().overworld();
         File file = new File(Bukkit.getServer().getWorldContainer(), levelName);
 
         if (!worlds().contains(levelName)) throw ERROR_FILE_NOT_EXISTS.create(levelName);
 
         if (world != null){
-            if (world == overworld.getWorld() || ((CraftWorld) world).getHandle().dimension() == Level.NETHER || ((CraftWorld) world).getHandle().dimension() == Level.END){
-                throw ERROR_CANNOT_UNLOAD_WORLD.create(((CraftWorld) world).getHandle().dimension().location().toString());
+            if (world == overworld.getWorld() || serverDimension == Level.NETHER || serverDimension == Level.END){
+                throw ERROR_CANNOT_UNLOAD_WORLD.create(serverDimension.location().toString());
             }
             if (source.isPlayer()){
                 EssentialsUtil.sendInfo(source, "Teleportiere Spieler...");
@@ -241,7 +242,7 @@ public class WorldCommand extends BrigadierCommand {
 
         World world = Bukkit.getWorld(file.getName());
 
-        if (world != null) throw ERROR_WORLD_ALREADY_LOADED.create(((CraftWorld) world).getHandle().dimension().location().toString());
+        if (world != null) throw ERROR_WORLD_ALREADY_LOADED.create(CraftUtil.toServerLevel(world).dimension().location().toString());
 
         if (source.isPlayer()){
             EssentialsUtil.sendInfo(source, "Lade Welt...");

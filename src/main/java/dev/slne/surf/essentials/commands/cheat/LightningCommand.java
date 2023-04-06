@@ -7,7 +7,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -20,12 +22,24 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LightningCommand {
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("lighting", LightningCommand::literal);
+public class LightningCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"lighting"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    @Override
+    public String usage() {
+        return "/lighting <players> [<amount>]";
+    }
+
+    @Override
+    public String description() {
+        return "";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(stack -> stack.getBukkitSender().hasPermission(Permissions.LIGHTING_PERMISSION));
 
         literal.then(Commands.argument("players", EntityArgument.players())
@@ -35,7 +49,8 @@ public class LightningCommand {
                         .executes(context -> lightingCustom(context, EntityArgument.getPlayers(context, "players"), new AtomicInteger(IntegerArgumentType.getInteger(context, "amount"))))));
     }
 
-    private static int lightingCustom(CommandContext<CommandSourceStack> context, Collection<ServerPlayer> targetsUnchecked, AtomicInteger power) throws CommandSyntaxException {
+
+    private int lightingCustom(CommandContext<CommandSourceStack> context, Collection<ServerPlayer> targetsUnchecked, AtomicInteger power) throws CommandSyntaxException {
         Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(context.getSource(), targetsUnchecked);
 
         for (ServerPlayer serverPlayer : targets) {
@@ -53,7 +68,6 @@ public class LightningCommand {
         }
 
         if (context.getSource().isPlayer()){
-
             if (targets.size() == 1){
                 EssentialsUtil.sendSuccess(context.getSource(), Component.text("Der Blitz hat ", Colors.SUCCESS)
                         .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
@@ -62,6 +76,15 @@ public class LightningCommand {
                 EssentialsUtil.sendSuccess(context.getSource(), Component.text("Der Blitz hat ", Colors.SUCCESS)
                         .append(Component.text(targets.size(), Colors.TERTIARY))
                         .append(Component.text(" Spieler getroffen.", Colors.SUCCESS)));
+            }
+        }else {
+            if (targets.size() == 1){
+                context.getSource().sendSuccess(PaperAdventure.asVanilla(Component.text("Lightning has struck ", Colors.GREEN)
+                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))), false);
+            }else {
+                context.getSource().sendSuccess(PaperAdventure.asVanilla(Component.text("Lightning has struck ", Colors.GREEN)
+                        .append(Component.text(targets.size(), Colors.TERTIARY))
+                        .append(Component.text(" players", Colors.GREEN))), false);
             }
         }
 

@@ -8,9 +8,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.TextComponent;
@@ -41,34 +41,32 @@ import java.util.Collections;
 import static dev.slne.surf.essentials.utils.EssentialsUtil.sendError;
 
 @DefaultQualifier(NotNull.class)
-public class BossbarCommand {
-    /**
-     * Registers the bossbar command.
-     */
-    public static void register() {
-        SurfEssentials.registerPluginBrigadierCommand("bossbar", BossbarCommand::literal);
+public class BossbarCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"bossbar"};
     }
 
-    /**
-     * Creates the bossbar command structure.
-     *
-     * @param literal the root command literal
-     */
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.BOSSBAR_PERMISSION));
+    @Override
+    public String usage() {
+        return "/bossbar ";
+    }
 
-        //--------------------------------------------------------------------------------------------------------------
-        //                                      add a bossbar
-        //--------------------------------------------------------------------------------------------------------------
+    @Override
+    public String description() {
+        return "Modify bossbar";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.BOSSBAR_PERMISSION));
+
         literal.then(Commands.literal("add")
                 .then(Commands.argument("id", ResourceLocationArgument.id())
                         .then(Commands.argument("name", ComponentArgument.textComponent())
                                 .executes(context -> add(context.getSource(), ResourceLocationArgument.getId(context, "id"),
                                         ComponentArgument.getComponent(context, "name"))))));
 
-        //--------------------------------------------------------------------------------------------------------------
-        //                                      get a bossbar
-        //--------------------------------------------------------------------------------------------------------------
         literal.then(Commands.literal("get")
                 .then(Commands.argument("id", ResourceLocationArgument.id())
                         .suggests(SUGGEST_BOSS_BAR)
@@ -81,23 +79,14 @@ public class BossbarCommand {
                         .then(Commands.literal("visible")
                                 .executes(context -> getVisible(context.getSource(), getBossBar(context))))));
 
-        //--------------------------------------------------------------------------------------------------------------
-        //                                      remove a bossbar
-        //--------------------------------------------------------------------------------------------------------------
         literal.then(Commands.literal("remove")
                 .then(Commands.argument("id", ResourceLocationArgument.id())
                         .suggests(SUGGEST_BOSS_BAR)
                         .executes(context -> remove(context.getSource(), getBossBar(context)))));
 
-        //--------------------------------------------------------------------------------------------------------------
-        //                                      list all bossbars
-        //--------------------------------------------------------------------------------------------------------------
         literal.then(Commands.literal("list")
                 .executes(context -> list(context.getSource())));
 
-        //--------------------------------------------------------------------------------------------------------------
-        //                                      change values from a bossbar
-        //--------------------------------------------------------------------------------------------------------------
         literal.then(Commands.literal("set")
                 .then(Commands.argument("id", ResourceLocationArgument.id())
                         .suggests(SUGGEST_BOSS_BAR)
@@ -151,15 +140,6 @@ public class BossbarCommand {
                                         .executes(context -> setVisible(context.getSource(), getBossBar(context), BoolArgumentType.getBool(context, "visible")))))));
     }
 
-    /**
-     * Creates a new bossbar with the given ID and display name.
-     *
-     * @param source the command source
-     * @param name the ID of the bossbar
-     * @param displayName the display name of the bossbar
-     * @return the number of bossbars in the server
-     * @throws CommandSyntaxException if the bossbar already exists
-     */
     private static int add(CommandSourceStack source, ResourceLocation name, Component displayName) throws CommandSyntaxException {
         CustomBossEvents customBossEvents = source.getServer().getCustomBossEvents();
         if (customBossEvents.get(name) != null) {
@@ -177,13 +157,6 @@ public class BossbarCommand {
         }
     }
 
-    /**
-     * Lists all the available bossbars.
-     *
-     * @param source the command source
-     * @return the number of bossbars
-     * @throws CommandSyntaxException if the command fails
-     */
     private static int list(CommandSourceStack source) throws CommandSyntaxException {
         Collection<CustomBossEvent> collection = source.getServer().getCustomBossEvents().getEvents();
         if (collection.isEmpty()) {
@@ -214,14 +187,6 @@ public class BossbarCommand {
         return collection.size();
     }
 
-    /**
-     * Gets the value of the specified bossbar.
-     *
-     * @param source the command source
-     * @param bossBar the bossbar
-     * @return the value of the bossbar
-     * @throws CommandSyntaxException if the bossbar does not exist
-     */
     private static int getValue(CommandSourceStack source, CustomBossEvent bossBar) throws CommandSyntaxException {
         if (source.isPlayer()) {
             EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.INFO))
@@ -235,14 +200,6 @@ public class BossbarCommand {
         return bossBar.getValue();
     }
 
-    /**
-     * Gets the maximum value of the specified bossbar.
-     *
-     * @param source the command source
-     * @param bossBar the bossbar
-     * @return the maximum value of the bossbar
-     * @throws CommandSyntaxException if the bossbar does not exist
-     */
     private static int getMax(CommandSourceStack source, CustomBossEvent bossBar) throws CommandSyntaxException {
         if (source.isPlayer()) {
             EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.INFO))
@@ -256,14 +213,6 @@ public class BossbarCommand {
         return bossBar.getMax();
     }
 
-    /**
-     * Gets the players that are currently viewing the specified bossbar.
-     *
-     * @param source the command source
-     * @param bossBar the bossbar
-     * @return the number of players viewing the bossbar
-     * @throws CommandSyntaxException if the bossbar does not exist
-     */
     private static int getPlayers(CommandSourceStack source, CustomBossEvent bossBar) throws CommandSyntaxException {
         if (bossBar.getPlayers().isEmpty()) {
             if (source.isPlayer()) {
@@ -297,14 +246,6 @@ public class BossbarCommand {
         return bossBar.getPlayers().size();
     }
 
-    /**
-     * Gets the visibility of the specified bossbar.
-     *
-     * @param source the command source
-     * @param bossBar the bossbar
-     * @return 1 if the bossbar is visible, 0 if it is hidden
-     * @throws CommandSyntaxException if the bossbar does not exist
-     */
     private static int getVisible(CommandSourceStack source, CustomBossEvent bossBar) throws CommandSyntaxException {
         if (bossBar.isVisible()) {
             if (source.isPlayer()) {
@@ -328,14 +269,6 @@ public class BossbarCommand {
         }
     }
 
-    /**
-     * Removes the specified bossbar.
-     *
-     * @param source the command source
-     * @param bossBar the bossbar to remove
-     * @return the number of bossbars in the server
-     * @throws CommandSyntaxException if the bossbar does not exist
-     */
     private static int remove(CommandSourceStack source, CustomBossEvent bossBar) throws CommandSyntaxException {
         CustomBossEvents customBossEvents = source.getServer().getCustomBossEvents();
         bossBar.removeAllPlayers();
@@ -350,15 +283,6 @@ public class BossbarCommand {
         return 1;
     }
 
-    /**
-     * Sets the color of the specified bossbar.
-     *
-     * @param source the command source
-     * @param bossBar the bossbar
-     * @param color the new color of the bossbar
-     * @return 1 if the color of the bossbar was changed, 0 otherwise
-     * @throws CommandSyntaxException if the bossbar does not exist
-     */
     private static int setColor(CommandSourceStack source, CustomBossEvent bossBar, BossEvent.BossBarColor color) throws CommandSyntaxException {
         if (bossBar.getColor().equals(color)) {
             if (source.isPlayer()) {
@@ -380,15 +304,6 @@ public class BossbarCommand {
         return 1;
     }
 
-    /**
-     * Sets the maximum value of the specified bossbar.
-     *
-     * @param source the command source
-     * @param bossBar the bossbar
-     * @param value the new maximum value
-     * @return the new maximum value
-     * @throws CommandSyntaxException if the bossbar does not exist or the value is not changed
-     */
     private static int setMax(CommandSourceStack source, CustomBossEvent bossBar, int value) throws CommandSyntaxException {
         if (bossBar.getMax() == value) {
             if (source.isPlayer()) {
@@ -411,15 +326,7 @@ public class BossbarCommand {
         return value;
     }
 
-    /**
-     * Sets the name of the specified bossbar.
-     *
-     * @param source the command source
-     * @param bossBar the bossbar
-     * @param name the new name of the bossbar
-     * @return 1 if the name was changed, 0 if the name was already set to the specified value
-     * @throws CommandSyntaxException if the bossbar does not exist
-     */
+
     private static int setName(CommandSourceStack source, CustomBossEvent bossBar, Component name) throws CommandSyntaxException {
         Component component = ComponentUtils.updateForEntity(source, name, null, 0);
         if (bossBar.getName().equals(component)) {
@@ -441,15 +348,6 @@ public class BossbarCommand {
         return 1;
     }
 
-    /**
-     * Sets the players of the specified bossbar.
-     *
-     * @param source the command source
-     * @param bossBar the bossbar
-     * @param playersUnchecked the players to set
-     * @return the number of players in the bossbar
-     * @throws CommandSyntaxException if the bossbar does not exist
-     */
     private static int setPlayers(CommandSourceStack source, CustomBossEvent bossBar, Collection<ServerPlayer> playersUnchecked) throws CommandSyntaxException {
         Collection<ServerPlayer> players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
         boolean notSamePlayers = bossBar.setPlayers(players);
@@ -492,15 +390,6 @@ public class BossbarCommand {
         return bossBar.getPlayers().size();
     }
 
-    /**
-     * Sets the style of the specified bossbar.
-     *
-     * @param source the command source
-     * @param bossBar the bossbar
-     * @param style the style to set
-     * @return 1 if the style was successfully changed, 0 otherwise
-     * @throws CommandSyntaxException if the bossbar does not exist
-     */
     private static int setStyle(CommandSourceStack source, CustomBossEvent bossBar, BossEvent.BossBarOverlay style)throws CommandSyntaxException{
         if (bossBar.getOverlay().equals(style)) {
             if (source.isPlayer()){
@@ -522,15 +411,6 @@ public class BossbarCommand {
         return 0;
     }
 
-    /**
-     * Sets the value of the specified bossbar.
-     *
-     * @param source the command source
-     * @param bossBar the bossbar
-     * @param value the new value for the bossbar
-     * @return the new value of the bossbar
-     * @throws CommandSyntaxException if the bossbar does not exist or if the value does not change
-     */
     private static int setValue(CommandSourceStack source, CustomBossEvent bossBar, int value) throws CommandSyntaxException{
         if (bossBar.getValue() == value) {
             if (source.isPlayer()){
@@ -554,15 +434,6 @@ public class BossbarCommand {
         return 0;
     }
 
-    /**
-     * Sets the visibility of the specified bossbar.
-     *
-     * @param source the command source
-     * @param bossBar the bossbar
-     * @param visible the visibility
-     * @return 1 if the visibility was successfully set, 0 otherwise
-     * @throws CommandSyntaxException if the bossbar does not exist
-     */
     private static int setVisible(CommandSourceStack source, CustomBossEvent bossBar, boolean visible) throws CommandSyntaxException{
         if (bossBar.isVisible() == visible) {
             if (visible) {
@@ -604,17 +475,7 @@ public class BossbarCommand {
         }
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    //                                           other Stuff
-    //------------------------------------------------------------------------------------------------------------------
 
-    /**
-     * Gets the bossbar with the specified ID.
-     *
-     * @param context the command context
-     * @return the bossbar
-     * @throws CommandSyntaxException if the bossbar does not exist
-     */
     public static CustomBossEvent getBossBar(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ResourceLocation resourceLocation = ResourceLocationArgument.getId(context, "id");
         @Nullable CustomBossEvent customBossEvent = (context.getSource()).getServer().getCustomBossEvents().get(resourceLocation);
@@ -625,61 +486,32 @@ public class BossbarCommand {
         }
     }
 
-    /**
-     * The command exception type for when a bossbar with the specified name already exists.
-     */
+
     private static final DynamicCommandExceptionType ERROR_ALREADY_EXISTS = new DynamicCommandExceptionType((name) ->
             Component.translatable("commands.bossbar.create.failed", name));
 
-    /**
-     * The command exception type for when a bossbar with the specified name does not exist.
-     */
     private static final DynamicCommandExceptionType ERROR_DOESNT_EXIST = new DynamicCommandExceptionType((name) ->
             Component.translatable("commands.bossbar.unknown", name));
 
-    /**
-     * The command exception type for when no players are changed in the bossbar.
-     */
     private static final SimpleCommandExceptionType ERROR_NO_PLAYER_CHANGE = new SimpleCommandExceptionType(Component.translatable("commands.bossbar.set.players.unchanged"));
 
-    /**
-     * The command exception type for when the bossbar name is not changed.
-     */
+
     private static final SimpleCommandExceptionType ERROR_NO_NAME_CHANGE = new SimpleCommandExceptionType(Component.translatable("commands.bossbar.set.name.unchanged"));
 
-    /**
-     * The command exception type for when the bossbar color is not changed.
-     */
     private static final SimpleCommandExceptionType ERROR_NO_COLOR_CHANGE = new SimpleCommandExceptionType(Component.translatable("commands.bossbar.set.color.unchanged"));
 
-    /**
-     * The command exception type for when the bossbar style is not changed.
-     */
     private static final SimpleCommandExceptionType ERROR_NO_STYLE_CHANGE = new SimpleCommandExceptionType(Component.translatable("commands.bossbar.set.style.unchanged"));
 
-    /**
-     * The command exception type for when the bossbar value is not changed.
-     */
     private static final SimpleCommandExceptionType ERROR_NO_VALUE_CHANGE = new SimpleCommandExceptionType(Component.translatable("commands.bossbar.set.value.unchanged"));
 
-    /**
-     * The command exception type for when the bossbar max value is not changed.
-     */
+
     private static final SimpleCommandExceptionType ERROR_NO_MAX_CHANGE = new SimpleCommandExceptionType(Component.translatable("commands.bossbar.set.max.unchanged"));
 
-    /**
-     The command exception type for when the bossbar is already hidden.
-     */
+
     private static final SimpleCommandExceptionType ERROR_ALREADY_HIDDEN = new SimpleCommandExceptionType(Component.translatable("commands.bossbar.set.visibility.unchanged.hidden"));
 
-    /**
-     The command exception type for when the bossbar is already visible.
-     */
     private static final SimpleCommandExceptionType ERROR_ALREADY_VISIBLE = new SimpleCommandExceptionType(Component.translatable("commands.bossbar.set.visibility.unchanged.visible"));
 
-    /**
-     A suggestion provider for bossbar names.
-     */
     public static final SuggestionProvider<CommandSourceStack> SUGGEST_BOSS_BAR = (context, builder) ->
             SharedSuggestionProvider.suggestResource(context.getSource().getServer().getCustomBossEvents().getIds(), builder);
 

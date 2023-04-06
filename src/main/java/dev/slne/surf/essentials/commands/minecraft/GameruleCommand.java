@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -13,12 +13,24 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.GameRules;
 import org.jetbrains.annotations.NotNull;
 
-public class GameruleCommand {
-
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("gamerule", GameruleCommand::literal);
+public class GameruleCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"gamerule"};
     }
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+
+    @Override
+    public String usage() {
+        return "/gamerule <gamerule> [<value>]";
+    }
+
+    @Override
+    public String description() {
+        return "Manage world game rules";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GAMERULE_PERMISSION));
 
         GameRules.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor() {

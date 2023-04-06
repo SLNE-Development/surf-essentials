@@ -3,28 +3,34 @@ package dev.slne.surf.essentials.commands.general.other.poll;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
-public class VoteCommand {
-
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("vote", VoteCommand::literal);
+public class VoteCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"vote"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(0, Permissions.VOTE_PERMISSION));
+    @Override
+    public String usage() {
+        return "/vote <poll> <yes | no>";
+    }
+
+    @Override
+    public String description() {
+        return "Vote for polls";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(EssentialsUtil.checkPermissions(0, Permissions.VOTE_PERMISSION));
 
         literal.then(Commands.argument("poll", StringArgumentType.word())
-                        .suggests((context, builder) -> {
-                            for (String poll : PollCommand.polls()) {
-                                builder.suggest(poll);
-                            }
-                            return builder.buildFuture();
-                        })
+                        .suggests(PollCommand.activePollSuggestions())
                 .then(Commands.literal("yes")
                         .executes(context -> vote(context.getSource(), StringArgumentType.getString(context, "poll"), true)))
                 .then(Commands.literal("no")
@@ -32,21 +38,19 @@ public class VoteCommand {
 
     }
 
-    private static int vote(CommandSourceStack source, String name, boolean yes) throws CommandSyntaxException {
-        if (!PollCommand.isValidPoll(name)){
+    private int vote(CommandSourceStack source, String name, boolean yes) throws CommandSyntaxException {
+        if (!Poll.checkPollExists(name)){
             EssentialsUtil.sendError(source, "Die Umfrage existiert nicht!");
             return 0;
         }
-        if (PollCommand.hasVoted(source.getPlayerOrException(), name)){
-            EssentialsUtil.sendError(source, "Du kannst nur einmal Abstimmen!");
-            return 0;
-        }
-        if (yes) PollCommand.addYesCount(name);
-        else PollCommand.addNoCount(name);
+        var player = source.getPlayerOrException().getBukkitEntity();
 
-        PollCommand.addVotedPlayer(source.getPlayerOrException(), name);
-        EssentialsUtil.sendSuccess(source, "Vielen Dank für deine Stimme!");
-
+        Poll.getPoll(name).thenAcceptAsync(poll -> {
+            if (!poll.addVote(player, yes)){
+                EssentialsUtil.sendError(player, "Du kannst nur einmal voten");
+            }
+            EssentialsUtil.sendSuccess(player, "Vielen Dank für deine Stimme!");
+        });
         return 1;
     }
 }

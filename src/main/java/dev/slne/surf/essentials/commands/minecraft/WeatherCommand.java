@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -13,15 +13,26 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerLevel;
 
-public class WeatherCommand {
-
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("weather", WeatherCommand::literal);
+public class WeatherCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"weather"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    @Override
+    public String usage() {
+        return "/weather <clear | rain | thunder> [<duration>]";
+    }
 
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.WEATHER_PERMISSION));
+    @Override
+    public String description() {
+        return "Change game weather";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.WEATHER_PERMISSION));
 
         literal.executes(context -> queryWeather(context.getSource()));
 

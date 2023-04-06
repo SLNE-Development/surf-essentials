@@ -26,13 +26,12 @@ import java.util.Collections;
 
 public class BoomTroll {
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> boom(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.boom"));
         return Commands.argument("player", EntityArgument.player())
                 .executes(context -> makeBoom(context, EntityArgument.getPlayer(context, "player")));
     }
 
     private static int makeBoom(@NotNull CommandContext<CommandSourceStack> context, @NotNull ServerPlayer serverPlayer) throws CommandSyntaxException {
-        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), serverPlayer);
+        EssentialsUtil.checkPlayerSuggestion(context.getSource(), serverPlayer);
         CommandSourceStack source = context.getSource();
         Player target = serverPlayer.getBukkitEntity();
         Location location = target.getLocation();

@@ -2,9 +2,9 @@ package dev.slne.surf.essentials.commands.general;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -18,22 +18,33 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.Collection;
 import java.util.Collections;
 
-public class RuleCommand {
-
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("rule", RuleCommand::literal);
+public class RuleCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"rule"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(0, Permissions.RULE_SELF_PERMISSION));
+    @Override
+    public String usage() {
+        return "/rule [<players>]";
+    }
+
+    @Override
+    public String description() {
+        return "Sends the rules to the players";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.RULE_SELF_PERMISSION, Permissions.RULE_OTHER_PERMISSION));
         literal.executes(context -> sendRules(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
 
         literal.then(Commands.argument("players", EntityArgument.players())
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.RULE_OTHER_PERMISSION))
+                .requires(EssentialsUtil.checkPermissions(Permissions.RULE_OTHER_PERMISSION))
                 .executes(context -> sendRules(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 
-    private static int sendRules(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException{
+    private int sendRules(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException{
         Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulSends = 0;
 

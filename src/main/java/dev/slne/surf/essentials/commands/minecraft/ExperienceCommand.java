@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -17,14 +17,25 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Collection;
 
-public class ExperienceCommand {
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("experience", ExperienceCommand::literal);
-        SurfEssentials.registerPluginBrigadierCommand("xp", ExperienceCommand::literal);
+public class ExperienceCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"experience", "xp"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.EXPERIENCE_PERMISSION));
+    @Override
+    public String usage() {
+        return "/experience <query | add | set>";
+    }
+
+    @Override
+    public String description() {
+        return "Query, add or set the experience of the targets";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.EXPERIENCE_PERMISSION));
 
         literal.then(Commands.literal("query")
                 .then(Commands.argument("player", EntityArgument.player())
@@ -60,7 +71,7 @@ public class ExperienceCommand {
     }
 
     private static int query(CommandSourceStack source, ServerPlayer targetUnchecked, int whatToQuery)throws CommandSyntaxException{
-        ServerPlayer target = EssentialsUtil.checkSinglePlayerSuggestion(source, targetUnchecked);
+        ServerPlayer target = EssentialsUtil.checkPlayerSuggestion(source, targetUnchecked);
         if (whatToQuery != 0 && whatToQuery != 1) throw new IllegalArgumentException("'whatToQuery' can only be 0 or 1.");
         int result = (whatToQuery == 0) ? target.experienceLevel : Math.round(target.experienceProgress * (float) target.getXpNeededForNextLevel());
 

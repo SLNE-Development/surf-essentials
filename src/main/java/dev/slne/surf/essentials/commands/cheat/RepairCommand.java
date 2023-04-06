@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.cheat;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -16,23 +16,33 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
-public class RepairCommand {
-
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("repair", RepairCommand::literal);
+public class RepairCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"repair"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.REPAIR_SELF_PERMISSION));
+    @Override
+    public String usage() {
+        return "/repair [<player]";
+    }
+
+    @Override
+    public String description() {
+        return "Repairs the players main-hand-item";
+    }
+
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.REPAIR_SELF_PERMISSION, Permissions.REPAIR_OTHER_PERMISSION));
 
         literal.executes(context -> repair(context.getSource(), context.getSource().getPlayerOrException()));
         literal.then(Commands.argument("player", EntityArgument.player())
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.REPAIR_OTHER_PERMISSION))
+                .requires(EssentialsUtil.checkPermissions(Permissions.REPAIR_OTHER_PERMISSION))
                 .executes(context -> repair(context.getSource(), EntityArgument.getPlayer(context, "players"))));
     }
 
-    private static int repair(CommandSourceStack source, ServerPlayer targetUnchecked) throws CommandSyntaxException{
-        ServerPlayer target = EssentialsUtil.checkSinglePlayerSuggestion(source, targetUnchecked);
+    public int repair(CommandSourceStack source, ServerPlayer targetUnchecked) throws CommandSyntaxException{
+        ServerPlayer target = EssentialsUtil.checkPlayerSuggestion(source, targetUnchecked);
         ItemStack item = target.getMainHandItem();
 
         if (!item.isDamageableItem()){

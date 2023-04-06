@@ -13,10 +13,8 @@ public class SurfEssentialsLoader implements PluginLoader {
     public void classloader(@NotNull PluginClasspathBuilder classpathBuilder) {
         MavenLibraryResolver resolver = new MavenLibraryResolver();
 
-        addDependency(resolver, "net.kyori", "adventure-nbt", "4.12.0");
-        addDependency(resolver, "io.papermc.paper", "paper-api", "1.19.4-R0.1-SNAPSHOT");
+        addDependency(resolver, "net.kyori", "adventure-nbt", "4.13.0");
 
-        addRepository(resolver, "jitpack.io", "https://jitpack.io");
         addRepository(resolver, "papermc", "https://repo.papermc.io/repository/maven-public/");
 
         classpathBuilder.addLibrary(resolver);

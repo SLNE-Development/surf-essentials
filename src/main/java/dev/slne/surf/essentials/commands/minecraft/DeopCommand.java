@@ -4,9 +4,9 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -19,13 +19,25 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
-public class DeopCommand {
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("deop", DeopCommand::literal);
+public class DeopCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"deop"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.DEOP_PERMISSION));
+    @Override
+    public String usage() {
+        return "/deop <player>";
+    }
+
+    @Override
+    public String description() {
+        return "Makes the player no longer a server operator";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.DEOP_PERMISSION));
 
         literal.then(Commands.argument("players", GameProfileArgument.gameProfile())
                 .suggests((context, builder) -> SharedSuggestionProvider.suggest(context.getSource().getServer().getPlayerList().getOpNames(), builder))
@@ -34,12 +46,12 @@ public class DeopCommand {
 
     private static int deop(CommandSourceStack source, Collection<GameProfile> players)throws CommandSyntaxException {
         PlayerList playerList = source.getServer().getPlayerList();
-        int i = 0;
+        int successful = 0;
 
         for (GameProfile gameProfile : players) {
             if (playerList.isOp(gameProfile)) {
                 playerList.deop(gameProfile);
-                ++i;
+                successful++;
                 if (source.isPlayer()){
                     Player player = Bukkit.getPlayer(gameProfile.getId());
                     net.kyori.adventure.text.Component displayName = (player == null) ? net.kyori.adventure.text.Component.text(gameProfile.getName()) : player.displayName();
@@ -55,14 +67,12 @@ public class DeopCommand {
             }
         }
 
-        if (i == 0) {
+        if (successful == 0) {
             if (source.isPlayer()){
                 EssentialsUtil.sendError(source, "Es hat sich nicht geändert! Die Spieler sind keine Operatoren");
-            }else {
-                throw ERROR_NOT_OP.create();
-            }
+            }else throw ERROR_NOT_OP.create();
         }
-        return i;
+        return successful;
     }
 
     private static final SimpleCommandExceptionType ERROR_NOT_OP = new SimpleCommandExceptionType(Component.translatable("commands.deop.failed"));

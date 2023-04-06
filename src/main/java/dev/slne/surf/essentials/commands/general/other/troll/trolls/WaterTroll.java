@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -15,7 +16,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -25,7 +25,6 @@ public class WaterTroll {
     public static ArrayList<Player> playersInTroll = new ArrayList<>();
 
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> water(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.water"));
         return Commands.argument("player", EntityArgument.player())
                 .executes(context -> waterTroll(context, EntityArgument.getPlayer(context, "player").getBukkitEntity().getPlayer(), 60))
                 .then(Commands.argument("time", IntegerArgumentType.integer(1, 3600))
@@ -34,7 +33,7 @@ public class WaterTroll {
     }
 
     private static int waterTroll(CommandContext<CommandSourceStack> context, Player target, int timeInSeconds) throws CommandSyntaxException {
-        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), ((CraftPlayer) target).getHandle());
+        EssentialsUtil.checkPlayerSuggestion(context.getSource(), CraftUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();
 
         if (playersInTroll.contains(target)){

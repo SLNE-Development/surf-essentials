@@ -37,7 +37,7 @@ public class ActionbarBroadcast {
                 .then(Commands.argument("actionbar", StringArgumentType.string())
                         .suggests((context, builder) -> {
                             builder.suggest("\"!&cExample &aactionbar\"");
-                            EssentialsUtil.suggestAllColorCodes(builder, context, "actionbar");
+                            EssentialsUtil.suggestAllColorCodes(builder, context);
                             return builder.buildFuture();
                         })
                         .executes(context -> broadcast(context.getSource(), EntityArgument.getPlayers(context, "players"), StringArgumentType.getString(context, "actionbar"), null, null))

@@ -3,54 +3,68 @@ package dev.slne.surf.essentials.commands.cheat;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.commands.minecraft.DamageCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
 
-public class HurtCommand {
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("hurt", HurtCommand::literal);
+public class HurtCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"hurt"};
     }
 
-    public static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.HURT_PERMISSION));
+    @Override
+    public String usage() {
+        return "/hurt <player>";
+    }
+
+    @Override
+    public String description() {
+        return "Hurt other players";
+    }
+
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.HURT_PERMISSION));
 
         literal.then(Commands.argument("players", EntityArgument.players())
-                .then(Commands.argument("amount", IntegerArgumentType.integer(1, 250))
+                .then(Commands.argument("amount", IntegerArgumentType.integer(1, 255))
                         .executes(context -> executeHurt(context.getSource(), EntityArgument.getPlayers(context, "players"),
                                 IntegerArgumentType.getInteger(context, "amount")))));
     }
 
-    private static int executeHurt(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, int amount) throws CommandSyntaxException {
-        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+    private int executeHurt(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, int amount) throws CommandSyntaxException {
+        var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+        var sources = EssentialsUtil.getDamageSources();
+        var successfulHurted = 0;
         if (source.isPlayer()){
             for (Player target : targets) {
-                target.hurt(new DamageSources(MinecraftServer.getServer().registryAccess()).playerAttack(source.getPlayerOrException()), amount);
+                if (target.hurt(sources.playerAttack(source.getPlayerOrException()), amount)) successfulHurted++;
             }
         }else {
             for (Player target : targets) {
-                target.hurt(new DamageSources(MinecraftServer.getServer().registryAccess()).magic(), amount);
+                if (target.hurt(sources.generic().critical(), amount)) successfulHurted++;
             }
         }
 
-        if (targets.size() == 1){
+        if (successfulHurted == 0) throw DamageCommand.ERROR_INVULNERABLE.create();
+
+        if (successfulHurted == 1){
             if (source.isPlayer()){
                 EssentialsUtil.sendSuccess(source, (targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
                         .append(Component.text(" wurde verletzt!", Colors.SUCCESS)));
             }else {
-                source.sendSuccess(targets.iterator().next().getDisplayName()
+                source.sendSuccess(EssentialsUtil.getDisplayNameAsVanilla(targets.iterator().next())
                         .copy().append(net.minecraft.network.chat.Component.literal(" was hurt!")
                                 .withStyle(ChatFormatting.GREEN)), false);
             }
@@ -60,7 +74,7 @@ public class HurtCommand {
                         .append(Component.text(" Spieler wurden verletzt!", Colors.SUCCESS)));
             }else {
                 source.sendSuccess(targets.iterator().next().getDisplayName()
-                        .copy().append(net.minecraft.network.chat.Component.literal(" players were hurted!")
+                        .copy().append(net.minecraft.network.chat.Component.literal(" players were hurt!")
                                 .withStyle(ChatFormatting.GREEN)), false);
             }
         }

@@ -27,7 +27,6 @@ import java.util.UUID;
 
 public class HerobrineTroll {
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> herobrine(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.herobrine"));
         return Commands.argument("player", EntityArgument.player())
                 .executes(context -> summonHerobrine(context, EntityArgument.getPlayer(context, "player"), true))
                 .then(Commands.argument("showParticles", BoolArgumentType.bool())
@@ -36,7 +35,7 @@ public class HerobrineTroll {
     }
 
     private static int summonHerobrine(CommandContext<CommandSourceStack> context, ServerPlayer target, boolean withParticles) throws CommandSyntaxException {
-        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), target);
+        EssentialsUtil.checkPlayerSuggestion(context.getSource(), target);
         CommandSourceStack source = context.getSource();
 
         GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "Herobrine");

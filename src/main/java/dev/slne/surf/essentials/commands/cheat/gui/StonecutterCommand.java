@@ -1,11 +1,10 @@
 package dev.slne.surf.essentials.commands.cheat.gui;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
@@ -16,17 +15,31 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
+import java.util.List;
 
-public class StonecutterCommand {
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("stonecutter", StonecutterCommand::literal);
+public class StonecutterCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"stonecutter"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.STONECUTTER_SELF_PERMISSION));
-        literal.executes(context -> open(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrException())));
+    @Override
+    public String usage() {
+        return "/stonecutter [<targets>]";
+    }
+
+    @Override
+    public String description() {
+        return "Opens the stonecutter gui for the targets";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.STONECUTTER_SELF_PERMISSION, Permissions.STONECUTTER_OTHER_PERMISSION));
+        literal.executes(context -> open(context.getSource(), List.of(context.getSource().getPlayerOrException())));
+
         literal.then(Commands.argument("targets", EntityArgument.players())
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.STONECUTTER_OTHER_PERMISSION))
+                .requires(EssentialsUtil.checkPermissions(Permissions.STONECUTTER_OTHER_PERMISSION))
                 .executes(context -> open(context.getSource(), EntityArgument.getPlayers(context, "targets"))));
     }
 

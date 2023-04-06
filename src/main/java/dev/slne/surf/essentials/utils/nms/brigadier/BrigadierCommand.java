@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.utils.brigadier;
+package dev.slne.surf.essentials.utils.nms.brigadier;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.essentials.SurfEssentials;

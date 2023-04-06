@@ -7,12 +7,12 @@ import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -156,7 +156,7 @@ public class TrollGuiItems {
         GuiItem guiItem = new GuiItem(new ItemStack(Material.VILLAGER_SPAWN_EGG, 1));
 
         rename(guiItem, "Villager annoy Troll");
-        lore(guiItem, "Spieler nervige villager geräusche für den Spieler ab");
+        lore(guiItem, "Spielt nervige villager geräusche für den Spieler ab");
         guiItem.setAction(clickAndShowOnlinePlayers(new String[]{"villager", ""}));
 
         return guiItem;
@@ -174,6 +174,15 @@ public class TrollGuiItems {
         guiItem.setAction(clickAndShowOnlinePlayers(new String[]{"water", ""}));
 
         return guiItem;
+    }
+
+    public static GuiItem crashTroll(){
+        var item = new GuiItem(new ItemStack(Material.TNT_MINECART, 1));
+
+        rename(item, "Crash Troll");
+        lore(item, "Lässt das Spiel von einem Spieler zum absturz bringen");
+
+        return item;
     }
 
     /** A page forward {@link GuiItem} */
@@ -256,7 +265,7 @@ public class TrollGuiItems {
                     ((Player) inventoryClickEvent.getWhoClicked()).performCommand("troll " + trollName[0] + " " + onlinePlayer.getName() + " " + trollName[1]);
                 });
 
-                if (EssentialsUtil.canPlayerSeePlayer(((CraftPlayer)player).getHandle(), (((CraftPlayer)onlinePlayer).getHandle()))) {
+                if (EssentialsUtil.canPlayerSeePlayer(EssentialsUtil.toServerPlayer(player), CraftUtil.toServerPlayer(onlinePlayer))) {
                     pages.get(currentPage).addItem(playerHead, Slot.fromIndex(currentSlot));
                     currentSlot++;
                 }

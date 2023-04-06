@@ -7,10 +7,10 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.color.EffectColors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -30,13 +30,24 @@ import org.bukkit.event.entity.EntityPotionEffectEvent;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
-public class EffectCommand {
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("effect", EffectCommand::literal);
+public class EffectCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"effect"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.EFFECT_PERMISSION));
+    @Override
+    public String usage() {
+        return "/effect <clear [<targets [<effect>]>] | give <targets> <effect> [<infinitive | duration >] [<amplifier [<hideParticles>]>]>";
+    }
+
+    @Override
+    public String description() {
+        return "Gives or clears the effects from the targets";
+    }
+
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.EFFECT_PERMISSION));
 
         literal.then(Commands.literal("give")
                 .then(Commands.argument("targets", EntityArgument.entities())
@@ -62,7 +73,7 @@ public class EffectCommand {
                                 .executes(context -> clearSingleEffect(context.getSource(), EntityArgument.getEntities(context, "targets"), ResourceArgument.getMobEffect(context, "effect"))))));
     }
 
-    private static int giveEffect(CommandSourceStack source, Collection<? extends Entity> targetsUnchecked, Holder<MobEffect> statusEffect, @Nullable Integer seconds, int amplifier, boolean showParticles) throws CommandSyntaxException{
+    private int giveEffect(CommandSourceStack source, Collection<? extends Entity> targetsUnchecked, Holder<MobEffect> statusEffect, @Nullable Integer seconds, int amplifier, boolean showParticles) throws CommandSyntaxException {
         Collection<? extends Entity> targets = EssentialsUtil.checkEntitySuggestion(source, targetsUnchecked);
         MobEffect mobEffectList = statusEffect.value();
         int successfulApplies = 0;
@@ -78,41 +89,40 @@ public class EffectCommand {
         }
 
         if (successfulApplies == 0) {
-            if (source.isPlayer()){
+            if (source.isPlayer()) {
                 EssentialsUtil.sendError(source, "Die Ziele sind entweder Immun gegen Effekte oder haben bereits einen stärkeren");
-            }else {
-                throw ERROR_GIVE_FAILED.create();
-            }
-        } else {
-            if (targets.size() == 1) {
-                if (source.isPlayer()){
-                    EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Der Effect ", Colors.SUCCESS))
-                            .append(net.kyori.adventure.text.Component.text("[%s]".formatted(mobEffectList.getDisplayName().getString()), EffectColors.getEffectColor(mobEffectList))
-                                    .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Zeit: ", Colors.INFO)
-                                            .append(net.kyori.adventure.text.Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.TERTIARY)))))
-                            .append(net.kyori.adventure.text.Component.text(" wurde ", Colors.SUCCESS))
-                            .append(PaperAdventure.asAdventure(targets.iterator().next().getDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(" gegeben!", Colors.SUCCESS)));
-                }else {
-                    source.sendSuccess(Component.translatable("commands.effect.give.success.single", mobEffectList.getDisplayName(), targets.iterator().next().getDisplayName(), durationInTicks / 20), false);
-                }
-
-            } else {
-                if (source.isPlayer()){
-                    EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Der Effect ", Colors.SUCCESS))
-                            .append(net.kyori.adventure.text.Component.text("[%s]".formatted(mobEffectList.getDisplayName().getString()), EffectColors.getEffectColor(mobEffectList))
-                                    .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Zeit: ", Colors.INFO)
-                                            .append(net.kyori.adventure.text.Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.TERTIARY)))))
-                            .append(net.kyori.adventure.text.Component.text(" wurde ", Colors.SUCCESS))
-                            .append(net.kyori.adventure.text.Component.text(targets.size(), Colors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(" Entities gegeben!", Colors.SUCCESS)));
-                }else {
-                    source.sendSuccess(Component.translatable("commands.effect.give.success.multiple", mobEffectList.getDisplayName(), targets.size(), durationInTicks / 20), false);
-                }
-            }
+            } else throw ERROR_GIVE_FAILED.create();
             return successfulApplies;
         }
-        return 0;
+        if (targets.size() == 1) {
+            if (source.isPlayer()) {
+                EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Der Effect ", Colors.SUCCESS))
+                        .append(net.kyori.adventure.text.Component.text("[%s]".formatted(mobEffectList.getDisplayName().getString()), EffectColors.getEffectColor(mobEffectList))
+                                .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Zeit: ", Colors.INFO)
+                                        .append(net.kyori.adventure.text.Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.TERTIARY)))))
+                        .append(net.kyori.adventure.text.Component.text(" wurde ", Colors.SUCCESS))
+                        .append(PaperAdventure.asAdventure(targets.iterator().next().getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                        .append(net.kyori.adventure.text.Component.text(" gegeben!", Colors.SUCCESS)));
+            } else {
+                source.sendSuccess(Component.translatable("commands.effect.give.success.single", mobEffectList.getDisplayName(), targets.iterator().next().getDisplayName(), durationInTicks / 20), false);
+            }
+
+        } else {
+            if (source.isPlayer()) {
+                EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Der Effect ", Colors.SUCCESS))
+                        .append(net.kyori.adventure.text.Component.text("[%s]".formatted(mobEffectList.getDisplayName().getString()), EffectColors.getEffectColor(mobEffectList))
+                                .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Zeit: ", Colors.INFO)
+                                        .append(net.kyori.adventure.text.Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.TERTIARY)))))
+                        .append(net.kyori.adventure.text.Component.text(" wurde ", Colors.SUCCESS))
+                        .append(net.kyori.adventure.text.Component.text(targets.size(), Colors.TERTIARY))
+                        .append(net.kyori.adventure.text.Component.text(" Entities gegeben!", Colors.SUCCESS)));
+            } else {
+                source.sendSuccess(Component.translatable("commands.effect.give.success.multiple", mobEffectList.getDisplayName(), targets.size(), durationInTicks / 20), false);
+            }
+        }
+        return successfulApplies;
+
+
     }
 
     private static int clearSingleEffect(CommandSourceStack source, Collection<? extends Entity> targetsUnchecked, Holder<MobEffect> statusEffect)throws CommandSyntaxException{
@@ -159,7 +169,7 @@ public class EffectCommand {
         return successfullyRemoves;
     }
 
-    private static int clearAllEffects(CommandSourceStack source, Collection<? extends Entity> targetsUnchecked) throws CommandSyntaxException{
+    private int clearAllEffects(CommandSourceStack source, Collection<? extends Entity> targetsUnchecked) throws CommandSyntaxException{
         Collection<? extends Entity> targets = EssentialsUtil.checkEntitySuggestion(source, targetsUnchecked);
         int successfullyRemoves = 0;
 
@@ -197,7 +207,7 @@ public class EffectCommand {
         return successfullyRemoves;
     }
 
-    private static int calculateDurationInTicks(MobEffect mobEffect, @Nullable Integer durationSeconds) {
+    private int calculateDurationInTicks(MobEffect mobEffect, @Nullable Integer durationSeconds) {
         int ticks;
         if (durationSeconds != null) {
             if (mobEffect.isInstantenous()) {
@@ -215,7 +225,7 @@ public class EffectCommand {
         return ticks;
     }
 
-    private static RequiredArgumentBuilder<CommandSourceStack, Integer> amplifierAndParticleBuilder(boolean isInfinitive){
+    private RequiredArgumentBuilder<CommandSourceStack, Integer> amplifierAndParticleBuilder(boolean isInfinitive){
         return Commands.argument("amplifier", IntegerArgumentType.integer(0, 255))
                 .executes(context -> giveEffect(context.getSource(), EntityArgument.getEntities(context, "targets"),
                         ResourceArgument.getMobEffect(context, "effect"), isInfinitive ? -1 : IntegerArgumentType.getInteger(context, "duration"),

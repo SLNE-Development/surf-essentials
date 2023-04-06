@@ -4,8 +4,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -46,7 +46,7 @@ public class UnhatCommand extends BrigadierCommand {
     }
 
     private int hat(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException{
-        ServerPlayer player = EssentialsUtil.checkSinglePlayerSuggestion(source, playerUnchecked);
+        ServerPlayer player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
         Inventory playerInventory = player.getInventory();
         ItemStack itemStackOnHead = playerInventory.getArmor(EquipmentSlot.HEAD.getIndex());
         int freeSlot = playerInventory.getFreeSlot();

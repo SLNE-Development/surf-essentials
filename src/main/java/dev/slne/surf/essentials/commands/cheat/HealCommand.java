@@ -2,9 +2,9 @@ package dev.slne.surf.essentials.commands.cheat;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -16,22 +16,32 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import java.util.Collection;
 import java.util.Collections;
 
-public class HealCommand {
-
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("heal", HealCommand::literal);
+public class HealCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"heal"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.HEAL_SELF_PERMISSION));
+    @Override
+    public String usage() {
+        return "/heal [<targets>]";
+    }
+
+    @Override
+    public String description() {
+        return "Heals the targets";
+    }
+
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.HEAL_SELF_PERMISSION, Permissions.HEAL_OTHER_PERMISSION));
 
         literal.executes(context -> heal(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("players", EntityArgument.players())
-                        .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.HEAL_OTHER_PERMISSION))
+                        .requires(EssentialsUtil.checkPermissions(Permissions.HEAL_OTHER_PERMISSION))
                         .executes(context -> heal(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 
-    private static int heal(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
+    private int heal(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
         Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulChanges = 0;
 

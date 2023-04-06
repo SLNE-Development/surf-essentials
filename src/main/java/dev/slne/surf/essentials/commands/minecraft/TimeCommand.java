@@ -4,10 +4,10 @@ import com.google.common.collect.Iterators;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.exceptions.InvalidStringTimeException;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.configuration.GlobalConfiguration;
 import net.kyori.adventure.text.Component;
@@ -25,14 +25,25 @@ import org.bukkit.event.world.TimeSkipEvent;
 
 import java.util.Iterator;
 
-public class TimeCommand{
-
-    public static void register() {
-        SurfEssentials.registerPluginBrigadierCommand("time", TimeCommand::literal);
+public class TimeCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"time"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.TIME_PERMISSION));
+    @Override
+    public String usage() {
+        return "/time <query | add | set | day | noon | night | midnight>";
+    }
+
+    @Override
+    public String description() {
+        return "Change game time";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.TIME_PERMISSION));
 
         literal.executes(context -> queryTime(context.getSource(), context.getSource().getLevel(), getDayTime(context.getSource().getLevel()), 1));
 

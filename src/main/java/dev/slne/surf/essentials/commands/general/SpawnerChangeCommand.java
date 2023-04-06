@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.general;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -27,14 +27,25 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Objects;
 
-public class SpawnerChangeCommand{
-
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("spawner", SpawnerChangeCommand::literal);
+public class SpawnerChangeCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"spawner"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SPAWNER_PERMISSION));
+    @Override
+    public String usage() {
+        return "/spawner ...";
+    }
+
+    @Override
+    public String description() {
+        return "Change spawners";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.SPAWNER_PERMISSION));
 
         literal.executes(context -> giveSpawner(context.getSource()));
 
@@ -143,6 +154,7 @@ public class SpawnerChangeCommand{
         return 1;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean isSpawner(CommandSourceStack source, BlockPos blockPos) throws CommandSyntaxException {
         if (source.getLevel().getBlockIfLoaded(blockPos) != Blocks.SPAWNER){
             if (source.isPlayer()){

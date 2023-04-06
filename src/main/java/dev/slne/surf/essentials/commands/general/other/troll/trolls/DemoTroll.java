@@ -20,13 +20,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class DemoTroll {
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> demo(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(stack -> stack.getBukkitSender().hasPermission("surf.essentials.commands.troll.demo"));
         return Commands.argument("player", EntityArgument.player())
                 .executes(context -> makeDemo(context, EntityArgument.getPlayer(context, "player")));
     }
 
     private static int makeDemo(@NotNull CommandContext<CommandSourceStack> context, ServerPlayer targetPlayer) throws CommandSyntaxException {
-        EssentialsUtil.checkSinglePlayerSuggestion(context.getSource(), targetPlayer);
+        EssentialsUtil.checkPlayerSuggestion(context.getSource(), targetPlayer);
         // Get the source of the command
         CommandSourceStack source = context.getSource();
         Player target = targetPlayer.getBukkitEntity();

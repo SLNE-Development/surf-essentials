@@ -2,9 +2,9 @@ package dev.slne.surf.essentials.commands.general;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.commands.CommandSourceStack;
@@ -13,23 +13,29 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import org.bukkit.Bukkit;
 
-import java.util.List;
-
-public class AlertCommand{
-    private static final List<String> aliases = List.of("alert", "broadcast", "al");
-
-    public static void register(){
-        for (String alias : aliases) {
-            SurfEssentials.registerPluginBrigadierCommand(alias, AlertCommand::literal);
-        }
+public class AlertCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"alert", "broadcast", "al"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.ALERT_PERMISSION));
+    @Override
+    public String usage() {
+        return "/alert <message>";
+    }
+
+    @Override
+    public String description() {
+        return "Sends an alert message to all online players";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.ALERT_PERMISSION));
 
         literal.then(Commands.argument("message", StringArgumentType.greedyString())
                 .suggests((context, builder) -> {
-                    EssentialsUtil.suggestAllColorCodes(builder);
+                    EssentialsUtil.suggestAllColorCodes(builder, context);
                     return builder.buildFuture();
                 })
                 .executes(context -> alert(context.getSource(), StringArgumentType.getString(context, "message"))));
