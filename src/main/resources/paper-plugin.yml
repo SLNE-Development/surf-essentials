@@ -1,0 +1,9 @@
+name: '${name}'
+version: '${project.version}'
+main: ${project.mainClass}
+description: '${project.description}'
+api-version: '${project.apiVersion}'
+bootstrapper: ${project.bootstrapper}
+loader: ${project.loader}
+authors: [${project.authors}]
+website: '${project.url}'
