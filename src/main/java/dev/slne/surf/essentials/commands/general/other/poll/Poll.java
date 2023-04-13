@@ -23,8 +23,8 @@ public class Poll {
 
     private final Set<UUID> VOTED_PLAYERS = new HashSet<>();
 
-    private String name;
-    private String question;
+    private final String name;
+    private final String question;
     private int duration;
     private boolean startedTimer;
     private boolean stopSilent;

@@ -44,6 +44,7 @@ public class AnvilTroll implements Listener {
                                 IntegerArgumentType.getInteger(context, "time"))));
     }
 
+
     private static int dropAnvil(CommandContext<CommandSourceStack> context, Player target, int timeInSeconds) throws CommandSyntaxException {
         EssentialsUtil.checkPlayerSuggestion(context.getSource(), CraftUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();

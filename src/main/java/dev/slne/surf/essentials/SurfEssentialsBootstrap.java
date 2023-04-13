@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("UnstableApiUsage")
 public class SurfEssentialsBootstrap implements PluginBootstrap {
     private static @Nullable ComponentLogger logger;
     private static final TextColor DEBUG = TextColor.fromHexString("#a6c7e6");

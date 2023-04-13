@@ -138,7 +138,7 @@ public abstract class MessageUtil extends CraftUtil {
 
     public static<T extends CommandSourceStack> void sendSourceSuccess(T source, Component message, boolean broadcastToOps) {
         source.sendSuccess(PaperAdventure.asVanilla(getPrefix()
-                .append(message)), broadcastToOps);
+                .append(message.colorIfAbsent(Colors.SUCCESS))), broadcastToOps);
     }
     public static<T extends CommandSourceStack> void sendSourceSuccess(T source, Component message){
         sendSourceSuccess(source, message, false);

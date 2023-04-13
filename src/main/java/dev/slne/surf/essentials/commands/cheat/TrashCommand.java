@@ -49,7 +49,6 @@ public class TrashCommand extends BrigadierCommand {
     }
 
     private int trashMenu(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException {
-
         var player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
 
         var chestGui = new ChestGui(
@@ -103,7 +102,8 @@ public class TrashCommand extends BrigadierCommand {
         chestGui.setOnClose(inventoryCloseEvent -> {
             var contents = new ArrayList<ItemStack>();
             for (ItemStack content : inventoryCloseEvent.getInventory().getContents()) {
-                if (content != null && (!content.equals(edgeItemStack) || !content.equals(confirmItemStack))) {
+                if (content != null) {
+                    if (content.equals(edgeItemStack) || content.equals(confirmItemStack)) return;
                     contents.add(content);
                 }
             }

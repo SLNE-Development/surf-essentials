@@ -4,14 +4,18 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 
 public interface Colors {
-    TextColor PRIMARY = TextColor.fromHexString("#3254a8");
-    TextColor SECONDARY = TextColor.fromHexString("#cdab57");
+    TextColor PRIMARY = TextColor.fromHexString("#3b92d1");
+    TextColor SECONDARY = TextColor.fromHexString("#5b5b5b");
     TextColor TERTIARY = TextColor.fromHexString("#f2c94c");
+    TextColor VARIABLE_KEY = TextColor.fromHexString("#3b92d1");
+    TextColor VARIABLE_VALUE = TextColor.fromHexString("#f9c353");
+    TextColor SPACER = NamedTextColor.GRAY;
+    TextColor DARK_SPACER = NamedTextColor.DARK_GRAY;
 
-    TextColor ERROR = TextColor.fromHexString("#AA4344");
-    TextColor SUCCESS = TextColor.fromHexString("#77dd77");
-    TextColor WARNING = TextColor.fromHexString("#FDFD96");
-    TextColor INFO = TextColor.fromHexString("#B5B5AC");
+    TextColor ERROR = TextColor.fromHexString("#ee3d51");
+    TextColor SUCCESS = TextColor.fromHexString("#65ff64");
+    TextColor WARNING = TextColor.fromHexString("#f9c353");
+    TextColor INFO = TextColor.fromHexString("#40d1db");
     TextColor DEBUG = TextColor.fromHexString("#a6c7e6");
 
     TextColor WHITE = TextColor.fromHexString("#f4f4f4");

@@ -62,7 +62,7 @@ public class DeopCommand extends BrigadierCommand {
                             .append(source.getPlayerOrException().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
                             .append(net.kyori.adventure.text.Component.text(" kein Operator mehr!", Colors.INFO)), "surf.essentials.announce.op");
                 }else {
-                    source.sendSuccess(Component.translatable("commands.op.success", gameProfile.getName()), true);
+                    source.sendSuccess(Component.translatable("commands.deop.success", gameProfile.getName()), true);
                 }
             }
         }

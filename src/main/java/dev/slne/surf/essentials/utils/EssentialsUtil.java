@@ -1,8 +1,10 @@
 package dev.slne.surf.essentials.utils;
 
+import com.mojang.authlib.GameProfile;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.abtract.CommandUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -31,13 +33,14 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public final class EssentialsUtil extends CommandUtil {
     private EssentialsUtil(){}
     private static Component prefix;
     public static final int MAX_FOOD = 20;
 
-    public static Sound[] scareSounds = new Sound[]{Sound.ENTITY_LIGHTNING_BOLT_THUNDER, Sound.ENTITY_WOLF_HOWL,
+    public static final Sound[] scareSounds = new Sound[]{Sound.ENTITY_LIGHTNING_BOLT_THUNDER, Sound.ENTITY_WOLF_HOWL,
             Sound.ENTITY_BAT_DEATH, Sound.ENTITY_GHAST_SCREAM, Sound.ENTITY_GHAST_HURT};
 
 
@@ -96,7 +99,6 @@ public final class EssentialsUtil extends CommandUtil {
     }
 
 
-    @SuppressWarnings("unchecked")
     public static @NotNull CommandBuildContext buildContext(){
         return CommandBuildContext.configurable(MinecraftServer.getServer().registryAccess(),
             MinecraftServer.getServer().getWorldData().getDataConfiguration().enabledFeatures());
@@ -165,6 +167,14 @@ public final class EssentialsUtil extends CommandUtil {
         return displayName.colorIfAbsent(Colors.TERTIARY);
     }
 
+    public static Component getDisplayName(GameProfile gameProfile){
+        var player = getServerPlayer(gameProfile.getId());
+        if (player != null){
+            return getDisplayName(player);
+        }
+        return Component.text(gameProfile.getName(), Colors.TERTIARY);
+    }
+
     public static<E extends Entity> net.minecraft.network.chat.Component getDisplayNameAsVanilla(E entity) {
        return PaperAdventure.asVanilla(getDisplayName(entity));
     }
@@ -194,5 +204,13 @@ public final class EssentialsUtil extends CommandUtil {
         return stack;
     }
 
-
+    @Contract(pure = true)
+    public static @NotNull Predicate<Player> hasGameModePermission(){
+        return player -> player.hasPermission(Permissions.GAMEMODE_ADVENTURE_SELF_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_ADVENTURE_OTHER_PERMISSION)
+                || player.hasPermission(Permissions.GAMEMODE_ADVENTURE_OTHER_OFFLINE_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_CREATIVE_SELF_PERMISSION)
+                || player.hasPermission(Permissions.GAMEMODE_CREATIVE_OTHER_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_CREATIVE_OTHER_OFFLINE_PERMISSION)
+                || player.hasPermission(Permissions.GAMEMODE_SURVIVAL_SELF_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_SURVIVAL_OTHER_PERMISSION)
+                || player.hasPermission(Permissions.GAMEMODE_SURVIVAL_OTHER_OFFLINE_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_SPECTATOR_OTHER_PERMISSION)
+                || player.hasPermission(Permissions.GAMEMODE_SPECTATOR_SELF_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_SPECTATOR_OTHER_OFFLINE_PERMISSION);
+    }
 }

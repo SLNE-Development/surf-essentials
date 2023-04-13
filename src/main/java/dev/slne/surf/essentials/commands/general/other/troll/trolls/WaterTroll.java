@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 public class WaterTroll {
 
-    public static ArrayList<Player> playersInTroll = new ArrayList<>();
+    public static final ArrayList<Player> playersInTroll = new ArrayList<>();
 
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> water(LiteralArgumentBuilder<CommandSourceStack> literal){
         return Commands.argument("player", EntityArgument.player())

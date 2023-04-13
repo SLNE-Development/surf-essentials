@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class CageTroll {
-    public static ArrayList<UUID> playersInCage = new ArrayList<>();
+    public static final ArrayList<UUID> playersInCage = new ArrayList<>();
 
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> cage(LiteralArgumentBuilder<CommandSourceStack> literal){
         return Commands.argument("player", EntityArgument.player())

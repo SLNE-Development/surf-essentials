@@ -6,10 +6,13 @@ import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.PatternPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
+import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -148,11 +151,23 @@ public class GuiUtils {
      */
     public static ItemStack getHeadFromValue(String value) {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
+        var minecraftSkull = EssentialsUtil.toMinecraftItemStack(skull);
+        CompoundTag compoundTag = minecraftSkull.getOrCreateTag();
         UUID hashAsId = new UUID(value.hashCode(), value.hashCode());
 
+        compoundTag.putUUID("SkullOwner.Id", hashAsId);
+        compoundTag.put("SkullOwner.Properties.Value", new ListTag().set(0, StringTag.valueOf(value)));
+
+        minecraftSkull.setTag(compoundTag);
+
+        return minecraftSkull.asBukkitCopy();
+
+        /**
         return Bukkit.getUnsafe().modifyItemStack(skull,
                 "{SkullOwner:{Id:\"" + hashAsId + "\",Properties:{textures:[{Value:\"" + value + "\"}]}}}"
         );
+         */
+        // TODO test code above
     }
 
     /**

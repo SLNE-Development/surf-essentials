@@ -13,7 +13,7 @@ public class Boarders {
      *
      * @return the boarder
      */
-    public static final OutlinePane LEFT_BOARDER(){
+    public static  OutlinePane LEFT_BOARDER(){
         OutlinePane pane = new OutlinePane(0, 0, 1, 6);
         pane.addItem(TrollGuiItems.boarder());
         pane.setRepeat(true);
@@ -25,7 +25,7 @@ public class Boarders {
      *
      * @return the boarder
      */
-    public static final OutlinePane RIGHT_BOARDER(){
+    public static  OutlinePane RIGHT_BOARDER(){
         OutlinePane pane = new OutlinePane(8, 0, 1, 6);
         pane.addItem(TrollGuiItems.boarder());
         pane.setRepeat(true);
@@ -37,7 +37,7 @@ public class Boarders {
      *
      * @return the boarder
      */
-    public static final PatternPane BOTTOM_BOARDER(){
+    public static  PatternPane BOTTOM_BOARDER(){
         Pattern pattern = new Pattern("0012300");
         PatternPane pane = new PatternPane(1, 5, 7, 1, pattern);
 
@@ -57,7 +57,7 @@ public class Boarders {
      *
      * @return the boarder
      */
-    public static final PatternPane BOTTOM_BOARDER(PaginatedPane paginatedPane, ChestGui gui){
+    public static  PatternPane BOTTOM_BOARDER(PaginatedPane paginatedPane, ChestGui gui){
         Pattern pattern = new Pattern("0012300");
         PatternPane pane = new PatternPane(1, 5, 7, 1, pattern);
 
@@ -88,7 +88,7 @@ public class Boarders {
      *
      * @return the boarder
      */
-    public static final OutlinePane UPPER_BOARDER(){
+    public static  OutlinePane UPPER_BOARDER(){
         OutlinePane pane = new OutlinePane(1, 0, 7, 1);
         pane.addItem(TrollGuiItems.boarder());
         pane.setRepeat(true);

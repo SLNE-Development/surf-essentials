@@ -89,6 +89,7 @@ public interface Permissions {
     String SET_BLOCK_PERMISSION = "surf.essentials.commands.setblock";
     String RIDE_PERMISSION = "surf.essentials.commands.ride";
     String DAMAGE_PERMISSION = "surf.essentials.commands.damage";
+    String WHITELIST_PERMISSION = "surf.essentials.commands.whitelist";
 
 
     /**

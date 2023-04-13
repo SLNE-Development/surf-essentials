@@ -172,7 +172,9 @@ public class WorldCommand extends BrigadierCommand {
             EssentialsUtil.sendInfo(source, "Teleportiere Spieler in overworld...");
         }
 
-        level.players().forEach(serverPlayer -> serverPlayer.teleportTo(overworld, overworldSpawn.getX(), overworldSpawn.getY(), overworldSpawn.getZ(), overworld.getSharedSpawnAngle(), 0.0F));
+        for (ServerPlayer player : level.players()) {
+            player.teleportTo(overworld, overworldSpawn.getX(), overworldSpawn.getY(), overworldSpawn.getZ(), overworld.getSharedSpawnAngle(), 0.0F);
+        }
 
         if (source.isPlayer()){
             EssentialsUtil.sendInfo(source, "Entlade Welt...");
@@ -359,14 +361,14 @@ public class WorldCommand extends BrigadierCommand {
             net.minecraft.network.chat.Component.literal("The file '" + fileName + "' doesn´t exist")
                     .withStyle(ChatFormatting.RED));
 
-    DynamicCommandExceptionType ERROR_INVALID_VALUE = new DynamicCommandExceptionType(id ->
+    final DynamicCommandExceptionType ERROR_INVALID_VALUE = new DynamicCommandExceptionType(id ->
             net.minecraft.network.chat.Component.translatable("argument.dimension.invalid", id));
 
-    DynamicCommandExceptionType ERROR_WORLD_ALREADY_LOADED = new DynamicCommandExceptionType(worldName ->
+    final DynamicCommandExceptionType ERROR_WORLD_ALREADY_LOADED = new DynamicCommandExceptionType(worldName ->
             net.minecraft.network.chat.Component.literal("The world '" + worldName + "' is already loaded")
                     .withStyle(ChatFormatting.RED));
 
-    DynamicCommandExceptionType ERROR_WORLD_ALREADY_CREATED = new DynamicCommandExceptionType(worldName ->
+    final DynamicCommandExceptionType ERROR_WORLD_ALREADY_CREATED = new DynamicCommandExceptionType(worldName ->
             net.minecraft.network.chat.Component.literal("The world '" + worldName + "' already exists")
                     .withStyle(ChatFormatting.RED));
 }

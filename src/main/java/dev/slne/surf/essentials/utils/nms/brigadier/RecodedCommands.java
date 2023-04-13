@@ -40,6 +40,7 @@ public class RecodedCommands {
         strings.add("weather");
         strings.add("teleport");
         strings.add("tp");
+        strings.add("whitelist");
     }).stream().map(o -> o.toString().toLowerCase()).toList();
 
     public RecodedCommands(){

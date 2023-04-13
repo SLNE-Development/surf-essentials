@@ -54,10 +54,12 @@ public class ListCommand extends BrigadierCommand {
                     .append(Component.text(" Spielern online: ", Colors.INFO)));
             for (ServerPlayer serverPlayer : list) {
                 if (withUUID) {
-                    builder.append(Component.text("(%s)".formatted(serverPlayer.adventure$displayName.colorIfAbsent(Colors.TERTIARY)), Colors.TERTIARY))
-                            .append(Component.text(" %s, ".formatted(serverPlayer.getUUID()), Colors.SECONDARY));
+                    builder.append(Component.text("(", Colors.TERTIARY)
+                            .append(EssentialsUtil.getDisplayName(serverPlayer))
+                            .append(Component.text(")", Colors.TERTIARY))
+                            .append(Component.text(" %s, ".formatted(serverPlayer.getUUID()), Colors.TERTIARY)));
                 }else {
-                    builder.append(serverPlayer.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                    builder.append(EssentialsUtil.getDisplayName(serverPlayer))
                             .append(Component.text(", ", Colors.INFO));
                 }
             }

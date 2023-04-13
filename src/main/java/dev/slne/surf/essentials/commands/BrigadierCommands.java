@@ -93,6 +93,7 @@ public class BrigadierCommands {
         new PlayerHeadCommand();
         new TrashCommand();
         new SpeedCommand();
+        new WhitelistCommand();
     }
 
     public synchronized void unregister() {
