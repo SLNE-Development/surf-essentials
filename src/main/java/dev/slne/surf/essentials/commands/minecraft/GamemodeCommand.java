@@ -71,11 +71,12 @@ public class GamemodeCommand extends BrigadierCommand {
         int successfulChanges = 0;
 
         if (targets.size() == 1) {
-            targets.iterator().next().setGameMode(gameMode);
-            EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Dein Gamemode wurde auf ", Colors.SUCCESS))
+            var target = targets.iterator().next();
+            target.setGameMode(gameMode);
+            EssentialsUtil.sendSuccess(target, (net.kyori.adventure.text.Component.text("Dein Gamemode wurde auf ", Colors.SUCCESS))
                     .append(PaperAdventure.asAdventure(gameMode.getLongDisplayName()).colorIfAbsent(Colors.TERTIARY))
                     .append(net.kyori.adventure.text.Component.text(" gesetzt!", Colors.SUCCESS)));
-            logSingleChange(targets.iterator().next(), gameMode);
+            logSingleChange(target, gameMode);
 
         } else {
             for (ServerPlayer target : targets) {
