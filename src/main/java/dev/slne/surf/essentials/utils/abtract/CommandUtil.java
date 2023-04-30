@@ -17,7 +17,7 @@ public abstract class CommandUtil extends VanishUtil {
     private static final Collection<CommandNode<CommandSourceStack>> REGISTERED_COMMANDS = new ArrayList<>();
 
     public static CommandDispatcher<CommandSourceStack> getDispatcher(){
-        return SurfEssentials.getMinecraftServer().getCommands().getDispatcher();
+        return SurfEssentials.getMinecraftServer().vanillaCommandDispatcher.getDispatcher();
     }
 
     public static RootCommandNode<CommandSourceStack> getRoot(){
@@ -29,6 +29,7 @@ public abstract class CommandUtil extends VanishUtil {
         getRoot().removeCommand(name);
         return command;
     }
+    @SuppressWarnings("UnusedReturnValue")
     public static Collection<CommandNode<CommandSourceStack>> unregisterDispatcherCommand(Collection<String> names){
         Collection<CommandNode<CommandSourceStack>> unregistered = new HashSet<>();
         for (String name : names) {
@@ -92,6 +93,7 @@ public abstract class CommandUtil extends VanishUtil {
             return true;
         };
     }
+    @SuppressWarnings("unused")
     public static Predicate<CommandSourceStack> checkRequiredPermissions(int level, String... permissions){
         return commandSourceStack -> {
             for (String permission : permissions) {
