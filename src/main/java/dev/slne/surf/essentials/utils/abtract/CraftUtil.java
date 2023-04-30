@@ -4,12 +4,14 @@ import net.minecraft.network.PacketListener;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.enchantment.Enchantment;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_19_R3.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_19_R3.enchantments.CraftEnchantment;
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack;
@@ -73,12 +75,18 @@ public abstract class CraftUtil {
         }
     }
 
+
+
     public static CraftItemStack toCraftItemStack(ItemStack stack){
         return ((CraftItemStack) stack);
     }
 
     public static net.minecraft.world.item.ItemStack toMinecraftItemStack(ItemStack stack){
         return toCraftItemStack(stack).handle;
+    }
+
+    public static Enchantment toMinecraftEnchant(org.bukkit.enchantments.Enchantment from){
+        return CraftEnchantment.getRaw(from);
     }
 
 }

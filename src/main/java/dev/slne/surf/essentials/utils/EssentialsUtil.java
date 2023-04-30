@@ -18,6 +18,7 @@ import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -167,6 +168,14 @@ public final class EssentialsUtil extends CommandUtil {
         return displayName.colorIfAbsent(Colors.TERTIARY);
     }
 
+    public static<E extends org.bukkit.entity.Entity> net.minecraft.network.chat.Component getMinecraftDisplayName(E entity){
+        return PaperAdventure.asVanilla(getDisplayName(entity));
+    }
+
+    public static<E extends Entity> net.minecraft.network.chat.Component getMinecraftDisplayName(E entity){
+        return PaperAdventure.asVanilla(getDisplayName(entity));
+    }
+
     public static Component getDisplayName(GameProfile gameProfile){
         var player = getServerPlayer(gameProfile.getId());
         if (player != null){
@@ -212,5 +221,16 @@ public final class EssentialsUtil extends CommandUtil {
                 || player.hasPermission(Permissions.GAMEMODE_SURVIVAL_SELF_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_SURVIVAL_OTHER_PERMISSION)
                 || player.hasPermission(Permissions.GAMEMODE_SURVIVAL_OTHER_OFFLINE_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_SPECTATOR_OTHER_PERMISSION)
                 || player.hasPermission(Permissions.GAMEMODE_SPECTATOR_SELF_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_SPECTATOR_OTHER_OFFLINE_PERMISSION);
+    }
+
+    public static boolean isEnchantmentCompatible(@NotNull Enchantment enchantment, ItemStack stack){
+        if (!enchantment.canEnchantItem(stack)) return false;
+
+        for (Enchantment otherEnchantment : stack.getEnchantments().keySet()) {
+            if (enchantment.conflictsWith(otherEnchantment)){
+                return false;
+            }
+        }
+        return true;
     }
 }
