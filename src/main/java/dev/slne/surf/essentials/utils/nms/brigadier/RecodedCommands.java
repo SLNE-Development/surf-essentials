@@ -46,7 +46,7 @@ public class RecodedCommands {
     public RecodedCommands(){
     }
 
-    public synchronized void unregisterVanillaCommands(){
+    public void unregisterVanillaCommands(){
         for (String s : COMMANDS) {
             REMOVED_COMMAND_NODE.add(EssentialsUtil.unregisterDispatcherCommand(s));
         }

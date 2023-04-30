@@ -17,7 +17,7 @@ import dev.slne.surf.essentials.commands.tp.*;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 
 public class BrigadierCommands {
-    public synchronized void register(){
+    public void register(){
         new BroadcastWorldCommand();
         new ListCommand();
         new LightningCommand();

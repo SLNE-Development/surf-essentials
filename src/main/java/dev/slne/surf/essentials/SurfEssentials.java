@@ -74,7 +74,6 @@ public final class SurfEssentials extends JavaPlugin{
         TimerCommand.removeRemainingBossbars();
         listeners.unregisterListeners();
         brigadierCommands.unregister();
-        recodedCommands.addVanillaCommands();
         logger().info(text("The plugin has stopped!", Colors.INFO));
         instance = null;
     }
