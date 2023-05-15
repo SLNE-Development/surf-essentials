@@ -1,42 +1,44 @@
 package dev.slne.surf.essentials.commands.general.other.troll.trolls;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.commands.general.other.troll.Troll;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.world.level.block.Blocks;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPhysicsEvent;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @DefaultQualifier(NotNull.class)
-public class AnvilTroll implements Listener {
-    private static final HashMap<UUID, Boolean> playersInTroll = new HashMap<>();
-    private static final HashMap<Double, Double> anvilLocation = new HashMap<>();
-    private static int anvilTaskID;
+public class AnvilTroll extends Troll {
+    @Override
+    public String name() {
+        return "anvil";
+    }
 
-    public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> anvil(LiteralArgumentBuilder<CommandSourceStack> literal){
+    @Override
+    public String permission() {
+        return Permissions.TROLL_ANVIL_PERMISSION;
+    }
+
+    @Override
+    protected ArgumentBuilder<CommandSourceStack, ?> troll() {
         return Commands.argument("player", EntityArgument.player())
                 .executes(context -> dropAnvil(context, EntityArgument.getPlayer(context, "player").getBukkitEntity(), 60))
                 .then(Commands.argument("time", IntegerArgumentType.integer(1, 3600))
@@ -44,17 +46,12 @@ public class AnvilTroll implements Listener {
                                 IntegerArgumentType.getInteger(context, "time"))));
     }
 
-
-    private static int dropAnvil(CommandContext<CommandSourceStack> context, Player target, int timeInSeconds) throws CommandSyntaxException {
+    @SuppressWarnings("SameReturnValue")
+    private int dropAnvil(CommandContext<CommandSourceStack> context, Player target, int timeInSeconds) throws CommandSyntaxException {
         EssentialsUtil.checkPlayerSuggestion(context.getSource(), CraftUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();
 
-        boolean isInTroll = playersInTroll.get(target.getUniqueId()) != null ? playersInTroll.get(target.getUniqueId()) : false;
-
-        if (!isInTroll){
-            playersInTroll.put(target.getUniqueId(), true);
-
-            Material anvil = Material.DAMAGED_ANVIL;
+        if (!getAndToggleTroll(target)){
             AtomicInteger timeLeft = new AtomicInteger(timeInSeconds*2);
 
             Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), bukkitTask -> {
@@ -63,20 +60,19 @@ public class AnvilTroll implements Listener {
                 Location blockPosition = new Location(location.getWorld(), location.getX(), location.getY() + 20, location.getZ());
 
                 if (blockPosition.getBlock().getType() == Material.AIR){
-                    blockPosition.getBlock().setType(anvil, true);
-                    anvilLocation.put(blockPosition.getX(), blockPosition.getY());
+                    EssentialsUtil.spawnFakeFallingBlock(target, Blocks.ANVIL, blockPosition);
                 }
                 timeLeft.getAndDecrement();
-                anvilTaskID = bukkitTask.getTaskId();
+                TASK_IDS.put(target.getUniqueId(), bukkitTask.getTaskId());
             },1,10);
 
-            Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), bukkitTask -> playersInTroll.put(target.getUniqueId(), false), 20L * timeInSeconds);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), bukkitTask -> PLAYER_IN_TROLL.remove(target.getUniqueId()), 20L * timeInSeconds);
 
         }else {
-            cancelAnvilTroll(target);
+            stopTroll(target);
 
             if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, (target.displayName().colorIfAbsent(Colors.YELLOW))
+                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
                         .append(Component.text(" wird nun nicht mehr mit Ambossen beworfen", Colors.INFO)));
 
             }else {
@@ -89,7 +85,7 @@ public class AnvilTroll implements Listener {
 
         if (source.isPlayer()){
             EssentialsUtil.sendSuccess(source, (Component.text("Bei ", Colors.SUCCESS))
-                    .append(target.displayName().colorIfAbsent(Colors.YELLOW))
+                    .append(EssentialsUtil.getDisplayName(target))
                     .append(Component.text(" regnet es jetzt Ambosse!", Colors.SUCCESS)));
         }else{
             source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
@@ -97,21 +93,5 @@ public class AnvilTroll implements Listener {
                             .withStyle(ChatFormatting.GREEN)), false);
         }
         return 1;
-    }
-
-    public static void cancelAnvilTroll(Player target){
-        Bukkit.getScheduler().cancelTask(anvilTaskID);
-        playersInTroll.put(target.getUniqueId(), false);
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onBlockPhysics(BlockPhysicsEvent event) {
-        if (event.getBlock().getType() != Material.DAMAGED_ANVIL) return;
-        Location blockLocation = event.getBlock().getLocation();
-        if (anvilLocation.get(blockLocation.getX()) != null && anvilLocation.get(blockLocation.getZ()) == blockLocation.getZ()){
-            anvilLocation.remove(blockLocation.getX(), blockLocation.getZ());
-            event.getBlock().setType(Material.AIR);
-        }
-
     }
 }

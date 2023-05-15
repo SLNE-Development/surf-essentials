@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>dev.slne</groupId>
     <artifactId>surf-essentials</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>SurfEssentials</name>
     <url>https://git.slne.dev/surf/surf-essentials</url>
@@ -46,6 +46,7 @@
             <scope>provided</scope>
         </dependency>
         <!-- https://github.com/Alvinn8/paper-nms-maven-plugin -->
+        <!--suppress VulnerableLibrariesLocal -->
         <dependency>
             <groupId>ca.bkaw</groupId>
             <artifactId>paper-nms</artifactId>
@@ -60,12 +61,26 @@
             <version>0.10.9</version>
             <scope>compile</scope>
         </dependency>
+
+        <!-- https://github.com/PlayPro/CoreProtect#api -->
+        <dependency>
+            <groupId>net.coreprotect</groupId>
+            <artifactId>coreprotect</artifactId>
+            <version>21.3</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <repositories>
         <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+
+        <repository>
+            <id>playpro-repo</id>
+            <url>https://maven.playpro.com</url>
         </repository>
     </repositories>
 

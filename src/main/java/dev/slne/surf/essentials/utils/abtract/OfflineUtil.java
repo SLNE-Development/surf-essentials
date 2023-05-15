@@ -7,69 +7,106 @@ import net.kyori.adventure.nbt.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-public abstract class OfflineUtil extends MessageUtil{
-    public static final DynamicCommandExceptionType ERROR_POSITION_IN_UNLOADED_WORLD = new DynamicCommandExceptionType(gameProfile ->
-            net.minecraft.network.chat.Component.literal(((GameProfile) gameProfile).getName() + " has logged out in an unloaded world."));
+/**
+ * Provides utility methods for working with offline players.
+ * @author twisti
+ * @since 1.0.2
+ */
+public abstract class OfflineUtil extends MessageUtil {
+    /**
+     * Represents an error that occurs when a player's position is in an unloaded world.
+     */
+    public static final DynamicCommandExceptionType ERROR_POSITION_IN_UNLOADED_WORLD;
 
-    public static File getPlayerFile(UUID uuid) {
+    /**
+     * Returns the file associated with the specified player UUID.
+     *
+     * @param uuid the UUID of the player
+     * @return the file associated with the player UUID, or null if the player file could not be found
+     */
+    public static @Nullable File getPlayerFile(UUID uuid) {
         for (World world : Bukkit.getWorlds()) {
-            File worldFolder = world.getWorldFolder();
+            final var worldFolder = world.getWorldFolder();
             if (!worldFolder.isDirectory()) continue;
-            File playerDataFolder = new File(worldFolder, "playerdata");
+
+            final var playerDataFolder = new File(worldFolder, "playerdata");
             if (!playerDataFolder.isDirectory()) continue;
-            File playerFile = new File(playerDataFolder, uuid.toString() + ".dat");
+
+            final var playerFile = new File(playerDataFolder, uuid.toString() + ".dat");
             if (playerFile.exists()) return playerFile;
         }
         return null;
     }
 
-    public static Location getLocation(GameProfile gameProfile) throws IOException, CommandSyntaxException {
-        File dataFile = getPlayerFile(gameProfile.getId());
+    /**
+     * Returns the location of the specified player's last logout location.
+     *
+     * @param gameProfile the GameProfile of the player
+     * @return the location of the player's last logout location, or null if the player file could not be found
+     * @throws IOException if an I/O error occurs
+     * @throws CommandSyntaxException if a syntax error occurs
+     */
+    public static @Nullable Location getLocation(@NotNull GameProfile gameProfile) throws IOException, CommandSyntaxException {
+        final var dataFile = getPlayerFile(gameProfile.getId());
 
         if (dataFile == null) return null;
-        CompoundBinaryTag tag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), BinaryTagIO.Compression.GZIP);
-        ListBinaryTag posTag = tag.getList("Pos");
-        ListBinaryTag rotTag = tag.getList("Rotation");
+        final var tag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), BinaryTagIO.Compression.GZIP);
+        final var posTag = tag.getList("Pos");
+        final var rotTag = tag.getList("Rotation");
 
-        long worldUUIDMost = tag.getLong("WorldUUIDMost");
-        long worldUUIDLeast = tag.getLong("WorldUUIDLeast");
+        final long worldUUIDMost = tag.getLong("WorldUUIDMost");
+        final long worldUUIDLeast = tag.getLong("WorldUUIDLeast");
 
-        World world = Bukkit.getWorld(new UUID(worldUUIDMost, worldUUIDLeast));
+        final var world = Bukkit.getWorld(new UUID(worldUUIDMost, worldUUIDLeast));
 
         if (world == null) throw ERROR_POSITION_IN_UNLOADED_WORLD.create(gameProfile);
 
         return new Location(world, posTag.getDouble(0), posTag.getDouble(1), posTag.getDouble(2), rotTag.getFloat(0), rotTag.getFloat(1));
     }
 
-    public static void setLocation(UUID uuid, Location location) throws IOException{
-        File dataFile = getPlayerFile(uuid);
+    /**
+     * Sets the specified player's last logout location to the specified location.
+     *
+     * @param uuid the UUID of the player
+     * @param location the location to set as the player's last logout location
+     * @throws IOException if an I/O error occurs
+     */
+    public static void setLocation(UUID uuid, Location location) throws IOException {
+        final var dataFile = getPlayerFile(uuid);
 
         if (dataFile == null) return;
-        CompoundBinaryTag rawTag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), BinaryTagIO.Compression.GZIP);
-        CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder().put(rawTag);
+        final var rawTag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), BinaryTagIO.Compression.GZIP);
+        final var builder = CompoundBinaryTag.builder().put(rawTag);
+        final var posTag = ListBinaryTag.builder();
+        final var rotTag = ListBinaryTag.builder();
 
-        ListBinaryTag.Builder<BinaryTag> posTag = ListBinaryTag.builder();
         posTag.add(DoubleBinaryTag.of(location.getX()));
         posTag.add(DoubleBinaryTag.of(location.getY()));
         posTag.add(DoubleBinaryTag.of(location.getZ()));
 
-        ListBinaryTag.Builder<BinaryTag> rotTag = ListBinaryTag.builder();
         rotTag.add(FloatBinaryTag.of(location.getYaw()));
         rotTag.add(FloatBinaryTag.of(location.getPitch()));
 
         builder.put("Pos", posTag.build());
         builder.put("Rotation", rotTag.build());
 
-        long worldUUIDLeast = location.getWorld().getUID().getLeastSignificantBits();
-        long worldUUIDMost = location.getWorld().getUID().getMostSignificantBits();
+        final long worldUUIDLeast = location.getWorld().getUID().getLeastSignificantBits();
+        final long worldUUIDMost = location.getWorld().getUID().getMostSignificantBits();
         builder.putLong("WorldUUIDLeast", worldUUIDLeast);
         builder.putLong("WorldUUIDMost", worldUUIDMost);
 
         BinaryTagIO.writer().write(builder.build(), dataFile.toPath(), BinaryTagIO.Compression.GZIP);
+    }
+
+    static {
+        ERROR_POSITION_IN_UNLOADED_WORLD = new DynamicCommandExceptionType(gameProfile ->
+                net.minecraft.network.chat.Component.literal(((GameProfile) gameProfile).getName() + " has logged out in an unloaded world."));
     }
 }

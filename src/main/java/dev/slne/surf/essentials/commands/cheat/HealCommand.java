@@ -42,19 +42,19 @@ public class HealCommand extends BrigadierCommand {
     }
 
     private int heal(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
-        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+        final var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulChanges = 0;
 
         for (ServerPlayer target : targets) {
-            target.heal(target.getMaxHealth(), EntityRegainHealthEvent.RegainReason.EATING, true);
+            target.heal(target.getMaxHealth(), EntityRegainHealthEvent.RegainReason.REGEN, true);
             successfulChanges ++;
             EssentialsUtil.sendSuccess(target, (Component.text("Du wurdest geheilt! ", Colors.GREEN)));
         }
 
-        ServerPlayer target = targets.iterator().next();
+        final var target = targets.iterator().next();
         if (source.isPlayer()){
             if (successfulChanges == 1 && source.getPlayerOrException() != targets.iterator().next()){
-                EssentialsUtil.sendSuccess(source, target.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
                         .append(Component.text(" wurde geheilt!", Colors.SUCCESS)));
             }else if (successfulChanges >= 1 && source.getPlayerOrException() != targets.iterator().next()){
                 EssentialsUtil.sendSuccess(source, Component.text(successfulChanges, Colors.TERTIARY)

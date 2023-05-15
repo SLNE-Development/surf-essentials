@@ -52,9 +52,9 @@ public class LatestDeathCommand extends BrigadierCommand {
 
     private int getLocation(CommandSourceStack source, Collection<GameProfile> profiles) throws CommandSyntaxException {
         if (profiles.size() > 1) throw EntityArgument.ERROR_NOT_SINGLE_PLAYER.create();
-        var profile = profiles.iterator().next();
-        var player = EssentialsUtil.getServerPlayer(profile.getId());
-        var dataFile = EssentialsUtil.getPlayerFile(profile.getId());
+        final var profile = profiles.iterator().next();
+        final var player = EssentialsUtil.getServerPlayer(profile.getId());
+        final var dataFile = EssentialsUtil.getPlayerFile(profile.getId());
 
         if (dataFile == null && player == null) throw EntityArgument.NO_PLAYERS_FOUND.create();
 
@@ -62,9 +62,9 @@ public class LatestDeathCommand extends BrigadierCommand {
         String dimension;
 
         if (player != null){
-            var deathLocation = player.getLastDeathLocation();
+            final var deathLocation = player.getLastDeathLocation();
             if (deathLocation.isEmpty()) throw ERROR_NOT_DIED.create(player.adventure$displayName);
-            var deathPos = deathLocation.get();
+            final var deathPos = deathLocation.get();
 
             x = deathPos.pos().getX();
             y = deathPos.pos().getY();
@@ -72,10 +72,10 @@ public class LatestDeathCommand extends BrigadierCommand {
             dimension = deathPos.dimension().location().toString();
         }else {
             try {
-                var rawTag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), BinaryTagIO.Compression.GZIP);
-                var deathTag = rawTag.getCompound("LastDeathLocation");
-                var pos = deathTag.getIntArray("pos");
-                var dimensionTag = deathTag.getString("dimension");
+                final var rawTag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), BinaryTagIO.Compression.GZIP);
+                final var deathTag = rawTag.getCompound("LastDeathLocation");
+                final var pos = deathTag.getIntArray("pos");
+                final var dimensionTag = deathTag.getString("dimension");
 
                 if (pos.length == 0 || dimensionTag.isEmpty()) throw ERROR_NOT_DIED.create(Component.text(profile.getName()));
 
@@ -84,25 +84,25 @@ public class LatestDeathCommand extends BrigadierCommand {
                 z = pos[2];
                 dimension = dimensionTag;
             } catch (IOException e) {
-                throw new SimpleCommandExceptionType(PaperAdventure.asVanilla(Component.text("Something went wrong", Colors.RED))).create();
+                throw new SimpleCommandExceptionType(PaperAdventure.asVanilla(Component.text("Something went wrong", Colors.ERROR))).create();
             }
         }
 
         if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, Component.text(profile.getName(), Colors.TERTIARY)
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(profile)
                     .append(Component.text(" ist bei ", Colors.INFO))
-                    .append(Component.text("%s %s %s".formatted(x, y, z), Colors.TERTIARY)
+                    .append(Component.text("%s %s %s".formatted(x, y, z), Colors.VARIABLE_VALUE)
                             .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Kopieren", Colors.INFO)))
                             .clickEvent(ClickEvent.copyToClipboard("%s %s %s".formatted(x, y, z))))
                     .append(Component.text(" in ", Colors.INFO))
-                    .append(Component.text(dimension, Colors.SECONDARY))
+                    .append(Component.text(dimension, Colors.VARIABLE_KEY))
                     .append(Component.text(" gestorben", Colors.INFO)));
         } else {
             EssentialsUtil.sendSystemMessage(source, Component.text(profile.getName(), Colors.TERTIARY)
                     .append(Component.text(" died at ", Colors.INFO))
-                    .append(Component.text("%s %s %s".formatted(x, y, z), Colors.TERTIARY))
+                    .append(Component.text("%s %s %s".formatted(x, y, z), Colors.VARIABLE_VALUE))
                     .append(Component.text(" in ", Colors.INFO))
-                    .append(Component.text(dimension, Colors.SECONDARY)));
+                    .append(Component.text(dimension, Colors.VARIABLE_KEY)));
         }
         return 1;
     }

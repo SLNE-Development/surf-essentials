@@ -17,24 +17,29 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.UUID;
 
-public class GuiUtils {
+/**
+ * Gui util class
+ */
+@SuppressWarnings("unused")
+public final class GuiUtils {
 
     /**
      * A boarder {@link GuiItem} using {@link Material#GRAY_STAINED_GLASS_PANE}
      * @return the {@link GuiItem}
      */
-    public static GuiItem boarder(){
+    public static @NotNull GuiItem boarder(){
         GuiItem guiItem = new GuiItem(new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1));
         GuiUtils.rename(guiItem, "");
         return guiItem;
     }
 
     /** A page backward {@link GuiItem} */
-    public static GuiItem BACKWARD_BUTTON() {
+    public static @NotNull GuiItem BACKWARD_BUTTON() {
         ItemStack item = getHeadFromValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3Rl" +
                 "eHR1cmUvNzc4ZWY4ZDEzYWU1M2FhNDMxNDNhMWZlNzU5YjVjNjIwNDEwNDZiMTc0NmI1MGZhNDUyZGYwZDUzNGM2YTNkIn19fQ==");
 
@@ -45,7 +50,7 @@ public class GuiUtils {
     }
 
     /** A page backward {@link GuiItem} with function */
-    public static GuiItem BACKWARD_BUTTON(ChestGui gui, PaginatedPane paginatedPane){
+    public static @NotNull GuiItem BACKWARD_BUTTON(ChestGui gui, PaginatedPane paginatedPane){
         GuiItem backwardButton = BACKWARD_BUTTON();
         backwardButton.setAction(inventoryClickEvent -> {
             if (0 > paginatedPane.getPage() - 1) return;
@@ -56,7 +61,7 @@ public class GuiUtils {
     }
 
     /** A page forward {@link GuiItem} */
-    public static GuiItem FORWARD_BUTTON() {
+    public static @NotNull GuiItem FORWARD_BUTTON() {
         ItemStack item = getHeadFromValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3Rl" +
                 "eHR1cmUvMmI0ZTM0ZDA0ZDNhNTY1ZjYxNjY4YzcwOTMwN2MzNTE5YTRmNzA2YTY5ZjBkZTIwZDJmMDNiZGJjMTdlOTIwNSJ9fX0=");
 
@@ -67,7 +72,7 @@ public class GuiUtils {
     }
 
     /** A page forward {@link GuiItem} with function*/
-    public static GuiItem FORWARD_BUTTON(ChestGui gui, PaginatedPane paginatedPane){
+    public static @NotNull GuiItem FORWARD_BUTTON(ChestGui gui, PaginatedPane paginatedPane){
         GuiItem forwardButton = FORWARD_BUTTON();
         forwardButton.setAction(inventoryClickEvent -> {
             if (paginatedPane.getPages() <= paginatedPane.getPage() + 1) return;
@@ -78,7 +83,7 @@ public class GuiUtils {
     }
 
     /** A close {@link GuiItem} using {@link Material#BARRIER} */
-    public static GuiItem CLOSE_BUTTON() {
+    public static @NotNull GuiItem CLOSE_BUTTON() {
         GuiItem guiItem = new GuiItem(new ItemStack(Material.BARRIER, 1));
 
         rename(guiItem, Component.text("Schließen", Colors.RED));
@@ -97,7 +102,7 @@ public class GuiUtils {
      * @param guiItem the {@link GuiItem} to be renamed
      * @param displayName the new display name {@link Component}
      */
-    public static void rename(GuiItem guiItem, Component displayName) {
+    public static void rename(@NotNull GuiItem guiItem, Component displayName) {
         ItemStack itemStack = guiItem.getItem();
         ItemMeta itemMeta = itemStack.getItemMeta();
 
@@ -123,7 +128,7 @@ public class GuiUtils {
      * @param guiItem the {@link GuiItem}
      * @param lore the new lore {@link Component}
      */
-    public static void lore(GuiItem guiItem, Component lore){
+    public static void lore(@NotNull GuiItem guiItem, Component lore){
         ItemStack itemStack = guiItem.getItem();
         ItemMeta itemMeta = itemStack.getItemMeta();
 
@@ -149,7 +154,8 @@ public class GuiUtils {
      * @param value the value from which the head is fashioned
      * @return the head {@link ItemStack}
      */
-    public static ItemStack getHeadFromValue(String value) {
+    @SuppressWarnings("DanglingJavadoc")
+    public static @NotNull ItemStack getHeadFromValue(@NotNull String value) {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
         var minecraftSkull = EssentialsUtil.toMinecraftItemStack(skull);
         CompoundTag compoundTag = minecraftSkull.getOrCreateTag();
@@ -175,7 +181,7 @@ public class GuiUtils {
      *
      * @return the boarder
      */
-    public static OutlinePane LEFT_BOARDER(){
+    public static @NotNull OutlinePane LEFT_BOARDER(){
         OutlinePane pane = new OutlinePane(0, 0, 1, 6);
         pane.addItem(boarder());
         pane.setRepeat(true);
@@ -187,7 +193,7 @@ public class GuiUtils {
      *
      * @return the boarder
      */
-    public static OutlinePane RIGHT_BOARDER(){
+    public static @NotNull OutlinePane RIGHT_BOARDER(){
         OutlinePane pane = new OutlinePane(8, 0, 1, 6);
         pane.addItem(boarder());
         pane.setRepeat(true);
@@ -199,7 +205,7 @@ public class GuiUtils {
      *
      * @return the boarder
      */
-    public static PatternPane BOTTOM_BOARDER(){
+    public static @NotNull PatternPane BOTTOM_BOARDER(){
         Pattern pattern = new Pattern("0012300");
         PatternPane pane = new PatternPane(1, 5, 7, 1, pattern);
 
@@ -219,7 +225,7 @@ public class GuiUtils {
      *
      * @return the boarder
      */
-    public static PatternPane BOTTOM_BOARDER(PaginatedPane paginatedPane, ChestGui gui){
+    public static @NotNull PatternPane BOTTOM_BOARDER(PaginatedPane paginatedPane, ChestGui gui){
         Pattern pattern = new Pattern("0012300");
         PatternPane pane = new PatternPane(1, 5, 7, 1, pattern);
 
@@ -250,7 +256,7 @@ public class GuiUtils {
      *
      * @return the boarder
      */
-    public static OutlinePane UPPER_BOARDER(){
+    public static @NotNull OutlinePane UPPER_BOARDER(){
         OutlinePane pane = new OutlinePane(1, 0, 7, 1);
         pane.addItem(boarder());
         pane.setRepeat(true);
@@ -262,7 +268,7 @@ public class GuiUtils {
      *
      * @param gui the {@link ChestGui}
      */
-    public static void setAllBoarders(ChestGui gui){
+    public static void setAllBoarders(@NotNull ChestGui gui){
         gui.addPane(LEFT_BOARDER());
         gui.addPane(RIGHT_BOARDER());
         gui.addPane(UPPER_BOARDER());
@@ -275,7 +281,7 @@ public class GuiUtils {
      * @param gui the {@link ChestGui}
      * @param paginatedPane the {@link PaginatedPane}
      */
-    public static void setAllBoarders(ChestGui gui, PaginatedPane paginatedPane){
+    public static void setAllBoarders(@NotNull ChestGui gui, PaginatedPane paginatedPane){
         gui.addPane(LEFT_BOARDER());
         gui.addPane(RIGHT_BOARDER());
         gui.addPane(UPPER_BOARDER());

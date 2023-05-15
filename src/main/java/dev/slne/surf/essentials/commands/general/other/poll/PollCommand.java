@@ -10,8 +10,7 @@ import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentBuilder;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -64,11 +63,12 @@ public class PollCommand extends BrigadierCommand {
     private int createPoll(CommandSourceStack source, String name, int durationInSeconds, String question) throws CommandSyntaxException{
         if (Poll.checkPollExists(name)) {
             if (source.isPlayer()){
-                Poll poll = Poll.getPoll(name).join();
+                final var poll = Poll.getPoll(name).join();
                 EssentialsUtil.sendError(source, Component.text("Es läuft bereits eine Umfrage mit dem Namen ", Colors.ERROR)
                         .append(Component.text(poll.getName(), Colors.TERTIARY)
                                 .hoverEvent(HoverEvent.showText(Component.text("Zeit: ", Colors.INFO)
-                                        .append(Component.text(EssentialsUtil.ticksToString(poll.getDuration()), Colors.GREEN))
+                                        .append(Component.text(EssentialsUtil.ticksToString(poll.getDuration() * 20), Colors.GREEN))
+                                                .appendNewline()
                                         .append(Component.text("Frage: ", Colors.INFO))
                                         .append(Component.newline())
                                         .append(Component.text(poll.getQuestion(), Colors.TERTIARY)))))
@@ -124,34 +124,30 @@ public class PollCommand extends BrigadierCommand {
         return 1;
     }
 
-    private static int listPolls(CommandSourceStack source) throws CommandSyntaxException{
-        var polls = Poll.getPolls();
-        if (polls.size() == 0){
-            if (source.isPlayer()){
+    private static int listPolls(CommandSourceStack source) throws CommandSyntaxException {
+        final var polls = Poll.getPolls();
+        if (polls.size() == 0) {
+            if (source.isPlayer()) {
                 EssentialsUtil.sendError(source, "Aktuell laufen keine Umfragen!");
-            }else {
+            } else {
                 source.sendFailure(net.minecraft.network.chat.Component.literal("No polls are active right now."));
             }
             return polls.size();
         }
 
-        if (source.isPlayer()){
-            ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
-            builder.append((Component.text("Aktuelle Umfragen: ", Colors.INFO)));
-            for (Poll poll : polls) {
-                builder.append(Component.newline()
-                        .append(EssentialsUtil.getPrefix()
-                                .append(Component.text("                      - ", Colors.INFO)))
-                        .append(Component.text(poll.getName(), Colors.TERTIARY)
-                                .hoverEvent(HoverEvent.showText(Component.text("Dauer: ", Colors.INFO)
-                                        .append(Component.text(EssentialsUtil.ticksToString(poll.getDuration() * 20), Colors.GREEN))
-                                        .append(Component.newline())
-                                        .append(Component.text("Frage: ", Colors.INFO))
-                                        .append(Component.text(poll.getQuestion(), Colors.TERTIARY))))));
-            }
-
-            EssentialsUtil.sendSuccess(source, builder.build());
-        }else {
+        if (source.isPlayer()) {
+            EssentialsUtil.sendSuccess(
+                    source,
+                    Component.text("Aktuelle Umfragen: ", Colors.INFO)
+                            .append(Component.join(JoinConfiguration.commas(true), polls.stream().map(poll ->
+                                    Component.text(poll.getName(), Colors.TERTIARY)
+                                            .hoverEvent(HoverEvent.showText(Component.text("Dauer: ", Colors.INFO)
+                                                    .append(Component.text(EssentialsUtil.ticksToString(poll.getDuration() * 20), Colors.GREEN))
+                                                    .append(Component.newline())
+                                                    .append(Component.text("Frage: ", Colors.INFO))
+                                                    .append(Component.text(poll.getQuestion(), Colors.TERTIARY))))).toArray(Component[]::new)))
+            );
+        } else {
             source.sendSuccess(net.minecraft.network.chat.Component.literal("Active polls: ")
                     .withStyle(ChatFormatting.GRAY)
                     .append(Arrays.toString(polls.stream().map(Poll::getName).toArray()))

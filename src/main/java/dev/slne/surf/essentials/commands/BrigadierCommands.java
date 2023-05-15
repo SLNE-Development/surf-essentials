@@ -7,16 +7,26 @@ import dev.slne.surf.essentials.commands.general.*;
 import dev.slne.surf.essentials.commands.general.other.ActionbarBroadcast;
 import dev.slne.surf.essentials.commands.general.other.TimerCommand;
 import dev.slne.surf.essentials.commands.general.other.TitlebroadcastCommand;
+import dev.slne.surf.essentials.commands.general.other.help.HelpCommand;
 import dev.slne.surf.essentials.commands.general.other.poll.PollCommand;
 import dev.slne.surf.essentials.commands.general.other.poll.VoteCommand;
 import dev.slne.surf.essentials.commands.general.other.troll.TrollManager;
 import dev.slne.surf.essentials.commands.general.other.world.WorldCommand;
-import dev.slne.surf.essentials.commands.general.sign.SignToggleCommand;
 import dev.slne.surf.essentials.commands.minecraft.*;
+import dev.slne.surf.essentials.commands.minecraft.internal.SpawnArmorTrimsCommand;
 import dev.slne.surf.essentials.commands.tp.*;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 
+/**
+ * This class is responsible for registering and unregistering all the commands provided by the plugin using Brigadier.
+ * @since 1.0.0
+ * @author twisti
+ */
 public class BrigadierCommands {
+
+    /**
+     * Registers all the commands provided by the plugin using Brigadier.
+     */
     public void register(){
         new BroadcastWorldCommand();
         new ListCommand();
@@ -82,7 +92,6 @@ public class BrigadierCommands {
         new SpectateCommand();
         new SummonCommand();
         new TeleportToTopCommand();
-        new SignToggleCommand();
         new WorldCommand();
         new FillCommand();
         new SetBlockCommand();
@@ -94,8 +103,21 @@ public class BrigadierCommands {
         new TrashCommand();
         new SpeedCommand();
         new WhitelistCommand();
+        new ScreamCommand();
+        new NearCommand();
+        new DataPackCommand();
+        new AttributeCommand();
+        new ReloadCommand();
+        new FillBiomeCommand();
+        new SpawnArmorTrimsCommand();
     }
 
+    /**
+     * Unregisters all commands registered by this plugin from the server's {@link com.mojang.brigadier.CommandDispatcher<net.minecraft.commands.CommandSourceStack>}.
+     * <p>
+     * This should be called in the plugins {@link org.bukkit.plugin.Plugin#onDisable()} method to ensure that no remaining {@link CommandNode<net.minecraft.commands.CommandSourceStack>}s
+     * exist on the server after the plugin has been unloaded.
+     */
     public synchronized void unregister() {
         EssentialsUtil.unregisterDispatcherCommand(EssentialsUtil.getRegisteredCommands().stream().map(CommandNode::getName).toList());
     }

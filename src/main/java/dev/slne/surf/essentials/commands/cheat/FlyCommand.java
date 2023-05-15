@@ -46,7 +46,7 @@ public class FlyCommand extends BrigadierCommand {
     }
 
     private int fly(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, boolean toggle, Boolean allowFly) throws CommandSyntaxException {
-        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+        final var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulChanges = 0;
 
         for (ServerPlayer target : targets) {
@@ -59,8 +59,8 @@ public class FlyCommand extends BrigadierCommand {
                 target.getBukkitEntity().setFlying(allowFly);
             }
             successfulChanges++;
-            EssentialsUtil.sendSuccess(target.getBukkitEntity(), (Component.text("Du kannst nun ", Colors.GREEN)
-                            .append(Component.text((target.getAbilities().mayfly) ? "fliegen!" : "nicht mehr fliegen!", Colors.GREEN))));
+            EssentialsUtil.sendSuccess(target, Component.text("Du kannst nun ", Colors.GREEN)
+                            .append(Component.text((target.getAbilities().mayfly) ? "fliegen!" : "nicht mehr fliegen!", Colors.GREEN)));
         }
 
         if (source.isPlayer()) {

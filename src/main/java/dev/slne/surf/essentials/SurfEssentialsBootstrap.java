@@ -25,7 +25,7 @@ public class SurfEssentialsBootstrap implements PluginBootstrap {
         return new SurfEssentials();
     }
 
-    public static ComponentLogger getLogger() {
+    public static @Nullable ComponentLogger getLogger() {
         return logger;
     }
 }

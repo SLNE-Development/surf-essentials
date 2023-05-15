@@ -14,7 +14,6 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.gui.GuiUtils;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
@@ -244,7 +243,7 @@ public class WorldCommand extends BrigadierCommand {
 
         World world = Bukkit.getWorld(file.getName());
 
-        if (world != null) throw ERROR_WORLD_ALREADY_LOADED.create(CraftUtil.toServerLevel(world).dimension().location().toString());
+        if (world != null) throw ERROR_WORLD_ALREADY_LOADED.create(EssentialsUtil.toServerLevel(world).dimension().location().toString());
 
         if (source.isPlayer()){
             EssentialsUtil.sendInfo(source, "Lade Welt...");

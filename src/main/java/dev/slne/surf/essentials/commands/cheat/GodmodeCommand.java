@@ -35,20 +35,22 @@ public class GodmodeCommand extends BrigadierCommand {
     public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(EssentialsUtil.checkPermissions(Permissions.GOD_MODE_SELF_PERMISSION, Permissions.GOD_MODE_OTHER_PERMISSION));
 
-        literal.executes(context -> godmode(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), !context.getSource().getPlayerOrException().isInvulnerable()));
+        literal.executes(context -> godMode(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), !context.getSource().getPlayerOrException().isInvulnerable()));
         literal.then(Commands.literal("enable")
+                .executes(context -> godMode(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), true))
                 .then(Commands.argument("players", EntityArgument.players())
                         .requires(EssentialsUtil.checkPermissions(Permissions.GOD_MODE_OTHER_PERMISSION))
-                        .executes(context -> godmode(context.getSource(), EntityArgument.getPlayers(context, "players"), true))));
+                        .executes(context -> godMode(context.getSource(), EntityArgument.getPlayers(context, "players"), true))));
 
         literal.then(Commands.literal("disable")
+                .executes(context -> godMode(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), false))
                 .then(Commands.argument("players", EntityArgument.players())
                         .requires(EssentialsUtil.checkPermissions(Permissions.GOD_MODE_OTHER_PERMISSION))
-                        .executes(context -> godmode(context.getSource(), EntityArgument.getPlayers(context, "players"), false))));
+                        .executes(context -> godMode(context.getSource(), EntityArgument.getPlayers(context, "players"), false))));
     }
 
-    private int godmode(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, boolean enable) throws CommandSyntaxException{
-        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+    private int godMode(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, boolean enable) throws CommandSyntaxException{
+        final var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulChanges = 0;
 
         for (ServerPlayer target : targets) {
@@ -58,13 +60,13 @@ public class GodmodeCommand extends BrigadierCommand {
                     .append(Component.text(target.isInvulnerable() ? "unverwundbar!" : "verwundbar!", Colors.GREEN)));
         }
 
-        ServerPlayer target = targets.iterator().next();
+        final var target = targets.iterator().next();
         if (source.isPlayer()){
-            if (successfulChanges == 1 && source.getPlayerOrException() != targets.iterator().next()){
-                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(targets.iterator().next())
+            if (successfulChanges == 1 && source.getPlayerOrException() != target){
+                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
                         .append(Component.text(" ist nun ", Colors.SUCCESS))
                         .append(Component.text(target.isInvulnerable() ? "unverwundbar!" : "verwundbar!", Colors.SUCCESS)));
-            }else if (successfulChanges >= 1 && source.getPlayerOrException() != targets.iterator().next()){
+            }else if (successfulChanges >= 1 && source.getPlayerOrException() != target){
                 EssentialsUtil.sendSuccess(source, Component.text(successfulChanges, Colors.TERTIARY)
                         .append(Component.text(" Spieler sind nun ", Colors.SUCCESS))
                         .append(Component.text(enable ? "unverwundbar!" : "verwundbar!", Colors.SUCCESS)));

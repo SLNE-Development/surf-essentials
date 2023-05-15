@@ -30,7 +30,7 @@ import java.util.UUID;
 public class TeleportToTopCommand extends BrigadierCommand {
     @Override
     public String[] names() {
-        return new String[]{"tptop"};
+        return new String[]{"tptop", "top"};
     }
 
     @Override

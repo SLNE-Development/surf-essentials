@@ -9,7 +9,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.color.EffectColors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
@@ -73,6 +72,7 @@ public class EffectCommand extends BrigadierCommand {
                                 .executes(context -> clearSingleEffect(context.getSource(), EntityArgument.getEntities(context, "targets"), ResourceArgument.getMobEffect(context, "effect"))))));
     }
 
+    @SuppressWarnings("DuplicatedCode")
     private int giveEffect(CommandSourceStack source, Collection<? extends Entity> targetsUnchecked, Holder<MobEffect> statusEffect, @Nullable Integer seconds, int amplifier, boolean showParticles) throws CommandSyntaxException {
         Collection<? extends Entity> targets = EssentialsUtil.checkEntitySuggestion(source, targetsUnchecked);
         MobEffect mobEffectList = statusEffect.value();
@@ -97,11 +97,11 @@ public class EffectCommand extends BrigadierCommand {
         if (targets.size() == 1) {
             if (source.isPlayer()) {
                 EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Der Effect ", Colors.SUCCESS))
-                        .append(net.kyori.adventure.text.Component.text("[%s]".formatted(mobEffectList.getDisplayName().getString()), EffectColors.getEffectColor(mobEffectList))
+                        .append(PaperAdventure.asAdventure(mobEffectList.getDisplayName()).colorIfAbsent(Colors.TERTIARY)
                                 .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Zeit: ", Colors.INFO)
                                         .append(net.kyori.adventure.text.Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.TERTIARY)))))
                         .append(net.kyori.adventure.text.Component.text(" wurde ", Colors.SUCCESS))
-                        .append(PaperAdventure.asAdventure(targets.iterator().next().getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                        .append(EssentialsUtil.getDisplayName(targets.iterator().next()))
                         .append(net.kyori.adventure.text.Component.text(" gegeben!", Colors.SUCCESS)));
             } else {
                 source.sendSuccess(Component.translatable("commands.effect.give.success.single", mobEffectList.getDisplayName(), targets.iterator().next().getDisplayName(), durationInTicks / 20), false);
@@ -110,7 +110,7 @@ public class EffectCommand extends BrigadierCommand {
         } else {
             if (source.isPlayer()) {
                 EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Der Effect ", Colors.SUCCESS))
-                        .append(net.kyori.adventure.text.Component.text("[%s]".formatted(mobEffectList.getDisplayName().getString()), EffectColors.getEffectColor(mobEffectList))
+                        .append(PaperAdventure.asAdventure(mobEffectList.getDisplayName()).colorIfAbsent(Colors.TERTIARY)
                                 .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Zeit: ", Colors.INFO)
                                         .append(net.kyori.adventure.text.Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.TERTIARY)))))
                         .append(net.kyori.adventure.text.Component.text(" wurde ", Colors.SUCCESS))
@@ -146,7 +146,7 @@ public class EffectCommand extends BrigadierCommand {
             if (targets.size() == 1) {
                 if (source.isPlayer()){
                     EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Der Effect ", Colors.SUCCESS))
-                            .append(net.kyori.adventure.text.Component.text("[%s]".formatted(mobEffectList.getDisplayName().getString()), EffectColors.getEffectColor(mobEffectList)))
+                            .append(PaperAdventure.asAdventure(mobEffectList.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
                             .append(net.kyori.adventure.text.Component.text(" wurde von ", Colors.SUCCESS))
                             .append(PaperAdventure.asAdventure(targets.iterator().next().getDisplayName()).colorIfAbsent(Colors.TERTIARY))
                             .append(net.kyori.adventure.text.Component.text(" entfernt!", Colors.SUCCESS)));
@@ -157,7 +157,7 @@ public class EffectCommand extends BrigadierCommand {
             } else {
                 if (source.isPlayer()){
                     EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Der Effect ", Colors.SUCCESS))
-                            .append(net.kyori.adventure.text.Component.text("[%s]".formatted(mobEffectList.getDisplayName().getString()), EffectColors.getEffectColor(mobEffectList)))
+                            .append(PaperAdventure.asAdventure(mobEffectList.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
                             .append(net.kyori.adventure.text.Component.text(" wurde von ", Colors.SUCCESS))
                             .append(net.kyori.adventure.text.Component.text(targets.size(), Colors.TERTIARY))
                             .append(net.kyori.adventure.text.Component.text(" Entities entfernt!", Colors.SUCCESS)));

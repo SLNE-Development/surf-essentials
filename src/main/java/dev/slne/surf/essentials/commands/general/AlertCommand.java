@@ -6,7 +6,6 @@ import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,16 +33,13 @@ public class AlertCommand extends BrigadierCommand {
         literal.requires(EssentialsUtil.checkPermissions(Permissions.ALERT_PERMISSION));
 
         literal.then(Commands.argument("message", StringArgumentType.greedyString())
-                .suggests((context, builder) -> {
-                    EssentialsUtil.suggestAllColorCodes(builder, context);
-                    return builder.buildFuture();
-                })
+                .suggests((context, builder) -> EssentialsUtil.suggestAllColorCodes(builder))
                 .executes(context -> alert(context.getSource(), StringArgumentType.getString(context, "message"))));
     }
 
     private static int alert(CommandSourceStack source, String message){
         Bukkit.broadcast(EssentialsUtil.getPrefix()
-                .append(LegacyComponentSerializer.legacyAmpersand().deserialize(message).colorIfAbsent(Colors.TERTIARY)));
+                .append(EssentialsUtil.deserialize(message).colorIfAbsent(Colors.TERTIARY)));
 
         for (ServerPlayer serverPlayer : source.getServer().getPlayerList().getPlayers()) {
             serverPlayer.playSound(SoundEvents.NOTE_BLOCK_BELL.value(), 1f, 1f);

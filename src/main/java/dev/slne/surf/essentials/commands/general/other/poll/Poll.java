@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+@SuppressWarnings("unused")
 public class Poll {
     private static final Map<String, Poll> POLLS = new HashMap<>();
     private static final Component line = Component.newline().append(EssentialsUtil.getPrefix());
@@ -127,9 +128,7 @@ public class Poll {
             }
             VOTED_PLAYERS.remove(player.getUniqueId());
         }
-        Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), bukkitTask2 -> {
-            POLLS.remove(name);
-        }, 10);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), bukkitTask2 -> POLLS.remove(name), 10);
         Bukkit.getScheduler().cancelTask(taskId);
     }
 
@@ -146,7 +145,7 @@ public class Poll {
                     .append(line)
                     .append(Component.text("----------------------------------------", Colors.DARK_GRAY))
                     .append(line)
-                    .append(Component.text("Vergiss nicht zu voten: %s".formatted(name), Colors.SECONDARY))
+                    .append(Component.text("Vergiss nicht zu voten: %s".formatted(name), Colors.VARIABLE_VALUE))
                     .append(line)
                     .append(line)
                     .append(Component.text(question, TextColor.fromHexString("#eea990")))

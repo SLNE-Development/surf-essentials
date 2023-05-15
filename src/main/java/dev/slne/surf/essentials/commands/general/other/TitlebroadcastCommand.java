@@ -11,7 +11,6 @@ import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -49,8 +48,7 @@ public class TitlebroadcastCommand extends BrigadierCommand {
                 .then(Commands.argument("title", StringArgumentType.string())
                         .suggests((context, builder) -> {
                             builder.suggest("\"!&cExample &atitle\"");
-                            EssentialsUtil.suggestAllColorCodes(builder, context);
-                            return builder.buildFuture();
+                            return EssentialsUtil.suggestAllColorCodes(builder);
                         })
                         .executes(context -> broadcast(context.getSource(), EntityArgument.getPlayers(context, "players"), StringArgumentType.getString(context, "title"),
                                 null, null, null, null))
@@ -58,8 +56,7 @@ public class TitlebroadcastCommand extends BrigadierCommand {
                         .then(Commands.argument("subtitle", StringArgumentType.string())
                                 .suggests((context, builder) -> {
                                     builder.suggest("\"!&cExample &asub-title\"");
-                                    EssentialsUtil.suggestAllColorCodes(builder, context);
-                                    return builder.buildFuture();
+                                    return EssentialsUtil.suggestAllColorCodes(builder);
                                 })
                                 .executes(context -> broadcast(context.getSource(), EntityArgument.getPlayers(context, "players"), StringArgumentType.getString(context, "title"),
                                         StringArgumentType.getString(context, "subtitle"), null, null, null))
@@ -91,8 +88,8 @@ public class TitlebroadcastCommand extends BrigadierCommand {
 
         subTitle = (subTitle == null) ? "" : subTitle;
 
-        Component titleComponent = LegacyComponentSerializer.legacyAmpersand().deserialize(title).colorIfAbsent(Colors.TERTIARY);
-        Component subTitleComponent = LegacyComponentSerializer.legacyAmpersand().deserialize(subTitle).colorIfAbsent(Colors.SECONDARY);
+        Component titleComponent = EssentialsUtil.deserialize(title).colorIfAbsent(Colors.TERTIARY);
+        Component subTitleComponent = EssentialsUtil.deserialize(subTitle).colorIfAbsent(Colors.SECONDARY);
 
         ClientboundSetTitlesAnimationPacket animationPacket = new ClientboundSetTitlesAnimationPacket(fadeInTicks, stayTicks, fadeOutTicks);
         ClientboundSetTitleTextPacket titleTextPacket = new ClientboundSetTitleTextPacket(PaperAdventure.asVanilla(titleComponent));

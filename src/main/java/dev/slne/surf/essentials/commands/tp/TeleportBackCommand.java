@@ -2,13 +2,11 @@ package dev.slne.surf.essentials.commands.tp;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.listeners.TeleportListener;
+import dev.slne.surf.essentials.listener.listeners.TeleportListener;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.minecraft.commands.CommandSourceStack;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class TeleportBackCommand extends BrigadierCommand {
@@ -35,17 +33,14 @@ public class TeleportBackCommand extends BrigadierCommand {
     }
 
     private int back(CommandSourceStack source) throws CommandSyntaxException {
-        Player player = source.getPlayerOrException().getBukkitEntity();
-        Location location = TeleportListener.getLastTeleportLocationOrNull(player);
+        final var player = source.getPlayerOrException().getBukkitEntity();
 
-        if (location == null){
-            EssentialsUtil.sendError(source, "Du hast dich noch nicht Teleportiert!");
-            return 0;
-        }
+        TeleportListener.getLastTeleportLocation(player).ifPresentOrElse(
+                location -> player.teleportAsync(location, PlayerTeleportEvent.TeleportCause.COMMAND).thenAccept(__ ->
+                        EssentialsUtil.sendSuccess(player, "Du wurdest zurück Teleportiert!")),
 
-        player.teleportAsync(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
-
-        EssentialsUtil.sendSuccess(source, "Du wirst zurück Teleportiert!");
+                () -> EssentialsUtil.sendError(player, "Du hast dich noch nicht Teleportiert!")
+        );
         return 1;
     }
 }

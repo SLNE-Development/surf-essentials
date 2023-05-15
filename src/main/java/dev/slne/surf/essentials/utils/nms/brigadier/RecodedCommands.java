@@ -7,8 +7,11 @@ import net.minecraft.commands.CommandSourceStack;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A class for unregistering and re-registering vanilla commands in order to recode them.
+ */
 public class RecodedCommands {
-    List<CommandNode<CommandSourceStack>> REMOVED_COMMAND_NODE = new ArrayList<>();
+    private final List<CommandNode<CommandSourceStack>> REMOVED_COMMAND_NODE = new ArrayList<>();
     private static final List<String> COMMANDS = EssentialsUtil.make(new ArrayList<>(), strings -> {
         strings.add("bossbar");
         strings.add("clear");
@@ -41,25 +44,47 @@ public class RecodedCommands {
         strings.add("teleport");
         strings.add("tp");
         strings.add("whitelist");
+        strings.add("attribute");
+        strings.add("datapack");
+        strings.add("reload");
+        strings.add("fillBiome");
+        strings.add("function");
     }).stream().map(o -> o.toString().toLowerCase()).toList();
 
+    /**
+     * Constructs a new {@link RecodedCommands} instance.
+     *
+     */
     public RecodedCommands(){
     }
 
+    /**
+     * Unregisters all vanilla commands defined in {@link RecodedCommands#COMMANDS}.
+     */
     public void unregisterVanillaCommands(){
         for (String s : COMMANDS) {
             REMOVED_COMMAND_NODE.add(EssentialsUtil.unregisterDispatcherCommand(s));
         }
     }
 
+    /**
+     * Re-registers all previously removed vanilla commands.
+     *
+     */
+    @SuppressWarnings("unused")
     public synchronized void addVanillaCommands(){
-        var copy = REMOVED_COMMAND_NODE;
+        final var copy = new ArrayList<>(REMOVED_COMMAND_NODE);
         for (CommandNode<CommandSourceStack> commandNode : copy) {
             EssentialsUtil.registerCommand(commandNode);
         }
-        REMOVED_COMMAND_NODE = new ArrayList<>();
+        REMOVED_COMMAND_NODE.clear();
     }
 
+    /**
+     * Gets a list of all commands defined in {@link RecodedCommands#COMMANDS}.
+     *
+     * @return a list of all recoded commands
+     */
     @SuppressWarnings("unused")
     public List<String> getRecodedCommands() {
         return COMMANDS;

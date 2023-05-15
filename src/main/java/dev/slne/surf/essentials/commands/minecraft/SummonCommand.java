@@ -77,8 +77,8 @@ public class SummonCommand extends BrigadierCommand {
 
         if (entity == null) throw  ERROR_FAILED.create();
 
-        if (initialize && entity instanceof Mob){
-            ((Mob) entity).finalizeSpawn(source.getLevel(), source.getLevel().getCurrentDifficultyAt(entity.blockPosition()),
+        if (initialize && entity instanceof Mob mob){
+            mob.finalizeSpawn(source.getLevel(), source.getLevel().getCurrentDifficultyAt(entity.blockPosition()),
                     MobSpawnType.COMMAND, null, null);
         }
 

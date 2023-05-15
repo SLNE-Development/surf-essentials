@@ -43,7 +43,7 @@ public class VoteCommand extends BrigadierCommand {
             EssentialsUtil.sendError(source, "Die Umfrage existiert nicht!");
             return 0;
         }
-        var player = source.getPlayerOrException().getBukkitEntity();
+        final var player = source.getPlayerOrException().getBukkitEntity();
 
         Poll.getPoll(name).thenAcceptAsync(poll -> {
             if (!poll.addVote(player, yes)){

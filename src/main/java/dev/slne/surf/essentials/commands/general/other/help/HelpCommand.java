@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.commands.minecraft;
+package dev.slne.surf.essentials.commands.general.other.help;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;

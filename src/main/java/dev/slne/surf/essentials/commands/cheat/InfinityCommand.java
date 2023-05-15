@@ -36,8 +36,9 @@ public class InfinityCommand extends BrigadierCommand {
         literal.executes(context -> infinity(context.getSource()));
     }
 
+    @SuppressWarnings("SameReturnValue")
     private int infinity(CommandSourceStack source) throws CommandSyntaxException {
-        ServerPlayer player = source.getPlayerOrException();
+        final var player = source.getPlayerOrException();
 
         if (playersInInfinity.contains(player)){
             playersInInfinity.remove(player);

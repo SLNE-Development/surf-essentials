@@ -21,13 +21,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Clearable;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -125,7 +125,7 @@ public class FillCommand extends BrigadierCommand {
     private int fill(@NotNull CommandSourceStack source, @NotNull BlockPos from, @NotNull BlockPos to, @NotNull BlockInput block, @NotNull Mode fillMode, @Nullable Predicate<BlockInWorld> filter) throws CommandSyntaxException {
         BoundingBox boundingBox = BoundingBox.fromCorners(from, to);
         int totalBlocks = boundingBox.getXSpan() * boundingBox.getYSpan() * boundingBox.getZSpan();
-        int maxFillArea = source.getLevel().getGameRules().getInt(GameRules.RULE_COMMAND_MODIFICATION_BLOCK_LIMIT);
+        int maxFillArea = EssentialsUtil.modificationBlockLimit(source);
 
         if (totalBlocks > maxFillArea) throw ERROR_AREA_TOO_LARGE.create(maxFillArea, totalBlocks);
 
@@ -152,6 +152,15 @@ public class FillCommand extends BrigadierCommand {
 
                 blockPosList.add(currentBlockPos.immutable());
                 filledBlocks.getAndIncrement();
+
+                if (EssentialsUtil.isCoreProtectEnabled()){
+                    EssentialsUtil.getCoreProtectAPI().logPlacement(
+                            source.getTextName(),
+                            new Location(serverLevel.getWorld(), currentBlockPos.getX(), currentBlockPos.getY(), currentBlockPos.getZ()),
+                            filteredBlockInput.getState().getBukkitMaterial(),
+                            filteredBlockInput.getState().createCraftBlockData()
+                    );
+                }
             }
         });
 
@@ -186,10 +195,21 @@ public class FillCommand extends BrigadierCommand {
 
         for (BlockStatePos statePos : blockStatePos) {
             ServerLevel level = statePos.serverLevel();
-            BlockState blockState = level.getBlockState(statePos.blockPos());
-            newBlockStatePos.add(new BlockStatePos(blockState, statePos.blockPos(), level));
+            BlockPos pos = statePos.blockPos();
+            BlockState blockState = level.getBlockState(pos);
+            newBlockStatePos.add(new BlockStatePos(blockState, pos, level));
 
-            level.setBlockAndUpdate(statePos.blockPos().immutable(), statePos.blockState());
+            if (level.setBlockAndUpdate(pos.immutable(), statePos.blockState())) {
+                if (EssentialsUtil.isCoreProtectEnabled()) {
+                    EssentialsUtil.getCoreProtectAPI().logPlacement(
+                            source.getTextName(),
+                            new Location(level.getWorld(), pos.getX(), pos.getY(), pos.getZ()),
+                            statePos.blockState().getBukkitMaterial(),
+                            statePos.blockState().createCraftBlockData()
+                    );
+                }
+            }
+
             level.blockUpdated(statePos.blockPos(), statePos.blockState().getBlock());
             undoneBlocks.getAndIncrement();
         }

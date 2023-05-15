@@ -1,34 +1,48 @@
 package dev.slne.surf.essentials.commands.general.other.troll.trolls;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.commands.general.other.troll.Troll;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.selector.EntitySelector;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.UUID;
 
-public class MlgTroll {
+public class MlgTroll extends Troll {
     private static final HashMap<UUID, ItemStack[]> saveInventory = new HashMap<>();
-    private static final HashMap<UUID, Boolean> scheduledTasks = new HashMap<>();
 
-    public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> mlg(LiteralArgumentBuilder<CommandSourceStack> literal){
+    @Override
+    public String name() {
+        return "mlg";
+    }
+
+    @Override
+    public String permission() {
+        return Permissions.TROLL_MLG_PERMISSION;
+    }
+
+    @Override
+    protected ArgumentBuilder<CommandSourceStack, ?> troll() {
         return Commands.argument("player", EntityArgument.player())
                 .then(Commands.literal("water")
                         .executes(context -> mlgTroll(context, EntityArgument.getPlayer(context, "player").getBukkitEntity(), "water")))
@@ -46,13 +60,18 @@ public class MlgTroll {
                         .executes(context -> mlgTroll(context, EntityArgument.getPlayer(context, "player").getBukkitEntity(), "vines")));
     }
 
-    private static int mlgTroll(CommandContext<CommandSourceStack> context, Player target, String mlgType) throws CommandSyntaxException {
+    private int mlgTroll(CommandContext<CommandSourceStack> context, Player target, String mlgType) throws CommandSyntaxException {
         EssentialsUtil.checkPlayerSuggestion(context.getSource(), CraftUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();
 
-        if (!saveInventory.containsKey(target.getUniqueId())) {
-            saveInventory.put(target.getUniqueId(), target.getInventory().getContents());
+        if (getAndToggleTroll(target)){
+            EssentialsUtil.sendSourceError(source, EssentialsUtil.getDisplayName(target)
+                    .append(Component.text(" versucht schon ein MLG", Colors.ERROR)));
+            return 0;
         }
+
+        saveInventory.put(target.getUniqueId(), target.getInventory().getContents());
+
         target.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20,100, false, false, false));
         EssentialsUtil.sendSuccess(target, Component.text("Schaffst du den MLG?", Colors.GREEN));
         target.setInvulnerable(true);
@@ -69,30 +88,30 @@ public class MlgTroll {
             default -> throw new IllegalStateException("Unexpected value: " + mlgType);
         }
 
-        if (!scheduledTasks.containsKey(target.getUniqueId())) {
-            scheduledTasks.put(target.getUniqueId(), true);
-            Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), () -> {
-                target.getInventory().setContents(saveInventory.get(target.getUniqueId()));
-                target.setInvulnerable(false);
-                saveInventory.remove(target.getUniqueId());
-                scheduledTasks.remove(target.getUniqueId());
-                target.removePotionEffect(PotionEffectType.LEVITATION);
-            }, 20 * 10);
-        }
+
+
+        Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), () -> {
+            target.getInventory().setContents(saveInventory.get(target.getUniqueId()));
+            target.setInvulnerable(false);
+            target.removePotionEffect(PotionEffectType.LEVITATION);
+
+            saveInventory.remove(target.getUniqueId());
+            stopTroll(target);
+        }, 20 * 10);
+
 
 
         //success message
         if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, target.displayName().colorIfAbsent(Colors.YELLOW)
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
                     .append(Component.text(" versucht nun ein MLG!", Colors.SUCCESS)));
         }else{
-            source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
+            source.sendSuccess(EssentialsUtil.getMinecraftDisplayName(target)
                     .copy().append(net.minecraft.network.chat.Component.literal(" now tries a MLG!")
                             .withStyle(ChatFormatting.GREEN)), false);
         }
         return 1;
     }
-
 
     public static void restoreInventoryFromMlgTroll(){
         saveInventory.forEach((uuid, itemStacks) -> {
@@ -106,11 +125,15 @@ public class MlgTroll {
 
     }
 
-    public static void restoreInventoryFromMlgTroll(Player player){
+    public static void restoreInventoryFromMlgTroll(@NotNull Player player){
         if (!saveInventory.containsKey(player.getUniqueId())) return;
         player.getInventory().setContents(saveInventory.get(player.getUniqueId()));
         player.setInvulnerable(false);
         saveInventory.remove(player.getUniqueId());
+    }
 
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
+        restoreInventoryFromMlgTroll(event.getPlayer());
     }
 }

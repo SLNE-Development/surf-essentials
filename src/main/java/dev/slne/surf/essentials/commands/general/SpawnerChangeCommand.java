@@ -128,7 +128,7 @@ public class SpawnerChangeCommand extends BrigadierCommand {
         baseSpawner.spawnRange = spawnRange == null ? baseSpawner.spawnRange : spawnRange;
         baseSpawner.requiredPlayerRange = requiredPlayerRange == null ? baseSpawner.requiredPlayerRange : requiredPlayerRange;
 
-        source.getLevel().sendBlockUpdated(blockEntity.getBlockPos(), oldState, blockEntity.getBlockState(), 0);
+        source.getLevel().sendBlockUpdated(blockEntity.getBlockPos(), oldState, blockEntity.getBlockState(), 3);
 
         if (source.isPlayer()){
             EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)

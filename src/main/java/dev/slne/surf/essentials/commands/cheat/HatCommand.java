@@ -15,8 +15,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 public class HatCommand extends BrigadierCommand {
     @Override
@@ -45,10 +43,10 @@ public class HatCommand extends BrigadierCommand {
     }
 
     private int hat(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException {
-        ServerPlayer player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
-        Inventory playerInventory = player.getInventory();
-        ItemStack itemStackInMainHand = player.getMainHandItem();
-        ItemStack itemStackOnHead = playerInventory.getArmor(EquipmentSlot.HEAD.getIndex());
+        final var player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
+        final var playerInventory = player.getInventory();
+        final var itemStackInMainHand = player.getMainHandItem();
+        final var itemStackOnHead = playerInventory.getArmor(EquipmentSlot.HEAD.getIndex());
 
         if(itemStackInMainHand.is(Items.AIR)) throw ERROR_NO_ITEM.create(player.getName().getString());
 

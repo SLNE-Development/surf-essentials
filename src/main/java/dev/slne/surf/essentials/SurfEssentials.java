@@ -5,19 +5,22 @@ import dev.slne.surf.essentials.commands.BrigadierCommands;
 import dev.slne.surf.essentials.commands.general.other.TimerCommand;
 import dev.slne.surf.essentials.commands.general.other.troll.trolls.MlgTroll;
 import dev.slne.surf.essentials.exceptions.UnsupportedServerVersionException;
-import dev.slne.surf.essentials.listeners.ListenerManager;
+import dev.slne.surf.essentials.listener.ListenerManager;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.RecodedCommands;
-import dev.slne.surf.essentials.utils.permission.PermissionManager;
+import net.coreprotect.CoreProtect;
+import net.coreprotect.CoreProtectAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
+import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -31,16 +34,15 @@ public final class SurfEssentials extends JavaPlugin{
     private ListenerManager listeners;
     private RecodedCommands recodedCommands;
     private BrigadierCommands brigadierCommands;
-    private PermissionManager permissionManager;
     private static MinecraftServer minecraftServer;
+    private static CoreProtectAPI CORE_PROTECT_API;
 
     @Override
     public void onLoad() {
+        minecraftServer = MinecraftServer.getServer();
         listeners = new ListenerManager(this);
         recodedCommands = new RecodedCommands();
         brigadierCommands = new BrigadierCommands();
-        permissionManager = new PermissionManager(this);
-        minecraftServer = MinecraftServer.getServer();
         saveDefaultConfig();
     }
 
@@ -50,15 +52,16 @@ public final class SurfEssentials extends JavaPlugin{
         loadMessage();
 
         if (!EssentialsUtil.isNmsSupported()){
-            getServer().getPluginManager().disablePlugin(instance);
+            getServer().getPluginManager().disablePlugin(this);
             throw new UnsupportedServerVersionException("This Serverversion (" + getServer().getMinecraftVersion() +") is not supported by the plugin!");
         }
 
         EssentialsUtil.setPrefix();
-        permissionManager.initializePermissions();
         listeners.registerListeners();
         recodedCommands.unregisterVanillaCommands();
         brigadierCommands.register();
+
+        CORE_PROTECT_API = getCoreProtectAPI_Internal();
 
         logger().info(text("The plugin has started successfully!", Colors.INFO));
 
@@ -77,6 +80,8 @@ public final class SurfEssentials extends JavaPlugin{
         logger().info(text("The plugin has stopped!", Colors.INFO));
         instance = null;
     }
+
+
 
 
     public SurfEssentials() {
@@ -130,10 +135,24 @@ public final class SurfEssentials extends JavaPlugin{
         return minecraftServer;
     }
 
+    public static CoreProtectAPI getCoreProtectApi() {
+        return CORE_PROTECT_API;
+    }
+
     public static void registerPluginBrigadierCommand(final String label, final Consumer<LiteralArgumentBuilder<CommandSourceStack>> command) {
         EssentialsUtil.sendDebug("Registering command: " + label);
         var builder = LiteralArgumentBuilder.<CommandSourceStack>literal(label);
         command.accept(builder);
         EssentialsUtil.registerCommand(builder.build());
+    }
+
+    private @Nullable CoreProtectAPI getCoreProtectAPI_Internal() {
+        final var plugin = Bukkit.getPluginManager().getPlugin("CoreProtect");
+
+        if (!(plugin instanceof CoreProtect coreProtect)) return null;
+        if (!coreProtect.isEnabled()) return null;
+        if (coreProtect.getAPI().APIVersion() < 9) return null;
+
+        return coreProtect.getAPI();
     }
 }

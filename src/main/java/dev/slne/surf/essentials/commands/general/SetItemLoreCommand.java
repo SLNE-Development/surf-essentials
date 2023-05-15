@@ -40,8 +40,7 @@ public class SetItemLoreCommand extends BrigadierCommand {
         literal.then(Commands.argument("lore", StringArgumentType.greedyString())
                 .suggests((context, builder) -> {
                     builder.suggest("\n", net.minecraft.network.chat.Component.literal("Create a new line"));
-                    EssentialsUtil.suggestAllColorCodes(builder);
-                    return builder.buildFuture();
+                    return EssentialsUtil.suggestAllColorCodes(builder);
                 })
                 .executes(context -> setLore(context.getSource(), StringArgumentType.getString(context, "lore"))));
     }

@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.listeners;
+package dev.slne.surf.essentials.listener.listeners;
 
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
@@ -7,13 +7,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 
+/**
+ * A {@link Listener} for player advancement events, which sends a chat message to players when they complete an advancement.
+ *
+ */
 public class AdvancementListener implements Listener {
     @EventHandler
     public void onPlayerAdvancementDone(PlayerAdvancementDoneEvent event) {
-        var display = event.getAdvancement().getDisplay();
+        final var display = event.getAdvancement().getDisplay();
         if (event.message() == null || display == null) return;
 
-        String translationKey;
+        final String translationKey;
 
         switch (display.frame()) {
             case TASK -> translationKey = "chat.type.advancement.task";
@@ -22,8 +26,8 @@ public class AdvancementListener implements Listener {
         }
 
         event.message(EssentialsUtil.getPrefix()
-                .append(Component.translatable(translationKey, event.getPlayer().displayName().colorIfAbsent(Colors.TERTIARY),
+                .append(Component.translatable(translationKey, EssentialsUtil.getDisplayName(event.getPlayer()),
                                 event.getAdvancement().displayName().colorIfAbsent(Colors.TERTIARY))
-                        .color(Colors.INFO)));
+                        .color(Colors.GRAY)));
     }
 }

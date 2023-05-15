@@ -13,7 +13,6 @@ import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,49 +42,19 @@ public class TrollManager extends BrigadierCommand {
 
         literal.executes(context -> gui(context.getSource()));
 
-        literal.then(Commands.literal("boom")
-                .requires(EssentialsUtil.checkPermissions(TROLL_BOOM_PERMISSION, TROLL_ALL_PERMISSION))
-                .then(BoomTroll.boom(literal)));
-
-        literal.then(Commands.literal("demo")
-                .requires(EssentialsUtil.checkPermissions(TROLL_DEMO_PERMISSION, TROLL_ALL_PERMISSION))
-                .then(DemoTroll.demo(literal)));
-
-        literal.then(Commands.literal("illusioner")
-                .requires(EssentialsUtil.checkPermissions(TROLL_ILLUSIONER_PERMISSION, TROLL_ALL_PERMISSION))
-                .then(IllusionerTroll.illusioner(literal)));
-
-        literal.then(Commands.literal("anvil")
-                .requires(EssentialsUtil.checkPermissions(TROLL_ANVIL_PERMISSION, TROLL_ALL_PERMISSION))
-                .then(AnvilTroll.anvil(literal)));
-
-        literal.then(Commands.literal("villager")
-                .requires(EssentialsUtil.checkPermissions(TROLL_VILLAGER_PERMISSION, TROLL_ALL_PERMISSION))
-                .then(VillagerAnnoyTroll.villager(literal)));
-
-        literal.then(Commands.literal("water")
-                .requires(EssentialsUtil.checkPermissions(TROLL_WATER_PERMISSION, TROLL_ALL_PERMISSION))
-                .then(WaterTroll.water(literal)));
-
-        literal.then(Commands.literal("mlg")
-                .requires(EssentialsUtil.checkPermissions(TROLL_MLG_PERMISSION, TROLL_ALL_PERMISSION))
-                .then(MlgTroll.mlg(literal)));
-
-        literal.then(Commands.literal("bell")
-                .requires(EssentialsUtil.checkPermissions(TROLL_BELL_PERMISSION, TROLL_ALL_PERMISSION))
-                .then(BellTroll.bell(literal)));
-
-        literal.then(Commands.literal("herobrine")
-                .requires(EssentialsUtil.checkPermissions(TROLL_HEROBRINE_PERMISSION, TROLL_ALL_PERMISSION))
-                .then(HerobrineTroll.herobrine(literal)));
-
-        literal.then(Commands.literal("cage")
-                .requires(EssentialsUtil.checkPermissions(TROLL_CAGE_PERMISSION, TROLL_ALL_PERMISSION))
-                .then(CageTroll.cage(literal)));
-
-        literal.then(Commands.literal("crash")
-                .requires(EssentialsUtil.checkPermissions(4, TROLL_CRASH_PERMISSION, TROLL_ALL_PERMISSION))
-                .then(CrashTroll.crashTroll(literal)));
+        literal.then(new BoomTroll().build());
+        literal.then(new DemoTroll().build());
+        literal.then(new IllusionerTroll().build());
+        literal.then(new AnvilTroll().build());
+        literal.then(new VillagerAnnoyTroll().build());
+        literal.then(new WaterTroll().build());
+        literal.then(new MlgTroll().build());
+        literal.then(new BellTroll().build());
+        literal.then(new HerobrineTroll().build());
+        literal.then(new CageTroll().build());
+        literal.then(new CrashTroll().build());
+        literal.then(new FakeBlockRainTroll().build());
+        literal.then(new FollowingBlockTroll().build());
     }
 
     private static int gui(CommandSourceStack source) throws CommandSyntaxException {

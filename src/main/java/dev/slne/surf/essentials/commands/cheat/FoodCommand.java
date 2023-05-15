@@ -43,11 +43,12 @@ public class FoodCommand extends BrigadierCommand {
     }
 
     private int feed(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked)throws CommandSyntaxException{
-        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+        final var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulFeeds = 0;
 
         for (ServerPlayer target : targets) {
             target.getFoodData().eat(EssentialsUtil.MAX_FOOD, 2f);
+            target.getBukkitEntity().sendHealthUpdate();
             successfulFeeds ++;
 
             target.playSound(SoundEvents.STRIDER_EAT, 1f, 0f);

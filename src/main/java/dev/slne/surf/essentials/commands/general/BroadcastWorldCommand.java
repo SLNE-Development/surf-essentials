@@ -8,7 +8,6 @@ import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.DimensionArgument;
@@ -49,7 +48,7 @@ public class BroadcastWorldCommand extends BrigadierCommand {
 
     private int broadcastWorld(CommandSourceStack source, ServerLevel level, String message) throws CommandSyntaxException {
         for (ServerPlayer player : level.players()) {
-            EssentialsUtil.sendMessage(player, LegacyComponentSerializer.legacyAmpersand().deserialize(message).colorIfAbsent(Colors.TERTIARY));
+            EssentialsUtil.sendMessage(player, EssentialsUtil.deserialize(message).colorIfAbsent(Colors.TERTIARY));
             player.playSound(SoundEvents.NOTE_BLOCK_BELL.value(), 1f, 1f);
         }
         if (source.isPlayer()){

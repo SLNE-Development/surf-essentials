@@ -42,25 +42,17 @@ public class RepairCommand extends BrigadierCommand {
     }
 
     public int repair(CommandSourceStack source, ServerPlayer targetUnchecked) throws CommandSyntaxException{
-        ServerPlayer target = EssentialsUtil.checkPlayerSuggestion(source, targetUnchecked);
-        ItemStack item = target.getMainHandItem();
+        final var target = EssentialsUtil.checkPlayerSuggestion(source, targetUnchecked);
+        final var item = target.getMainHandItem();
 
-        if (!item.isDamageableItem()){
-            if (source.isPlayer()){
-                EssentialsUtil.sendError(source, Component.text("Das Item ", Colors.ERROR)
-                        .append(PaperAdventure.asAdventure(item.getDisplayName()))
-                        .append(Component.text(" kann nicht repariert werden!", Colors.ERROR)));
-
-            }else throw  ERROR_NOT_DAMAGEABLE.create(item);
-            return 0;
-        }
+        if (!item.isDamageableItem()) throw ERROR_NOT_DAMAGEABLE.create(item);
 
         item.setDamageValue(0);
 
         if (source.isPlayer()){
             EssentialsUtil.sendSuccess(source, PaperAdventure.asAdventure(item.getDisplayName())
                     .append(Component.text(" von ", Colors.SUCCESS))
-                    .append(target.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                    .append(EssentialsUtil.getDisplayName(target))
                     .append(Component.text(" wurde repariert!", Colors.SUCCESS)));
         }else {
             source.sendSuccess(net.minecraft.network.chat.Component.literal("The item ")

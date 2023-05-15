@@ -7,3 +7,12 @@ bootstrapper: ${project.bootstrapper}
 loader: ${project.loader}
 authors: [${project.authors}]
 website: '${project.url}'
+
+dependencies:
+  - name: CoreProtect
+    required: false
+    bootstrap: false
+
+load-after:
+  - name: CoreProtect
+    bootstrap: false

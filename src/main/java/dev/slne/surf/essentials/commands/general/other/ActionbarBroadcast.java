@@ -11,7 +11,6 @@ import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -37,8 +36,7 @@ public class ActionbarBroadcast {
                 .then(Commands.argument("actionbar", StringArgumentType.string())
                         .suggests((context, builder) -> {
                             builder.suggest("\"!&cExample &aactionbar\"");
-                            EssentialsUtil.suggestAllColorCodes(builder, context);
-                            return builder.buildFuture();
+                            return EssentialsUtil.suggestAllColorCodes(builder);
                         })
                         .executes(context -> broadcast(context.getSource(), EntityArgument.getPlayers(context, "players"), StringArgumentType.getString(context, "actionbar"), null, null))
 
@@ -60,7 +58,7 @@ public class ActionbarBroadcast {
         fadeOutTicks = (fadeOutTicks == null) ? 10 : fadeOutTicks;
 
 
-        Component actionBarText = LegacyComponentSerializer.legacyAmpersand().deserialize(actionbar).colorIfAbsent(Colors.TERTIARY);
+        Component actionBarText = EssentialsUtil.deserialize(actionbar).colorIfAbsent(Colors.TERTIARY);
 
         ClientboundSetTitlesAnimationPacket animationPacket = new ClientboundSetTitlesAnimationPacket(fadeInTicks, stayTicks, fadeOutTicks);
         ClientboundSetActionBarTextPacket actionBarTextPacket = new ClientboundSetActionBarTextPacket(PaperAdventure.asVanilla(actionBarText));

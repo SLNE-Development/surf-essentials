@@ -418,4 +418,44 @@ public final class Validate {
         }
         return t;
     }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Validates that the {@link Number} is in bound of the specified bounds
+     * @param check the {@link Number} to check
+     * @param min the minimum {@link Number}
+     * @param max the maximum {@link Number}
+     * @return the validated {@link Number}
+     * @param <T> {@link Number}
+     */
+    @Contract("_, _, _ -> param1")
+    public static<T extends Number> T isInBound(@NotNull T check, @NotNull T min, @NotNull T max){
+        notNull(check);
+        notNull(min);
+        notNull(max);
+
+        if (check.doubleValue() > max.doubleValue() || check.doubleValue() < min.doubleValue()){
+            throw makeException(
+                    "Index (%s) is out of bounds [%s - %s]".formatted(check.doubleValue(), min.doubleValue(), max.doubleValue()),
+                    new IndexOutOfBoundsException()
+            );
+        }
+        return check;
+    }
+
+    @Contract("_, _ -> param1")
+    public static<T extends Number> T isBigger(@NotNull T toCheck, @NotNull T against){
+        notNull(toCheck);
+        notNull(against);
+
+        if (toCheck.doubleValue() <= against.doubleValue()){
+            throw makeException(
+                    "Number is too low",
+                    new IllegalArgumentException()
+            );
+        }
+
+        return toCheck;
+    }
 }

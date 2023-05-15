@@ -37,7 +37,7 @@ public class SpectateCommand extends BrigadierCommand {
 
     @Override
     public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SPECTATE_SELF_PERMISSION));
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.SPECTATE_LEAVE_PERMISSION, Permissions.SPECTATE_OTHER_PERMISSION));
 
         literal.executes(context -> spectate(context.getSource(), null, context.getSource().getPlayerOrException()));
 

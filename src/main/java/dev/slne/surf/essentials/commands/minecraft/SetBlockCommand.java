@@ -116,6 +116,8 @@ public class SetBlockCommand extends BrigadierCommand {
 
         if (bl && !blockInput.place(serverLevel, blockPos, 2)) throw ERROR_FAILED.create();
 
+        EssentialsUtil.logBlockChange(source, serverLevel, blockPos, blockInput.getState());
+
         serverLevel.blockUpdated(blockPos, blockInput.getState().getBlock());
 
         if (source.isPlayer()){
@@ -142,20 +144,19 @@ public class SetBlockCommand extends BrigadierCommand {
         if (blockStatePos == null) throw FillCommand.ERROR_NOTHING_TO_UNDO.create();
 
         ServerLevel level = blockStatePos.serverLevel();
+        BlockPos pos = blockStatePos.blockPos();
 
-        BlockState blockState = level.getBlockState(blockStatePos.blockPos());
-        BLOCK.put(uuid, new BlockStatePos(blockState, blockStatePos.blockPos(), level));
+        BlockState blockState = level.getBlockState(pos);
+        BLOCK.put(uuid, new BlockStatePos(blockState, pos, level));
 
-        level.setBlockAndUpdate(blockStatePos.blockPos().immutable(), blockStatePos.blockState());
+        if (level.setBlockAndUpdate(pos.immutable(), blockStatePos.blockState())) {
+            EssentialsUtil.logBlockChange(source, level, pos, blockStatePos.blockState());
+        }
         level.blockUpdated(blockStatePos.blockPos(), blockStatePos.blockState().getBlock());
 
         EssentialsUtil.sendSuccess(source, "Der Block wurde rückgängig gemacht");
         return 1;
     }
-
-
-
-
 
 
     public enum Mode {

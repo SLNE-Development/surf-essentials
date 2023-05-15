@@ -42,8 +42,8 @@ public class FillStackCommand extends BrigadierCommand {
     }
 
     private int more(CommandSourceStack source, ServerPlayer targetUnchecked) throws CommandSyntaxException{
-        ServerPlayer target = EssentialsUtil.checkPlayerSuggestion(source, targetUnchecked);
-        ItemStack item = target.getMainHandItem();
+        final ServerPlayer target = EssentialsUtil.checkPlayerSuggestion(source, targetUnchecked);
+        final ItemStack item = target.getMainHandItem();
 
         if (item.isEmpty()) throw ERROR_HOLDS_NOTHING.create(target);
         if (item.getMaxStackSize() == 1) throw ERROR_CANNOT_STACK.create(item);

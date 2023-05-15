@@ -52,7 +52,7 @@ public class SpeedCommand extends BrigadierCommand {
                         IntegerArgumentType.getInteger(context, "speed")))
                 .then(Commands.argument("players", EntityArgument.players())
                         .requires(EssentialsUtil.checkPermissions(Permissions.SPEED_PERMISSION_OTHER))
-                        .executes(context -> changeWalkSpeed(context.getSource(), EntityArgument.getPlayers(context, "players"),
+                        .executes(context -> changeFlySpeed(context.getSource(), EntityArgument.getPlayers(context, "players"),
                                 IntegerArgumentType.getInteger(context, "speed"))))));
 
         literal.then(Commands.literal("default")
@@ -67,8 +67,8 @@ public class SpeedCommand extends BrigadierCommand {
     }
 
     private int detect(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) int speed) throws CommandSyntaxException {
-        var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
-        var calculatedSpeed = (float) speed / 10;
+        final var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
+        float calculatedSpeed = speed / 10f;
         int successes = 0;
 
         for (ServerPlayer player : players) {
@@ -86,17 +86,17 @@ public class SpeedCommand extends BrigadierCommand {
     }
 
     private int changeFlySpeed(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) int speed) throws CommandSyntaxException {
-        var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
+        final var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
         return changeSpeed(source, players, speed, false);
     }
 
     private int changeWalkSpeed(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) int speed) throws CommandSyntaxException {
-        var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
+        final var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
         return changeSpeed(source, players, speed, true);
     }
 
     private int changeSpeed(CommandSourceStack source, Collection<ServerPlayer> players, @Range(from = -10, to = 10) int speed, boolean isWalkSpeed) throws CommandSyntaxException {
-        var calculatedSpeed = (float) speed / 10;
+        float calculatedSpeed = speed / 10f;
         int successes = 0;
 
         for (ServerPlayer player : players) {

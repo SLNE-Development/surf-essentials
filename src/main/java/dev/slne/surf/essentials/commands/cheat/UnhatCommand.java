@@ -15,8 +15,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public class UnhatCommand extends BrigadierCommand {
@@ -46,9 +44,9 @@ public class UnhatCommand extends BrigadierCommand {
     }
 
     private int hat(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException{
-        ServerPlayer player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
-        Inventory playerInventory = player.getInventory();
-        ItemStack itemStackOnHead = playerInventory.getArmor(EquipmentSlot.HEAD.getIndex());
+        final var player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
+        final var playerInventory = player.getInventory();
+        final var itemStackOnHead = playerInventory.getArmor(EquipmentSlot.HEAD.getIndex());
         int freeSlot = playerInventory.getFreeSlot();
 
         if (freeSlot == -1) throw NO_SPACE_IN_INVENTORY.create(player);
@@ -57,12 +55,12 @@ public class UnhatCommand extends BrigadierCommand {
         playerInventory.setItem(playerInventory.getContainerSize() - 2, Items.AIR.getDefaultInstance());
 
         if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(player)
                     .append(Component.text(" hat das Item ", Colors.SUCCESS)
                             .append(PaperAdventure.asAdventure(itemStackOnHead.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
                             .append(Component.text(" abgesetzt.", Colors.SUCCESS))));
         }else {
-            source.sendSuccess(player.getDisplayName()
+            source.sendSuccess(EssentialsUtil.getDisplayNameAsVanilla(player)
                     .copy().append(net.minecraft.network.chat.Component.literal(" has unput the item ")
                             .withStyle(ChatFormatting.GREEN)
                             .append(itemStackOnHead.getDisplayName())), false);
@@ -71,7 +69,7 @@ public class UnhatCommand extends BrigadierCommand {
         return 1;
     }
 
-    private static final DynamicCommandExceptionType NO_SPACE_IN_INVENTORY = new DynamicCommandExceptionType(player -> PaperAdventure.asVanilla(((ServerPlayer) player).adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+    private static final DynamicCommandExceptionType NO_SPACE_IN_INVENTORY = new DynamicCommandExceptionType(player -> PaperAdventure.asVanilla(EssentialsUtil.getDisplayName(((ServerPlayer) player)))
             .copy().append(net.minecraft.network.chat.Component.literal(" has no free inventory space!")
                     .withStyle(ChatFormatting.RED)));
 }

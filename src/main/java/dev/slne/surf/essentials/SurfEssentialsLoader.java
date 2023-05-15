@@ -8,7 +8,7 @@ import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("UnstableApiUsage")
+@SuppressWarnings({"UnstableApiUsage", "SameParameterValue", "unused"})
 public class SurfEssentialsLoader implements PluginLoader {
     @Override
     public void classloader(@NotNull PluginClasspathBuilder classpathBuilder) {
@@ -21,7 +21,7 @@ public class SurfEssentialsLoader implements PluginLoader {
         classpathBuilder.addLibrary(resolver);
     }
 
-    private void addDependency(MavenLibraryResolver resolver, String groupId, String artifactId, String version) {
+    private void addDependency(@NotNull MavenLibraryResolver resolver, String groupId, String artifactId, String version) {
         resolver.addDependency(new Dependency(new DefaultArtifact("%s:%s:%s".formatted(groupId, artifactId, version)), null));
     }
 

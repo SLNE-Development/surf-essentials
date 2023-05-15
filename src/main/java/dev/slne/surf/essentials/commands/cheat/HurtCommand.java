@@ -44,9 +44,9 @@ public class HurtCommand extends BrigadierCommand {
     }
 
     private int executeHurt(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, int amount) throws CommandSyntaxException {
-        var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
-        var sources = EssentialsUtil.getDamageSources();
-        var successfulHurted = 0;
+        final var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+        final var sources = EssentialsUtil.getDamageSources();
+        int successfulHurted = 0;
         if (source.isPlayer()){
             for (Player target : targets) {
                 if (target.hurt(sources.playerAttack(source.getPlayerOrException()), amount)) successfulHurted++;
@@ -61,7 +61,7 @@ public class HurtCommand extends BrigadierCommand {
 
         if (successfulHurted == 1){
             if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, (targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(targets.iterator().next())
                         .append(Component.text(" wurde verletzt!", Colors.SUCCESS)));
             }else {
                 source.sendSuccess(EssentialsUtil.getDisplayNameAsVanilla(targets.iterator().next())

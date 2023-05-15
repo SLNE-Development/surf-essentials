@@ -27,8 +27,8 @@ public class SuicideCommand extends BrigadierCommand {
         literal.requires(EssentialsUtil.checkPermissions(Permissions.SUICIDE_PERMISSION));
         literal.executes(context -> {
 
-            var player = context.getSource().getPlayerOrException();
-            var success = player.hurt(EssentialsUtil.getDamageSources().playerAttack(player), Float.MAX_VALUE);
+            final var player = context.getSource().getPlayerOrException();
+            final boolean success = player.hurt(EssentialsUtil.getDamageSources().playerAttack(player), Float.MAX_VALUE);
 
             if (!success) throw DamageCommand.ERROR_INVULNERABLE.create();
             EssentialsUtil.sendSuccess(context.getSource(), "Du hast Selbstmord begangen!");
