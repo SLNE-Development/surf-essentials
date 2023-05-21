@@ -238,6 +238,18 @@ public final class EssentialsUtil extends LoggingUtil {
     }
 
     /**
+     * Initializes and returns an object.
+     *
+     * @param object      the object to initialize
+     * @param <T>         the type of object to initialize
+     * @return the initialized object
+     */
+    @Contract("_ -> param1")
+    public static <T> T make(T object) {
+        return make(object, something -> {});
+    }
+
+    /**
      * Gets the display name of the specified {@link Entity} as an Adventure Component.
      *
      * @param entity the entity whose display name to retrieve

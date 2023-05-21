@@ -56,6 +56,8 @@ public final class Permissions {
     public static final String TRASH_PERMISSION_OTHER;
     public static final String SPEED_PERMISSION_SELF;
     public static final String SPEED_PERMISSION_OTHER;
+    public static final String POSE_SELF_PERMISSION;
+    public static final String POSE_OTHER_PERMISSION;
 
 
     /**
@@ -112,6 +114,7 @@ public final class Permissions {
     public static final String FUNCTION_PERMISSION;
     public static final String FILL_BIOME_PERMISSION;
     public static final String SPAWN_ARMOR_TRIMS_PERMISSION;
+    public static final String EXECUTE_COMMAND_PERMISSION;
 
 
     /**
@@ -289,6 +292,8 @@ public final class Permissions {
         TRASH_PERMISSION_OTHER = register("surf.essentials.commands.trash.others");
         SPEED_PERMISSION_SELF = register("surf.essentials.commands.speed.self", modPermission);
         SPEED_PERMISSION_OTHER = register("surf.essentials.commands.speed.others");
+        POSE_SELF_PERMISSION = register("surf.essentials.commands.pose.self", playerPermission, modPermission);
+        POSE_OTHER_PERMISSION = register("surf.essentials.commands.pose.others", modPermission);
 
 
         // 'minecraft' permissions
@@ -329,6 +334,7 @@ public final class Permissions {
         FUNCTION_PERMISSION = register("surf.essentials.commands.function");
         FILL_BIOME_PERMISSION = register("surf.essentials.commands.fillBiome");
         SPAWN_ARMOR_TRIMS_PERMISSION = register("surf.essentials.commands.internal.spawn_armor_trims", modPermission);
+        EXECUTE_COMMAND_PERMISSION = register("surf.essentials.commands.execute");
 
         GAMEMODE_CREATIVE_SELF_PERMISSION = register("surf.essentials.commands.gamemode.creative.self");
         GAMEMODE_CREATIVE_OTHER_PERMISSION = register("surf.essentials.commands.gamemode.creative.others");

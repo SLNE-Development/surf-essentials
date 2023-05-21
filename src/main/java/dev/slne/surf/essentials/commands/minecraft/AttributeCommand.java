@@ -52,7 +52,7 @@ public class AttributeCommand extends BrigadierCommand {
 
 
         literal.then(Commands.argument("target", EntityArgument.entity())
-                .then(Commands.argument("attribute", ResourceArgument.resource(EssentialsUtil.buildContext(), Registries.ATTRIBUTE))
+                .then(Commands.argument("attribute", ResourceArgument.resource(this.commandBuildContext, Registries.ATTRIBUTE))
 
                         .then(Commands.literal("reset")
                                 .executes(context -> resetAttributes(

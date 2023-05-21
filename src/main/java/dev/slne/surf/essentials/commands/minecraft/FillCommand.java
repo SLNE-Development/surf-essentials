@@ -27,7 +27,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -69,7 +68,7 @@ public class FillCommand extends BrigadierCommand {
 
         literal.then(Commands.argument("fromLocation", BlockPosArgument.blockPos())
                 .then(Commands.argument("toLocation", BlockPosArgument.blockPos())
-                        .then(Commands.argument("material", BlockStateArgument.block(EssentialsUtil.buildContext()))
+                        .then(Commands.argument("material", BlockStateArgument.block(this.commandBuildContext))
                                 .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                         BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                         Mode.REPLACE, null))
@@ -78,7 +77,7 @@ public class FillCommand extends BrigadierCommand {
                                         .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                 BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                 Mode.REPLACE, null))
-                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                                 .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                         BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                         Mode.REPLACE, BlockPredicateArgument.getBlockPredicate(context, "filter")))))
@@ -87,7 +86,7 @@ public class FillCommand extends BrigadierCommand {
                                         .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                 BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                 Mode.OUTLINE, null))
-                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                                 .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                         BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                         Mode.OUTLINE, BlockPredicateArgument.getBlockPredicate(context, "filter")))))
@@ -96,7 +95,7 @@ public class FillCommand extends BrigadierCommand {
                                         .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                 BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                 Mode.HOLLOW, null))
-                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                                 .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                         BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                         Mode.HOLLOW, BlockPredicateArgument.getBlockPredicate(context, "filter")))))
@@ -105,7 +104,7 @@ public class FillCommand extends BrigadierCommand {
                                         .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                 BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                 Mode.DESTROY, null))
-                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                                 .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                         BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                         Mode.DESTROY, BlockPredicateArgument.getBlockPredicate(context, "filter")))))
@@ -116,7 +115,7 @@ public class FillCommand extends BrigadierCommand {
                                                 Mode.REPLACE, blockInWorld -> blockInWorld.getLevel().isEmptyBlock(blockInWorld.getPos()))))
 
                                 .then(Commands.literal("filter")
-                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                                 .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                         BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                         Mode.REPLACE, BlockPredicateArgument.getBlockPredicate(context, "filter"))))))));
@@ -153,14 +152,12 @@ public class FillCommand extends BrigadierCommand {
                 blockPosList.add(currentBlockPos.immutable());
                 filledBlocks.getAndIncrement();
 
-                if (EssentialsUtil.isCoreProtectEnabled()){
-                    EssentialsUtil.getCoreProtectAPI().logPlacement(
-                            source.getTextName(),
-                            new Location(serverLevel.getWorld(), currentBlockPos.getX(), currentBlockPos.getY(), currentBlockPos.getZ()),
-                            filteredBlockInput.getState().getBukkitMaterial(),
-                            filteredBlockInput.getState().createCraftBlockData()
-                    );
-                }
+                EssentialsUtil.logBlockChange(
+                        source,
+                        serverLevel,
+                        currentBlockPos,
+                        filteredBlockInput.getState()
+                );
             }
         });
 
@@ -200,14 +197,12 @@ public class FillCommand extends BrigadierCommand {
             newBlockStatePos.add(new BlockStatePos(blockState, pos, level));
 
             if (level.setBlockAndUpdate(pos.immutable(), statePos.blockState())) {
-                if (EssentialsUtil.isCoreProtectEnabled()) {
-                    EssentialsUtil.getCoreProtectAPI().logPlacement(
-                            source.getTextName(),
-                            new Location(level.getWorld(), pos.getX(), pos.getY(), pos.getZ()),
-                            statePos.blockState().getBukkitMaterial(),
-                            statePos.blockState().createCraftBlockData()
-                    );
-                }
+                EssentialsUtil.logBlockChange(
+                        source,
+                        level,
+                        pos,
+                        statePos.blockState()
+                );
             }
 
             level.blockUpdated(statePos.blockPos(), statePos.blockState().getBlock());

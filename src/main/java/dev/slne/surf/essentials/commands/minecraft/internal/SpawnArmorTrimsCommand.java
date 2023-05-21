@@ -70,6 +70,7 @@ public class SpawnArmorTrimsCommand extends BrigadierCommand {
     }
 
     private int spawnArmorTrims(CommandSourceStack source) throws CommandSyntaxException {
+
         final var player = source.getPlayerOrException();
         final var level = player.getLevel();
         final var armorTrims = new HashSet<ArmorTrim>();
@@ -102,10 +103,10 @@ public class SpawnArmorTrimsCommand extends BrigadierCommand {
 
                 armorStand.setId(EssentialsUtil.getCustomEntityId());
 
-                IDS.computeIfAbsent(player.getUUID(), uuid -> new IntArrayList()).add(armorStand.getId());
-
                 Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), () -> {
+                    IDS.computeIfAbsent(player.getUUID(), uuid -> new IntArrayList()).add(armorStand.getId());
                     EssentialsUtil.sendPackets(player, new ClientboundAddEntityPacket(armorStand));
+
                     for (EquipmentSlot equipmentSlot : equipmentSlots) {
                         final var item = MATERIAL_AND_SLOT_TO_ITEM.get(Pair.of(armorMaterial, equipmentSlot));
                         if (item == null) continue;
@@ -141,6 +142,7 @@ public class SpawnArmorTrimsCommand extends BrigadierCommand {
         }
 
         EssentialsUtil.sendSourceSuccess(source, "Rüstungsständer mit Armor-trims werden um dich herum gespawnt.");
+
         return 1;
     }
 

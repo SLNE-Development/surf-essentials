@@ -42,7 +42,7 @@ public class GiveCommand extends BrigadierCommand {
     public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(EssentialsUtil.checkPermissions(Permissions.GIVE_PERMISSION));
         literal.then(Commands.argument("targets", EntityArgument.players())
-                .then(Commands.argument("item", ItemArgument.item(EssentialsUtil.buildContext()))
+                .then(Commands.argument("item", ItemArgument.item(this.commandBuildContext))
                         .executes(context -> give(context.getSource(), EntityArgument.getPlayers(context, "targets"), ItemArgument.getItem(context, "item"), 1))
 
                         .then(Commands.argument("amount", IntegerArgumentType.integer(1))

@@ -40,7 +40,7 @@ public class ClearItemCommand extends BrigadierCommand {
     public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.CLEAR_ITEM_SELF_PERMISSION));
 
-        literal.then(Commands.argument("item", ItemArgument.item(EssentialsUtil.buildContext()))
+        literal.then(Commands.argument("item", ItemArgument.item(this.commandBuildContext))
                 .executes(context -> clearItem(context.getSource(), ItemArgument.getItem(context, "item"), Collections.singleton(context.getSource().getPlayerOrException())))
                 .then(Commands.argument("players", EntityArgument.players())
                         .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.CLEAR_ITEM_OTHER_PERMISSION))

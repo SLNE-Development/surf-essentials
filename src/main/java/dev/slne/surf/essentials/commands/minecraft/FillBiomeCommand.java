@@ -51,7 +51,7 @@ public class FillBiomeCommand extends BrigadierCommand {
 
         literal.then(Commands.argument("from", BlockPosArgument.blockPos())
                 .then(Commands.argument("to", BlockPosArgument.blockPos())
-                        .then(Commands.argument("biome", ResourceArgument.resource(EssentialsUtil.buildContext(), Registries.BIOME))
+                        .then(Commands.argument("biome", ResourceArgument.resource(this.commandBuildContext, Registries.BIOME))
                                 .executes(context -> fillBiome(
                                         context.getSource(),
                                         BlockPosArgument.getLoadedBlockPos(context, "from"),
@@ -61,7 +61,7 @@ public class FillBiomeCommand extends BrigadierCommand {
                                 ))
 
                                 .then(Commands.literal("replace")
-                                        .then(Commands.argument("filter", ResourceOrTagArgument.resourceOrTag(EssentialsUtil.buildContext(), Registries.BIOME))
+                                        .then(Commands.argument("filter", ResourceOrTagArgument.resourceOrTag(this.commandBuildContext, Registries.BIOME))
                                                 .executes(context -> {
                                                     final var filter = ResourceOrTagArgument.getResourceOrTag(context, "filter", Registries.BIOME);
                                                     return fillBiome(

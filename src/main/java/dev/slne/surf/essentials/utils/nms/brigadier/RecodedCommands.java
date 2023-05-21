@@ -49,6 +49,7 @@ public class RecodedCommands {
         strings.add("reload");
         strings.add("fillBiome");
         strings.add("function");
+        strings.add("execute");
     }).stream().map(o -> o.toString().toLowerCase()).toList();
 
     /**

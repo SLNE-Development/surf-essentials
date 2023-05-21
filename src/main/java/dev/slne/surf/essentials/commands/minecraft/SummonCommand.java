@@ -7,7 +7,6 @@ import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.CompoundTagArgument;
@@ -19,7 +18,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -27,6 +25,7 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class SummonCommand extends BrigadierCommand {
     @Override
@@ -48,7 +47,7 @@ public class SummonCommand extends BrigadierCommand {
     public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SUMMON_PERMISSION));
 
-        literal.then(Commands.argument("entity", ResourceArgument.resource(EssentialsUtil.buildContext(), Registries.ENTITY_TYPE))
+        literal.then(Commands.argument("entity", ResourceArgument.resource(this.commandBuildContext, Registries.ENTITY_TYPE))
                 .suggests(SuggestionProviders.SUMMONABLE_ENTITIES)
                 .executes(context -> summon(context.getSource(), ResourceArgument.getSummonableEntityType(context, "entity"),
                         context.getSource().getPosition(), new CompoundTag(), true))
@@ -60,38 +59,43 @@ public class SummonCommand extends BrigadierCommand {
                                         Vec3Argument.getVec3(context, "pos"), CompoundTagArgument.getCompoundTag(context, "nbt"), false)))));
     }
 
-    private int summon(CommandSourceStack source, Holder.Reference<EntityType<?>> entityType, Vec3 pos, CompoundTag compoundTag, boolean initialize)throws CommandSyntaxException {
-        BlockPos blockPos = new BlockPos((int) pos.x(), (int) pos.y(), (int) pos.z());
+    private int summon(CommandSourceStack source, Holder.Reference<EntityType<?>> entityType, Vec3 pos, CompoundTag compoundTag, boolean initialize) throws CommandSyntaxException {
+        final var entity = createEntity(source, entityType, pos, compoundTag, initialize);
 
-        if (!Level.isInSpawnableBounds(blockPos)) throw INVALID_POSITION.create();
-
-        CompoundTag compoundTag1 = compoundTag.copy();
-
-        compoundTag1.putString("id", entityType.key().location().toString());
-
-        ServerLevel serverLevel = source.getLevel();
-        Entity entity = EntityType.loadEntityRecursive(compoundTag1, serverLevel, entity1 -> {
-            entity1.moveTo(pos.x(), pos.y(), pos.z(), entity1.getYRot(), entity1.getXRot());
-            return entity1;
-        });
-
-        if (entity == null) throw  ERROR_FAILED.create();
-
-        if (initialize && entity instanceof Mob mob){
-            mob.finalizeSpawn(source.getLevel(), source.getLevel().getCurrentDifficultyAt(entity.blockPosition()),
-                    MobSpawnType.COMMAND, null, null);
-        }
-
-        if (!serverLevel.tryAddFreshEntityWithPassengers(entity, CreatureSpawnEvent.SpawnReason.COMMAND)) throw  ERROR_DUPLICATE_UUID.create();
-
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, PaperAdventure.asAdventure(entity.getDisplayName()).colorIfAbsent(Colors.TERTIARY)
+        if (source.isPlayer()) {
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(entity)
                     .append(net.kyori.adventure.text.Component.text(" wurde gespawnt.", Colors.SUCCESS)));
-        }else {
+        } else {
             source.sendSuccess(Component.translatable("commands.summon.success", entity.getDisplayName()), false);
         }
 
         return 1;
+    }
+
+    public static @NotNull Entity createEntity(@NotNull CommandSourceStack source, Holder.Reference<EntityType<?>> entityType, Vec3 pos, @NotNull CompoundTag nbt, boolean initialize) throws CommandSyntaxException {
+        final var blockPos = BlockPos.containing(pos);
+        final var level = source.getLevel();
+        final var modifiedTag = nbt.copy();
+
+        if (!Level.isInSpawnableBounds(blockPos)) throw INVALID_POSITION.create();
+
+        modifiedTag.putString("id", entityType.key().location().toString());
+
+        final var entity = EntityType.loadEntityRecursive(modifiedTag, level, loadedEntity -> {
+            loadedEntity.moveTo(pos.x(), pos.y(), pos.z(), loadedEntity.getYRot(), loadedEntity.getXRot());
+            return loadedEntity;
+        });
+
+        if (entity == null) throw ERROR_FAILED.create();
+
+        if (initialize && entity instanceof Mob mob) {
+            mob.finalizeSpawn(level, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
+        }
+
+        if (!level.tryAddFreshEntityWithPassengers(entity, CreatureSpawnEvent.SpawnReason.COMMAND))
+            throw ERROR_DUPLICATE_UUID.create();
+
+        return entity;
     }
 
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.summon.failed"));

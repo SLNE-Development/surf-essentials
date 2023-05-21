@@ -52,7 +52,7 @@ public class SpawnerChangeCommand extends BrigadierCommand {
         literal.then(Commands.argument("position", BlockPosArgument.blockPos())
                 .executes(context -> querySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position")))
 
-                .then(Commands.argument("entity", ResourceArgument.resource(EssentialsUtil.buildContext(), Registries.ENTITY_TYPE))
+                .then(Commands.argument("entity", ResourceArgument.resource(this.commandBuildContext, Registries.ENTITY_TYPE))
                         .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getSummonableEntityType(context, "entity").value(),
                                 null, null, null, null))
 

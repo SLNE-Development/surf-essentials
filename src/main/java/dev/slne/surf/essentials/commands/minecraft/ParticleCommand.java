@@ -48,7 +48,7 @@ public class ParticleCommand extends BrigadierCommand {
     public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
         literal.requires(EssentialsUtil.checkPermissions(Permissions.PARTICLE_PERMISSION));
 
-        literal.then(Commands.argument("name", ParticleArgument.particle(EssentialsUtil.buildContext()))
+        literal.then(Commands.argument("name", ParticleArgument.particle(this.commandBuildContext))
                 .executes(context -> showParticles(context.getSource(), ParticleArgument.getParticle(context, "name"),
                         context.getSource().getPosition(), Vec3.ZERO, 0.0F, 0, false, context.getSource().getServer().getPlayerList().getPlayers()))
 

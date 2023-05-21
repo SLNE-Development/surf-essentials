@@ -43,6 +43,7 @@ public final class SurfEssentials extends JavaPlugin{
         listeners = new ListenerManager(this);
         recodedCommands = new RecodedCommands();
         brigadierCommands = new BrigadierCommands();
+
         saveDefaultConfig();
     }
 

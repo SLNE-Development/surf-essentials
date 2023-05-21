@@ -44,7 +44,7 @@ public class DamageCommand extends BrigadierCommand {
                         .executes(context -> damage(context.getSource(), EntityArgument.getEntity(context, "target"),
                                 FloatArgumentType.getFloat(context, "amount"), context.getSource().getLevel().damageSources().generic()))
 
-                        .then(Commands.argument("damageType", ResourceArgument.resource(EssentialsUtil.buildContext(), Registries.DAMAGE_TYPE))
+                        .then(Commands.argument("damageType", ResourceArgument.resource(this.commandBuildContext, Registries.DAMAGE_TYPE))
                                 .executes(context -> damage(context.getSource(), EntityArgument.getEntity(context, "target"),
                                         FloatArgumentType.getFloat(context, "amount"),
                                         new DamageSource(ResourceArgument.getResource(context, "damageType", Registries.DAMAGE_TYPE))))

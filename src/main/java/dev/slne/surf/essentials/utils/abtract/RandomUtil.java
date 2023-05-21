@@ -55,6 +55,6 @@ public abstract class RandomUtil extends CommandUtil {
      * @return the custom entity ID
      */
     public static int getCustomEntityId(){
-        return getRandomInt(Integer.MAX_VALUE - 100_000, Integer.MAX_VALUE);
+        return getRandomInt(Integer.MAX_VALUE - 100_000);
     }
 }

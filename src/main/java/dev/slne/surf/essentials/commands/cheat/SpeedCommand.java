@@ -1,6 +1,6 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
@@ -37,23 +37,23 @@ public class SpeedCommand extends BrigadierCommand {
     public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(EssentialsUtil.checkPermissions(Permissions.SPEED_PERMISSION_SELF, Permissions.SPEED_PERMISSION_OTHER));
 
-        literal.then(Commands.argument("speed", IntegerArgumentType.integer(-10, 10))
+        literal.then(Commands.argument("speed", FloatArgumentType.floatArg(-10, 10))
                 .executes(context -> detect(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()),
-                        IntegerArgumentType.getInteger(context, "speed")))
+                        FloatArgumentType.getFloat(context, "speed")))
                 .then(Commands.literal("walk")
                         .executes(context -> changeWalkSpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()),
-                                IntegerArgumentType.getInteger(context, "speed")))
+                                FloatArgumentType.getFloat(context, "speed")))
                         .then(Commands.argument("players", EntityArgument.players())
                                 .requires(EssentialsUtil.checkPermissions(Permissions.SPEED_PERMISSION_OTHER))
                                 .executes(context -> changeWalkSpeed(context.getSource(), EntityArgument.getPlayers(context, "players"),
-                                        IntegerArgumentType.getInteger(context, "speed")))))
+                                        FloatArgumentType.getFloat(context, "speed")))))
                 .then(Commands.literal("fly")
                 .executes(context -> changeFlySpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()),
-                        IntegerArgumentType.getInteger(context, "speed")))
+                        FloatArgumentType.getFloat(context, "speed")))
                 .then(Commands.argument("players", EntityArgument.players())
                         .requires(EssentialsUtil.checkPermissions(Permissions.SPEED_PERMISSION_OTHER))
                         .executes(context -> changeFlySpeed(context.getSource(), EntityArgument.getPlayers(context, "players"),
-                                IntegerArgumentType.getInteger(context, "speed"))))));
+                                FloatArgumentType.getFloat(context, "speed"))))));
 
         literal.then(Commands.literal("default")
                 .executes(context -> {
@@ -66,7 +66,7 @@ public class SpeedCommand extends BrigadierCommand {
                         .executes(context -> changeFlySpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), 2))));
     }
 
-    private int detect(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) int speed) throws CommandSyntaxException {
+    private int detect(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) float speed) throws CommandSyntaxException {
         final var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
         float calculatedSpeed = speed / 10f;
         int successes = 0;
@@ -85,17 +85,17 @@ public class SpeedCommand extends BrigadierCommand {
         return successes;
     }
 
-    private int changeFlySpeed(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) int speed) throws CommandSyntaxException {
+    private int changeFlySpeed(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) float speed) throws CommandSyntaxException {
         final var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
         return changeSpeed(source, players, speed, false);
     }
 
-    private int changeWalkSpeed(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) int speed) throws CommandSyntaxException {
+    private int changeWalkSpeed(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) float speed) throws CommandSyntaxException {
         final var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
         return changeSpeed(source, players, speed, true);
     }
 
-    private int changeSpeed(CommandSourceStack source, Collection<ServerPlayer> players, @Range(from = -10, to = 10) int speed, boolean isWalkSpeed) throws CommandSyntaxException {
+    private int changeSpeed(CommandSourceStack source, Collection<ServerPlayer> players, @Range(from = -10, to = 10) float speed, boolean isWalkSpeed) throws CommandSyntaxException {
         float calculatedSpeed = speed / 10f;
         int successes = 0;
 
@@ -114,13 +114,13 @@ public class SpeedCommand extends BrigadierCommand {
         return successes;
     }
 
-    private void successPlayer(ServerPlayer player, String mode, @Range(from = -10, to = 10) int speed) {
+    private void successPlayer(ServerPlayer player, String mode, @Range(from = -10, to = 10) float speed) {
         EssentialsUtil.sendSuccess(player, Component.text("Deine %s wurde auf ".formatted(mode), Colors.SUCCESS)
                 .append(Component.text(speed, Colors.TERTIARY))
                 .append(Component.text(" gesetzt", Colors.SUCCESS)));
     }
 
-    private void successSource(CommandSourceStack source, boolean isWalkSpeed, int successes, @Range(from = -10, to = 10) int speed,  Collection<ServerPlayer> players) throws CommandSyntaxException {
+    private void successSource(CommandSourceStack source, boolean isWalkSpeed, int successes, @Range(from = -10, to = 10) float speed,  Collection<ServerPlayer> players) throws CommandSyntaxException {
         if (source.isPlayer()){
             String mode = (isWalkSpeed) ? "Gehgeschwindigkeit" : "Fluggeschwindigkeit";
             if (successes == 1 && source.getPlayerOrException().getUUID() != players.iterator().next().getUUID()){

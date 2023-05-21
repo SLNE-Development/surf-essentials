@@ -50,7 +50,7 @@ public class EffectCommand extends BrigadierCommand {
 
         literal.then(Commands.literal("give")
                 .then(Commands.argument("targets", EntityArgument.entities())
-                        .then(Commands.argument("effect", ResourceArgument.resource(EssentialsUtil.buildContext(), Registries.MOB_EFFECT))
+                        .then(Commands.argument("effect", ResourceArgument.resource(this.commandBuildContext, Registries.MOB_EFFECT))
                                 .executes(context -> giveEffect(context.getSource(), EntityArgument.getEntities(context, "targets"),
                                         ResourceArgument.getMobEffect(context, "effect"), null, 0, true))
 
@@ -68,7 +68,7 @@ public class EffectCommand extends BrigadierCommand {
                 .executes(context -> clearAllEffects(context.getSource(), ImmutableList.of(context.getSource().getEntityOrException())))
                 .then(Commands.argument("targets", EntityArgument.entities())
                         .executes(context -> clearAllEffects(context.getSource(), EntityArgument.getEntities(context, "targets")))
-                        .then(Commands.argument("effect", ResourceArgument.resource(EssentialsUtil.buildContext(), Registries.MOB_EFFECT))
+                        .then(Commands.argument("effect", ResourceArgument.resource(this.commandBuildContext, Registries.MOB_EFFECT))
                                 .executes(context -> clearSingleEffect(context.getSource(), EntityArgument.getEntities(context, "targets"), ResourceArgument.getMobEffect(context, "effect"))))));
     }
 

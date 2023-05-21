@@ -3,6 +3,8 @@ package dev.slne.surf.essentials.utils.nms.brigadier;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.commands.general.other.help.EssentialsHelpTopic;
+import dev.slne.surf.essentials.utils.EssentialsUtil;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
@@ -22,10 +24,14 @@ public abstract class BrigadierCommand {
      */
     public static final Map<Class<? extends BrigadierCommand>, BrigadierCommand> INSTANCES = new HashMap<>();
 
+    protected final CommandBuildContext commandBuildContext;
+
     /**
      * Constructs a new BrigadierCommand instance and registers it with SurfEssentials and Bukkit.
      */
     public BrigadierCommand(){
+        this.commandBuildContext = EssentialsUtil.buildContext();
+
         INSTANCES.put(this.getClass(), this);
         for (String name : names()) {
             SurfEssentials.registerPluginBrigadierCommand(name, this::literal);

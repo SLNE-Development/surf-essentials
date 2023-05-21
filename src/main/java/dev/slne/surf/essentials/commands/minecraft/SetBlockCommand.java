@@ -55,14 +55,14 @@ public class SetBlockCommand extends BrigadierCommand {
         literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SET_BLOCK_PERMISSION));
 
         literal.then(Commands.argument("location", BlockPosArgument.blockPos())
-                .then(Commands.argument("block", BlockStateArgument.block(EssentialsUtil.buildContext()))
+                .then(Commands.argument("block", BlockStateArgument.block(this.commandBuildContext))
                         .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                 BlockStateArgument.getBlock(context, "block"), Mode.REPLACE, null))
 
                         .then(Commands.literal("keep")
                                 .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                         BlockStateArgument.getBlock(context, "block"), Mode.REPLACE, (pos) -> pos.getLevel().isEmptyBlock(pos.getPos())))
-                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                         .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                                 BlockStateArgument.getBlock(context, "block"), Mode.REPLACE,
                                                 BlockPredicateArgument.getBlockPredicate(context, "filter")))))
@@ -70,7 +70,7 @@ public class SetBlockCommand extends BrigadierCommand {
                         .then(Commands.literal("replace")
                                 .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                         BlockStateArgument.getBlock(context, "block"), Mode.REPLACE, null))
-                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                         .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                                 BlockStateArgument.getBlock(context, "block"), Mode.REPLACE,
                                                 BlockPredicateArgument.getBlockPredicate(context, "filter")))))
@@ -78,13 +78,13 @@ public class SetBlockCommand extends BrigadierCommand {
                         .then(Commands.literal("destroy")
                                 .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                         BlockStateArgument.getBlock(context, "block"), Mode.DESTROY, null))
-                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                         .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                                 BlockStateArgument.getBlock(context, "block"), Mode.DESTROY,
                                                 BlockPredicateArgument.getBlockPredicate(context, "filter")))))
 
                         .then(Commands.literal("filter")
-                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                         .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                                 BlockStateArgument.getBlock(context, "block"), Mode.DESTROY,
                                                 BlockPredicateArgument.getBlockPredicate(context, "filter")))))));

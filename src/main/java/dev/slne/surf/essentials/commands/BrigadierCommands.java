@@ -110,6 +110,7 @@ public class BrigadierCommands {
         new ReloadCommand();
         new FillBiomeCommand();
         new SpawnArmorTrimsCommand();
+        new ExecuteCommand();
     }
 
     /**
