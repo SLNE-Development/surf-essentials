@@ -111,6 +111,9 @@ public class BrigadierCommands {
         new FillBiomeCommand();
         new SpawnArmorTrimsCommand();
         new ExecuteCommand();
+        new SetPlayerIdleTimeoutCommand();
+        new PlaySoundCommand();
+        new AdvancementCommand();
     }
 
     /**

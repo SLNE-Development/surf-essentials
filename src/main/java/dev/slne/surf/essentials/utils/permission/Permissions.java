@@ -21,7 +21,7 @@ public final class Permissions {
      * These are the permissions for the 'cheat' commands
      */
     public static final String FILL_STACK_PERMISSION;
-    public static final  String FLY_SELF_PERMISSION;
+    public static final String FLY_SELF_PERMISSION;
     public static final String FLY_OTHER_PERMISSION;
     public static final String FEED_SELF_PERMISSION;
     public static final String FEED_OTHER_PERMISSION;
@@ -115,6 +115,9 @@ public final class Permissions {
     public static final String FILL_BIOME_PERMISSION;
     public static final String SPAWN_ARMOR_TRIMS_PERMISSION;
     public static final String EXECUTE_COMMAND_PERMISSION;
+    public static final String SET_PLAYER_IDLE_TIMEOUT_PERMISSION;
+    public static final String PLAY_SOUND_PERMISSION;
+    public static final String ADVANCEMENT_PERMISSION;
 
 
     /**
@@ -198,16 +201,17 @@ public final class Permissions {
 
     /**
      * Registers a new {@link Permission} with the given name and optionally parent permissions.
+     *
      * @param permission The name of the permission to register.
-     * @param parents The optionally parent permissions of the permission.
+     * @param parents    The optionally parent permissions of the permission.
      * @return The name of the registered permission.
      */
     @Contract("_, _ -> param1")
-    private static String register(final @NotNull String permission, Permission @NotNull ... parents){
+    private static String register(final @NotNull String permission, Permission @NotNull ... parents) {
         EssentialsUtil.sendDebug("Registering permission: " + permission);
         final var bukkitPermission = new Permission(permission);
 
-        EssentialsUtil.sendDebug("Linking permissions: " + permission +  " -> " + parentPermission.getName());
+        EssentialsUtil.sendDebug("Linking permissions: " + permission + " -> " + parentPermission.getName());
         bukkitPermission.addParent(parentPermission, true);
 
         for (Permission parent : parents) {
@@ -220,11 +224,12 @@ public final class Permissions {
 
     /**
      * Registers a new parent permission with the given name and optional description.
-     * @param permission The name of the permission to register.
+     *
+     * @param permission  The name of the permission to register.
      * @param description The optional description of the permission.
      * @return The registered parent permission.
      */
-    private static @NotNull Permission registerParent(@NotNull String permission, @Nullable String description){
+    private static @NotNull Permission registerParent(@NotNull String permission, @Nullable String description) {
         final var perm = new Permission(permission, description);
         EssentialsUtil.sendDebug("Adding parent permission: " + perm.getName());
         pluginManager.addPermission(perm);
@@ -233,11 +238,12 @@ public final class Permissions {
 
     /**
      * Registers a new parent permission with the given name and no description.
+     *
      * @param permission The name of the permission to register.
      * @return The registered parent permission.
      */
     @SuppressWarnings("unused")
-    private static @NotNull Permission registerParent(@NotNull String permission){
+    private static @NotNull Permission registerParent(@NotNull String permission) {
         return registerParent(permission, null);
     }
 
@@ -335,6 +341,9 @@ public final class Permissions {
         FILL_BIOME_PERMISSION = register("surf.essentials.commands.fillBiome");
         SPAWN_ARMOR_TRIMS_PERMISSION = register("surf.essentials.commands.internal.spawn_armor_trims", modPermission);
         EXECUTE_COMMAND_PERMISSION = register("surf.essentials.commands.execute");
+        SET_PLAYER_IDLE_TIMEOUT_PERMISSION = register("surf.essentials.commands.setPlayerIdleTimeout");
+        PLAY_SOUND_PERMISSION = register("surf.essentials.commands.playsound");
+        ADVANCEMENT_PERMISSION = register("surf.essentials.commands.advancement");
 
         GAMEMODE_CREATIVE_SELF_PERMISSION = register("surf.essentials.commands.gamemode.creative.self");
         GAMEMODE_CREATIVE_OTHER_PERMISSION = register("surf.essentials.commands.gamemode.creative.others");

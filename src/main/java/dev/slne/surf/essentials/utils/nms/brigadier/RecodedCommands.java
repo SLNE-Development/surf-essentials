@@ -50,6 +50,9 @@ public class RecodedCommands {
         strings.add("fillBiome");
         strings.add("function");
         strings.add("execute");
+        strings.add("setidletimeout");
+        strings.add("playsound");
+        strings.add("advancement");
     }).stream().map(o -> o.toString().toLowerCase()).toList();
 
     /**

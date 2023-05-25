@@ -4,11 +4,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.color.Colors;
 import io.papermc.paper.adventure.PaperAdventure;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
+import org.jetbrains.annotations.NotNull;
 
 import static dev.slne.surf.essentials.utils.EssentialsUtil.getPrefix;
 
@@ -40,10 +40,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param error the error message to send
-     * @param <T> the type of command source to send the message to
      * @throws CommandSyntaxException if the command source is not a player
      */
-    public static<T extends CommandSourceStack> void sendError(T source, String error) throws CommandSyntaxException {
+    public static void sendError(CommandSourceStack source, String error) throws CommandSyntaxException {
         sendError(source, Component.text(error));
     }
 
@@ -52,10 +51,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param error the error message to send
-     * @param <T> the type of command source to send the message to
      * @throws CommandSyntaxException if the command source is not a player
      */
-    public static<T extends CommandSourceStack> void sendError(T source, Component error) throws CommandSyntaxException {
+    public static void sendError(CommandSourceStack source, Component error) throws CommandSyntaxException {
         sendMessage(source, error.colorIfAbsent(Colors.ERROR));
     }
 
@@ -64,9 +62,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param audience the audience to send the message to
      * @param error the error message to send
-     * @param <T> the type of the audience to send the message to
+     * @param <Audience> the type of the audience to send the message to
      */
-    public static<T extends Audience> void sendError(T audience, Component error) {
+    public static<Audience extends net.kyori.adventure.audience.Audience> void sendError(Audience audience, Component error) {
         sendMessage(audience, error.colorIfAbsent(Colors.ERROR));
     }
 
@@ -75,9 +73,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param audience the audience to send the message to
      * @param error the error message to send
-     * @param <T> the type of the audience to send the message to
+     * @param <Audience> the type of the audience to send the message to
      */
-    public static<T extends Audience> void sendError(T audience, String error) {
+    public static<Audience extends net.kyori.adventure.audience.Audience> void sendError(Audience audience, String error) {
         sendError(audience, Component.text(error));
     }
 
@@ -86,9 +84,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param commandSource the command source to send the message to
      * @param error the error message to send
-     * @param <T> the type of the command source to send the message to
+     * @param <Source> the type of the command source to send the message to
      */
-    public static<T extends CommandSource> void sendError(T commandSource, Component error) {
+    public static<Source extends CommandSource> void sendError(Source commandSource, Component error) {
         sendMessage(commandSource, error.colorIfAbsent(Colors.ERROR));
     }
 
@@ -97,9 +95,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param commandSource the command source to send the message to
      * @param error the error message to send
-     * @param <T> the type of the command source to send the message to
+     * @param <Source> the type of the command source to send the message to
      */
-    public static<T extends CommandSource> void sendError(T commandSource, String error) {
+    public static<Source extends CommandSource> void sendError(Source commandSource, String error) {
         sendError(commandSource, Component.text(error));
     }
 
@@ -113,10 +111,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param success the success message to send
-     * @param <T> the type of command source to send the message to
      * @throws CommandSyntaxException if the command source is not a player
      */
-    public static<T extends CommandSourceStack> void sendSuccess(T source, Component success) throws CommandSyntaxException {
+    public static void sendSuccess(CommandSourceStack source, Component success) throws CommandSyntaxException {
         sendMessage(source, success.colorIfAbsent(Colors.SUCCESS));
     }
 
@@ -125,10 +122,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param success the success message to send
-     * @param <T> the type of command source to send the message to
      * @throws CommandSyntaxException if the command source is not a player
      */
-    public static<T extends CommandSourceStack> void sendSuccess(T source, String success) throws CommandSyntaxException {
+    public static void sendSuccess(CommandSourceStack source, String success) throws CommandSyntaxException {
         sendSuccess(source, Component.text(success));
     }
 
@@ -137,9 +133,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param audience the audience to send the message to
      * @param success the success message to send
-     * @param <T> the type of audience to send the message to
+     * @param <Audience> the type of audience to send the message to
      */
-    public static<T extends Audience> void sendSuccess(T audience, String success) {
+    public static<Audience extends net.kyori.adventure.audience.Audience> void sendSuccess(Audience audience, String success) {
         sendSuccess(audience, Component.text(success));
     }
 
@@ -148,9 +144,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param audience the audience to send the message to
      * @param success the success message to send
-     * @param <T> the type of audience to send the message to
+     * @param <Audience> the type of audience to send the message to
      */
-    public static<T extends Audience>  void sendSuccess(T audience, Component success) {
+    public static<Audience extends net.kyori.adventure.audience.Audience>  void sendSuccess(Audience audience, Component success) {
         sendMessage(audience, success.colorIfAbsent(Colors.SUCCESS));
     }
 
@@ -159,9 +155,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param commandSource the command source to send the message to
      * @param success the success message to send
-     * @param <T> the type of command source to send the message to
+     * @param <Source> the type of command source to send the message to
      */
-    public static<T extends CommandSource> void sendSuccess(T commandSource, Component success){
+    public static<Source extends CommandSource> void sendSuccess(Source commandSource, Component success){
         sendMessage(commandSource, success.colorIfAbsent(Colors.SUCCESS));
     }
 
@@ -170,9 +166,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param commandSource the command source to send the message to
      * @param success the success message to send
-     * @param <T> the type of command source to send the message to
+     * @param <Source> the type of command source to send the message to
      */
-    public static<T extends CommandSource> void sendSuccess(T commandSource, String success){
+    public static<Source extends CommandSource> void sendSuccess(Source commandSource, String success){
         sendSuccess(commandSource, Component.text(success));
     }
 
@@ -186,10 +182,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param info the info message to send
-     * @param <T> the type of command source to send the message to
      * @throws CommandSyntaxException if the command source is not a player
      */
-    public static<T extends CommandSourceStack> void sendInfo(T source, Component info) throws CommandSyntaxException {
+    public static void sendInfo(CommandSourceStack source, Component info) throws CommandSyntaxException {
         sendMessage(source, info.colorIfAbsent(Colors.INFO));
     }
 
@@ -198,10 +193,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param info the info message to send
-     * @param <T> the type of command source to send the message to
      * @throws CommandSyntaxException if the command source is not a player
      */
-    public static<T extends CommandSourceStack> void sendInfo(T source, String info) throws CommandSyntaxException {
+    public static void sendInfo(CommandSourceStack source, String info) throws CommandSyntaxException {
         sendInfo(source, Component.text(info));
     }
 
@@ -210,9 +204,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param commandSource the command source to send the message to
      * @param info the info message to send
-     * @param <T> the type of command source to send the message to
+     * @param <Source> the type of command source to send the message to
      */
-    public static<T extends CommandSource> void sendInfo(T commandSource, Component info){
+    public static<Source extends CommandSource> void sendInfo(Source commandSource, Component info){
         sendMessage(commandSource, info.colorIfAbsent(Colors.INFO));
     }
 
@@ -221,9 +215,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param commandSource the command source to send the message to
      * @param info the info message to send
-     * @param <T> the type of command source to send the message to
+     * @param <Source> the type of command source to send the message to
      */
-    public static<T extends CommandSource> void sendInfo(T commandSource, String info){
+    public static<Source extends CommandSource> void sendInfo(Source commandSource, String info){
         sendInfo(commandSource, Component.text(info));
     }
 
@@ -232,9 +226,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param audience the audience to send the message to
      * @param info the info message to send
-     * @param <T> the type of audience to send the message to
+     * @param <Audience> the type of audience to send the message to
      */
-    public static<T extends Audience> void sendInfo(T audience, Component info){
+    public static<Audience extends net.kyori.adventure.audience.Audience> void sendInfo(Audience audience, Component info){
         sendMessage(audience, info.colorIfAbsent(Colors.INFO));
     }
 
@@ -243,9 +237,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param audience the audience to send the message to
      * @param info the info message to send
-     * @param <T> the type of audience to send the message to
+     * @param <Audience> the type of audience to send the message to
      */
-    public static<T extends Audience> void sendInfo(T audience, String info){
+    public static<Audience extends net.kyori.adventure.audience.Audience> void sendInfo(Audience audience, String info){
         sendInfo(audience, Component.text(info));
     }
 
@@ -260,9 +254,8 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param sourceStack the command source to send the message to
      * @param debug the debug message to send
-     * @param <T> the type of command source to send the message to
      */
-    public static<T extends CommandSourceStack> void sendDebug(T sourceStack, Component debug){
+    public static void sendDebug(CommandSourceStack sourceStack, Component debug){
         if (!IS_DEBUGGING) return;
         sourceStack.getBukkitSender().sendMessage(debug.colorIfAbsent(Colors.DEBUG));
     }
@@ -306,10 +299,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param message the message to send
-     * @param <T> the type of command source to send the message to
      * @throws CommandSyntaxException if the command source is not a player
      */
-    public static<T extends CommandSourceStack> void sendMessage(T source, Component message) throws CommandSyntaxException {
+    public static void sendMessage(CommandSourceStack source, Component message) throws CommandSyntaxException {
         source.getPlayerOrException().getBukkitEntity().sendMessage(getPrefix()
                 .append(message));
     }
@@ -319,9 +311,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param audience the audience to send the message to
      * @param message the message to send
-     * @param <T> the type of audience to send the message to
+     * @param <Audience> the type of audience to send the message to
      */
-    public static<T extends Audience> void sendMessage(T audience, Component message) {
+    public static<Audience extends net.kyori.adventure.audience.Audience> void sendMessage(@NotNull Audience audience, Component message) {
         audience.sendMessage(getPrefix()
                 .append(message));
     }
@@ -331,9 +323,9 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param commandSource the command source to send the message to
      * @param message the message to send
-     * @param <T> the type of command source to send the message to
+     * @param <Source> the type of command source to send the message to
      */
-    public static<T extends CommandSource> void sendMessage(T commandSource, Component message) {
+    public static<Source extends CommandSource> void sendMessage(@NotNull Source commandSource, Component message) {
         commandSource.sendSystemMessage(PaperAdventure.asVanilla(getPrefix()
                 .append(message)));
     }
@@ -343,15 +335,15 @@ public abstract class MessageUtil extends CraftUtil {
     // system message
     //---------------------------------------------------------------------------------
 
-    public static<T extends CommandSourceStack> void sendSystemMessage(T source, Component message) {
+    public static void sendSystemMessage(@NotNull CommandSourceStack source, Component message) {
         source.sendSystemMessage(PaperAdventure.asVanilla(getPrefix()
                 .append(message)));
     }
-    public static<T extends Audience> void sendSystemMessage(T audience, Component message) {
+    public static<Audience extends net.kyori.adventure.audience.Audience> void sendSystemMessage(@NotNull Audience audience, Component message) {
         audience.sendMessage(getPrefix()
                 .append(message));
     }
-    public static<T extends CommandSource> void sendSystemMessage(T commandSource, Component message) {
+    public static<Source extends CommandSource> void sendSystemMessage(@NotNull Source commandSource, Component message) {
         commandSource.sendSystemMessage(PaperAdventure.asVanilla(getPrefix()
                 .append(message)));
     }
@@ -368,9 +360,8 @@ public abstract class MessageUtil extends CraftUtil {
      * @param source the command source to send the message to
      * @param message the success message to send
      * @param broadcastToOps whether to broadcast the message to ops
-     * @param <T> the type of command source to send the message to
      */
-    public static<T extends CommandSourceStack> void sendSourceSuccess(T source, Component message, boolean broadcastToOps) {
+    public static void sendSourceSuccess(@NotNull CommandSourceStack source, @NotNull Component message, boolean broadcastToOps) {
         source.sendSuccess(PaperAdventure.asVanilla(getPrefix()
                 .append(message.colorIfAbsent(Colors.SUCCESS))), broadcastToOps);
     }
@@ -380,9 +371,8 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param message the success message to send
-     * @param <T> the type of command source to send the message to
      */
-    public static<T extends CommandSourceStack> void sendSourceSuccess(T source, Component message){
+    public static void sendSourceSuccess(CommandSourceStack source, Component message){
         sendSourceSuccess(source, message, false);
     }
 
@@ -391,9 +381,8 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param message the success message to send
-     * @param <T> the type of command source to send the message to
      */
-    public static<T extends CommandSourceStack> void sendSourceSuccess(T source, String message){
+    public static void sendSourceSuccess(CommandSourceStack source, String message){
         sendSourceSuccess(source, Component.text(message, Colors.SUCCESS));
     }
 
@@ -403,9 +392,8 @@ public abstract class MessageUtil extends CraftUtil {
      * @param source the command source to send the message to
      * @param message the success message to send
      * @param broadcastToOps whether to broadcast the message to ops
-     * @param <T> the type of command source to send the message to
      */
-    public static<T extends CommandSourceStack> void sendSourceSuccess(T source, String message, boolean broadcastToOps){
+    public static void sendSourceSuccess(CommandSourceStack source, String message, boolean broadcastToOps){
         sendSourceSuccess(source, Component.text(message, Colors.SUCCESS), broadcastToOps);
     }
 
@@ -415,9 +403,8 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param message the error message to send
-     * @param <T> the type of command source to send the message to
      */
-    public static<T extends CommandSourceStack> void sendSourceError(T source, Component message) {
+    public static void sendSourceError(@NotNull CommandSourceStack source, @NotNull Component message) {
         source.sendFailure(PaperAdventure.asVanilla(getPrefix()
                 .append(message.colorIfAbsent(Colors.ERROR))));
     }
@@ -427,9 +414,8 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param message the error message to send
-     * @param <T> the type of command source to send the message to
      */
-    public static<T extends CommandSourceStack> void sendSourceError(T source, String message){
+    public static void sendSourceError(CommandSourceStack source, String message){
         sendSourceError(source, Component.text(message, Colors.ERROR));
     }
 
@@ -438,9 +424,8 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param message the information message to send
-     * @param <T> the type of command source to send the message to
      */
-    public static<T extends CommandSourceStack> void sendSourceInfo(T source, Component message) {
+    public static void sendSourceInfo(CommandSourceStack source, @NotNull Component message) {
         sendSourceMessage(source, message.colorIfAbsent(Colors.INFO));
     }
 
@@ -449,9 +434,8 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param message the information message to send
-     * @param <T> the type of command source to send the message to
      */
-    public static<T extends CommandSourceStack> void sendSourceInfo(T source, String message){
+    public static void sendSourceInfo(CommandSourceStack source, String message){
         sendSourceInfo(source, Component.text(message, Colors.INFO));
     }
 
@@ -460,11 +444,10 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param message the message to send
-     * @param <T> the type of command source to send the message to
      */
-    public static<T extends CommandSourceStack> void sendSourceMessage(T source, Component message) {
-        source.sendSystemMessage(PaperAdventure.asVanilla(getPrefix()
-                .append(message)));
+    public static void sendSourceMessage(@NotNull CommandSourceStack source, Component message) {
+        source.getBukkitSender().sendMessage(getPrefix()
+                .append(message));
     }
 
     /**
@@ -472,9 +455,8 @@ public abstract class MessageUtil extends CraftUtil {
      *
      * @param source the command source to send the message to
      * @param message the text message to send
-     * @param <T> the type of command source to send the message to
      */
-    public static<T extends CommandSourceStack> void sendSourceMessage(T source, String message){
+    public static void sendSourceMessage(CommandSourceStack source, String message){
         sendSourceMessage(source, Component.text(message, Colors.GRAY));
     }
 
