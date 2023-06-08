@@ -10,4 +10,5 @@ import java.lang.annotation.RetentionPolicy;
 @NotNull(exception = NullPointerException.class, value = "Method returns null!")
 @TypeQualifierDefault({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MethodsReturnNonnullByDefault {}
+public @interface MethodsReturnNonnullByDefault {
+}

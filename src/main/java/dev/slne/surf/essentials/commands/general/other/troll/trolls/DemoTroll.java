@@ -7,7 +7,6 @@ import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -41,15 +40,9 @@ public class DemoTroll extends Troll {
         EssentialsUtil.sendPackets(target, new ClientboundGameEventPacket(ClientboundGameEventPacket.DEMO_EVENT, ClientboundGameEventPacket.DEMO_PARAM_INTRO));
         target.playSound(target.getLocation(), Sound.ENTITY_ITEM_PICKUP, 2F, 1F);
 
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
+                .append(Component.text(" wurde die Demo gezeigt!", Colors.SUCCESS)));
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
-                    .append(Component.text(" wurde die Demo gezeigt!", Colors.SUCCESS)));
-        }else{
-            source.sendSuccess(EssentialsUtil.getMinecraftDisplayName(target)
-                    .copy().append(net.minecraft.network.chat.Component.literal(" was shown the demo!")
-                            .withStyle(ChatFormatting.GREEN)), false);
-        }
         return 1;
     }
 }

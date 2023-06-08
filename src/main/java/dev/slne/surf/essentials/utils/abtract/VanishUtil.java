@@ -16,6 +16,7 @@ import java.util.Objects;
 
 /**
  * This abstract class provides utility methods related to player vanishing and entity visibility.
+ *
  * @author twisti
  * @since 1.0.2
  */
@@ -40,22 +41,22 @@ public abstract class VanishUtil extends SuggestionUtil {
     /**
      * Checks whether a {@link ServerPlayer} can see another {@link ServerPlayer}.
      *
-     * @param player       the {@link ServerPlayer} who is checking visibility
+     * @param player        the {@link ServerPlayer} who is checking visibility
      * @param playerToCheck the {@link ServerPlayer} to check visibility against
      * @return `true` if `player` can see `playerToCheck`, `false` otherwise
      */
-    public static boolean canPlayerSeePlayer(@NotNull ServerPlayer player, @NotNull ServerPlayer playerToCheck){
+    public static boolean canPlayerSeePlayer(@NotNull ServerPlayer player, @NotNull ServerPlayer playerToCheck) {
         return canPlayerSeePlayer(player.getBukkitEntity(), playerToCheck.getBukkitEntity());
     }
 
     /**
      * Checks whether a {@link Player} can see another {@link Player}.
      *
-     * @param player the {@link Player} who is checking visibility
+     * @param player        the {@link Player} who is checking visibility
      * @param playerToCheck the {@link Player} to check visibility against
      * @return `true` if `player` can see `playerToCheck`, `false` otherwise
      */
-    public static boolean canPlayerSeePlayer(@NotNull Player player, @NotNull Player playerToCheck){
+    public static boolean canPlayerSeePlayer(@NotNull Player player, @NotNull Player playerToCheck) {
         if (!isVanished(playerToCheck)) return true;
         return player.canSee(playerToCheck);
     }
@@ -67,7 +68,7 @@ public abstract class VanishUtil extends SuggestionUtil {
      * @param entity the entity to check
      * @return `true` if `source` can see `entity`, `false` otherwise
      */
-    public static boolean canSourceSeeEntity(@NotNull CommandSourceStack source, @NotNull Entity entity){
+    public static boolean canSourceSeeEntity(@NotNull CommandSourceStack source, @NotNull Entity entity) {
         return canSourceSeeEntity(source, entity.getBukkitEntity());
     }
 
@@ -78,12 +79,12 @@ public abstract class VanishUtil extends SuggestionUtil {
      * @param entity the entity to check
      * @return `true` if `source` can see `entity`, `false` otherwise
      */
-    public static boolean canSourceSeeEntity(@NotNull CommandSourceStack source, @NotNull org.bukkit.entity.Entity entity){
-        if (source.isPlayer()){
+    public static boolean canSourceSeeEntity(@NotNull CommandSourceStack source, @NotNull org.bukkit.entity.Entity entity) {
+        if (source.isPlayer()) {
             final var player = Objects.requireNonNull(source.getPlayer()).getBukkitEntity();
-            if (entity instanceof Player other){
+            if (entity instanceof Player other) {
                 return canPlayerSeePlayer(player, other);
-            }else  {
+            } else {
                 return player.canSee(entity);
             }
         }
@@ -93,21 +94,21 @@ public abstract class VanishUtil extends SuggestionUtil {
     /**
      * Checks whether the {@link ServerPlayer}s in the provided collection are visible to the source who executed the command.
      *
-     * @param source the command source
+     * @param source  the command source
      * @param targets the collection of {@link ServerPlayer}s to check
-     * @param <T> a subtype of Collection that extends {@link ServerPlayer}
+     * @param <T>     a subtype of Collection that extends {@link ServerPlayer}
      * @return the collection of {@link ServerPlayer}s that are visible to the command source
      * @throws CommandSyntaxException if no {@link ServerPlayer}s were found that are visible to the command source
      */
     @Contract("_, _ -> param2")
-    public static<T extends Collection<ServerPlayer>> T checkPlayerSuggestion(CommandSourceStack source, T targets) throws CommandSyntaxException {
+    public static <T extends Collection<ServerPlayer>> T checkPlayerSuggestion(CommandSourceStack source, T targets) throws CommandSyntaxException {
         if (!source.isPlayer()) return targets;
 
         for (ServerPlayer target : targets) {
             if (canPlayerSeePlayer(source.getPlayerOrException(), target)) continue;
             targets.remove(target);
         }
-        if (targets.size() == 0){
+        if (targets.size() == 0) {
             throw EntityArgument.NO_PLAYERS_FOUND.create();
         }
         return targets;
@@ -116,16 +117,17 @@ public abstract class VanishUtil extends SuggestionUtil {
     /**
      * Checks whether the {@link ServerPlayer}s in the provided collection are visible to the source who executed the command.
      *
-     * @param source the command source
+     * @param source  the command source
      * @param targets the collection of {@link ServerPlayer}s to check
-     * @param <T> a subtype of Collection that extends {@link ServerPlayer}
+     * @param <T>     a subtype of Collection that extends {@link ServerPlayer}
      * @return the collection of {@link ServerPlayer} that are visible to the command source
      */
     @Contract("_, _ -> param2")
-    public static<T extends Collection<ServerPlayer>> T checkPlayerSuggestionWithoutException(CommandSourceStack source, T targets){
+    public static <T extends Collection<ServerPlayer>> T checkPlayerSuggestionWithoutException(CommandSourceStack source, T targets) {
         try {
             checkEntitySuggestion(source, targets);
-        } catch (CommandSyntaxException ignored) {}
+        } catch (CommandSyntaxException ignored) {
+        }
 
         return targets;
     }
@@ -133,15 +135,15 @@ public abstract class VanishUtil extends SuggestionUtil {
     /**
      * Checks whether the {@link Entity}´s in the provided collection are visible to the player who executed the command.
      *
-     * @param source the command source
+     * @param source  the command source
      * @param targets the collection of {@link Entity}´s to check
-     * @param <E> a subtype of Entity
-     * @param <T> a subtype of Collection that extends E
+     * @param <E>     a subtype of Entity
+     * @param <T>     a subtype of Collection that extends E
      * @return the collection of {@link Entity}´s that are visible to the command source
      * @throws CommandSyntaxException if no {@link Entity}´s were found that are visible to the command source
      */
     @Contract("_, _ -> param2")
-    public static<E extends Entity, T extends Collection<? extends E>> T checkEntitySuggestion(CommandSourceStack source, T targets) throws CommandSyntaxException {
+    public static <E extends Entity, T extends Collection<? extends E>> T checkEntitySuggestion(CommandSourceStack source, T targets) throws CommandSyntaxException {
         if (!source.isPlayer()) return targets;
 
         for (E target : targets) {
@@ -186,12 +188,12 @@ public abstract class VanishUtil extends SuggestionUtil {
      *
      * @param source the command source
      * @param entity the entity to check
-     * @param <T> the type of entity
+     * @param <T>    the type of entity
      * @return the entity that is visible to the command source
      * @throws CommandSyntaxException if the entity is not visible to the command source
      */
     @SuppressWarnings("UnusedReturnValue")
-    public static <T extends Entity> T checkSingleEntitySuggestion(CommandSourceStack source, T entity) throws CommandSyntaxException{
+    public static <T extends Entity> T checkSingleEntitySuggestion(CommandSourceStack source, T entity) throws CommandSyntaxException {
         return checkEntitySuggestion(source, Collections.singleton(entity)).iterator().next();
     }
 }

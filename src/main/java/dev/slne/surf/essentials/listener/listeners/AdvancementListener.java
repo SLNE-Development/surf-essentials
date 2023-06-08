@@ -9,7 +9,6 @@ import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 
 /**
  * A {@link Listener} for player advancement events, which sends a chat message to players when they complete an advancement.
- *
  */
 public class AdvancementListener implements Listener {
     @EventHandler

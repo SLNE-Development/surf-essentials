@@ -51,7 +51,9 @@ import java.util.function.Predicate;
  */
 @SuppressWarnings("unused")
 public final class EssentialsUtil extends LoggingUtil {
-    private EssentialsUtil() {} // Util class
+    private EssentialsUtil() {
+    } // Util class
+
     private static Component prefix; // plugins prefix
     private static final CommandBuildContext buildContext; // the build context
     private static final DamageSources damageSources; // damage sources instance
@@ -73,8 +75,8 @@ public final class EssentialsUtil extends LoggingUtil {
     /**
      * Creates a gradient of text with the given input, first color and second color.
      *
-     * @param input the input text
-     * @param firstHex the hex value of the first color
+     * @param input     the input text
+     * @param firstHex  the hex value of the first color
      * @param secondHex the hex value of the second color
      * @return a gradient of text with the given input, first color and second color
      */
@@ -240,13 +242,14 @@ public final class EssentialsUtil extends LoggingUtil {
     /**
      * Initializes and returns an object.
      *
-     * @param object      the object to initialize
-     * @param <T>         the type of object to initialize
+     * @param object the object to initialize
+     * @param <T>    the type of object to initialize
      * @return the initialized object
      */
     @Contract("_ -> param1")
     public static <T> T make(T object) {
-        return make(object, something -> {});
+        return make(object, something -> {
+        });
     }
 
     /**
@@ -265,8 +268,9 @@ public final class EssentialsUtil extends LoggingUtil {
 
     /**
      * Returns the display name of the given {@link org.bukkit.entity.Entity}.
+     *
      * @param entity the entity whose display name is to be returned
-     * @param <E> the type of entity to retrieve the display name of
+     * @param <E>    the type of entity to retrieve the display name of
      * @return a Component representing the display name of the given entity, with color set to TERTIARY if not already set
      */
     public static <E extends org.bukkit.entity.Entity> @NotNull Component getDisplayName(E entity) {
@@ -318,6 +322,39 @@ public final class EssentialsUtil extends LoggingUtil {
     }
 
     /**
+     * Gets the display name component for a player with the given name.
+     * <p>
+     * If a player with the given name is online, the display name component of that player
+     * is returned. Otherwise, a text component with the given name and tertiary color is returned.
+     * </p>
+     *
+     * @param name the name of the player
+     * @return the display name component
+     * @since 1.0.4
+     */
+    public static Component getDisplayName(String name) {
+        final var player = Bukkit.getPlayer(name);
+
+        if (player != null) return getDisplayName(player);
+        return Component.text(name, Colors.TERTIARY);
+    }
+
+    /**
+     * Gets the display name of an OfflinePlayer if online otherwise just the String name
+     *
+     * @param offlinePlayer   the OfflinePlayer
+     * @param <OfflinePlayer> the type of the OfflinePlayer
+     * @return the display name
+     */
+    public static <OfflinePlayer extends org.bukkit.OfflinePlayer> Component getOfflineDisplayName(OfflinePlayer offlinePlayer) {
+        final var name = offlinePlayer.getName();
+        if (!offlinePlayer.isOnline())
+            return name != null ? Component.text(name, Colors.VARIABLE_VALUE) : Component.empty();
+
+        return getDisplayName(offlinePlayer.getPlayer());
+    }
+
+    /**
      * Gets the display name of the specified entity as a vanilla Minecraft component.
      *
      * @param entity the entity
@@ -366,7 +403,7 @@ public final class EssentialsUtil extends LoggingUtil {
      *
      * @param meta the {@link ItemMeta} to modify
      * @param name the new display name
-     * @param <T> the type of the {@link ItemMeta}
+     * @param <T>  the type of the {@link ItemMeta}
      * @return the modified {@link ItemMeta}
      */
     @Contract("_, _ -> param1")
@@ -379,7 +416,7 @@ public final class EssentialsUtil extends LoggingUtil {
      * Changes the display name of the given {@link ItemStack}.
      *
      * @param stack the {@link ItemStack} to modify
-     * @param name the new display name
+     * @param name  the new display name
      * @return the modified {@link ItemStack}
      */
     @Contract("_, _ -> param1")
@@ -408,7 +445,7 @@ public final class EssentialsUtil extends LoggingUtil {
      * Checks if an {@link Enchantment} is compatible with an {@link ItemStack}.
      *
      * @param enchantment the {@link Enchantment} to check compatibility with
-     * @param stack the {@link ItemStack} to check compatibility for
+     * @param stack       the {@link ItemStack} to check compatibility for
      * @return true if the enchantment is compatible with the item stack, false otherwise
      */
     public static boolean isEnchantmentCompatible(@NotNull Enchantment enchantment, ItemStack stack) {
@@ -503,7 +540,7 @@ public final class EssentialsUtil extends LoggingUtil {
     /**
      * Formats a {@link BoundingBox} location with the specified color.
      *
-     * @param color the color to use for formatting
+     * @param color       the color to use for formatting
      * @param boundingBox the bounding box to format
      * @return the formatted location as a Component
      */
@@ -517,7 +554,7 @@ public final class EssentialsUtil extends LoggingUtil {
     /**
      * Formats a {@link org.bukkit.util.BoundingBox} location with the specified color.
      *
-     * @param color the color to use for formatting
+     * @param color       the color to use for formatting
      * @param boundingBox the BoundingBox to format
      * @return the formatted location as a Component
      */
@@ -531,23 +568,24 @@ public final class EssentialsUtil extends LoggingUtil {
     /**
      * Formats a {@link Location} with the specified color and displays the world if requested.
      *
-     * @param color the color to use for formatting
-     * @param location the Location to format
+     * @param color        the color to use for formatting
+     * @param location     the Location to format
      * @param displayWorld whether to display the world information
      * @return the formatted location as a Component
      */
-    public static @NotNull Component formatLocation(TextColor color, @NotNull Location location, boolean displayWorld){
+    public static @NotNull Component formatLocation(TextColor color, @NotNull Location location, boolean displayWorld) {
         final var builder = Component.text();
 
         builder.append(formatLocation(Colors.SPACER, location.x(), location.y(), location.z()));
 
-        if (displayWorld){
-            try (final var serverLevel = EssentialsUtil.toServerLevel(location.getWorld())){
+        if (displayWorld) {
+            try (final var serverLevel = EssentialsUtil.toServerLevel(location.getWorld())) {
 
                 builder.append(Component.text(" in ", color))
                         .append(Component.text(serverLevel.dimension().location().toString(), Colors.VARIABLE_VALUE));
 
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         }
 
         return builder.build();
@@ -557,20 +595,19 @@ public final class EssentialsUtil extends LoggingUtil {
      * Formats the location coordinates with the specified spacer color.
      *
      * @param spacer the color to use for the spacer
-     * @param x the X-coordinate
-     * @param y the Y-coordinate
-     * @param z the Z-coordinate
-     * @param <T> the type of the coordinates (Number)
+     * @param x      the X-coordinate
+     * @param y      the Y-coordinate
+     * @param z      the Z-coordinate
+     * @param <T>    the type of the coordinates (Number)
      * @return the formatted location as a Component
      */
-    public static<T extends Number> @NotNull Component formatLocation(TextColor spacer, @NotNull T x, @NotNull T y, @NotNull T z) {
+    public static <T extends Number> @NotNull Component formatLocation(TextColor spacer, @NotNull T x, @NotNull T y, @NotNull T z) {
         return Component.text(x.doubleValue(), Colors.VARIABLE_VALUE)
                 .append(Component.text(", ", spacer))
                 .append(Component.text(y.doubleValue(), Colors.VARIABLE_VALUE))
                 .append(Component.text(", ", spacer))
                 .append(Component.text(z.doubleValue(), Colors.VARIABLE_VALUE));
     }
-
 
 
     static {

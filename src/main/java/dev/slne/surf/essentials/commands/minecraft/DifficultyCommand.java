@@ -31,7 +31,7 @@ public class DifficultyCommand extends BrigadierCommand {
     }
 
     @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(EssentialsUtil.checkPermissions(Permissions.DIFFICULTY_PERMISSION));
 
         literal.executes(context -> getDifficulty(context.getSource()));
@@ -46,13 +46,11 @@ public class DifficultyCommand extends BrigadierCommand {
         if (worldServer.getDifficulty() == difficulty) throw ERROR_ALREADY_DIFFICULT.create(difficulty.getKey());
 
         EssentialsUtil.getMinecraftServer().setDifficulty(worldServer, difficulty, true);
-        if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Schwierigkeit wurde auf ", Colors.SUCCESS)
-                    .append(PaperAdventure.asAdventure(difficulty.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(" gesetzt!", Colors.SUCCESS)));
-        } else {
-            source.sendSuccess(Component.translatable("commands.difficulty.success", difficulty.getDisplayName()), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Schwierigkeit wurde auf ", Colors.SUCCESS)
+                .append(PaperAdventure.asAdventure(difficulty.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text(" gesetzt!", Colors.SUCCESS)));
+
         return 1;
 
     }
@@ -60,13 +58,9 @@ public class DifficultyCommand extends BrigadierCommand {
     private static int getDifficulty(CommandSourceStack source) throws CommandSyntaxException {
         Difficulty difficulty = EssentialsUtil.getMinecraftServer().getWorldData().getDifficulty();
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Schwierigkeit ist ", Colors.INFO)
-                    .append(PaperAdventure.asAdventure(difficulty.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text("!", Colors.INFO)));
-        }else {
-            source.sendSuccess(Component.translatable("commands.difficulty.query", difficulty.getDisplayName()), false);
-        }
+        EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Schwierigkeit ist ", Colors.INFO)
+                .append(PaperAdventure.asAdventure(difficulty.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text("!", Colors.INFO)));
         return 1;
     }
 

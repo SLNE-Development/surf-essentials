@@ -5,6 +5,7 @@ import net.coreprotect.CoreProtectAPI;
 
 /**
  * A utility class for working with other plugins
+ *
  * @author twisti
  * @since 1.0.2
  */
@@ -16,7 +17,7 @@ public abstract class PluginUtil extends RandomUtil {
      * @return true if the {@link CoreProtectAPI} is enabled, false otherwise
      */
     public static boolean isCoreProtectEnabled() {
-        return  getCoreProtectAPI() != null;
+        return getCoreProtectAPI() != null;
     }
 
     /**
@@ -24,7 +25,7 @@ public abstract class PluginUtil extends RandomUtil {
      *
      * @return the instance of the CoreProtectAPI
      */
-    public static CoreProtectAPI getCoreProtectAPI(){
+    public static CoreProtectAPI getCoreProtectAPI() {
         return SurfEssentials.getCoreProtectApi();
     }
 

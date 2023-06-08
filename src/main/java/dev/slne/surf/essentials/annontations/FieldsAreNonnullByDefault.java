@@ -10,4 +10,5 @@ import java.lang.annotation.RetentionPolicy;
 @NotNull(exception = NullPointerException.class, value = "Field is null!")
 @TypeQualifierDefault({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FieldsAreNonnullByDefault {}
+public @interface FieldsAreNonnullByDefault {
+}

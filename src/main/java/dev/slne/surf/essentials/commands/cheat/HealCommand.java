@@ -37,8 +37,8 @@ public class HealCommand extends BrigadierCommand {
 
         literal.executes(context -> heal(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
         literal.then(Commands.argument("players", EntityArgument.players())
-                        .requires(EssentialsUtil.checkPermissions(Permissions.HEAL_OTHER_PERMISSION))
-                        .executes(context -> heal(context.getSource(), EntityArgument.getPlayers(context, "players"))));
+                .requires(EssentialsUtil.checkPermissions(Permissions.HEAL_OTHER_PERMISSION))
+                .executes(context -> heal(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 
     private int heal(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
@@ -47,26 +47,18 @@ public class HealCommand extends BrigadierCommand {
 
         for (ServerPlayer target : targets) {
             target.heal(target.getMaxHealth(), EntityRegainHealthEvent.RegainReason.REGEN, true);
-            successfulChanges ++;
+            successfulChanges++;
             EssentialsUtil.sendSuccess(target, (Component.text("Du wurdest geheilt! ", Colors.GREEN)));
         }
 
         final var target = targets.iterator().next();
-        if (source.isPlayer()){
-            if (successfulChanges == 1 && source.getPlayerOrException() != targets.iterator().next()){
-                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
-                        .append(Component.text(" wurde geheilt!", Colors.SUCCESS)));
-            }else if (successfulChanges >= 1 && source.getPlayerOrException() != targets.iterator().next()){
-                EssentialsUtil.sendSuccess(source, Component.text(successfulChanges, Colors.TERTIARY)
-                        .append(Component.text(" Spieler wurden geheilt!", Colors.SUCCESS)));
-            }
-        }else {
-            if (successfulChanges == 1){
-                source.sendSuccess(target.getDisplayName()
-                        .copy().append(net.minecraft.network.chat.Component.literal(" was healed")), false);
-            }else {
-                source.sendSuccess(net.minecraft.network.chat.Component.literal(successfulChanges + " players were healed"), false);
-            }
+        boolean isSelf = source.isPlayer() && source.getPlayerOrException() == target;
+        if (successfulChanges == 1 && !isSelf) {
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
+                    .append(Component.text(" wurde geheilt!", Colors.SUCCESS)));
+        } else if (successfulChanges >= 1 && source.getPlayerOrException() != targets.iterator().next()) {
+            EssentialsUtil.sendSuccess(source, Component.text(successfulChanges, Colors.TERTIARY)
+                    .append(Component.text(" Spieler wurden geheilt!", Colors.SUCCESS)));
         }
         return successfulChanges;
     }

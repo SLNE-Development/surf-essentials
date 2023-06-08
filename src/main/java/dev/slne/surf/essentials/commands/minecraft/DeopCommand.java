@@ -15,7 +15,6 @@ import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.players.PlayerList;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
@@ -36,7 +35,7 @@ public class DeopCommand extends BrigadierCommand {
     }
 
     @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(EssentialsUtil.checkPermissions(Permissions.DEOP_PERMISSION));
 
         literal.then(Commands.argument("players", GameProfileArgument.gameProfile())
@@ -44,7 +43,7 @@ public class DeopCommand extends BrigadierCommand {
                 .executes(context -> deop(context.getSource(), GameProfileArgument.getGameProfiles(context, "players"))));
     }
 
-    private static int deop(CommandSourceStack source, Collection<GameProfile> players)throws CommandSyntaxException {
+    private static int deop(CommandSourceStack source, Collection<GameProfile> players) throws CommandSyntaxException {
         PlayerList playerList = source.getServer().getPlayerList();
         int successful = 0;
 
@@ -52,25 +51,20 @@ public class DeopCommand extends BrigadierCommand {
             if (playerList.isOp(gameProfile)) {
                 playerList.deop(gameProfile);
                 successful++;
-                if (source.isPlayer()){
-                    Player player = Bukkit.getPlayer(gameProfile.getId());
-                    net.kyori.adventure.text.Component displayName = (player == null) ? net.kyori.adventure.text.Component.text(gameProfile.getName()) : player.displayName();
 
-                    Bukkit.broadcast(EssentialsUtil.getPrefix()
-                            .append(displayName.colorIfAbsent(Colors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(" ist durch ", Colors.INFO))
-                            .append(source.getPlayerOrException().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(" kein Operator mehr!", Colors.INFO)), "surf.essentials.announce.op");
-                }else {
-                    source.sendSuccess(Component.translatable("commands.deop.success", gameProfile.getName()), true);
-                }
+
+                Bukkit.broadcast(EssentialsUtil.getPrefix()
+                        .append(EssentialsUtil.getDisplayName(gameProfile))
+                        .append(net.kyori.adventure.text.Component.text(" ist durch ", Colors.INFO))
+                        .append(source.getPlayerOrException().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                        .append(net.kyori.adventure.text.Component.text(" kein Operator mehr!", Colors.INFO)), "surf.essentials.announce.op");
             }
         }
 
         if (successful == 0) {
-            if (source.isPlayer()){
+            if (source.isPlayer()) {
                 EssentialsUtil.sendError(source, "Es hat sich nicht geändert! Die Spieler sind keine Operatoren");
-            }else throw ERROR_NOT_OP.create();
+            } else throw ERROR_NOT_OP.create();
         }
         return successful;
     }

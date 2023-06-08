@@ -13,7 +13,6 @@ import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.IntBinaryTag;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -96,7 +95,7 @@ public class GamemodeCommand extends BrigadierCommand {
         GameProfile gameProfile = profiles.iterator().next();
         UUID targetUUID = gameProfile.getId();
 
-        if (source.getServer().getPlayerList().getPlayer(targetUUID) != null){
+        if (source.getServer().getPlayerList().getPlayer(targetUUID) != null) {
             setMode(source, Collections.singleton(source.getServer().getPlayerList().getPlayer(targetUUID)), gameType);
             return 1;
         }
@@ -111,23 +110,11 @@ public class GamemodeCommand extends BrigadierCommand {
             e.printStackTrace();
         }
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, Component.text("Der Gamemode von ", Colors.SUCCESS)
-                    .append(Component.text(gameProfile.getName(), Colors.TERTIARY))
-                    .append(Component.text(" wurde auf ", Colors.SUCCESS))
-                    .append(PaperAdventure.asAdventure(gameType.getLongDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                    .append(Component.text(" gesetzt!", Colors.SUCCESS)));
-        } else {
-            source.sendSuccess(net.minecraft.network.chat.Component.literal("Set ")
-                    .withStyle(ChatFormatting.GRAY)
-                    .append(gameProfile.getName())
-                    .withStyle(ChatFormatting.GOLD)
-                    .append("´s gamemode to ")
-                    .withStyle(ChatFormatting.GRAY)
-                    .append(gameType.getLongDisplayName())
-                    .append("!")
-                    .withStyle(ChatFormatting.GRAY), false);
-        }
+        EssentialsUtil.sendSuccess(source, Component.text("Der Gamemode von ", Colors.SUCCESS)
+                .append(EssentialsUtil.getDisplayName(gameProfile))
+                .append(Component.text(" wurde auf ", Colors.SUCCESS))
+                .append(PaperAdventure.asAdventure(gameType.getLongDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                .append(Component.text(" gesetzt!", Colors.SUCCESS)));
 
         return 1;
     }
@@ -179,7 +166,7 @@ public class GamemodeCommand extends BrigadierCommand {
                                 .executes(context -> setOfflineMode(context.getSource(), gameType, GameProfileArgument.getGameProfiles(context, "offlinePlayer"))))));
     }
 
-    private static void setModeInFile(GameType gameType, File dataFile) throws IOException{
+    private static void setModeInFile(GameType gameType, File dataFile) throws IOException {
         CompoundBinaryTag rawTag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), GZIP);
         CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder().put(rawTag);
 

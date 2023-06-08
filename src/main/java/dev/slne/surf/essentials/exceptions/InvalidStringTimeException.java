@@ -3,19 +3,19 @@ package dev.slne.surf.essentials.exceptions;
 /**
  * An exception that is thrown when a given string does not represent a valid time value.
  *
- * @since 1.0.0
  * @author twisti
+ * @since 1.0.0
  */
-public class InvalidStringTimeException extends RuntimeException{
+public class InvalidStringTimeException extends RuntimeException {
 
     /**
      * Constructs a new InvalidStringTimeException with the specified detail message.
      *
      * @param message the detail message
-     * @since 1.0.0
      * @author twisti
+     * @since 1.0.0
      */
-    public InvalidStringTimeException(String message){
+    public InvalidStringTimeException(String message) {
         super(message);
         printStackTrace();
     }

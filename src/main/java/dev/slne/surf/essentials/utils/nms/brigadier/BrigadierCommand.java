@@ -29,7 +29,7 @@ public abstract class BrigadierCommand {
     /**
      * Constructs a new BrigadierCommand instance and registers it with SurfEssentials and Bukkit.
      */
-    public BrigadierCommand(){
+    public BrigadierCommand() {
         this.commandBuildContext = EssentialsUtil.buildContext();
 
         INSTANCES.put(this.getClass(), this);
@@ -73,10 +73,10 @@ public abstract class BrigadierCommand {
      * Gets or creates an instance of BrigadierCommand of the specified type.
      *
      * @param clazz the class of the BrigadierCommand
-     * @param <T> the type of the BrigadierCommand
+     * @param <T>   the type of the BrigadierCommand
      * @return an instance of BrigadierCommand of the specified type
      */
-    public static<T extends BrigadierCommand> @Nullable T getOrCreateCommand(Class<T> clazz){
+    public static <T extends BrigadierCommand> @Nullable T getOrCreateCommand(Class<T> clazz) {
         @SuppressWarnings("unchecked")
         T instance = (T) INSTANCES.get(clazz);
 
@@ -84,7 +84,8 @@ public abstract class BrigadierCommand {
             try {
                 instance = clazz.getDeclaredConstructor().newInstance();
                 INSTANCES.put(clazz, instance);
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                     InvocationTargetException e) {
                 e.printStackTrace();
                 return null;
             }

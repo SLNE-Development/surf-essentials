@@ -12,14 +12,14 @@ import org.bukkit.Location;
  * @author twisti
  * @since 1.0.2
  */
-public abstract class LoggingUtil extends PluginUtil{
+public abstract class LoggingUtil extends PluginUtil {
     /**
      * Logs a block change in {@link net.coreprotect.CoreProtect} if the plugin is enabled.
      *
      * @param source the source of the block change
-     * @param level the level in which the block change occurred
-     * @param pos the position of the block that was changed
-     * @param state the new state of the block
+     * @param level  the level in which the block change occurred
+     * @param pos    the position of the block that was changed
+     * @param state  the new state of the block
      * @return true if the block change was logged successfully, false otherwise
      */
     @SuppressWarnings("UnusedReturnValue")

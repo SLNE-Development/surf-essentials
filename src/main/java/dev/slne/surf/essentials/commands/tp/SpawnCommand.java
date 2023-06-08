@@ -6,7 +6,6 @@ import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -59,25 +58,14 @@ public class SpawnCommand extends BrigadierCommand {
             successfullyTeleported++;
         }
 
-        if (sourceStack.isPlayer()){
-            if (successfullyTeleported == 1 && players.iterator().next().getUUID() != sourceStack.getPlayerOrException().getUUID()){
-                EssentialsUtil.sendSuccess(sourceStack, players.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY)
-                        .append(Component.text(" wurde zum Spawn teleportiert", Colors.SUCCESS)));
-            }else if (successfullyTeleported != 1){
-                EssentialsUtil.sendSuccess(sourceStack, Component.text("Es wurden ", Colors.SUCCESS)
-                        .append(Component.text(successfullyTeleported, Colors.TERTIARY))
-                        .append(Component.text(" Spieler zum Spawn teleportiert", Colors.SUCCESS)));
-            }
-        }else {
-            if (successfullyTeleported == 1){
-                sourceStack.sendSuccess(PaperAdventure.asVanilla(Component.text("Teleported ", Colors.GREEN)
-                        .append(players.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                        .append(Component.text(" to the spawn", Colors.GREEN))), false);
-            }else {
-                sourceStack.sendSuccess(PaperAdventure.asVanilla(Component.text("Teleported ", Colors.GREEN)
-                        .append(Component.text(successfullyTeleported, Colors.TERTIARY))
-                        .append(Component.text(" players to the spawn", Colors.GREEN))), false);
-            }
+        boolean isSelf = sourceStack.isPlayer() && players.iterator().next().getUUID() == sourceStack.getPlayerOrException().getUUID();
+        if (successfullyTeleported == 1 && !isSelf) {
+            EssentialsUtil.sendSuccess(sourceStack, players.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+                    .append(Component.text(" wurde zum Spawn teleportiert", Colors.SUCCESS)));
+        } else if (successfullyTeleported != 1) {
+            EssentialsUtil.sendSuccess(sourceStack, Component.text("Es wurden ", Colors.SUCCESS)
+                    .append(Component.text(successfullyTeleported, Colors.TERTIARY))
+                    .append(Component.text(" Spieler zum Spawn teleportiert", Colors.SUCCESS)));
         }
 
         return 1;

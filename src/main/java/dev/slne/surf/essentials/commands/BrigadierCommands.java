@@ -19,15 +19,16 @@ import dev.slne.surf.essentials.utils.EssentialsUtil;
 
 /**
  * This class is responsible for registering and unregistering all the commands provided by the plugin using Brigadier.
- * @since 1.0.0
+ *
  * @author twisti
+ * @since 1.0.0
  */
 public class BrigadierCommands {
 
     /**
      * Registers all the commands provided by the plugin using Brigadier.
      */
-    public void register(){
+    public void register() {
         new BroadcastWorldCommand();
         new ListCommand();
         new LightningCommand();

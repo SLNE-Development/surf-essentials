@@ -7,7 +7,6 @@ import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -43,7 +42,7 @@ public class ChatClearCommand extends BrigadierCommand {
                 .executes(context -> clearChat(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 
-    private int clearChat(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException{
+    private int clearChat(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
         Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulClears = 0;
         int countEmptyLines = 100;
@@ -60,27 +59,18 @@ public class ChatClearCommand extends BrigadierCommand {
             EssentialsUtil.sendSuccess(target, "Dein Chat wurde gelöscht!");
         }
 
-        if (successfulClears == 1){
-            if (source.isPlayer()){
-                if (targets.iterator().next() != source.getPlayerOrException()){
-                    EssentialsUtil.sendSuccess(source, Component.text("Der Chat von ", Colors.SUCCESS)
-                            .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                            .append(Component.text(" wurde gelöscht.", Colors.SUCCESS)));
-                }
-            }else {
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("Cleared the chat from ")
-                        .withStyle(ChatFormatting.GREEN)
-                        .append(targets.iterator().next().getDisplayName()), false);
-            }
-        }else {
-            if (source.isPlayer()){
+        if (successfulClears == 1) {
+            if (targets.iterator().next() != source.getPlayerOrException()) {
                 EssentialsUtil.sendSuccess(source, Component.text("Der Chat von ", Colors.SUCCESS)
-                        .append(Component.text(successfulClears, Colors.TERTIARY))
-                        .append(Component.text(" Spielern wurde gelöscht.", Colors.SUCCESS)));
-            }else {
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("Cleared the chat from " + successfulClears + " players")
-                        .withStyle(ChatFormatting.GREEN), false);
+                        .append(EssentialsUtil.getDisplayName(targets.iterator().next()))
+                        .append(Component.text(" wurde gelöscht.", Colors.SUCCESS)));
             }
+
+        } else {
+            EssentialsUtil.sendSuccess(source, Component.text("Der Chat von ", Colors.SUCCESS)
+                    .append(Component.text(successfulClears, Colors.TERTIARY))
+                    .append(Component.text(" Spielern wurde gelöscht.", Colors.SUCCESS)));
+
         }
         return successfulClears;
     }

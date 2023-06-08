@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import static dev.slne.surf.essentials.utils.EssentialsUtil.gradientify;
 import static net.kyori.adventure.text.Component.text;
 
-public final class SurfEssentials extends JavaPlugin{
+public final class SurfEssentials extends JavaPlugin {
 
     private static SurfEssentials instance;
     private ListenerManager listeners;
@@ -52,9 +52,9 @@ public final class SurfEssentials extends JavaPlugin{
         instance = this;
         loadMessage();
 
-        if (!EssentialsUtil.isNmsSupported()){
+        if (!EssentialsUtil.isNmsSupported()) {
             getServer().getPluginManager().disablePlugin(this);
-            throw new UnsupportedServerVersionException("This Serverversion (" + getServer().getMinecraftVersion() +") is not supported by the plugin!");
+            throw new UnsupportedServerVersionException("This Serverversion (" + getServer().getMinecraftVersion() + ") is not supported by the plugin!");
         }
 
         EssentialsUtil.setPrefix();
@@ -83,8 +83,6 @@ public final class SurfEssentials extends JavaPlugin{
     }
 
 
-
-
     public SurfEssentials() {
         if (SurfEssentials.instance != null) {
             throw new Error("Plugin already initialized!");
@@ -109,12 +107,12 @@ public final class SurfEssentials extends JavaPlugin{
                 .append(text("|  ___/  ___|", Colors.AQUA))
                 .append(Component.newline())
                 .append(text("| |__ \\ `--. ", Colors.AQUA))
-                        .append(gradientify("  SurfEssentials ", "#009245", "#FCEE21"))
-                        .append(gradientify(version, "#FC4A1A", "#F7B733"))
+                .append(gradientify("  SurfEssentials ", "#009245", "#FCEE21"))
+                .append(gradientify(version, "#FC4A1A", "#F7B733"))
                 .append(Component.newline())
                 .append(text("|  __| `--. \\", Colors.AQUA)
                         .append(gradientify("  Running on %s ".formatted(instance.getServer().getName()), "#fdfcfb", "#e2d1c3")))
-                        .append(gradientify(instance.getServer().getVersion(), "#93a5cf", "#e4efe9").decorate(TextDecoration.ITALIC))
+                .append(gradientify(instance.getServer().getVersion(), "#93a5cf", "#e4efe9").decorate(TextDecoration.ITALIC))
                 .append(Component.newline())
                 .append(text("| |___/\\__/ /", Colors.AQUA))
                 .append(Component.newline())
@@ -124,9 +122,9 @@ public final class SurfEssentials extends JavaPlugin{
     /**
      * Component Logger
      */
-    public static @NotNull ComponentLogger logger(){
+    public static @NotNull ComponentLogger logger() {
         var bootStrapLogger = SurfEssentialsBootstrap.getLogger();
-        if (bootStrapLogger != null){
+        if (bootStrapLogger != null) {
             return bootStrapLogger;
         }
         return instance.getComponentLogger();

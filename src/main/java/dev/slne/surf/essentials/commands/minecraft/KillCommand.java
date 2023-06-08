@@ -49,22 +49,14 @@ public class KillCommand extends BrigadierCommand {
             entity.kill();
         }
 
-        if (context.getSource().isPlayer()){
-            if (targets.size() == 1){
-                EssentialsUtil.sendSuccess(context.getSource(), EssentialsUtil.getDisplayName(targets.iterator().next())
-                        .append(Component.text(" wurde getötet!", Colors.SUCCESS)));
-            }else {
-                EssentialsUtil.sendSuccess(context.getSource(), Component.text(targets.size(), Colors.TERTIARY)
-                        .append(Component.text(" entities wurden getötet!", Colors.SUCCESS)));
-            }
-        }else {
-            if (targets.size() == 1) {
-                context.getSource().sendSuccess(net.minecraft.network.chat.Component.translatable("commands.kill.success.single",
-                        targets.iterator().next().getDisplayName()), true);
-            } else {
-                context.getSource().sendSuccess(net.minecraft.network.chat.Component.translatable("commands.kill.success.multiple", targets.size()), true);
-            }
+        if (targets.size() == 1) {
+            EssentialsUtil.sendSuccess(context.getSource(), EssentialsUtil.getDisplayName(targets.iterator().next())
+                    .append(Component.text(" wurde getötet!", Colors.SUCCESS)));
+        } else {
+            EssentialsUtil.sendSuccess(context.getSource(), Component.text(targets.size(), Colors.TERTIARY)
+                    .append(Component.text(" entities wurden getötet!", Colors.SUCCESS)));
         }
+
         return 1;
     }
 }

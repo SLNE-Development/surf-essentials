@@ -8,8 +8,6 @@ import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentBuilder;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -53,7 +51,7 @@ public class TeleportToTopCommand extends BrigadierCommand {
                 .executes(context -> tptop(context.getSource(), GameProfileArgument.getGameProfiles(context, "player"))));
     }
 
-    private int tptop(CommandSourceStack source, Collection<GameProfile> gameProfiles) throws CommandSyntaxException{
+    private int tptop(CommandSourceStack source, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
         if (gameProfiles.size() > 1) throw EntityArgument.ERROR_NOT_SINGLE_PLAYER.create();
 
         GameProfile gameProfile = gameProfiles.iterator().next();
@@ -74,7 +72,7 @@ public class TeleportToTopCommand extends BrigadierCommand {
             EssentialsUtil.callEvent(playerTeleportEvent);
 
             player.getBukkitEntity().teleport(location);
-        }else {
+        } else {
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
 
             if (!offlinePlayer.hasPlayedBefore()) {
@@ -97,26 +95,10 @@ public class TeleportToTopCommand extends BrigadierCommand {
             }
         }
 
-        if (source.isPlayer()){
-            ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
-
-            if (player != null){
-                builder.append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY));
-            }else {
-                builder.append(Component.text(gameProfile.getName(), Colors.TERTIARY));
-            }
-
-            builder.append(Component.text(" wurde zum höchsten Block teleportiert.", Colors.SUCCESS)
-                    .hoverEvent(HoverEvent.showText(Component.text("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(location.getX()),
-                            EssentialsUtil.makeDoubleReadable(location.getY()), EssentialsUtil.makeDoubleReadable(location.getZ())), Colors.INFO))));
-
-            EssentialsUtil.sendSuccess(source, builder.build());
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.literal("Teleported " + gameProfile.getName() +
-                    " to the highest block. (%s %s %s)".formatted(EssentialsUtil.makeDoubleReadable(location.getX()),
-                            EssentialsUtil.makeDoubleReadable(location.getY()), EssentialsUtil.makeDoubleReadable(location.getZ()))), false);
-        }
-
+        EssentialsUtil.sendSourceSuccess(source, EssentialsUtil.getDisplayName(gameProfile)
+                .append(Component.text(" wurde zum höchsten Block teleportiert.", Colors.SUCCESS)
+                        .hoverEvent(HoverEvent.showText(Component.text("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(location.getX()),
+                                EssentialsUtil.makeDoubleReadable(location.getY()), EssentialsUtil.makeDoubleReadable(location.getZ())), Colors.INFO)))));
         return 1;
     }
 }

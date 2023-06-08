@@ -49,35 +49,27 @@ public class GodmodeCommand extends BrigadierCommand {
                         .executes(context -> godMode(context.getSource(), EntityArgument.getPlayers(context, "players"), false))));
     }
 
-    private int godMode(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, boolean enable) throws CommandSyntaxException{
+    private int godMode(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, boolean enable) throws CommandSyntaxException {
         final var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulChanges = 0;
 
         for (ServerPlayer target : targets) {
             target.setInvulnerable(enable);
-            successfulChanges ++;
+            successfulChanges++;
             EssentialsUtil.sendSuccess(target, (Component.text("Du bist nun ", Colors.GREEN))
                     .append(Component.text(target.isInvulnerable() ? "unverwundbar!" : "verwundbar!", Colors.GREEN)));
         }
 
         final var target = targets.iterator().next();
-        if (source.isPlayer()){
-            if (successfulChanges == 1 && source.getPlayerOrException() != target){
-                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
-                        .append(Component.text(" ist nun ", Colors.SUCCESS))
-                        .append(Component.text(target.isInvulnerable() ? "unverwundbar!" : "verwundbar!", Colors.SUCCESS)));
-            }else if (successfulChanges >= 1 && source.getPlayerOrException() != target){
-                EssentialsUtil.sendSuccess(source, Component.text(successfulChanges, Colors.TERTIARY)
-                        .append(Component.text(" Spieler sind nun ", Colors.SUCCESS))
-                        .append(Component.text(enable ? "unverwundbar!" : "verwundbar!", Colors.SUCCESS)));
-            }
-        }else {
-            if (successfulChanges == 1){
-                source.sendSuccess(target.getDisplayName()
-                        .copy().append(net.minecraft.network.chat.Component.literal(" is now " + (target.isInvulnerable() ? "invulnerable" : "vulnerable"))), false);
-            }else {
-                source.sendSuccess(net.minecraft.network.chat.Component.literal(successfulChanges + " players are now " + (enable ? "invulnerable" : "vulnerable")), false);
-            }
+        boolean isSelf = source.isPlayer() && source.getPlayerOrException() == target;
+        if (successfulChanges == 1 && !isSelf) {
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
+                    .append(Component.text(" ist nun ", Colors.SUCCESS))
+                    .append(Component.text(target.isInvulnerable() ? "unverwundbar!" : "verwundbar!", Colors.SUCCESS)));
+        } else if (successfulChanges >= 1 && source.getPlayerOrException() != target) {
+            EssentialsUtil.sendSuccess(source, Component.text(successfulChanges, Colors.TERTIARY)
+                    .append(Component.text(" Spieler sind nun ", Colors.SUCCESS))
+                    .append(Component.text(enable ? "unverwundbar!" : "verwundbar!", Colors.SUCCESS)));
         }
         return successfulChanges;
     }

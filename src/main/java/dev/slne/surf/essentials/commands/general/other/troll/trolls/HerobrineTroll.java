@@ -12,7 +12,6 @@ import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -22,6 +21,7 @@ import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
 
+import java.io.IOException;
 import java.util.UUID;
 
 public class HerobrineTroll extends Troll {
@@ -58,24 +58,21 @@ public class HerobrineTroll extends Troll {
         );
         EssentialsUtil.scarePlayer(target.getBukkitEntity());
 
-        if (withParticles){
-            Bukkit.getScheduler().runTaskTimerAsynchronously(SurfEssentials.getInstance(), bukkitTask -> herobrineNpc.getLevel().sendParticles(
-                    target, ParticleTypes.ASH, false, herobrineNpc.getEyePosition().x, herobrineNpc.getEyePosition().y,
-                    herobrineNpc.getEyePosition().z, 10, 0.5, 0.5, 0.5, 1), 2, 5);
+        if (withParticles) {
+            try (final var level = herobrineNpc.serverLevel()) {
+                Bukkit.getScheduler().runTaskTimerAsynchronously(SurfEssentials.getInstance(), bukkitTask -> level.sendParticles(
+                        target, ParticleTypes.ASH, false, herobrineNpc.getEyePosition().x, herobrineNpc.getEyePosition().y,
+                        herobrineNpc.getEyePosition().z, 10, 0.5, 0.5, 0.5, 1), 2, 5);
+            } catch (IOException ignored) {
+            }
         }
 
         //success message
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Bei ", Colors.SUCCESS)
-                    .append(EssentialsUtil.getDisplayName(target))
-                    .append(Component.text(" erscheint nun Herobrine!", Colors.SUCCESS)));
-        }else{
-            source.sendSuccess(net.minecraft.network.chat.Component.literal("Herobrine now appears at ")
-                            .withStyle(ChatFormatting.GREEN)
-                    .append(EssentialsUtil.getMinecraftDisplayName(target))
-                    .copy().append(net.minecraft.network.chat.Component.literal("!")
-                            .withStyle(ChatFormatting.GREEN)), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, Component.text("Bei ", Colors.SUCCESS)
+                .append(EssentialsUtil.getDisplayName(target))
+                .append(Component.text(" erscheint nun Herobrine!", Colors.SUCCESS)));
+
         return 1;
     }
 

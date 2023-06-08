@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 
 /**
  * A utility class for handling commands in Minecraft.
+ *
  * @author twisti
  * @since 1.0.2
  */
@@ -26,7 +27,7 @@ public abstract class CommandUtil extends VanishUtil {
      *
      * @return the command dispatcher
      */
-    public static CommandDispatcher<CommandSourceStack> getDispatcher(){
+    public static CommandDispatcher<CommandSourceStack> getDispatcher() {
         return getMinecraftServer().vanillaCommandDispatcher.getDispatcher();
     }
 
@@ -35,7 +36,7 @@ public abstract class CommandUtil extends VanishUtil {
      *
      * @return the root command node
      */
-    public static RootCommandNode<CommandSourceStack> getRoot(){
+    public static RootCommandNode<CommandSourceStack> getRoot() {
         return getDispatcher().getRoot();
     }
 
@@ -45,7 +46,7 @@ public abstract class CommandUtil extends VanishUtil {
      * @param name the name of the command to unregister
      * @return the removed command node
      */
-    public static CommandNode<CommandSourceStack> unregisterDispatcherCommand(String name){
+    public static CommandNode<CommandSourceStack> unregisterDispatcherCommand(String name) {
         var command = getRoot().getChild(name);
         sendDebug("Removing command: " + name);
         getRoot().removeCommand(name);
@@ -59,7 +60,7 @@ public abstract class CommandUtil extends VanishUtil {
      * @return the removed command nodes
      */
     @SuppressWarnings("UnusedReturnValue")
-    public static Collection<CommandNode<CommandSourceStack>> unregisterDispatcherCommand(Collection<String> names){
+    public static Collection<CommandNode<CommandSourceStack>> unregisterDispatcherCommand(Collection<String> names) {
         Collection<CommandNode<CommandSourceStack>> unregistered = new HashSet<>();
         for (String name : names) {
             unregistered.add(unregisterDispatcherCommand(name));
@@ -70,7 +71,7 @@ public abstract class CommandUtil extends VanishUtil {
     /**
      * Syncs the commands registered with the {@link CommandDispatcher<CommandSourceStack>}.
      */
-    public static void syncCommands(){
+    public static void syncCommands() {
         sendDebug("Syncing commands...");
         toCraftServer(SurfEssentials.getInstance().getServer()).syncCommands();
     }
@@ -79,9 +80,9 @@ public abstract class CommandUtil extends VanishUtil {
      * Registers a command with the {@link CommandDispatcher<CommandSourceStack>}.
      *
      * @param command the command node to register
-     * @param <T> the type of the command node
+     * @param <T>     the type of the command node
      */
-    public static <T extends CommandNode<CommandSourceStack>> T registerCommand(T command){
+    public static <T extends CommandNode<CommandSourceStack>> T registerCommand(T command) {
         getRoot().addChild(command);
         REGISTERED_COMMANDS.add(command);
         return command;
@@ -94,7 +95,7 @@ public abstract class CommandUtil extends VanishUtil {
      * @return the collection of registered commands
      */
     @SuppressWarnings("unchecked")
-    public static<T extends Collection<CommandNode<CommandSourceStack>>> T getRegisteredCommands(){
+    public static <T extends Collection<CommandNode<CommandSourceStack>>> T getRegisteredCommands() {
         return (T) REGISTERED_COMMANDS;
     }
 
@@ -103,7 +104,7 @@ public abstract class CommandUtil extends VanishUtil {
      *
      * @param player the player to send the commands to
      */
-    public static void sendCommands(Player player){
+    public static void sendCommands(Player player) {
         SurfEssentials.getMinecraftServer().getCommands().sendCommands(CraftUtil.toServerPlayer(player));
     }
 
@@ -113,18 +114,18 @@ public abstract class CommandUtil extends VanishUtil {
      * @param permission the permission to check
      * @return the permission predicate
      */
-    public static Predicate<CommandSourceStack> checkPermissions(String permission){
+    public static Predicate<CommandSourceStack> checkPermissions(String permission) {
         return commandSourceStack -> commandSourceStack.hasPermission(2, permission);
     }
 
     /**
      * Returns a predicate that checks whether the command source has the given permission <b>or</b> the specified level.
      *
-     * @param level the permission level  to check
+     * @param level      the permission level  to check
      * @param permission the permission to check
      * @return the permission predicate
      */
-    public static Predicate<CommandSourceStack> checkPermissions(int level, String permission){
+    public static Predicate<CommandSourceStack> checkPermissions(int level, String permission) {
         return commandSourceStack -> commandSourceStack.hasPermission(level, permission);
     }
 
@@ -134,10 +135,10 @@ public abstract class CommandUtil extends VanishUtil {
      * @param permissions the permissions to check
      * @return the permission predicate
      */
-    public static Predicate<CommandSourceStack> checkPermissions(String... permissions){
+    public static Predicate<CommandSourceStack> checkPermissions(String... permissions) {
         return commandSourceStack -> {
             for (String permission : permissions) {
-                if (commandSourceStack.hasPermission(2, permission)){
+                if (commandSourceStack.hasPermission(2, permission)) {
                     return true;
                 }
             }
@@ -148,14 +149,14 @@ public abstract class CommandUtil extends VanishUtil {
     /**
      * Returns a predicate that checks whether the command source has any of the given permissions <b>or</b> the specified level.
      *
-     * @param level the permission level to check
+     * @param level       the permission level to check
      * @param permissions the permissions to check
      * @return the permission predicate
      */
-    public static Predicate<CommandSourceStack> checkPermissions(int level, String... permissions){
+    public static Predicate<CommandSourceStack> checkPermissions(int level, String... permissions) {
         return commandSourceStack -> {
             for (String permission : permissions) {
-                if (commandSourceStack.hasPermission(level, permission)){
+                if (commandSourceStack.hasPermission(level, permission)) {
                     return true;
                 }
             }
@@ -169,10 +170,10 @@ public abstract class CommandUtil extends VanishUtil {
      * @param permissions the permissions to check
      * @return the permission predicate
      */
-    public static Predicate<CommandSourceStack> checkRequiredPermissions(String... permissions){
+    public static Predicate<CommandSourceStack> checkRequiredPermissions(String... permissions) {
         return commandSourceStack -> {
             for (String permission : permissions) {
-                if (!commandSourceStack.hasPermission(2, permission)){
+                if (!commandSourceStack.hasPermission(2, permission)) {
                     return false;
                 }
             }
@@ -183,15 +184,15 @@ public abstract class CommandUtil extends VanishUtil {
     /**
      * Returns a predicate that checks whether the command source has all of the given permissions <b>or</b> the specified level.
      *
-     * @param level the permission level to check
+     * @param level       the permission level to check
      * @param permissions the permissions to check
      * @return the permission predicate
      */
     @SuppressWarnings("unused")
-    public static Predicate<CommandSourceStack> checkRequiredPermissions(int level, String... permissions){
+    public static Predicate<CommandSourceStack> checkRequiredPermissions(int level, String... permissions) {
         return commandSourceStack -> {
             for (String permission : permissions) {
-                if (!commandSourceStack.hasPermission(level, permission)){
+                if (!commandSourceStack.hasPermission(level, permission)) {
                     return false;
                 }
             }

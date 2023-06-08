@@ -62,14 +62,15 @@ public class EnchantCommand extends BrigadierCommand {
 
                         .then(Commands.argument("level", IntegerArgumentType.integer(0))
                                 .executes(context -> enchant(context.getSource(), EntityArgument.getEntities(context, "targets"),
-                                        ResourceLocationArgument.getId(context, "enchantment") , IntegerArgumentType.getInteger(context, "level"))))));
+                                        ResourceLocationArgument.getId(context, "enchantment"), IntegerArgumentType.getInteger(context, "level"))))));
     }
 
     private static int enchant(CommandSourceStack source, Collection<? extends net.minecraft.world.entity.Entity> targetsUnchecked, ResourceLocation enchantmentString, int level) throws CommandSyntaxException {
         var targets = EssentialsUtil.checkEntitySuggestion(source, targetsUnchecked).stream().map(net.minecraft.world.entity.Entity::getBukkitEntity).toList();
         var key = NamespacedKey.fromString(enchantmentString.toString());
         var enchantment = Enchantment.getByKey(key);
-        if (enchantment == null) throw ResourceArgument.ERROR_UNKNOWN_RESOURCE.create(enchantmentString.toString(), "minecraft:enchantment");
+        if (enchantment == null)
+            throw ResourceArgument.ERROR_UNKNOWN_RESOURCE.create(enchantmentString.toString(), "minecraft:enchantment");
 
         if (level > enchantment.getMaxLevel()) throw ERROR_LEVEL_TOO_HIGH.create(level, enchantment.getMaxLevel());
 
@@ -82,13 +83,15 @@ public class EnchantCommand extends BrigadierCommand {
 
                 ItemStack itemStack = equipment.getItemInMainHand();
 
-                if (itemStack.getType() == Material.AIR) throw ERROR_NO_ITEM.create(EssentialsUtil.getMinecraftDisplayName(livingEntity));
+                if (itemStack.getType() == Material.AIR)
+                    throw ERROR_NO_ITEM.create(EssentialsUtil.getMinecraftDisplayName(livingEntity));
 
                 if (EssentialsUtil.isEnchantmentCompatible(enchantment, itemStack)) {
                     itemStack.addEnchantment(enchantment, level);
                     ++successfullEnchantment;
 
-                } else if (targets.size() == 1) throw ERROR_INCOMPATIBLE.create(PaperAdventure.asVanilla(itemStack.displayName()));
+                } else if (targets.size() == 1)
+                    throw ERROR_INCOMPATIBLE.create(PaperAdventure.asVanilla(itemStack.displayName()));
 
             } else throw ERROR_NOT_LIVING_ENTITY.create(EssentialsUtil.getMinecraftDisplayName(entity));
 
@@ -96,29 +99,21 @@ public class EnchantCommand extends BrigadierCommand {
 
         if (successfullEnchantment == 0) throw ERROR_NOTHING_HAPPENED.create();
 
-        if (source.isPlayer()) {
-            if (targets.size() == 1) {
-                EssentialsUtil.sendSuccess(source, Component.text("Die Verzauberung ", Colors.SUCCESS)
-                        .append(enchantment.displayName(level).colorIfAbsent(Colors.TERTIARY))
-                        .append(Component.text(" wurde zu ", Colors.SUCCESS))
-                        .append(EssentialsUtil.getDisplayName(targets.iterator().next()))
-                        .append(Component.text("'s item hinzugefügt", Colors.SUCCESS)));
-            } else {
-                EssentialsUtil.sendSuccess(source, Component.text("Die Verzauberung ", Colors.SUCCESS)
-                        .append(enchantment.displayName(level).colorIfAbsent(Colors.TERTIARY))
-                        .append(Component.text(" wurde zu ", Colors.SUCCESS))
-                        .append(Component.text(targets.size(), Colors.TERTIARY))
-                        .append(Component.text(" entities hinzugefügt", Colors.SUCCESS)));
-            }
+
+        if (targets.size() == 1) {
+            EssentialsUtil.sendSuccess(source, Component.text("Die Verzauberung ", Colors.SUCCESS)
+                    .append(enchantment.displayName(level).colorIfAbsent(Colors.TERTIARY))
+                    .append(Component.text(" wurde zu ", Colors.SUCCESS))
+                    .append(EssentialsUtil.getDisplayName(targets.iterator().next()))
+                    .append(Component.text("'s item hinzugefügt", Colors.SUCCESS)));
         } else {
-            if (targets.size() == 1) {
-                source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.enchant.success.single",
-                        PaperAdventure.asVanilla(enchantment.displayName(level)), EssentialsUtil.getMinecraftDisplayName(targets.iterator().next())), true);
-            } else {
-                source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.enchant.success.multiple",
-                        PaperAdventure.asVanilla(enchantment.displayName(level)), targets.size()), true);
-            }
+            EssentialsUtil.sendSuccess(source, Component.text("Die Verzauberung ", Colors.SUCCESS)
+                    .append(enchantment.displayName(level).colorIfAbsent(Colors.TERTIARY))
+                    .append(Component.text(" wurde zu ", Colors.SUCCESS))
+                    .append(Component.text(targets.size(), Colors.TERTIARY))
+                    .append(Component.text(" entities hinzugefügt", Colors.SUCCESS)));
         }
+
         return successfullEnchantment;
 
     }
@@ -139,13 +134,13 @@ public class EnchantCommand extends BrigadierCommand {
             net.minecraft.network.chat.Component.translatable("commands.enchant.failed"));
 
 
-    private static CompletableFuture<Suggestions> suggestEnchantments(@NotNull CommandContext<?> context, SuggestionsBuilder builder){
+    private static CompletableFuture<Suggestions> suggestEnchantments(@NotNull CommandContext<?> context, SuggestionsBuilder builder) {
         var args = context.getInput().split(" ");
         String currentArg;
 
         try {
             currentArg = args[2].toLowerCase(Locale.ENGLISH);
-        }catch (IndexOutOfBoundsException e){
+        } catch (IndexOutOfBoundsException e) {
             currentArg = "";
         }
 
@@ -153,7 +148,7 @@ public class EnchantCommand extends BrigadierCommand {
             var key = enchantment.getKey();
 
             if (currentArg.isEmpty() || currentArg.isBlank() ||
-                    key.toString().toLowerCase().startsWith(currentArg) || key.value().toLowerCase().startsWith(currentArg)){
+                    key.toString().toLowerCase().startsWith(currentArg) || key.value().toLowerCase().startsWith(currentArg)) {
 
                 builder.suggest(enchantment.getKey().asString(), PaperAdventure.asVanilla(enchantment.displayName(0)));
             }

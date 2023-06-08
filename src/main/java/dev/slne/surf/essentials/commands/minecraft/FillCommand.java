@@ -168,14 +168,11 @@ public class FillCommand extends BrigadierCommand {
 
         if (filledBlocks.get() == 0) throw ERROR_FAILED.create();
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Es " + ((filledBlocks.get() == 1) ? "wurde " : "wurden "), Colors.SUCCESS)
-                    .append(net.kyori.adventure.text.Component.text(filledBlocks.get(), Colors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(((filledBlocks.get() == 1) ? " Block " : " Blöcke ") + "platziert.", Colors.SUCCESS)));
-            BLOCKS.put(source.getPlayerOrException().getUUID(), blockStatePos);
-        }else {
-            source.sendSuccess(Component.translatable("commands.fill.success", filledBlocks.get()), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Es " + ((filledBlocks.get() == 1) ? "wurde " : "wurden "), Colors.SUCCESS)
+                .append(net.kyori.adventure.text.Component.text(filledBlocks.get(), Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text(((filledBlocks.get() == 1) ? " Block " : " Blöcke ") + "platziert.", Colors.SUCCESS)));
+        BLOCKS.put(source.getPlayerOrException().getUUID(), blockStatePos);
 
         return filledBlocks.get();
     }

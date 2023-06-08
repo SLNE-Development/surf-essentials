@@ -130,36 +130,33 @@ public class SpawnerChangeCommand extends BrigadierCommand {
 
         source.getLevel().sendBlockUpdated(blockEntity.getBlockPos(), oldState, blockEntity.getBlockState(), 3);
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
-                    .append(Component.text("Spawner", Colors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text("Entity: ", Colors.INFO)
-                                    .append(PaperAdventure.asAdventure(type.getDescription()).colorIfAbsent(Colors.TERTIARY))
-                                    .append(Component.newline())
-                                    .append(Component.text("minSpawnDelay: ", Colors.INFO)
-                                            .append(Component.text(baseSpawner.minSpawnDelay, Colors.TERTIARY)))
-                                    .append(Component.newline())
-                                    .append(Component.text("maxSpawnDelay: ", Colors.INFO)
-                                            .append(Component.text(baseSpawner.maxSpawnDelay, Colors.TERTIARY)))
-                                    .append(Component.newline())
-                                    .append(Component.text("spawnRange: ", Colors.INFO)
-                                            .append(Component.text(baseSpawner.spawnRange, Colors.TERTIARY)))
-                                    .append(Component.newline())
-                                    .append(Component.text("requiredPlayerRange: ", Colors.INFO)
-                                            .append(Component.text(baseSpawner.requiredPlayerRange, Colors.TERTIARY))))))
-                    .append(Component.text(" wurde erfolgreich geändert!")));
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.literal("The spawner was successfully modified"), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
+                .append(Component.text("Spawner", Colors.TERTIARY)
+                        .hoverEvent(HoverEvent.showText(Component.text("Entity: ", Colors.INFO)
+                                .append(PaperAdventure.asAdventure(type.getDescription()).colorIfAbsent(Colors.TERTIARY))
+                                .append(Component.newline())
+                                .append(Component.text("minSpawnDelay: ", Colors.INFO)
+                                        .append(Component.text(baseSpawner.minSpawnDelay, Colors.TERTIARY)))
+                                .append(Component.newline())
+                                .append(Component.text("maxSpawnDelay: ", Colors.INFO)
+                                        .append(Component.text(baseSpawner.maxSpawnDelay, Colors.TERTIARY)))
+                                .append(Component.newline())
+                                .append(Component.text("spawnRange: ", Colors.INFO)
+                                        .append(Component.text(baseSpawner.spawnRange, Colors.TERTIARY)))
+                                .append(Component.newline())
+                                .append(Component.text("requiredPlayerRange: ", Colors.INFO)
+                                        .append(Component.text(baseSpawner.requiredPlayerRange, Colors.TERTIARY))))))
+                .append(Component.text(" wurde erfolgreich geändert!")));
         return 1;
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean isSpawner(CommandSourceStack source, BlockPos blockPos) throws CommandSyntaxException {
-        if (source.getLevel().getBlockIfLoaded(blockPos) != Blocks.SPAWNER){
-            if (source.isPlayer()){
+        if (source.getLevel().getBlockIfLoaded(blockPos) != Blocks.SPAWNER) {
+            if (source.isPlayer()) {
                 EssentialsUtil.sendError(source, "An der Position befindet sich kein Spawner");
-            }else {
+            } else {
                 source.sendFailure(net.minecraft.network.chat.Component.literal("There is no spawner at this location."));
             }
             return false;

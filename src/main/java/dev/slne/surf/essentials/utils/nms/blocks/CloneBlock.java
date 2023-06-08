@@ -8,4 +8,5 @@ import net.minecraft.world.level.block.state.BlockState;
 /**
  * A record that represents a cloned block with its position, state, block entity and server level.
  */
-public record CloneBlock(BlockPos pos, BlockState state, BlockEntity blockEntity, ServerLevel level) {}
+public record CloneBlock(BlockPos pos, BlockState state, BlockEntity blockEntity, ServerLevel level) {
+}

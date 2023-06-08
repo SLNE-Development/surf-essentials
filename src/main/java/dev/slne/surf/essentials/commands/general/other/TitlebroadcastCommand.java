@@ -11,7 +11,6 @@ import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -41,7 +40,7 @@ public class TitlebroadcastCommand extends BrigadierCommand {
     }
 
     @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(EssentialsUtil.checkPermissions(Permissions.TITLE_BROADCAST_PERMISSION));
 
         literal.then(Commands.argument("players", EntityArgument.players())
@@ -77,13 +76,13 @@ public class TitlebroadcastCommand extends BrigadierCommand {
     }
 
     private static int broadcast(@NotNull CommandSourceStack source, @NotNull Collection<ServerPlayer> targetsUnchecked, @NotNull String title,
-                                 @Nullable String subTitle, @Nullable Integer fadeInTicks, @Nullable Integer stayTicks, @Nullable Integer fadeOutTicks) throws CommandSyntaxException{
+                                 @Nullable String subTitle, @Nullable Integer fadeInTicks, @Nullable Integer stayTicks, @Nullable Integer fadeOutTicks) throws CommandSyntaxException {
 
         Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
 
         int successfullyShowed = 0;
         fadeInTicks = (fadeInTicks == null) ? 10 : fadeInTicks;
-        stayTicks = (stayTicks == null) ? 20*7 : stayTicks;
+        stayTicks = (stayTicks == null) ? 20 * 7 : stayTicks;
         fadeOutTicks = (fadeOutTicks == null) ? 10 : fadeOutTicks;
 
         subTitle = (subTitle == null) ? "" : subTitle;
@@ -102,63 +101,47 @@ public class TitlebroadcastCommand extends BrigadierCommand {
             successfullyShowed++;
         }
 
-        if (source.isPlayer()){
-            if (successfullyShowed == 1) {
-                EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
-                        .append(Component.text("Titel", Colors.TERTIARY)
-                                .hoverEvent(HoverEvent.showText(Component.text("Titel: ", Colors.INFO)
-                                        .append(titleComponent)
-                                        .append(Component.newline())
-                                        .append(Component.text("Einblenden: ", Colors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(fadeInTicks), Colors.TERTIARY)))
-                                        .append(Component.newline())
-                                        .append(Component.text("Dauer: ", Colors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
-                                        .append(Component.newline())
-                                        .append(Component.text("Ausblenden: ", Colors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
-                                        .append(Component.newline())
-                                        .append(Component.text("Untertitel: ", Colors.INFO))
-                                        .append(subTitleComponent))))
-                        .append(Component.text(" wurde ", Colors.SUCCESS))
-                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                        .append(Component.text(" gezeigt!", Colors.SUCCESS)));
-            }else {
-                EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
-                        .append(Component.text("Titel", Colors.TERTIARY)
-                                .hoverEvent(HoverEvent.showText(Component.text("Titel: ", Colors.INFO)
-                                        .append(titleComponent)
-                                        .append(Component.newline())
-                                        .append(Component.text("Einblenden: ", Colors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(fadeInTicks), Colors.TERTIARY)))
-                                        .append(Component.newline())
-                                        .append(Component.text("Dauer: ", Colors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
-                                        .append(Component.newline())
-                                        .append(Component.text("Ausblenden: ", Colors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
-                                        .append(Component.newline())
-                                        .append(Component.text("Untertitel: ", Colors.INFO))
-                                        .append(subTitleComponent))))
-                        .append(Component.text(" wurde ", Colors.SUCCESS))
-                        .append(Component.text(successfullyShowed, Colors.TERTIARY))
-                        .append(Component.text(" Spielern gezeigt!", Colors.SUCCESS)));
-            }
-        }else {
-            if (successfullyShowed == 1) {
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("Showed ")
-                        .withStyle(ChatFormatting.GREEN)
-                        .append(targets.iterator().next().getDisplayName())
-                        .append(" the title!")
-                        .withStyle(ChatFormatting.GREEN), false);
-            }else {
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("Showed ")
-                        .withStyle(ChatFormatting.GREEN)
-                        .append(String.valueOf(successfullyShowed))
-                        .withStyle(ChatFormatting.GOLD)
-                        .append(" players the title!")
-                        .withStyle(ChatFormatting.GREEN), false);
-            }
+
+        if (successfullyShowed == 1) {
+            EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
+                    .append(Component.text("Titel", Colors.TERTIARY)
+                            .hoverEvent(HoverEvent.showText(Component.text("Titel: ", Colors.INFO)
+                                    .append(titleComponent)
+                                    .append(Component.newline())
+                                    .append(Component.text("Einblenden: ", Colors.INFO)
+                                            .append(Component.text(EssentialsUtil.ticksToString(fadeInTicks), Colors.TERTIARY)))
+                                    .append(Component.newline())
+                                    .append(Component.text("Dauer: ", Colors.INFO)
+                                            .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
+                                    .append(Component.newline())
+                                    .append(Component.text("Ausblenden: ", Colors.INFO)
+                                            .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
+                                    .append(Component.newline())
+                                    .append(Component.text("Untertitel: ", Colors.INFO))
+                                    .append(subTitleComponent))))
+                    .append(Component.text(" wurde ", Colors.SUCCESS))
+                    .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                    .append(Component.text(" gezeigt!", Colors.SUCCESS)));
+        } else {
+            EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
+                    .append(Component.text("Titel", Colors.TERTIARY)
+                            .hoverEvent(HoverEvent.showText(Component.text("Titel: ", Colors.INFO)
+                                    .append(titleComponent)
+                                    .append(Component.newline())
+                                    .append(Component.text("Einblenden: ", Colors.INFO)
+                                            .append(Component.text(EssentialsUtil.ticksToString(fadeInTicks), Colors.TERTIARY)))
+                                    .append(Component.newline())
+                                    .append(Component.text("Dauer: ", Colors.INFO)
+                                            .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
+                                    .append(Component.newline())
+                                    .append(Component.text("Ausblenden: ", Colors.INFO)
+                                            .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
+                                    .append(Component.newline())
+                                    .append(Component.text("Untertitel: ", Colors.INFO))
+                                    .append(subTitleComponent))))
+                    .append(Component.text(" wurde ", Colors.SUCCESS))
+                    .append(Component.text(successfullyShowed, Colors.TERTIARY))
+                    .append(Component.text(" Spielern gezeigt!", Colors.SUCCESS)));
         }
         return successfullyShowed;
     }

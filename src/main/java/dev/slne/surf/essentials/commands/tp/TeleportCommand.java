@@ -9,7 +9,6 @@ import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -76,15 +75,11 @@ public class TeleportCommand extends BrigadierCommand {
             sender.getBukkitEntity().teleport(targetLocation);
             EssentialsUtil.sendSuccess(source, teleportToEntity$adventure(entity));
 
-        }else {
+        } else {
             EssentialsUtil.callEvent(playerTeleportEvent);
             waiting$adventure(source);
 
-            sender.getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAcceptAsync(aBoolean -> {
-                try {
-                    EssentialsUtil.sendSuccess(source, teleportToEntity$adventure(entity));
-                } catch (CommandSyntaxException ignored) {}
-            });
+            sender.getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAcceptAsync(__ -> EssentialsUtil.sendSuccess(source, teleportToEntity$adventure(entity)));
         }
 
         return 1;
@@ -101,35 +96,22 @@ public class TeleportCommand extends BrigadierCommand {
             if (playerTeleportEvent.isCancelled()) return 0;
         }
 
-        if (isLoaded(targetLocation)){
+        if (isLoaded(targetLocation)) {
             if (playerTeleportEvent != null) {
                 EssentialsUtil.callEvent(playerTeleportEvent);
             }
 
             fromEntity.getBukkitEntity().teleport(targetLocation);
+            EssentialsUtil.sendSuccess(source, teleportEntityToEntity$adventure(fromEntity, toEntity));
 
-            if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, teleportEntityToEntity$adventure(fromEntity, toEntity));
-            }else {
-                source.sendSuccess(teleportEntityToEntity(fromEntity, toEntity), false);
-            }
-        }else {
+        } else {
             waiting$adventure(source);
-
-            fromEntity.getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAcceptAsync(aBoolean -> {
-                if (source.isPlayer()){
-                    try {
-                        EssentialsUtil.sendSuccess(source, teleportEntityToEntity$adventure(fromEntity, toEntity));
-                    } catch (CommandSyntaxException ignored) {}
-                }else {
-                    source.sendSuccess(teleportEntityToEntity(fromEntity, toEntity), false);
-                }
-            });
+            fromEntity.getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAcceptAsync(__ -> EssentialsUtil.sendSuccess(source, teleportEntityToEntity$adventure(fromEntity, toEntity)));
         }
         return 1;
     }
 
-    private int teleportEntityToLocation(CommandSourceStack source, Entity entity, Vec3 vec3) throws CommandSyntaxException{
+    private int teleportEntityToLocation(CommandSourceStack source, Entity entity, Vec3 vec3) throws CommandSyntaxException {
         canSourceSeeEntity(source, entity);
         var targetLocation = new Location(source.getLevel().getWorld(), vec3.x(), vec3.y(), vec3.z());
         PlayerTeleportEvent playerTeleportEvent = null;
@@ -139,34 +121,22 @@ public class TeleportCommand extends BrigadierCommand {
             if (playerTeleportEvent.isCancelled()) return 0;
         }
 
-        if (isLoaded(targetLocation)){
+        if (isLoaded(targetLocation)) {
             if (playerTeleportEvent != null) {
                 EssentialsUtil.callEvent(playerTeleportEvent);
             }
             entity.getBukkitEntity().teleport(targetLocation);
+            EssentialsUtil.sendSuccess(source, teleportEntityToLocation$adventure(entity, targetLocation));
 
-            if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, teleportEntityToLocation$adventure(entity, targetLocation));
-            }else {
-                source.sendSuccess(teleportEntityToLocation(entity, targetLocation), false);
-            }
-        }else {
+        } else {
             waiting$adventure(source);
 
-            entity.getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAcceptAsync(aBoolean -> {
-                if (source.isPlayer()){
-                    try {
-                        EssentialsUtil.sendSuccess(source, teleportEntityToLocation$adventure(entity, targetLocation));
-                    } catch (CommandSyntaxException ignored) {}
-                }else {
-                    source.sendSuccess(teleportEntityToLocation(entity, targetLocation), false);
-                }
-            });
+            entity.getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAcceptAsync(__ -> EssentialsUtil.sendSuccess(source, teleportEntityToLocation$adventure(entity, targetLocation)));
         }
         return 1;
     }
 
-    private int teleportEntitiesToEntity(CommandSourceStack source, Collection<? extends Entity> entitiesUnchecked, Entity toEntity) throws CommandSyntaxException{
+    private int teleportEntitiesToEntity(CommandSourceStack source, Collection<? extends Entity> entitiesUnchecked, Entity toEntity) throws CommandSyntaxException {
         var entities = EssentialsUtil.checkEntitySuggestion(source, entitiesUnchecked);
         canSourceSeeEntity(source, toEntity);
 
@@ -175,66 +145,50 @@ public class TeleportCommand extends BrigadierCommand {
 
         if (isLoaded(targetLocation)) {
             teleportEntities(entities, targetLocation, successfulTeleports);
+            EssentialsUtil.sendSuccess(source, teleportEntitiesToEntity$adventure(successfulTeleports.get(), toEntity));
 
-            if (source.isPlayer()) {
-                EssentialsUtil.sendSuccess(source, teleportEntitiesToEntity$adventure(successfulTeleports.get(), toEntity));
-            } else {
-                source.sendSuccess(teleportEntitiesToEntity(successfulTeleports.get(), toEntity), false);
-            }
-        }else {
+        } else {
             waiting$adventure(source);
 
-            entities.iterator().next().getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAccept(aBoolean -> {
+            entities.iterator().next().getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAccept(__ -> {
                 for (Entity entity : entities) {
                     entity.getBukkitEntity().teleport(targetLocation);
                     successfulTeleports.getAndIncrement();
                 }
-                if (source.isPlayer()){
-                    try {
-                        EssentialsUtil.sendSuccess(source, teleportEntitiesToEntity$adventure(successfulTeleports.get(), toEntity));
-                    } catch (CommandSyntaxException ignored) {}
-                }else {
-                    source.sendSuccess(teleportEntitiesToEntity(successfulTeleports.get(), toEntity), false);
-                }
+
+                EssentialsUtil.sendSuccess(source, teleportEntitiesToEntity$adventure(successfulTeleports.get(), toEntity));
+
             });
         }
         return successfulTeleports.get();
     }
 
-    private int teleportEntitiesToLocation(CommandSourceStack source, Collection<? extends Entity> entitiesUnchecked, Vec3 vec3) throws CommandSyntaxException{
+    private int teleportEntitiesToLocation(CommandSourceStack source, Collection<? extends Entity> entitiesUnchecked, Vec3 vec3) throws CommandSyntaxException {
         var entities = EssentialsUtil.checkEntitySuggestion(source, entitiesUnchecked);
         var targetLocation = new Location(source.getLevel().getWorld(), vec3.x(), vec3.y(), vec3.z());
         var successfulTeleports = new AtomicInteger();
 
-        if (isLoaded(targetLocation)){
+        if (isLoaded(targetLocation)) {
             teleportEntities(entities, targetLocation, successfulTeleports);
-            if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, teleportEntitiesToLocation$adventure(successfulTeleports.get(), targetLocation));
-            }else {
-                source.sendSuccess(teleportEntitiesToLocation(successfulTeleports.get(), targetLocation), false);
-            }
-        }else {
+            EssentialsUtil.sendSuccess(source, teleportEntitiesToLocation$adventure(successfulTeleports.get(), targetLocation));
+
+        } else {
             waiting$adventure(source);
 
-            entities.iterator().next().getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAccept(aBoolean -> {
+            entities.iterator().next().getBukkitEntity().teleportAsync(targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND).thenAccept(__ -> {
                 for (Entity entity : entities) {
                     entity.getBukkitEntity().teleport(targetLocation);
                     successfulTeleports.getAndIncrement();
                 }
-                if (source.isPlayer()){
-                    try {
-                        EssentialsUtil.sendSuccess(source, teleportEntitiesToLocation$adventure(successfulTeleports.get(), targetLocation));
-                    } catch (CommandSyntaxException ignored) {}
-                }else {
-                    source.sendSuccess(teleportEntitiesToLocation(successfulTeleports.get(), targetLocation), false);
-                }
+                EssentialsUtil.sendSuccess(source, teleportEntitiesToLocation$adventure(successfulTeleports.get(), targetLocation));
+
             });
         }
         return successfulTeleports.get();
     }
 
 
-    private boolean isLoaded(Location location){
+    private boolean isLoaded(Location location) {
         return location.isChunkLoaded();
     }
 
@@ -243,38 +197,38 @@ public class TeleportCommand extends BrigadierCommand {
             if (entity instanceof ServerPlayer player) {
                 if (!EssentialsUtil.isVanished(player.getBukkitEntity())) return;
                 if (source.getPlayerOrException().getBukkitEntity().canSee(player.getBukkitEntity())) return;
-            }else {
+            } else {
                 if (source.getPlayerOrException().getBukkitEntity().canSee(entity.getBukkitEntity())) return;
             }
             throw EntityArgument.NO_ENTITIES_FOUND.create();
         }
     }
 
-    private void waiting$adventure(CommandSourceStack source) throws CommandSyntaxException {
-        if (source.isPlayer()){
+    private void waiting$adventure(CommandSourceStack source) {
+        if (source.isPlayer()) {
             EssentialsUtil.sendInfo(source, "Teleportiere...");
         }
     }
 
-    private Component teleportToEntity$adventure(Entity entity){
+    private Component teleportToEntity$adventure(Entity entity) {
         var builder = Component.text();
         builder.append(Component.text("Du hast dich zu ", Colors.SUCCESS));
 
-        if (entity instanceof ServerPlayer player){
+        if (entity instanceof ServerPlayer player) {
             builder.append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY));
-        }else {
+        } else {
             builder.append(PaperAdventure.asAdventure(entity.getDisplayName()).colorIfAbsent(Colors.TERTIARY));
         }
 
         return builder.append(Component.text(" teleportiert!", Colors.SUCCESS)).build();
     }
 
-    private Component teleportEntityToEntity$adventure(Entity fromEntity, Entity toEntity){
+    private Component teleportEntityToEntity$adventure(Entity fromEntity, Entity toEntity) {
         var builder = Component.text();
 
-        if (fromEntity instanceof ServerPlayer player){
+        if (fromEntity instanceof ServerPlayer player) {
             builder.append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY));
-        }else {
+        } else {
             builder.append(PaperAdventure.asAdventure(fromEntity.getDisplayName()).colorIfAbsent(Colors.TERTIARY));
         }
 
@@ -284,7 +238,7 @@ public class TeleportCommand extends BrigadierCommand {
             builder.append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
                     .hoverEvent(HoverEvent.showText(Component.text("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(player.getX()),
                             EssentialsUtil.makeDoubleReadable(player.getY()), EssentialsUtil.makeDoubleReadable(player.getZ())), Colors.INFO))));
-        }else {
+        } else {
             builder.append(PaperAdventure.asAdventure(toEntity.getDisplayName()).colorIfAbsent(Colors.TERTIARY)
                     .hoverEvent(HoverEvent.showText(Component.text("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(toEntity.getX()),
                             EssentialsUtil.makeDoubleReadable(toEntity.getY()), EssentialsUtil.makeDoubleReadable(toEntity.getZ())), Colors.INFO))));
@@ -293,21 +247,12 @@ public class TeleportCommand extends BrigadierCommand {
         return builder.append(Component.text(" teleportiert!", Colors.SUCCESS)).build();
     }
 
-    private net.minecraft.network.chat.Component teleportEntityToEntity(Entity fromEntity, Entity toEntity){
-        return net.minecraft.network.chat.Component.literal("Teleported ")
-                .withStyle(ChatFormatting.GREEN)
-                .append(fromEntity.getDisplayName())
-                .append(net.minecraft.network.chat.Component.literal(" to ")
-                        .withStyle(ChatFormatting.GREEN))
-                .append(toEntity.getDisplayName());
-    }
-
-    private Component teleportEntityToLocation$adventure(Entity entity, Location location){
+    private Component teleportEntityToLocation$adventure(Entity entity, Location location) {
         var builder = Component.text();
 
-        if (entity instanceof ServerPlayer player){
+        if (entity instanceof ServerPlayer player) {
             builder.append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY));
-        }else {
+        } else {
             builder.append(PaperAdventure.asAdventure(entity.getDisplayName()).colorIfAbsent(Colors.TERTIARY));
         }
 
@@ -317,36 +262,22 @@ public class TeleportCommand extends BrigadierCommand {
                 .append(Component.text(" teleportiert!", Colors.SUCCESS))).build();
     }
 
-    private net.minecraft.network.chat.Component teleportEntityToLocation(Entity entity, Location location){
-        return net.minecraft.network.chat.Component.literal("Teleported ")
-                .withStyle(ChatFormatting.GREEN)
-                .append(entity.getDisplayName())
-                .append(net.minecraft.network.chat.Component.literal(" to %s %s %s".formatted(location.getX(), location.getY(), location.getZ()))
-                        .withStyle(ChatFormatting.GREEN));
-    }
-
-    private Component teleportEntitiesToEntity$adventure(int successfulTeleports, Entity toEntity){
+    private Component teleportEntitiesToEntity$adventure(int successfulTeleports, Entity toEntity) {
         var builder = Component.text();
 
         builder.append(Component.text(successfulTeleports, Colors.TERTIARY)
                 .append(Component.text(" Entities wurden zu ", Colors.SUCCESS)));
 
-        if (toEntity instanceof ServerPlayer player){
+        if (toEntity instanceof ServerPlayer player) {
             builder.append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY));
-        }else {
+        } else {
             builder.append(PaperAdventure.asAdventure(toEntity.getDisplayName()).colorIfAbsent(Colors.TERTIARY));
         }
 
         return builder.append(Component.text(" teleportiert!", Colors.SUCCESS)).build();
     }
 
-    private net.minecraft.network.chat.Component teleportEntitiesToEntity(int successfulTeleports, Entity toEntity){
-        return net.minecraft.network.chat.Component.literal("Teleported " + successfulTeleports + " entities to ")
-                .withStyle(ChatFormatting.GREEN)
-                .append(toEntity.getDisplayName());
-    }
-
-    private Component teleportEntitiesToLocation$adventure(int successfulTeleports, Location location){
+    private Component teleportEntitiesToLocation$adventure(int successfulTeleports, Location location) {
         var builder = Component.text();
 
         builder.append(Component.text(successfulTeleports, Colors.TERTIARY)
@@ -358,15 +289,7 @@ public class TeleportCommand extends BrigadierCommand {
         return builder.append(Component.text(" teleportiert!", Colors.SUCCESS)).build();
     }
 
-    private net.minecraft.network.chat.Component teleportEntitiesToLocation(int successfulTeleports, Location location){
-        return net.minecraft.network.chat.Component.literal("Teleported " + successfulTeleports + " entities to ")
-                .withStyle(ChatFormatting.GREEN)
-                .append(net.minecraft.network.chat.Component.literal("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(location.getX()),
-                        EssentialsUtil.makeDoubleReadable(location.getY()), EssentialsUtil.makeDoubleReadable(location.getZ())))
-                        .withStyle(ChatFormatting.GRAY));
-    }
-
-    private <T extends Entity, S extends Location, M extends AtomicInteger> void teleportEntities(Collection<T> entities, S targetLocation, M atomicInteger){
+    private <T extends Entity, S extends Location, M extends AtomicInteger> void teleportEntities(Collection<T> entities, S targetLocation, M atomicInteger) {
         for (Entity entity : entities) {
             if (entity instanceof ServerPlayer player) {
                 var playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(), targetLocation, PlayerTeleportEvent.TeleportCause.COMMAND);

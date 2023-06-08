@@ -53,6 +53,7 @@ public class RecodedCommands {
         strings.add("setidletimeout");
         strings.add("playsound");
         strings.add("advancement");
+        strings.add("defaultgamemode");
     }).stream().map(o -> o.toString().toLowerCase()).toList();
 
     /**

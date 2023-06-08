@@ -9,7 +9,6 @@ import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -35,7 +34,7 @@ public class RuleCommand extends BrigadierCommand {
     }
 
     @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(EssentialsUtil.checkPermissions(Permissions.RULE_SELF_PERMISSION, Permissions.RULE_OTHER_PERMISSION));
         literal.executes(context -> sendRules(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
 
@@ -44,7 +43,7 @@ public class RuleCommand extends BrigadierCommand {
                 .executes(context -> sendRules(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 
-    private int sendRules(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException{
+    private int sendRules(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
         Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulSends = 0;
 
@@ -60,28 +59,18 @@ public class RuleCommand extends BrigadierCommand {
                             .clickEvent(ClickEvent.openUrl("https://castcrafter.de/subserver"))));
             successfulSends++;
         }
-        if (source.isPlayer()){
-            if (successfulSends == 1 && !(targets.iterator().next() == source.getPlayerOrException())){
-                EssentialsUtil.sendSuccess(source, Component.text("Die Regeln wurden an ", Colors.SUCCESS)
-                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                        .append(Component.text(" gesendet!", Colors.SUCCESS)));
-            }else if (!(targets.iterator().next() == source.getPlayerOrException())){
-                EssentialsUtil.sendSuccess(source, Component.text("Die Regeln wurden an ", Colors.SUCCESS)
-                        .append(Component.text(successfulSends, Colors.TERTIARY))
-                        .append(Component.text(" Spieler gesendet!", Colors.SUCCESS)));
-            }
-        }else {
-            if (successfulSends == 1){
-                source.sendSuccess(targets.iterator().next().getDisplayName()
-                        .copy().append(" has received the rules.")
-                        .withStyle(ChatFormatting.GREEN), false);
-            }else {
-                source.sendSuccess(net.minecraft.network.chat.Component.literal(String.valueOf(targets.size()))
-                                .withStyle(ChatFormatting.GOLD)
-                        .append(" players have received the rules.")
-                        .withStyle(ChatFormatting.GREEN), false);
-            }
+
+        boolean isSelf = source.isPlayer() && source.getPlayerOrException() == targets.iterator().next();
+        if (successfulSends == 1 && !isSelf) {
+            EssentialsUtil.sendSuccess(source, Component.text("Die Regeln wurden an ", Colors.SUCCESS)
+                    .append(EssentialsUtil.getDisplayName(targets.iterator().next()))
+                    .append(Component.text(" gesendet!", Colors.SUCCESS)));
+        } else if (!isSelf) {
+            EssentialsUtil.sendSuccess(source, Component.text("Die Regeln wurden an ", Colors.SUCCESS)
+                    .append(Component.text(successfulSends, Colors.TERTIARY))
+                    .append(Component.text(" Spieler gesendet!", Colors.SUCCESS)));
         }
+
         return 1;
     }
 }

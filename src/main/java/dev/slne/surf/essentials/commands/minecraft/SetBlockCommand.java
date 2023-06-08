@@ -35,6 +35,7 @@ import java.util.function.Predicate;
 public class SetBlockCommand extends BrigadierCommand {
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.setblock.failed"));
     private static final Map<UUID, BlockStatePos> BLOCK = new HashMap<>();
+
     @Override
     public String[] names() {
         return new String[]{"setblock"};
@@ -90,7 +91,6 @@ public class SetBlockCommand extends BrigadierCommand {
                                                 BlockPredicateArgument.getBlockPredicate(context, "filter")))))));
 
 
-
         literal.then(Commands.literal("undo")
                 .executes(context -> undo(context.getSource())));
     }
@@ -120,19 +120,17 @@ public class SetBlockCommand extends BrigadierCommand {
 
         serverLevel.blockUpdated(blockPos, blockInput.getState().getBlock());
 
-        if (source.isPlayer()){
+        if (source.isPlayer()) {
             BLOCK.put(source.getPlayerOrException().getUUID(), new BlockStatePos(oldBlockState, blockPos, serverLevel));
-
-            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Der Block ", Colors.SUCCESS)
-                    .append(PaperAdventure.asAdventure(oldBlockState.getBlock().getName()).colorIfAbsent(Colors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(" bei ", Colors.SUCCESS))
-                    .append(net.kyori.adventure.text.Component.text("%s %s %s".formatted(blockPos.getX(), blockPos.getY(), blockPos.getZ())))
-                    .append(net.kyori.adventure.text.Component.text(" wurde zu ", Colors.SUCCESS))
-                    .append(PaperAdventure.asAdventure(blockInput.getState().getBlock().getName()).colorIfAbsent(Colors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(" geändert.", Colors.SUCCESS)));
-        } else {
-            source.sendSuccess(Component.translatable("commands.setblock.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), false);
         }
+
+        EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Der Block ", Colors.SUCCESS)
+                .append(PaperAdventure.asAdventure(oldBlockState.getBlock().getName()).colorIfAbsent(Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text(" bei ", Colors.SUCCESS))
+                .append(net.kyori.adventure.text.Component.text("%s %s %s".formatted(blockPos.getX(), blockPos.getY(), blockPos.getZ())))
+                .append(net.kyori.adventure.text.Component.text(" wurde zu ", Colors.SUCCESS))
+                .append(PaperAdventure.asAdventure(blockInput.getState().getBlock().getName()).colorIfAbsent(Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text(" geändert.", Colors.SUCCESS)));
         return 1;
     }
 
@@ -163,11 +161,11 @@ public class SetBlockCommand extends BrigadierCommand {
         REPLACE,
         DESTROY;
 
-        Mode(){
+        Mode() {
         }
     }
 
-    public interface Filter{
+    public interface Filter {
         @Nullable
         BlockInput filter(BoundingBox box, BlockPos pos, BlockInput block, ServerLevel world);
     }

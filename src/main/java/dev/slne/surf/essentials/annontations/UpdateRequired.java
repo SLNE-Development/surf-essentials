@@ -9,5 +9,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE})
 public @interface UpdateRequired {
     String minVersion() default "";
+
     String updateReason() default "";
 }

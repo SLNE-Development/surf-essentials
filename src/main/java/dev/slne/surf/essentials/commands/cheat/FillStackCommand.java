@@ -9,7 +9,6 @@ import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -32,7 +31,7 @@ public class FillStackCommand extends BrigadierCommand {
         return "Fill the items tack in players main hand";
     }
 
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(EssentialsUtil.checkPermissions(Permissions.FILL_STACK_PERMISSION));
 
         literal.executes(context -> more(context.getSource(), context.getSource().getPlayerOrException()));
@@ -41,7 +40,7 @@ public class FillStackCommand extends BrigadierCommand {
                 .executes(context -> more(context.getSource(), EntityArgument.getPlayer(context, "player"))));
     }
 
-    private int more(CommandSourceStack source, ServerPlayer targetUnchecked) throws CommandSyntaxException{
+    private int more(CommandSourceStack source, ServerPlayer targetUnchecked) throws CommandSyntaxException {
         final ServerPlayer target = EssentialsUtil.checkPlayerSuggestion(source, targetUnchecked);
         final ItemStack item = target.getMainHandItem();
 
@@ -50,26 +49,13 @@ public class FillStackCommand extends BrigadierCommand {
 
         item.setCount(item.getMaxStackSize());
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Das Item ", Colors.SUCCESS)
-                    .append(PaperAdventure.asAdventure(item.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                    .append(Component.text(" wurde ", Colors.SUCCESS))
-                    .append(Component.text("%dx".formatted(item.getMaxStackSize()), Colors.TERTIARY))
-                    .append(Component.text(" für ", Colors.SUCCESS))
-                    .append(EssentialsUtil.getDisplayName(target))
-                    .append(Component.text(" gestackt!", Colors.SUCCESS)));
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.literal("The item ")
-                    .withStyle(ChatFormatting.GREEN)
-                    .append(item.getDisplayName())
-                    .append(net.minecraft.network.chat.Component.literal("has been stacked "))
-                    .withStyle(ChatFormatting.GREEN)
-                    .append(net.minecraft.network.chat.Component.literal(item.getMaxStackSize() + "x"))
-                    .withStyle(ChatFormatting.GOLD)
-                    .append(net.minecraft.network.chat.Component.literal(" for "))
-                    .withStyle(ChatFormatting.GREEN)
-                    .append(target.getDisplayName()), false);
-        }
+        EssentialsUtil.sendSuccess(source, Component.text("Das Item ", Colors.SUCCESS)
+                .append(PaperAdventure.asAdventure(item.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                .append(Component.text(" wurde ", Colors.SUCCESS))
+                .append(Component.text("%dx".formatted(item.getMaxStackSize()), Colors.TERTIARY))
+                .append(Component.text(" für ", Colors.SUCCESS))
+                .append(EssentialsUtil.getDisplayName(target))
+                .append(Component.text(" gestackt!", Colors.SUCCESS)));
         return item.getMaxStackSize();
     }
 

@@ -12,13 +12,13 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_19_R3.block.CraftBlock;
-import org.bukkit.craftbukkit.v1_19_R3.enchantments.CraftEnchantment;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R1.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_20_R1.enchantments.CraftEnchantment;
+import org.bukkit.craftbukkit.v1_20_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -27,18 +27,19 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * A utility class that provides helper methods for working with Bukkit's Craft classes.
- * @since 1.0.2
+ *
  * @author twisti
+ * @since 1.0.2
  */
 @SuppressWarnings("unused")
-@UpdateRequired(minVersion = "1.20", updateReason = "Update imports")
+@UpdateRequired(minVersion = "1.21", updateReason = "Update imports")
 public abstract class CraftUtil {
 
     /**
      * The name of the NMS class used for the current version of Minecraft.
      */
-    @UpdateRequired(minVersion = "1.20", updateReason = "Craft classes change with each minecraft version")
-    public static final String NMS_CLASS = "org.bukkit.craftbukkit.v1_19_R3.CraftWorld";
+    @UpdateRequired(minVersion = "1.21", updateReason = "Craft classes change with each minecraft version")
+    public static final String NMS_CLASS = "org.bukkit.craftbukkit.v1_20_R1.CraftWorld";
 
     /**
      * Converts a {@link Player} into a {@link CraftPlayer}.
@@ -47,7 +48,7 @@ public abstract class CraftUtil {
      * @return the corresponding {@link CraftPlayer} object
      */
     @Contract(value = "_ -> param1", pure = true)
-    public static CraftPlayer toCraftPlayer(Player player){
+    public static CraftPlayer toCraftPlayer(Player player) {
         return (CraftPlayer) player;
     }
 
@@ -57,7 +58,7 @@ public abstract class CraftUtil {
      * @param player the {@link Player} to convert
      * @return the corresponding {@link ServerPlayer} object
      */
-    public static ServerPlayer toServerPlayer(Player player){
+    public static ServerPlayer toServerPlayer(Player player) {
         return toCraftPlayer(player).getHandle();
     }
 
@@ -68,7 +69,7 @@ public abstract class CraftUtil {
      * @return the corresponding {@link CraftServer} object
      */
     @Contract(value = "_ -> param1", pure = true)
-    public static CraftServer toCraftServer(Server server){
+    public static CraftServer toCraftServer(Server server) {
         return (CraftServer) server;
     }
 
@@ -79,7 +80,7 @@ public abstract class CraftUtil {
      * @return the corresponding {@link CraftWorld} object
      */
     @Contract(value = "_ -> param1", pure = true)
-    public static CraftWorld toCraftWorld(World world){
+    public static CraftWorld toCraftWorld(World world) {
         return ((CraftWorld) world);
     }
 
@@ -89,7 +90,7 @@ public abstract class CraftUtil {
      * @param world the {@link World} to convert
      * @return the corresponding {@link ServerLevel} object
      */
-    public static ServerLevel toServerLevel(World world){
+    public static ServerLevel toServerLevel(World world) {
         return toCraftWorld(world).getHandle();
     }
 
@@ -100,7 +101,7 @@ public abstract class CraftUtil {
      * @return the corresponding {@link CraftBlock} object
      */
     @Contract(value = "_ -> param1", pure = true)
-    public static CraftBlock toCraftBlock(Block block){
+    public static CraftBlock toCraftBlock(Block block) {
         return (CraftBlock) block;
     }
 
@@ -110,7 +111,7 @@ public abstract class CraftUtil {
      * @param block the {@link Block} to convert
      * @return the corresponding {@link net.minecraft.world.level.block.Block} object
      */
-    public static net.minecraft.world.level.block.@NotNull Block toMinecraftBlock(Block block){
+    public static net.minecraft.world.level.block.@NotNull Block toMinecraftBlock(Block block) {
         return toCraftBlock(block).getNMS().getBlock();
     }
 
@@ -121,7 +122,7 @@ public abstract class CraftUtil {
      * @return the corresponding {@link CraftEntity} object
      */
     @Contract(value = "_ -> param1", pure = true)
-    public static CraftEntity toCraftEntity(Entity entity){
+    public static CraftEntity toCraftEntity(Entity entity) {
         return (CraftEntity) entity;
     }
 
@@ -131,7 +132,7 @@ public abstract class CraftUtil {
      * @param entity the {@link Entity} to convert
      * @return the corresponding {@link net.minecraft.world.entity.Entity} object
      */
-    public static net.minecraft.world.entity.Entity toMinecraftEntity(Entity entity){
+    public static net.minecraft.world.entity.Entity toMinecraftEntity(Entity entity) {
         return toCraftEntity(entity).getHandle();
     }
 
@@ -141,7 +142,7 @@ public abstract class CraftUtil {
      * @param player the {@link Player} to convert
      * @return the corresponding {@link net.minecraft.world.entity.player.Player} object
      */
-    public static net.minecraft.world.entity.player.Player toMinecraftPlayer(Player player){
+    public static net.minecraft.world.entity.player.Player toMinecraftPlayer(Player player) {
         return toCraftPlayer(player).getHandle();
     }
 
@@ -152,7 +153,7 @@ public abstract class CraftUtil {
      * @return the corresponding {@link CraftItemStack} object
      */
     @Contract(value = "_ -> param1", pure = true)
-    public static CraftItemStack toCraftItemStack(ItemStack stack){
+    public static CraftItemStack toCraftItemStack(ItemStack stack) {
         return ((CraftItemStack) stack);
     }
 
@@ -163,7 +164,7 @@ public abstract class CraftUtil {
      * @return the corresponding {@link net.minecraft.world.item.ItemStack} object
      */
     @Contract(pure = true)
-    public static net.minecraft.world.item.ItemStack toMinecraftItemStack(ItemStack stack){
+    public static net.minecraft.world.item.ItemStack toMinecraftItemStack(ItemStack stack) {
         return toCraftItemStack(stack).handle;
     }
 
@@ -174,41 +175,43 @@ public abstract class CraftUtil {
      * @return the corresponding {@link Enchantment} object
      */
     @Contract("null -> null")
-    public static Enchantment toMinecraftEnchant(org.bukkit.enchantments.Enchantment from){
+    public static Enchantment toMinecraftEnchant(org.bukkit.enchantments.Enchantment from) {
         return CraftEnchantment.getRaw(from);
     }
 
 
     /**
      * Sends one or more {@link Packet}s to the client of the given {@link Player}.
-     * @param player the player to send the packets to
-     * @param packet the first packet to send
+     *
+     * @param player  the player to send the packets to
+     * @param packet  the first packet to send
      * @param packets additional packets to send
+     * @param <L>     the type of packet listener
+     * @param <P>     the type of packet to send
      * @return the first {@code packet}
-     * @param <L> the type of packet listener
-     * @param <P> the type of packet to send
      * @see #sendPackets(ServerPlayer player, P packet, P... packets)
      */
     @SuppressWarnings("UnusedReturnValue")
     @Contract("_, _, _ -> param2")
     @SafeVarargs
-    public static<L extends PacketListener,  P extends Packet<L>> P sendPackets(Player player, @NotNull P  packet, @NotNull P... packets){
+    public static <L extends PacketListener, P extends Packet<L>> P sendPackets(Player player, @NotNull P packet, @NotNull P... packets) {
         return sendPackets(toServerPlayer(player), packet, packets);
     }
 
 
     /**
      * Sends one or more {@link Packet}s to the {@link ServerPlayer}'s client.
-     * @param player the player to send the packets to
-     * @param packet the first packet to send
+     *
+     * @param player  the player to send the packets to
+     * @param packet  the first packet to send
      * @param packets additional packets to send
+     * @param <L>     the type of packet listener
+     * @param <P>     the type of packet to send
      * @return the first {@code packet}
-     * @param <L> the type of packet listener
-     * @param <P> the type of packet to send
      */
     @SafeVarargs
     @Contract("_, _, _ -> param2")
-    public static<L extends PacketListener,  P extends Packet<L>> P sendPackets(@NotNull ServerPlayer player, @NotNull P packet, @NotNull P... packets){
+    public static <L extends PacketListener, P extends Packet<L>> P sendPackets(@NotNull ServerPlayer player, @NotNull P packet, @NotNull P... packets) {
         Validate.notNull(player, "Player cannot be null");
         Validate.notNull(packet, "Packet cannot be null");
         Validate.notNull(packets, "Packets cannot be null");
@@ -226,9 +229,10 @@ public abstract class CraftUtil {
 
     /**
      * Sends a {@link ClientboundRemoveEntitiesPacket} to remove all entities with the given ids
-     * @param player the {@link Player} to send the packet to
+     *
+     * @param player        the {@link Player} to send the packet to
      * @param firstEntityId the first entity ids
-     * @param entityIds the optionally others entity ids
+     * @param entityIds     the optionally others entity ids
      */
     public static void sendRemoveEntitiesPacket(Player player, int firstEntityId, int... entityIds) {
         final var list = IntArrayList.of(entityIds);

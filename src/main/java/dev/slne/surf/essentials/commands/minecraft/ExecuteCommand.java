@@ -42,7 +42,7 @@ import net.minecraft.nbt.*;
 import net.minecraft.server.bossevents.CustomBossEvent;
 import net.minecraft.server.commands.data.DataAccessor;
 import net.minecraft.server.commands.data.DataCommands;
-import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -52,6 +52,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootDataType;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
@@ -64,7 +66,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Stream;
 
-@UpdateRequired(minVersion = "1.20", updateReason = "Maybe Mojang will add more options")
+@UpdateRequired(minVersion = "1.21", updateReason = "Maybe Mojang will add more options")
 public class ExecuteCommand extends BrigadierCommand {
 
     @UpdateRequired
@@ -133,7 +135,7 @@ public class ExecuteCommand extends BrigadierCommand {
                                     list.addAll(EntityArgument.getOptionalEntities(context, "targets")
                                             .stream()
                                             .map(entity -> context.getSource()
-                                                    .withLevel(((ServerLevel) entity.getLevel()))
+                                                    .withLevel(((ServerLevel) entity.level()))
                                                     .withPosition(entity.position())
                                                     .withRotation(entity.getRotationVector()))
                                             .toList());
@@ -414,7 +416,7 @@ public class ExecuteCommand extends BrigadierCommand {
         final int sectionZ = SectionPos.blockToSectionCoord(blockPos.getZ());
         final var levelChunk = level.getChunkSource().getChunkNow(sectionX, sectionZ);
 
-        if (levelChunk != null) return levelChunk.getFullStatus() == ChunkHolder.FullChunkStatus.ENTITY_TICKING;
+        if (levelChunk != null) return levelChunk.getFullStatus() == FullChunkStatus.ENTITY_TICKING;
 
         return false;
     }
@@ -430,10 +432,10 @@ public class ExecuteCommand extends BrigadierCommand {
                         }))));
 
         argumentBuilder.then(Commands.literal("entityPredicate") // Why I did that is a mystery to me.Perhaps as a result of my boredom
-                                                                 // executes if a condition is true (e.g. /execute if entityPredicate <entity> flying --> executes if entity is flying)
+                // executes if a condition is true (e.g. /execute if entityPredicate <entity> flying --> executes if entity is flying)
                 .then(Commands.argument("entity", EntityArgument.entity())
                         .then(addConditional(root, Commands.literal("invulnerable"), positive, context -> checkEntity(context, "entity", Entity::isInvulnerable)))
-                        .then(addConditional(root, Commands.literal("onGround"), positive, context -> checkEntity(context, "entity", Entity::isOnGround)))
+                        .then(addConditional(root, Commands.literal("onGround"), positive, context -> checkEntity(context, "entity", Entity::onGround)))
                         .then(addConditional(root, Commands.literal("isOnPortalCooldown"), positive, context -> checkEntity(context, "entity", Entity::isOnPortalCooldown)))
                         .then(addConditional(root, Commands.literal("isSilent"), positive, context -> checkEntity(context, "entity", Entity::isSilent)))
                         .then(addConditional(root, Commands.literal("isNoGravity"), positive, context -> checkEntity(context, "entity", Entity::isNoGravity)))
@@ -662,11 +664,16 @@ public class ExecuteCommand extends BrigadierCommand {
     }
 
     private boolean checkCustomPredicate(@NotNull CommandSourceStack source, @NotNull LootItemCondition condition) {
-        final var builder = new LootContext.Builder(source.getLevel())
+        ServerLevel serverLevel = source.getLevel();
+        LootParams lootParams = new LootParams.Builder(serverLevel)
                 .withParameter(LootContextParams.ORIGIN, source.getPosition())
-                .withOptionalParameter(LootContextParams.THIS_ENTITY, source.getEntity());
+                .withOptionalParameter(LootContextParams.THIS_ENTITY, source.getEntity())
+                .create(LootContextParamSets.COMMAND);
+        LootContext lootContext = new LootContext.Builder(lootParams)
+                .create(null);
+        lootContext.pushVisitedElement(LootContext.createVisitedEntry(condition));
 
-        return condition.test(builder.create(LootContextParamSets.COMMAND));
+        return condition.test(lootContext);
     }
 
     private Collection<CommandSourceStack> expect(CommandContext<CommandSourceStack> context, boolean positive, boolean value) {
@@ -905,6 +912,6 @@ public class ExecuteCommand extends BrigadierCommand {
             consumer2.onCommandComplete(context, success, result);
         };
 
-        SUGGEST_PREDICATE = (context, builder) -> SharedSuggestionProvider.suggestResource(context.getSource().getServer().getPredicateManager().getKeys(), builder);
+        SUGGEST_PREDICATE = (context, builder) -> SharedSuggestionProvider.suggestResource(context.getSource().getServer().getLootData().getKeys(LootDataType.PREDICATE), builder);
     }
 }

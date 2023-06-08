@@ -39,7 +39,7 @@ public class GiveCommand extends BrigadierCommand {
     }
 
     @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(EssentialsUtil.checkPermissions(Permissions.GIVE_PERMISSION));
         literal.then(Commands.argument("targets", EntityArgument.players())
                 .then(Commands.argument("item", ItemArgument.item(this.commandBuildContext))
@@ -53,9 +53,9 @@ public class GiveCommand extends BrigadierCommand {
     private static int give(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, ItemInput item, int amount) throws CommandSyntaxException {
         var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int maxStackSize = item.getItem().getMaxStackSize();
-        int maxGiveSize = maxStackSize*100;
+        int maxGiveSize = maxStackSize * 100;
 
-        if (amount > maxGiveSize){
+        if (amount > maxGiveSize) {
             source.sendFailure(net.minecraft.network.chat.Component.translatable("commands.give.failed.toomanyitems", maxGiveSize, item.createItemStack(amount, false).getDisplayName()));
             return 0;
         }
@@ -96,33 +96,23 @@ public class GiveCommand extends BrigadierCommand {
             }
         }
 
-        if (source.isPlayer()){
-            if (targets.size() == 1) {
-                EssentialsUtil.sendSuccess(source, (targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                        .append(Component.text(" hat ", Colors.SUCCESS))
-                        .append(Component.text(amount, Colors.TERTIARY))
-                        .append(Component.text("x ", Colors.TERTIARY))
-                        .append(item.createItemStack(amount, false).getBukkitStack().displayName())
-                        .append(Component.text(" erhalten!", Colors.SUCCESS)));
+
+        if (targets.size() == 1) {
+            EssentialsUtil.sendSuccess(source, (targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                    .append(Component.text(" hat ", Colors.SUCCESS))
+                    .append(Component.text(amount, Colors.TERTIARY))
+                    .append(Component.text("x ", Colors.TERTIARY))
+                    .append(item.createItemStack(amount, false).getBukkitStack().displayName())
+                    .append(Component.text(" erhalten!", Colors.SUCCESS)));
 
             // If there are multiple targets
-            } else {
-                EssentialsUtil.sendSuccess(source, (Component.text(targets.size()))
-                        .append(Component.text(" Spieler haben ", Colors.SUCCESS))
-                        .append(Component.text(amount, Colors.TERTIARY))
-                        .append(Component.text("x ", Colors.TERTIARY))
-                        .append(item.createItemStack(amount, false).getBukkitStack().displayName())
-                        .append(Component.text(" erhalten!", Colors.SUCCESS)));
-            }
-        }else {
-            if (targets.size() == 1) {
-                source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.give.success.single", amount,
-                        item.createItemStack(amount, false).getDisplayName(), (targets.iterator().next()).getDisplayName()), false);
-
-            } else {
-                source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.give.success.single", amount,
-                        item.createItemStack(amount, false).getDisplayName(), targets.size()), false);
-            }
+        } else {
+            EssentialsUtil.sendSuccess(source, (Component.text(targets.size()))
+                    .append(Component.text(" Spieler haben ", Colors.SUCCESS))
+                    .append(Component.text(amount, Colors.TERTIARY))
+                    .append(Component.text("x ", Colors.TERTIARY))
+                    .append(item.createItemStack(amount, false).getBukkitStack().displayName())
+                    .append(Component.text(" erhalten!", Colors.SUCCESS)));
         }
         return targets.size();
     }

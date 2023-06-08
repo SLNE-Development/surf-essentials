@@ -7,7 +7,6 @@ import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -34,7 +33,7 @@ public class GrindstoneCommand extends BrigadierCommand {
     }
 
     @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(EssentialsUtil.checkPermissions(Permissions.GRINDSTONE_SELF_PERMISSION, Permissions.GRINDSTONE_OTHER_PERMISSION));
         literal.executes(context -> open(context.getSource(), List.of(context.getSource().getPlayerOrException())));
 
@@ -48,29 +47,15 @@ public class GrindstoneCommand extends BrigadierCommand {
         for (Player target : targets) {
             target.getBukkitEntity().openGrindstone(target.getBukkitEntity().getLocation(), true);
         }
-        if (source.isPlayer()){
-            if (targets.size() == 1){
-                EssentialsUtil.sendSuccess(source, Component.text("Der Schleifstein wurde für ", Colors.SUCCESS)
-                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                        .append(Component.text(" geöffnet", Colors.SUCCESS)));
-            }else {
-                EssentialsUtil.sendSuccess(source, Component.text("Der Schleifstein wurde für ", Colors.SUCCESS)
-                        .append(Component.text(targets.size(), Colors.TERTIARY))
-                        .append(Component.text(" Spieler geöffnet", Colors.SUCCESS)));
-            }
-        }else {
-            if (targets.size() == 1){
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("Opened grindstone for ")
-                        .withStyle(ChatFormatting.WHITE)
-                        .append(targets.iterator().next().getDisplayName()), false);
-            }else{
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("Opened grindstone table for ")
-                        .withStyle(ChatFormatting.WHITE)
-                        .append(net.minecraft.network.chat.Component.literal(String.valueOf(targets.size()))
-                                .withStyle(ChatFormatting.GOLD))
-                        .append(net.minecraft.network.chat.Component.literal(" players")
-                                .withStyle(ChatFormatting.WHITE)), false);
-            }
+
+        if (targets.size() == 1) {
+            EssentialsUtil.sendSuccess(source, Component.text("Der Schleifstein wurde für ", Colors.SUCCESS)
+                    .append(EssentialsUtil.getDisplayName(targets.iterator().next()))
+                    .append(Component.text(" geöffnet", Colors.SUCCESS)));
+        } else {
+            EssentialsUtil.sendSuccess(source, Component.text("Der Schleifstein wurde für ", Colors.SUCCESS)
+                    .append(Component.text(targets.size(), Colors.TERTIARY))
+                    .append(Component.text(" Spieler geöffnet", Colors.SUCCESS)));
         }
         return 1;
     }

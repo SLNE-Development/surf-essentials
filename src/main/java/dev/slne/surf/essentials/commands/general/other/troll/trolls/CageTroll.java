@@ -12,7 +12,6 @@ import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -55,17 +54,12 @@ public class CageTroll extends Troll {
         EssentialsUtil.checkPlayerSuggestion(context.getSource(), CraftUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();
 
-        if (getAndToggleTroll(target)){
+        if (getAndToggleTroll(target)) {
             stopTroll(target);
 
-            if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
-                        .append(Component.text(" wurde befreit!", Colors.SUCCESS)));
-            }else{
-                source.sendSuccess(EssentialsUtil.getMinecraftDisplayName(target)
-                        .copy().append(net.minecraft.network.chat.Component.literal(" has been freed!")
-                                .withStyle(ChatFormatting.GREEN)), false);
-            }
+            EssentialsUtil.sendSourceSuccess(source, EssentialsUtil.getDisplayName(target)
+                    .append(Component.text(" wurde befreit!", Colors.SUCCESS)));
+
             return 1;
         }
 
@@ -85,9 +79,9 @@ public class CageTroll extends Troll {
         int minZ = Math.min(corner1.getBlockZ(), corner2.getBlockZ());
         int maxZ = Math.max(corner1.getBlockZ(), corner2.getBlockZ());
 
-        for(int x = minX; x <= maxX; ++x) {
-            for(int y = 0; y < height; ++y) {
-                for(int z = minZ; z <= maxZ; ++z) {
+        for (int x = minX; x <= maxX; ++x) {
+            for (int y = 0; y < height; ++y) {
+                for (int z = minZ; z <= maxZ; ++z) {
                     Block block;
                     if (x == minX || x == maxX || z == minZ || z == maxZ) {
                         block = corner1.getWorld().getBlockAt(x, entityLocation.getBlockY() + y, z);
@@ -104,25 +98,17 @@ public class CageTroll extends Troll {
             }
         }
 
-        double middleX = Math.round( (minX + maxX) / 2.0 * 2) / 2.0 + 0.5;
-        double middleY = Math.round( entityLocation.getY() * 2) / 2.0;
-        double middleZ = Math.round( (minZ + maxZ) / 2.0 * 2) / 2.0 + 0.5;
-
+        double middleX = Math.round((minX + maxX) / 2.0 * 2) / 2.0 + 0.5;
+        double middleY = Math.round(entityLocation.getY() * 2) / 2.0;
+        double middleZ = Math.round((minZ + maxZ) / 2.0 * 2) / 2.0 + 0.5;
         Location middle = new Location(entityLocation.getWorld(), middleX, middleY, middleZ, entityLocation.getYaw(), entityLocation.getPitch());
 
         target.teleportAsync(middle, PlayerTeleportEvent.TeleportCause.COMMAND);
-
         Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), () -> stopTroll(target), 20L * timeInSeconds);
 
-        //success message
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, target.displayName().colorIfAbsent(Colors.YELLOW)
-                    .append(Component.text(" sitzt jetzt in der Falle!", Colors.SUCCESS)));
-        }else{
-            source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
-                    .copy().append(net.minecraft.network.chat.Component.literal(" is now trapped!")
-                            .withStyle(ChatFormatting.GREEN)), false);
-        }
+        EssentialsUtil.sendSourceSuccess(source, target.displayName().colorIfAbsent(Colors.YELLOW)
+                .append(Component.text(" sitzt jetzt in der Falle!", Colors.SUCCESS)));
+
         return 1;
     }
 

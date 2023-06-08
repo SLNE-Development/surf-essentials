@@ -16,6 +16,7 @@ import java.util.UUID;
 
 /**
  * Provides utility methods for working with offline players.
+ *
  * @author twisti
  * @since 1.0.2
  */
@@ -50,7 +51,7 @@ public abstract class OfflineUtil extends MessageUtil {
      *
      * @param gameProfile the GameProfile of the player
      * @return the location of the player's last logout location, or null if the player file could not be found
-     * @throws IOException if an I/O error occurs
+     * @throws IOException            if an I/O error occurs
      * @throws CommandSyntaxException if a syntax error occurs
      */
     public static @Nullable Location getLocation(@NotNull GameProfile gameProfile) throws IOException, CommandSyntaxException {
@@ -74,7 +75,7 @@ public abstract class OfflineUtil extends MessageUtil {
     /**
      * Sets the specified player's last logout location to the specified location.
      *
-     * @param uuid the UUID of the player
+     * @param uuid     the UUID of the player
      * @param location the location to set as the player's last logout location
      * @throws IOException if an I/O error occurs
      */

@@ -20,7 +20,7 @@ public class ListenerManager {
      *
      * @param plugin the plugin
      */
-    public ListenerManager(@NotNull Plugin plugin){
+    public ListenerManager(@NotNull Plugin plugin) {
         this.plugin = plugin;
         this.pluginManager = plugin.getServer().getPluginManager();
     }
@@ -28,7 +28,7 @@ public class ListenerManager {
     /**
      * Registers all listeners.
      */
-    public void registerListeners(){
+    public void registerListeners() {
         pluginManager.registerEvents(new TeleportListener(), plugin);
         pluginManager.registerEvents(new InfinityListener(), plugin);
         pluginManager.registerEvents(new CommandRegisterListener(), plugin);
@@ -40,7 +40,7 @@ public class ListenerManager {
     /**
      * Unregisters all listeners from this plugin
      */
-    public void unregisterListeners(){
+    public void unregisterListeners() {
         HandlerList.unregisterAll(this.plugin);
     }
 }

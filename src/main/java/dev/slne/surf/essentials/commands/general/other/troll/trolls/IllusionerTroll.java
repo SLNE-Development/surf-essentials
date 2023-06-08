@@ -12,7 +12,6 @@ import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.pdc.UUIDDataType;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -58,7 +57,7 @@ public class IllusionerTroll extends Troll {
         final var player = target.getBukkitEntity();
 
         // Check if position is valid spawn position
-        if (!Level.isInSpawnableBounds(blockPosition)){
+        if (!Level.isInSpawnableBounds(blockPosition)) {
             throw INVALID_POSITION.create();
         }
 
@@ -66,10 +65,10 @@ public class IllusionerTroll extends Troll {
         for (int i = 0; i < amount; i++) {
             player.getWorld().spawnEntity(player.getLocation(), EntityType.ILLUSIONER, CreatureSpawnEvent.SpawnReason.COMMAND, entity ->
                     entity.getPersistentDataContainer().set(
-                    NAMESPACED_KEY,
-                    UUIDDataType.INSTANCE,
-                    player.getUniqueId()
-            ));
+                            NAMESPACED_KEY,
+                            UUIDDataType.INSTANCE,
+                            player.getUniqueId()
+                    ));
         }
 
         // Sends message to the target
@@ -81,27 +80,22 @@ public class IllusionerTroll extends Troll {
 
             player.getWorld().getNearbyEntities(target.getBukkitEntity().getLocation(), 50, 50, 50).forEach(entity -> {
                 final var pdc = entity.getPersistentDataContainer();
-                if (pdc.has(NAMESPACED_KEY) && player.getUniqueId().equals(pdc.get(NAMESPACED_KEY, UUIDDataType.INSTANCE))){
+                if (pdc.has(NAMESPACED_KEY) && player.getUniqueId().equals(pdc.get(NAMESPACED_KEY, UUIDDataType.INSTANCE))) {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 1, false, false, false));
                     validEntity.addAndGet(1);
                 }
             });
 
-            if (validEntity.get() == 0){
+            if (validEntity.get() == 0) {
                 bukkitTask.cancel();
             }
 
         }, 0, 20);
 
         // Success messages
-        if (context.getSource().isPlayer()){
-            EssentialsUtil.sendSuccess(context.getSource(), EssentialsUtil.getDisplayName(target)
-                    .append(Component.text(" wird mit Illusioner getrollt!", Colors.SUCCESS)));
-        }else{
-            context.getSource().sendSuccess(EssentialsUtil.getMinecraftDisplayName(target)
-                    .copy().append(net.minecraft.network.chat.Component.literal(" is trolled with Illusioner")
-                            .withStyle(ChatFormatting.GREEN)), false);
-        }
+        EssentialsUtil.sendSuccess(context.getSource(), EssentialsUtil.getDisplayName(target)
+                .append(Component.text(" wird mit Illusioner getrollt!", Colors.SUCCESS)));
+
         return 1;
     }
 }

@@ -9,13 +9,13 @@ import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Items;
+
 public class HatCommand extends BrigadierCommand {
     @Override
     public String[] names() {
@@ -48,22 +48,16 @@ public class HatCommand extends BrigadierCommand {
         final var itemStackInMainHand = player.getMainHandItem();
         final var itemStackOnHead = playerInventory.getArmor(EquipmentSlot.HEAD.getIndex());
 
-        if(itemStackInMainHand.is(Items.AIR)) throw ERROR_NO_ITEM.create(player.getName().getString());
+        if (itemStackInMainHand.is(Items.AIR)) throw ERROR_NO_ITEM.create(player.getName().getString());
 
         playerInventory.setItem(playerInventory.selected, itemStackOnHead);
         playerInventory.setItem(playerInventory.getContainerSize() - 2, itemStackInMainHand);
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
-                    .append(Component.text(" hat das Item ", Colors.SUCCESS)
-                            .append(PaperAdventure.asAdventure(itemStackInMainHand.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                            .append(Component.text(" aufgesetzt bekommen.", Colors.SUCCESS))));
-        }else {
-            source.sendSuccess(player.getDisplayName()
-                    .copy().append(net.minecraft.network.chat.Component.literal(" has put on the item ")
-                            .withStyle(ChatFormatting.GREEN)
-                            .append(itemStackInMainHand.getDisplayName())), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+                .append(Component.text(" hat das Item ", Colors.SUCCESS)
+                        .append(PaperAdventure.asAdventure(itemStackInMainHand.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                        .append(Component.text(" aufgesetzt bekommen.", Colors.SUCCESS))));
 
         return 1;
     }

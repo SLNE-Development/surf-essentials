@@ -23,7 +23,7 @@ public class DeathListener implements Listener {
         if (message == null) return;
 
         message = message.replaceText(b -> b.matchLiteral(event.getPlayer().getName())
-                .replacement(EssentialsUtil.getDisplayName(event.getPlayer())))
+                        .replacement(EssentialsUtil.getDisplayName(event.getPlayer())))
                 .colorIfAbsent(Colors.GRAY);
 
         event.deathMessage(EssentialsUtil.getPrefix()

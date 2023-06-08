@@ -60,10 +60,9 @@ public class UnhatCommand extends BrigadierCommand {
                             .append(PaperAdventure.asAdventure(itemStackOnHead.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
                             .append(Component.text(" abgesetzt.", Colors.SUCCESS))));
         }else {
-            source.sendSuccess(EssentialsUtil.getDisplayNameAsVanilla(player)
-                    .copy().append(net.minecraft.network.chat.Component.literal(" has unput the item ")
-                            .withStyle(ChatFormatting.GREEN)
-                            .append(itemStackOnHead.getDisplayName())), false);
+            EssentialsUtil.sendSourceSuccess(source, EssentialsUtil.getDisplayName(player)
+                    .append(Component.text(" has unput the item ", Colors.SUCCESS)
+                            .append(PaperAdventure.asAdventure(itemStackOnHead.getDisplayName()).colorIfAbsent(Colors.TERTIARY))));
         }
 
         return 1;

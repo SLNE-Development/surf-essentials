@@ -33,7 +33,7 @@ public class FoodCommand extends BrigadierCommand {
     }
 
     @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(EssentialsUtil.checkPermissions(Permissions.FEED_SELF_PERMISSION, Permissions.FEED_OTHER_PERMISSION));
 
         literal.executes(context -> feed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
@@ -42,38 +42,30 @@ public class FoodCommand extends BrigadierCommand {
                 .executes(context -> feed(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 
-    private int feed(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked)throws CommandSyntaxException{
+    private int feed(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
         final var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulFeeds = 0;
 
         for (ServerPlayer target : targets) {
             target.getFoodData().eat(EssentialsUtil.MAX_FOOD, 2f);
             target.getBukkitEntity().sendHealthUpdate();
-            successfulFeeds ++;
+            successfulFeeds++;
 
             target.playSound(SoundEvents.STRIDER_EAT, 1f, 0f);
             EssentialsUtil.sendSuccess(target, Component.text("Du wurdest gefüttert!", Colors.GREEN));
 
         }
 
-        if(source.isPlayer()){
-            if (successfulFeeds == 1 && source.getPlayerOrException() != targets.iterator().next()){
-                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(targets.iterator().next())
-                        .append(Component.text(" wurde gefüttert!", Colors.SUCCESS)));
-            }else if (successfulFeeds >= 1 && source.getPlayerOrException() != targets.iterator().next()){
-                EssentialsUtil.sendSuccess(source, Component.text(successfulFeeds, Colors.TERTIARY)
-                        .append(Component.text(" Spieler wurden gefüttert!", Colors.SUCCESS)));
-            }
-        }else {
-            if (successfulFeeds == 1){
-                source.sendSuccess(targets.iterator().next().getDisplayName()
-                        .copy().append(net.minecraft.network.chat.Component.literal(" has been fed")), false);
-            }else {
-                source.sendSuccess(net.minecraft.network.chat.Component.literal(targets.size() + " players have been fed"), false);
-            }
+        boolean isSelf = source.isPlayer() && source.getPlayerOrException() == targets.iterator().next();
+        if (successfulFeeds == 1 && !isSelf) {
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(targets.iterator().next())
+                    .append(Component.text(" wurde gefüttert!", Colors.SUCCESS)));
+        } else if (successfulFeeds >= 1 && !isSelf) {
+            EssentialsUtil.sendSuccess(source, Component.text(successfulFeeds, Colors.TERTIARY)
+                    .append(Component.text(" Spieler wurden gefüttert!", Colors.SUCCESS)));
         }
         return successfulFeeds;
     }
 
-   
+
 }

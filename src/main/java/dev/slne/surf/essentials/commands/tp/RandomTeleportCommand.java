@@ -22,7 +22,6 @@ import java.util.Random;
 
 public class RandomTeleportCommand extends BrigadierCommand {
 
-    @SuppressWarnings("UnstableApiUsage")
     private static final HashSet<Material> unsafeMaterials = EssentialsUtil.make(new HashSet<>(), materials -> {
         materials.add(Material.LAVA);
         materials.add(Material.FIRE);
@@ -86,7 +85,7 @@ public class RandomTeleportCommand extends BrigadierCommand {
 
         Location randomLocation = generateLocation(bukkitPlayer, maxRadius);
 
-        if (randomLocation == null){
+        if (randomLocation == null) {
             EssentialsUtil.sendError(source, "Es wurde kein Sicherer Ort gefunden!");
             return 0;
         }
@@ -99,11 +98,9 @@ public class RandomTeleportCommand extends BrigadierCommand {
             double playerY = EssentialsUtil.makeDoubleReadable(randomLocation.getY());
             double playerZ = EssentialsUtil.makeDoubleReadable(randomLocation.getZ());
 
-            try {
-                EssentialsUtil.sendSuccess(source, Component.text("Du wurdest zu ", Colors.SUCCESS)
-                        .append(Component.text("%s %s %s".formatted(playerX, playerY, playerZ), Colors.TERTIARY))
-                        .append(Component.text(" teleportiert!", Colors.SUCCESS)));
-            } catch (CommandSyntaxException ignored) {}
+            EssentialsUtil.sendSuccess(source, Component.text("Du wurdest zu ", Colors.SUCCESS)
+                    .append(Component.text("%s %s %s".formatted(playerX, playerY, playerZ), Colors.TERTIARY))
+                    .append(Component.text(" teleportiert!", Colors.SUCCESS)));
         });
 
         return 1;
@@ -111,6 +108,7 @@ public class RandomTeleportCommand extends BrigadierCommand {
 
     // TODO: Check the performance impact
     int trys = 0;
+
     private Location generateLocation(Player player, int radius) {
         Random random = new Random();
 
@@ -120,9 +118,9 @@ public class RandomTeleportCommand extends BrigadierCommand {
 
         Location randomLocation = new Location(player.getWorld(), x, y, z);
 
-        while (!isLocationSafe(randomLocation)){
+        while (!isLocationSafe(randomLocation)) {
             if (trys > 10) return null;
-            trys ++;
+            trys++;
             generateLocation(player, radius);
         }
 

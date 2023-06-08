@@ -11,7 +11,6 @@ import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -46,8 +45,8 @@ public class VillagerAnnoyTroll extends Troll {
         EssentialsUtil.checkPlayerSuggestion(context.getSource(), CraftUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();
 
-        if (!getAndToggleTroll(target)){
-            AtomicInteger timeLeft = new AtomicInteger(timeInSeconds*4);
+        if (!getAndToggleTroll(target)) {
+            AtomicInteger timeLeft = new AtomicInteger(timeInSeconds * 4);
 
             Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), bukkitTask -> {
                 if (timeLeft.get() < 1) bukkitTask.cancel();
@@ -58,30 +57,19 @@ public class VillagerAnnoyTroll extends Troll {
 
                 timeLeft.getAndDecrement();
                 TASK_IDS.put(target.getUniqueId(), bukkitTask.getTaskId());
-            },1,5);
+            }, 1, 5);
 
             Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), bukkitTask -> stopTroll(target), 20L * timeInSeconds);
 
-            if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
-                        .append(Component.text(" wird nun mit Dorfbewohner-geräuschen gestört!", Colors.SUCCESS)));
-            }else{
-                source.sendSuccess(EssentialsUtil.getMinecraftDisplayName(target)
-                        .copy().append(net.minecraft.network.chat.Component.literal(" is now disturbed with villager noises!")
-                                .withStyle(ChatFormatting.GREEN)), false);
-            }
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
+                    .append(Component.text(" wird nun mit Dorfbewohner-geräuschen gestört!", Colors.SUCCESS)));
 
-        }else {
+        } else {
             stopTroll(target);
 
-            if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
-                        .append(Component.text(" wird nun nicht mehr mit Dorfbewohner-geräuschen gestört", Colors.INFO)));
-            }else {
-                source.sendSuccess(EssentialsUtil.getMinecraftDisplayName(target)
-                        .copy().append(net.minecraft.network.chat.Component.literal(" is no longer disturbed with villager noises!")
-                                .withStyle(ChatFormatting.GREEN)), false);
-            }
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
+                    .append(Component.text(" wird nun nicht mehr mit Dorfbewohner-geräuschen gestört", Colors.INFO)));
+
         }
         return 1;
     }

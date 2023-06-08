@@ -1,3 +1,4 @@
+#file: noinspection YAMLSchemaValidation
 name: '${name}'
 version: '${project.version}'
 main: ${project.mainClass}
@@ -5,14 +6,12 @@ description: '${project.description}'
 api-version: '${project.apiVersion}'
 bootstrapper: ${project.bootstrapper}
 loader: ${project.loader}
-authors: [${project.authors}]
+authors: [ ${ project.authors } ]
 website: '${project.url}'
 
 dependencies:
-  - name: CoreProtect
-    required: false
-    bootstrap: false
-
-load-after:
-  - name: CoreProtect
-    bootstrap: false
+  server:
+    CoreProtect:
+      load: BEFORE
+      required: false
+      join-classpath: true

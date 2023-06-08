@@ -24,7 +24,6 @@ public interface Colors {
     TextColor TERTIARY = TextColor.fromHexString("#f2c94c");
 
 
-
     /**
      * The text color for variable keys.
      */
@@ -36,7 +35,6 @@ public interface Colors {
     TextColor VARIABLE_VALUE = TextColor.fromHexString("#f9c353");
 
 
-
     /**
      * The spacer text color.
      */
@@ -46,7 +44,6 @@ public interface Colors {
      * The dark spacer text color.
      */
     TextColor DARK_SPACER = NamedTextColor.DARK_GRAY;
-
 
 
     /**
@@ -73,7 +70,6 @@ public interface Colors {
      * The debug text color.
      */
     TextColor DEBUG = TextColor.fromHexString("#a6c7e6");
-
 
 
     /**

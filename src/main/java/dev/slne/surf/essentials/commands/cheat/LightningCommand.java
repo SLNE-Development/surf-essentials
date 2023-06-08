@@ -9,7 +9,6 @@ import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -43,7 +42,7 @@ public class LightningCommand extends BrigadierCommand {
     }
 
     @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(stack -> stack.getBukkitSender().hasPermission(Permissions.LIGHTING_PERMISSION));
 
         literal.then(Commands.argument("players", EntityArgument.players())
@@ -74,32 +73,21 @@ public class LightningCommand extends BrigadierCommand {
                     serverPlayer.resetPlayerWeather(), 20L * power.get() + 40);
         }
 
-        if (context.getSource().isPlayer()){
-            if (targets.size() == 1){
-                EssentialsUtil.sendSuccess(context.getSource(), Component.text("Der Blitz hat ", Colors.SUCCESS)
-                        .append(EssentialsUtil.getDisplayName(targets.iterator().next()))
-                        .append(Component.text(" getroffen!", Colors.SUCCESS)));
-            }else {
-                EssentialsUtil.sendSuccess(context.getSource(), Component.text("Der Blitz hat ", Colors.SUCCESS)
-                        .append(Component.text(targets.size(), Colors.TERTIARY))
-                        .append(Component.text(" Spieler getroffen.", Colors.SUCCESS)));
-            }
-        }else {
-            if (targets.size() == 1){
-                context.getSource().sendSuccess(PaperAdventure.asVanilla(Component.text("Lightning has struck ", Colors.GREEN)
-                        .append(EssentialsUtil.getDisplayName(targets.iterator().next()))), false);
-            }else {
-                context.getSource().sendSuccess(PaperAdventure.asVanilla(Component.text("Lightning has struck ", Colors.GREEN)
-                        .append(Component.text(targets.size(), Colors.TERTIARY))
-                        .append(Component.text(" players", Colors.GREEN))), false);
-            }
+        if (targets.size() == 1) {
+            EssentialsUtil.sendSuccess(context.getSource(), Component.text("Der Blitz hat ", Colors.SUCCESS)
+                    .append(EssentialsUtil.getDisplayName(targets.iterator().next()))
+                    .append(Component.text(" getroffen!", Colors.SUCCESS)));
+        } else {
+            EssentialsUtil.sendSuccess(context.getSource(), Component.text("Der Blitz hat ", Colors.SUCCESS)
+                    .append(Component.text(targets.size(), Colors.TERTIARY))
+                    .append(Component.text(" Spieler getroffen.", Colors.SUCCESS)));
         }
 
         return 1;
     }
 
-    private void strikeLighting(final ServerPlayer player, int flashes, boolean visual){
-        final var world = player.getLevel();
+    private void strikeLighting(final ServerPlayer player, int flashes, boolean visual) {
+        final var world = player.serverLevel();
         final var playerLocation = player.position();
         final var lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, world);
 

@@ -62,12 +62,8 @@ public class SummonCommand extends BrigadierCommand {
     private int summon(CommandSourceStack source, Holder.Reference<EntityType<?>> entityType, Vec3 pos, CompoundTag compoundTag, boolean initialize) throws CommandSyntaxException {
         final var entity = createEntity(source, entityType, pos, compoundTag, initialize);
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(entity)
-                    .append(net.kyori.adventure.text.Component.text(" wurde gespawnt.", Colors.SUCCESS)));
-        } else {
-            source.sendSuccess(Component.translatable("commands.summon.success", entity.getDisplayName()), false);
-        }
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(entity)
+                .append(net.kyori.adventure.text.Component.text(" wurde gespawnt.", Colors.SUCCESS)));
 
         return 1;
     }

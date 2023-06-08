@@ -9,7 +9,6 @@ import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 
 public class SeedCommand extends BrigadierCommand {
@@ -35,21 +34,17 @@ public class SeedCommand extends BrigadierCommand {
         literal.executes(context -> getSeed(context.getSource()));
     }
 
-    private int getSeed(CommandSourceStack source) throws CommandSyntaxException{
+    private int getSeed(CommandSourceStack source) throws CommandSyntaxException {
         long seed = source.getLevel().getSeed();
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Der Seed in ", Colors.SUCCESS)
-                    .append(Component.text(source.getLevel().dimension().location().toString(), Colors.SECONDARY))
-                    .append(Component.text(" ist [", Colors.SUCCESS))
-                    .append(Component.text(seed, Colors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text("Klicke zum kopieren", Colors.INFO)))
-                            .clickEvent(ClickEvent.copyToClipboard(String.valueOf(seed))))
-                    .append(Component.text("]", Colors.SUCCESS)));
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.seed.success",
-                    net.minecraft.network.chat.Component.literal(String.valueOf(seed)).withStyle(ChatFormatting.GREEN)), false);
-        }
+        EssentialsUtil.sendSourceSuccess(source, Component.text("Der Seed in ", Colors.SUCCESS)
+                .append(Component.text(source.getLevel().dimension().location().toString(), Colors.SECONDARY))
+                .append(Component.text(" ist [", Colors.SUCCESS))
+                .append(Component.text(seed, Colors.TERTIARY)
+                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum kopieren", Colors.INFO)))
+                        .clickEvent(ClickEvent.copyToClipboard(String.valueOf(seed))))
+                .append(Component.text("]", Colors.SUCCESS)));
+
         return 1;
     }
 }

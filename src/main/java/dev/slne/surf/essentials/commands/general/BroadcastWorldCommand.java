@@ -2,7 +2,6 @@ package dev.slne.surf.essentials.commands.general;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
@@ -33,7 +32,7 @@ public class BroadcastWorldCommand extends BrigadierCommand {
     }
 
     @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.BROADCAST_WORLD_PERMISSION));
 
         literal.then(Commands.argument("world", DimensionArgument.dimension())
@@ -46,19 +45,15 @@ public class BroadcastWorldCommand extends BrigadierCommand {
                         })));
     }
 
-    private int broadcastWorld(CommandSourceStack source, ServerLevel level, String message) throws CommandSyntaxException {
+    private int broadcastWorld(CommandSourceStack source, ServerLevel level, String message) {
         for (ServerPlayer player : level.players()) {
             EssentialsUtil.sendMessage(player, EssentialsUtil.deserialize(message).colorIfAbsent(Colors.TERTIARY));
             player.playSound(SoundEvents.NOTE_BLOCK_BELL.value(), 1f, 1f);
         }
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Es wurde eine Nachricht an alle Spieler in der Welt ", Colors.SUCCESS)
-                    .append(Component.text(level.dimension().location().toString(), Colors.TERTIARY))
-                    .append(Component.text(" geschickt!", Colors.SUCCESS)));
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.literal(
-                    "A message was send to all players in the world " + level.dimension().location()), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, Component.text("Es wurde eine Nachricht an alle Spieler in der Welt ", Colors.SUCCESS)
+                .append(Component.text(level.dimension().location().toString(), Colors.TERTIARY))
+                .append(Component.text(" geschickt!", Colors.SUCCESS)));
         return 1;
     }
 }

@@ -7,4 +7,5 @@ import net.minecraft.world.level.block.state.BlockState;
 /**
  * A record that represents the combination of a block state, a block position, and a server level.
  */
-public record BlockStatePos(BlockState blockState, BlockPos blockPos, ServerLevel serverLevel) {}
+public record BlockStatePos(BlockState blockState, BlockPos blockPos, ServerLevel serverLevel) {
+}

@@ -9,7 +9,6 @@ import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -32,7 +31,7 @@ public class GetPosCommand extends BrigadierCommand {
     }
 
     @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(EssentialsUtil.checkPermissions(Permissions.GET_POS_SELF_PERMISSION, Permissions.GET_POS_OTHER_PERMISSION));
         literal.executes(context -> getPos(context.getSource(), context.getSource().getPlayerOrException()));
 
@@ -47,20 +46,14 @@ public class GetPosCommand extends BrigadierCommand {
         double posY = EssentialsUtil.makeDoubleReadable(player.getY());
         double posZ = EssentialsUtil.makeDoubleReadable(player.getZ());
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Die Position von ", Colors.INFO)
-                    .append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                    .append(Component.text(" ist: ", Colors.INFO))
-                    .append(Component.text("%s, %s, %s".formatted(posX, posY, posZ), Colors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Kopieren", Colors.INFO)))
-                            .clickEvent(ClickEvent.copyToClipboard("%s %s %s".formatted(posX, posY, posZ)))));
-        }else {
-            source.sendSuccess(player.getDisplayName()
-                    .copy().append(net.minecraft.network.chat.Component.literal("'s position: ")
-                            .withStyle(ChatFormatting.GRAY)
-                            .append(posX + ", " + posY + ", " + posZ)
-                                    .withStyle(ChatFormatting.GOLD)), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, Component.text("Die Position von ", Colors.INFO)
+                .append(EssentialsUtil.getDisplayName(player))
+                .append(Component.text(" ist: ", Colors.INFO))
+                .append(Component.text("%s, %s, %s".formatted(posX, posY, posZ), Colors.TERTIARY)
+                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Kopieren", Colors.INFO)))
+                        .clickEvent(ClickEvent.copyToClipboard("%s %s %s".formatted(posX, posY, posZ)))));
+
         return 1;
     }
 }

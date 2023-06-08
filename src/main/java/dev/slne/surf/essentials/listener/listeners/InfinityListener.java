@@ -67,16 +67,16 @@ public class InfinityListener implements Listener {
     /**
      * Regains the specified item for the given player and the given hand.
      *
-     * @param player the player who will regain the item
+     * @param player    the player who will regain the item
      * @param eventItem the item to regain
-     * @param hand the hand that held the item
+     * @param hand      the hand that held the item
      */
     public void regainItems(final Player player, final ItemStack eventItem, EquipmentSlot hand) {
         final var inventory = player.getInventory();
 
         if (hand == EquipmentSlot.HAND) {
             inventory.setItemInMainHand(eventItem);
-        } else if (hand == EquipmentSlot.OFF_HAND){
+        } else if (hand == EquipmentSlot.OFF_HAND) {
             inventory.setItemInOffHand(eventItem);
         }
 

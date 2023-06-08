@@ -7,6 +7,7 @@ import java.util.Random;
 
 /**
  * A utility class for generating random integers and entity IDs.
+ *
  * @author twisti
  * @since 1.0.2
  */
@@ -23,7 +24,7 @@ public abstract class RandomUtil extends CommandUtil {
      *
      * @return the random integer
      */
-    public static int getRandomInt(){
+    public static int getRandomInt() {
         return random.nextInt();
     }
 
@@ -33,7 +34,7 @@ public abstract class RandomUtil extends CommandUtil {
      * @param bound the upper bound (exclusive) for the random integer to be generated
      * @return the random integer
      */
-    public static int getRandomInt(@Range(from = 0, to = Integer.MAX_VALUE) int bound){
+    public static int getRandomInt(@Range(from = 0, to = Integer.MAX_VALUE) int bound) {
         return random.nextInt(Validate.isInBound(bound, 0, Integer.MAX_VALUE));
     }
 
@@ -41,10 +42,10 @@ public abstract class RandomUtil extends CommandUtil {
      * Generates a random integer between the specified origin (inclusive) and bound (exclusive).
      *
      * @param origin the lower bound (inclusive) for the random integer to be generated
-     * @param bound the upper bound (exclusive) for the random integer to be generated
+     * @param bound  the upper bound (exclusive) for the random integer to be generated
      * @return the random integer
      */
-    public static int getRandomInt(int origin, int bound){
+    public static int getRandomInt(int origin, int bound) {
         Validate.isBigger(origin, bound);
         return random.nextInt(origin, bound);
     }
@@ -54,7 +55,7 @@ public abstract class RandomUtil extends CommandUtil {
      *
      * @return the custom entity ID
      */
-    public static int getCustomEntityId(){
+    public static int getCustomEntityId() {
         return getRandomInt(Integer.MAX_VALUE - 100_000);
     }
 }

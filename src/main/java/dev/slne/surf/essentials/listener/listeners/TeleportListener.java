@@ -32,7 +32,8 @@ public class TeleportListener implements Listener {
         if (event.isCancelled()) return;
         Player player = event.getPlayer();
 
-        if (event.getCause() != PlayerTeleportEvent.TeleportCause.COMMAND && event.getCause() != PlayerTeleportEvent.TeleportCause.PLUGIN) return;
+        if (event.getCause() != PlayerTeleportEvent.TeleportCause.COMMAND && event.getCause() != PlayerTeleportEvent.TeleportCause.PLUGIN)
+            return;
 
         PLAYER_LOCATION_MAP.remove(player);
         PLAYER_LOCATION_MAP.put(player, event.getFrom());
@@ -44,11 +45,12 @@ public class TeleportListener implements Listener {
      * @param player the player whose last teleport location should be retrieved
      * @return an Optional containing the player's last teleport location, or an empty Optional if the player has not teleported yet
      */
-    public static Optional<Location> getLastTeleportLocation(Player player){
+    public static Optional<Location> getLastTeleportLocation(Player player) {
         return Optional.ofNullable(PLAYER_LOCATION_MAP.get(player));
     }
 
     static {
-        PLAYER_LOCATION_MAP = EssentialsUtil.make(new HashMap<>(), map -> {});
+        PLAYER_LOCATION_MAP = EssentialsUtil.make(new HashMap<>(), map -> {
+        });
     }
 }

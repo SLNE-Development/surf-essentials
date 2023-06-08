@@ -7,7 +7,6 @@ import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -42,37 +41,26 @@ public class ClearInventoryCommand extends BrigadierCommand {
                 .executes(context -> clear(context.getSource(), EntityArgument.getPlayers(context, "players"))));
     }
 
-    private int clear(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException{
+    private int clear(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
         Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulClears = 0;
 
         for (ServerPlayer target : targets) {
             target.getInventory().clearContent();
-            successfulClears ++;
+            successfulClears++;
         }
 
-        if (source.isPlayer()){
-            if (successfulClears == 1){
-                EssentialsUtil.sendSuccess(source, Component.text("Das Inventar von ", Colors.SUCCESS)
-                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                        .append(Component.text(" wurde geleert.", Colors.SUCCESS)));
-            }else {
-                EssentialsUtil.sendSuccess(source, Component.text("Das Inventar von ", Colors.SUCCESS)
-                        .append(Component.text(successfulClears, Colors.TERTIARY))
-                        .append(Component.text(" Spielern wurde geleert.", Colors.SUCCESS)));
-            }
-        }else {
-            if (successfulClears == 1){
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("Cleared ")
-                        .withStyle(ChatFormatting.GREEN)
-                        .append(targets.iterator().next().getDisplayName())
-                        .append(net.minecraft.network.chat.Component.literal("´s inventory")
-                                .withStyle(ChatFormatting.GREEN)), false);
-            }else {
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("Cleared the inventory from " + successfulClears + " players")
-                        .withStyle(ChatFormatting.GREEN), false);
-            }
+
+        if (successfulClears == 1) {
+            EssentialsUtil.sendSourceSuccess(source, Component.text("Das Inventar von ", Colors.SUCCESS)
+                    .append(EssentialsUtil.getDisplayName(targets.iterator().next()))
+                    .append(Component.text(" wurde geleert.", Colors.SUCCESS)));
+        } else {
+            EssentialsUtil.sendSourceSuccess(source, Component.text("Das Inventar von ", Colors.SUCCESS)
+                    .append(Component.text(successfulClears, Colors.TERTIARY))
+                    .append(Component.text(" Spielern wurde geleert.", Colors.SUCCESS)));
         }
+
         return successfulClears;
     }
 }

@@ -32,6 +32,7 @@ public class CommandRegisterListener implements Listener {
 
     /**
      * Overrides Bukkit's default commands when they are getting registered to the server
+     *
      * @param event the command registered event
      */
     @SuppressWarnings({"UnstableApiUsage"})
@@ -47,12 +48,14 @@ public class CommandRegisterListener implements Listener {
 
     /**
      * Handles unknown commands that are executed by players and sends a custom message
+     *
      * @param event the unknown command event
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onUnknownCommand(@NotNull UnknownCommandEvent event) {
-        if (event.getSender() instanceof ConsoleCommandSender || event.getSender() instanceof RemoteConsoleCommandSender) return;
-        if (event.message() == null || LegacyComponentSerializer.builder().build().serialize(event.message()).equalsIgnoreCase("Unknown command. Type \"/help\" for help.")){
+        if (event.getSender() instanceof ConsoleCommandSender || event.getSender() instanceof RemoteConsoleCommandSender)
+            return;
+        if (event.message() == null || LegacyComponentSerializer.builder().build().serialize(event.message()).equalsIgnoreCase("Unknown command. Type \"/help\" for help.")) {
             event.message(null);
             event.getSender().sendMessage(EssentialsUtil.getPrefix()
                     .append(PaperAdventure.asAdventure(Component.translatable("command.unknown.command")
@@ -82,8 +85,9 @@ public class CommandRegisterListener implements Listener {
 
     /**
      * Builds a command to be registered in the server based on the {@link CommandRegisteredEvent<CommandSourceStack>}
-     * @param event the command registered event
-     * @param name the name of the command
+     *
+     * @param event   the command registered event
+     * @param name    the name of the command
      * @param command the command to be built
      */
     @SuppressWarnings("UnstableApiUsage")

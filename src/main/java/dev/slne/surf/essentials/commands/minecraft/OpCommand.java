@@ -15,7 +15,6 @@ import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.players.PlayerList;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
@@ -47,7 +46,7 @@ public class OpCommand extends BrigadierCommand {
                 .executes(context -> op(context.getSource(), GameProfileArgument.getGameProfiles(context, "players"))));
     }
 
-    private static int op(CommandSourceStack source, Collection<GameProfile> players) throws CommandSyntaxException{
+    private static int op(CommandSourceStack source, Collection<GameProfile> players) throws CommandSyntaxException {
         PlayerList playerList = source.getServer().getPlayerList();
         int successful = 0;
 
@@ -55,27 +54,23 @@ public class OpCommand extends BrigadierCommand {
             if (!playerList.isOp(gameProfile)) {
                 playerList.op(gameProfile);
                 ++successful;
-                if (source.isPlayer()){
-                    Player player = Bukkit.getPlayer(gameProfile.getId());
-                    net.kyori.adventure.text.Component displayName = (player == null) ? net.kyori.adventure.text.Component.text(gameProfile.getName()) : player.displayName();
 
-                    Bukkit.broadcast(EssentialsUtil.getPrefix()
-                            .append(displayName.colorIfAbsent(Colors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(" wurde durch ", Colors.INFO))
-                            .append(source.getPlayerOrException().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                            .append(net.kyori.adventure.text.Component.text(" zum Operator", Colors.INFO)), "surf.essentials.announce.op");
-                }else {
-                    source.sendSuccess(Component.translatable("commands.op.success", gameProfile.getName()), true);
-                }
+                Bukkit.broadcast(EssentialsUtil.getPrefix()
+                        .append(EssentialsUtil.getDisplayName(gameProfile))
+                        .append(net.kyori.adventure.text.Component.text(" wurde durch ", Colors.INFO))
+                        .append(source.getPlayerOrException().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                        .append(net.kyori.adventure.text.Component.text(" zum Operator", Colors.INFO)), "surf.essentials.announce.op");
+
             }
         }
 
         if (successful == 0) {
-            if (source.isPlayer()){
+            if (source.isPlayer()) {
                 EssentialsUtil.sendError(source, "Es hat sich nicht geändert! Die Spieler sind bereits Operatoren");
-            }else throw ERROR_ALREADY_OP.create();
+            } else throw ERROR_ALREADY_OP.create();
         }
         return successful;
     }
+
     private static final SimpleCommandExceptionType ERROR_ALREADY_OP = new SimpleCommandExceptionType(Component.translatable("commands.op.failed"));
 }

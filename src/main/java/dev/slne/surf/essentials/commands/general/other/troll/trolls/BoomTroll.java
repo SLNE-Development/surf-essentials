@@ -9,7 +9,6 @@ import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -48,25 +47,21 @@ public class BoomTroll extends Troll {
         Location location = target.getLocation();
         ClientboundExplodePacket explodePacket = new ClientboundExplodePacket(location.getX(), location.getY(), location.getZ(), 2F, Collections.emptyList(), null);
 
-        serverPlayer.connection.send(explodePacket);
+        EssentialsUtil.sendPackets(serverPlayer, explodePacket);
 
         target.setInvulnerable(true);
         target.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20, 127, false, false, false));
 
         Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), bukkitTask ->
-                target.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20*2, 128, false, false, false)), 20);
+                target.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20 * 2, 128, false, false, false)), 20);
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), bukkitTask ->
-                target.setInvulnerable(false), 20*2);
+                target.setInvulnerable(false), 20 * 2);
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
-                    .append(Component.text(" wurde gesprengt!", Colors.SUCCESS)));
-        }else{
-            source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
-                    .copy().append(net.minecraft.network.chat.Component.literal(" was blown up!")
-                            .withStyle(ChatFormatting.GREEN)), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
+                .append(Component.text(" wurde gesprengt!", Colors.SUCCESS)));
+
         return 1;
     }
 }

@@ -11,7 +11,6 @@ import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -51,47 +50,36 @@ public class AnvilTroll extends Troll {
         EssentialsUtil.checkPlayerSuggestion(context.getSource(), CraftUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();
 
-        if (!getAndToggleTroll(target)){
-            AtomicInteger timeLeft = new AtomicInteger(timeInSeconds*2);
+        if (!getAndToggleTroll(target)) {
+            AtomicInteger timeLeft = new AtomicInteger(timeInSeconds * 2);
 
             Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), bukkitTask -> {
                 if (timeLeft.get() < 1) bukkitTask.cancel();
                 Location location = target.getLocation();
                 Location blockPosition = new Location(location.getWorld(), location.getX(), location.getY() + 20, location.getZ());
 
-                if (blockPosition.getBlock().getType() == Material.AIR){
+                if (blockPosition.getBlock().getType() == Material.AIR) {
                     EssentialsUtil.spawnFakeFallingBlock(target, Blocks.ANVIL, blockPosition);
                 }
                 timeLeft.getAndDecrement();
                 TASK_IDS.put(target.getUniqueId(), bukkitTask.getTaskId());
-            },1,10);
+            }, 1, 10);
 
             Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), bukkitTask -> PLAYER_IN_TROLL.remove(target.getUniqueId()), 20L * timeInSeconds);
 
-        }else {
+        } else {
             stopTroll(target);
 
-            if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
-                        .append(Component.text(" wird nun nicht mehr mit Ambossen beworfen", Colors.INFO)));
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
+                    .append(Component.text(" wird nun nicht mehr mit Ambossen beworfen", Colors.INFO)));
 
-            }else {
-                source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
-                        .copy().append(net.minecraft.network.chat.Component.literal(" is no longer thrown with anvils!")
-                                .withStyle(ChatFormatting.GREEN)), false);
-            }
             return 1;
         }
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, (Component.text("Bei ", Colors.SUCCESS))
-                    .append(EssentialsUtil.getDisplayName(target))
-                    .append(Component.text(" regnet es jetzt Ambosse!", Colors.SUCCESS)));
-        }else{
-            source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
-                    .copy().append(net.minecraft.network.chat.Component.literal(" is thrown with anvils!")
-                            .withStyle(ChatFormatting.GREEN)), false);
-        }
+        EssentialsUtil.sendSuccess(source, (Component.text("Bei ", Colors.SUCCESS))
+                .append(EssentialsUtil.getDisplayName(target))
+                .append(Component.text(" regnet es jetzt Ambosse!", Colors.SUCCESS)));
+
         return 1;
     }
 }

@@ -8,7 +8,6 @@ import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -55,36 +54,23 @@ public class ClearItemCommand extends BrigadierCommand {
             for (ItemStack content : target.getInventory().getContents()) {
                 if (content.is(itemInput.getItem())) content.setCount(0);
             }
-            successfullyRemoved ++;
+            successfullyRemoved++;
         }
 
-        if (successfullyRemoved == 1){
-            if (source.isPlayer()) {
-                EssentialsUtil.sendSuccess(source, Component.text("Das Item ", Colors.SUCCESS)
-                        .append(PaperAdventure.asAdventure(itemInput.getItem().getDefaultInstance().getDisplayName()))
-                        .append(Component.text(" wurde erfolgreich aus dem Inventar von ", Colors.SUCCESS))
-                        .append(targetsChecked.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                        .append(Component.text(" entfernt!", Colors.SUCCESS)));
-            }else {
-                source.sendSuccess(itemInput.getItem().getDefaultInstance().getDisplayName()
-                        .copy().append(" was successful removed from ")
-                        .withStyle(ChatFormatting.GREEN)
-                        .append(targetsChecked.iterator().next().getDisplayName())
-                        .append("´s inventory")
-                        .withStyle(ChatFormatting.GREEN), false);
-            }
-        }else {
-            if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, Component.text("Das Item ", Colors.SUCCESS)
-                        .append(PaperAdventure.asAdventure(itemInput.getItem().getDefaultInstance().getDisplayName()))
-                        .append(Component.text(" wurde erfolgreich aus ", Colors.SUCCESS))
-                        .append(Component.text(successfullyRemoved, Colors.TERTIARY))
-                        .append(Component.text(" Inventaren entfernt!", Colors.SUCCESS)));
-            }else {
-                source.sendSuccess(itemInput.getItem().getDefaultInstance().getDisplayName()
-                        .plainCopy().append(net.minecraft.network.chat.Component.literal(" was successful removed from " + successfullyRemoved + " inventories")
-                        .withStyle(ChatFormatting.GREEN)), false);
-            }
+        if (successfullyRemoved == 1) {
+            EssentialsUtil.sendSuccess(source, Component.text("Das Item ", Colors.SUCCESS)
+                    .append(PaperAdventure.asAdventure(itemInput.getItem().getDefaultInstance().getDisplayName()))
+                    .append(Component.text(" wurde erfolgreich aus dem Inventar von ", Colors.SUCCESS))
+                    .append(targetsChecked.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                    .append(Component.text(" entfernt!", Colors.SUCCESS)));
+        } else {
+
+            EssentialsUtil.sendSuccess(source, Component.text("Das Item ", Colors.SUCCESS)
+                    .append(PaperAdventure.asAdventure(itemInput.getItem().getDefaultInstance().getDisplayName()))
+                    .append(Component.text(" wurde erfolgreich aus ", Colors.SUCCESS))
+                    .append(Component.text(successfullyRemoved, Colors.TERTIARY))
+                    .append(Component.text(" Inventaren entfernt!", Colors.SUCCESS)));
+
         }
         return successfullyRemoved;
     }

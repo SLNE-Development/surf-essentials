@@ -25,7 +25,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.armortrim.*;
 import org.bukkit.Bukkit;
@@ -59,9 +58,7 @@ public class SpawnArmorTrimsCommand extends BrigadierCommand {
 
     @Override
     public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(stack -> EssentialsUtil.checkPermissions(Permissions.SPAWN_ARMOR_TRIMS_PERMISSION).test(stack) &&
-                stack.getLevel().enabledFeatures().contains(FeatureFlags.UPDATE_1_20)
-        );
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.SPAWN_ARMOR_TRIMS_PERMISSION));
 
         literal.executes(context -> spawnArmorTrims(context.getSource()));
 
@@ -72,7 +69,7 @@ public class SpawnArmorTrimsCommand extends BrigadierCommand {
     private int spawnArmorTrims(CommandSourceStack source) throws CommandSyntaxException {
 
         final var player = source.getPlayerOrException();
-        final var level = player.getLevel();
+        final var level = player.level();
         final var armorTrims = new HashSet<ArmorTrim>();
         final var trimPattern = level.registryAccess().registryOrThrow(Registries.TRIM_PATTERN);
         final var trimMaterial = level.registryAccess().registryOrThrow(Registries.TRIM_MATERIAL);

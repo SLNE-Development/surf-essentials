@@ -3,7 +3,6 @@ package dev.slne.surf.essentials.commands.general.other.poll;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
@@ -16,8 +15,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import org.bukkit.Bukkit;
-
-import java.util.Arrays;
 
 public class PollCommand extends BrigadierCommand {
     @Override
@@ -36,7 +33,7 @@ public class PollCommand extends BrigadierCommand {
     }
 
     @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.POLL_PERMISSION));
 
         literal.then(Commands.literal("create")
@@ -60,20 +57,20 @@ public class PollCommand extends BrigadierCommand {
                 .executes(context -> listPolls(context.getSource())));
     }
 
-    private int createPoll(CommandSourceStack source, String name, int durationInSeconds, String question) throws CommandSyntaxException{
+    private int createPoll(CommandSourceStack source, String name, int durationInSeconds, String question) {
         if (Poll.checkPollExists(name)) {
-            if (source.isPlayer()){
+            if (source.isPlayer()) {
                 final var poll = Poll.getPoll(name).join();
                 EssentialsUtil.sendError(source, Component.text("Es läuft bereits eine Umfrage mit dem Namen ", Colors.ERROR)
                         .append(Component.text(poll.getName(), Colors.TERTIARY)
                                 .hoverEvent(HoverEvent.showText(Component.text("Zeit: ", Colors.INFO)
                                         .append(Component.text(EssentialsUtil.ticksToString(poll.getDuration() * 20), Colors.GREEN))
-                                                .appendNewline()
+                                        .appendNewline()
                                         .append(Component.text("Frage: ", Colors.INFO))
                                         .append(Component.newline())
                                         .append(Component.text(poll.getQuestion(), Colors.TERTIARY)))))
                         .append(Component.text("!", Colors.ERROR)));
-            }else {
+            } else {
                 source.sendFailure(net.minecraft.network.chat.Component.literal("The poll ")
                         .withStyle(ChatFormatting.RED)
                         .append(name)
@@ -91,23 +88,20 @@ public class PollCommand extends BrigadierCommand {
         return 1;
     }
 
-    private int endPoll(CommandSourceStack source, String name) throws CommandSyntaxException{
-        if (!testPoll(name, source)){
+    private int endPoll(CommandSourceStack source, String name) {
+        if (!testPoll(name, source)) {
             return 0;
         }
 
         Poll.getPoll(name).thenAcceptAsync(Poll::stop);
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, "Die Umfrage wird beendet.");
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.literal("The poll will be closed."), false);
-        }
+        EssentialsUtil.sendSuccess(source, "Die Umfrage wird beendet.");
+
         return 1;
     }
 
-    private int removePoll(CommandSourceStack source, String name) throws CommandSyntaxException {
-        if (!testPoll(name, source)){
+    private int removePoll(CommandSourceStack source, String name) {
+        if (!testPoll(name, source)) {
             return 0;
         }
 
@@ -116,15 +110,11 @@ public class PollCommand extends BrigadierCommand {
             poll.stop();
         });
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, "Die Umfrage wird gelöscht.");
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.literal("The poll will be removed."), false);
-        }
+        EssentialsUtil.sendSuccess(source, "Die Umfrage wird gelöscht.");
         return 1;
     }
 
-    private static int listPolls(CommandSourceStack source) throws CommandSyntaxException {
+    private static int listPolls(CommandSourceStack source) {
         final var polls = Poll.getPolls();
         if (polls.size() == 0) {
             if (source.isPlayer()) {
@@ -135,35 +125,29 @@ public class PollCommand extends BrigadierCommand {
             return polls.size();
         }
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(
-                    source,
-                    Component.text("Aktuelle Umfragen: ", Colors.INFO)
-                            .append(Component.join(JoinConfiguration.commas(true), polls.stream().map(poll ->
-                                    Component.text(poll.getName(), Colors.TERTIARY)
-                                            .hoverEvent(HoverEvent.showText(Component.text("Dauer: ", Colors.INFO)
-                                                    .append(Component.text(EssentialsUtil.ticksToString(poll.getDuration() * 20), Colors.GREEN))
-                                                    .append(Component.newline())
-                                                    .append(Component.text("Frage: ", Colors.INFO))
-                                                    .append(Component.text(poll.getQuestion(), Colors.TERTIARY))))).toArray(Component[]::new)))
-            );
-        } else {
-            source.sendSuccess(net.minecraft.network.chat.Component.literal("Active polls: ")
-                    .withStyle(ChatFormatting.GRAY)
-                    .append(Arrays.toString(polls.stream().map(Poll::getName).toArray()))
-                    .withStyle(ChatFormatting.GOLD), false);
-        }
+
+        EssentialsUtil.sendSuccess(
+                source,
+                Component.text("Aktuelle Umfragen: ", Colors.INFO)
+                        .append(Component.join(JoinConfiguration.commas(true), polls.stream().map(poll ->
+                                Component.text(poll.getName(), Colors.TERTIARY)
+                                        .hoverEvent(HoverEvent.showText(Component.text("Dauer: ", Colors.INFO)
+                                                .append(Component.text(EssentialsUtil.ticksToString(poll.getDuration() * 20), Colors.GREEN))
+                                                .append(Component.newline())
+                                                .append(Component.text("Frage: ", Colors.INFO))
+                                                .append(Component.text(poll.getQuestion(), Colors.TERTIARY))))).toArray(Component[]::new)))
+        );
         return polls.size();
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean testPoll(String name, CommandSourceStack source) throws CommandSyntaxException {
-        if (!Poll.checkPollExists(name)){
-            if (source.isPlayer()){
+    private boolean testPoll(String name, CommandSourceStack source) {
+        if (!Poll.checkPollExists(name)) {
+            if (source.isPlayer()) {
                 EssentialsUtil.sendError(source, Component.text("Die Umfrage ", Colors.ERROR)
                         .append(Component.text(name, Colors.TERTIARY))
                         .append(Component.text(" existiert nicht!")));
-            }else {
+            } else {
                 source.sendFailure(net.minecraft.network.chat.Component.literal("The poll ")
                         .withStyle(ChatFormatting.RED)
                         .append(name)

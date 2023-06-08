@@ -78,26 +78,24 @@ public class TimeCommand extends BrigadierCommand {
     }
 
     private static int queryTime(CommandSourceStack source, ServerLevel serverLevel, int time, int whatTime) throws CommandSyntaxException {
-        if (source.isPlayer()) {
-            ResourceKey<Level> resourceKey = serverLevel.dimension();
-            String timeName;
-            switch (whatTime) {
-                case 0 -> timeName = "Zeit";
-                case 1 -> timeName = "Tageszeit";
-                case 2 -> timeName = "gesamte Zeit";
-                default -> timeName = "undefined";
-            }
-            EssentialsUtil.sendSuccess(source, Component.text("Die ", Colors.INFO)
-                    .append(Component.text(timeName, Colors.TERTIARY))
-                    .append(Component.text(" in der Welt ", Colors.INFO))
-                    .append(Component.text(resourceKey.location().toString().replace("minecraft:", ""), Colors.TERTIARY))
-                    .append(Component.text(" beträgt ", Colors.INFO))
-                    .append(Component.text(time, Colors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), Colors.INFO))))
-                    .append(Component.text(" Ticks!", Colors.INFO)));
-        } else {
-            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.time.query", time), false);
+
+        ResourceKey<Level> resourceKey = serverLevel.dimension();
+        String timeName;
+        switch (whatTime) {
+            case 0 -> timeName = "Zeit";
+            case 1 -> timeName = "Tageszeit";
+            case 2 -> timeName = "gesamte Zeit";
+            default -> timeName = "undefined";
         }
+        EssentialsUtil.sendSuccess(source, Component.text("Die ", Colors.INFO)
+                .append(Component.text(timeName, Colors.TERTIARY))
+                .append(Component.text(" in der Welt ", Colors.INFO))
+                .append(Component.text(resourceKey.location().toString().replace("minecraft:", ""), Colors.TERTIARY))
+                .append(Component.text(" beträgt ", Colors.INFO))
+                .append(Component.text(time, Colors.TERTIARY)
+                        .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), Colors.INFO))))
+                .append(Component.text(" Ticks!", Colors.INFO)));
+
         return time;
     }
 
@@ -111,14 +109,12 @@ public class TimeCommand extends BrigadierCommand {
             if (!timeSkipEvent.isCancelled()) level.setDayTime(level.getDayTime() + timeSkipEvent.getSkipAmount());
         });
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, Component.text("Die Zeit wurde auf ", Colors.SUCCESS)
-                    .append(Component.text(time, Colors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), Colors.INFO))))
-                    .append(Component.text(" Ticks gesetzt!", Colors.SUCCESS)));
-        } else {
-            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.time.set", time), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, Component.text("Die Zeit wurde auf ", Colors.SUCCESS)
+                .append(Component.text(time, Colors.TERTIARY)
+                        .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), Colors.INFO))))
+                .append(Component.text(" Ticks gesetzt!", Colors.SUCCESS)));
+
         return getDayTime(source.getLevel());
     }
 
@@ -132,14 +128,12 @@ public class TimeCommand extends BrigadierCommand {
             if (!timeSkipEvent.isCancelled()) level.setDayTime(level.getDayTime() + timeSkipEvent.getSkipAmount());
         });
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, Component.text("Es wurden ", Colors.SUCCESS)
-                    .append(Component.text(time, Colors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), Colors.INFO))))
-                    .append(Component.text(" Ticks zur Zeit hinzugefügt!", Colors.SUCCESS)));
-        } else {
-            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.time.set", getDayTime(source.getLevel())), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, Component.text("Es wurden ", Colors.SUCCESS)
+                .append(Component.text(time, Colors.TERTIARY)
+                        .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), Colors.INFO))))
+                .append(Component.text(" Ticks zur Zeit hinzugefügt!", Colors.SUCCESS)));
+
         return getDayTime(source.getLevel());
     }
 
@@ -173,13 +167,10 @@ public class TimeCommand extends BrigadierCommand {
             });
         });
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, Component.text("Die Zeit wurde auf ", Colors.SUCCESS)
-                    .append(Component.text(namedTime, Colors.TERTIARY))
-                    .append(Component.text(" gesetzt!")));
-        } else {
-            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.time.set", getDayTime(source.getLevel())), false);
-        }
+        EssentialsUtil.sendSuccess(source, Component.text("Die Zeit wurde auf ", Colors.SUCCESS)
+                .append(Component.text(namedTime, Colors.TERTIARY))
+                .append(Component.text(" gesetzt!")));
+
         return 0;
     }
 

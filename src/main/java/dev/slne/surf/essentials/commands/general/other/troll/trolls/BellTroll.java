@@ -10,7 +10,6 @@ import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -49,17 +48,11 @@ public class BellTroll extends Troll {
         EssentialsUtil.checkPlayerSuggestion(context.getSource(), EssentialsUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();
 
-        //cancel troll if target is already in troll
-        if (getAndToggleTroll(target)){
+        if (getAndToggleTroll(target)) {
             stopTroll(target);
-            if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source,EssentialsUtil.getDisplayName(target)
-                        .append(Component.text(" wird nun nicht mehr mit Glockengeräuschen gestört!", Colors.SUCCESS)));
-            }else {
-                source.sendSuccess(EssentialsUtil.getMinecraftDisplayName(target)
-                        .copy().append(net.minecraft.network.chat.Component.literal(" will now no longer be annoyed with bell sounds!")
-                                .withStyle(ChatFormatting.GREEN)), false);
-            }
+
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
+                    .append(Component.text(" wird nun nicht mehr mit Glockengeräuschen gestört!", Colors.SUCCESS)));
             return 1;
         }
 
@@ -90,15 +83,10 @@ public class BellTroll extends Troll {
             TASK_IDS.put(targetUUID, bukkitTask.getTaskId());
         }, 1, 5);
 
-        //success message
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, (target.displayName().colorIfAbsent(Colors.YELLOW))
-                    .append(Component.text(" wird nun mit Glockengeräuschen genervt!", Colors.SUCCESS)));
-        }else{
-            source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
-                    .copy().append(net.minecraft.network.chat.Component.literal(" is now annoyed with bell noises!")
-                            .withStyle(ChatFormatting.GREEN)), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
+                .append(Component.text(" wird nun mit Glockengeräuschen genervt!", Colors.SUCCESS)));
+
         return 1;
     }
 }

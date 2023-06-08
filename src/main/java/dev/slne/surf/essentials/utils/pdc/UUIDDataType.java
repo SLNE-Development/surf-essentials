@@ -22,7 +22,8 @@ public class UUIDDataType implements PersistentDataType<byte[], UUID> {
     /**
      * Constructs a new {@link UUIDDataType}. This constructor is private because this class is a singleton.
      */
-    private UUIDDataType(){}
+    private UUIDDataType() {
+    }
 
     /**
      * Gets the primitive type that is used to store UUIDs.
@@ -64,7 +65,7 @@ public class UUIDDataType implements PersistentDataType<byte[], UUID> {
      * Converts a byte array to a UUID value.
      *
      * @param primitive the byte array to be converted
-     * @param context the persistent data adapter context
+     * @param context   the persistent data adapter context
      * @return a UUID value that represents the given byte array
      */
     @Override

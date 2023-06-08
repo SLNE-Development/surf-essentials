@@ -106,8 +106,8 @@ public class TeleportOffline {
 
             EssentialsUtil.sendInfo(player, "Teleportiere Spieler...");
 
-            try {
-                EssentialsUtil.setLocation(uuid, new Location(player.getLevel().getWorld(), newLocation.x(), newLocation.y(), newLocation.z()));
+            try(final var level = player.level()) {
+                EssentialsUtil.setLocation(uuid, new Location(level.getWorld(), newLocation.x(), newLocation.y(), newLocation.z()));
             } catch (IOException e) {
                 e.printStackTrace();
                 return 0;

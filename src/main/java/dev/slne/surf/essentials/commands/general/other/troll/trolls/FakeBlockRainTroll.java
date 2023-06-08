@@ -12,7 +12,6 @@ import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -80,34 +79,19 @@ public class FakeBlockRainTroll extends Troll {
         } else {
             stopTroll(target);
 
-            if (source.isPlayer()) {
-                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
-                        .append(Component.text(" wird nun nicht mehr mit ", Colors.INFO))
-                        .append(PaperAdventure.asAdventure(blockReference.value().getName()))
-                        .append(Component.text(" beworfen!", Colors.INFO)));
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
+                    .append(Component.text(" wird nun nicht mehr mit ", Colors.INFO))
+                    .append(PaperAdventure.asAdventure(blockReference.value().getName()))
+                    .append(Component.text(" beworfen!", Colors.INFO)));
 
-            } else {
-                source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
-                        .copy().append(net.minecraft.network.chat.Component.literal(" is no longer thrown with ")
-                                .append(blockReference.value().getName())
-                                .append("!")
-                                .withStyle(ChatFormatting.GREEN)), false);
-            }
             return 1;
         }
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, (Component.text("Bei ", Colors.SUCCESS))
-                    .append(EssentialsUtil.getDisplayName(target))
-                    .append(Component.text(" regnet es jetzt ", Colors.SUCCESS)
-                            .append(PaperAdventure.asAdventure(blockReference.value().getName()))));
-        } else {
-            source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
-                    .copy().append(net.minecraft.network.chat.Component.literal(" is thrown with ")
-                            .append(blockReference.value().getName())
-                            .append("!")
-                            .withStyle(ChatFormatting.GREEN)), false);
-        }
+        EssentialsUtil.sendSuccess(source, (Component.text("Bei ", Colors.SUCCESS))
+                .append(EssentialsUtil.getDisplayName(target))
+                .append(Component.text(" regnet es jetzt ", Colors.SUCCESS)
+                        .append(PaperAdventure.asAdventure(blockReference.value().getName()))));
+
         return 1;
 
     }

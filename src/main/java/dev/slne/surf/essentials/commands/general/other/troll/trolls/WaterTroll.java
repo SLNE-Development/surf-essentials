@@ -11,7 +11,6 @@ import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -50,30 +49,21 @@ public class WaterTroll extends Troll {
         EssentialsUtil.checkPlayerSuggestion(context.getSource(), CraftUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();
 
-        if (getAndToggleTroll(target)){
+        if (getAndToggleTroll(target)) {
             stopTroll(target);
 
-            if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
-                        .append(Component.text(" hat jetzt keine Wasserphobie mehr", Colors.SUCCESS)));
-            }else{
-                source.sendSuccess(EssentialsUtil.getMinecraftDisplayName(target)
-                        .copy().append(net.minecraft.network.chat.Component.literal(" now no longer has water phobia")
-                                .withStyle(ChatFormatting.GREEN)), false);
-            }
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
+                    .append(Component.text(" hat jetzt keine Wasserphobie mehr", Colors.SUCCESS)));
+
             return 1;
         }
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), () -> stopTroll(target), 20L * timeInSeconds);
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, target.displayName().colorIfAbsent(Colors.TERTIARY)
-                    .append(Component.text(" hat nun Wasserphobie!", Colors.SUCCESS)));
-        }else{
-            source.sendSuccess(EntityArgument.getPlayer(context, "player").getDisplayName()
-                    .copy().append(net.minecraft.network.chat.Component.literal(" now has water phobia!")
-                            .withStyle(ChatFormatting.GREEN)), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
+                .append(Component.text(" hat nun Wasserphobie!", Colors.SUCCESS)));
+
         return 1;
     }
 
@@ -84,7 +74,7 @@ public class WaterTroll extends Troll {
         if (!isInTroll(player)) return;
         if (player.getLocation().getBlock().getType() != Material.WATER) return;
 
-        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20*4, 1, false, false, false));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * 4, 1, false, false, false));
         player.addPotionEffect(new PotionEffect(PotionEffectType.DARKNESS, 20, 1, false, false, false));
         player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 20, 15, false, false, false));
         player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 20, 15, false, false, false));

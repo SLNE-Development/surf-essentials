@@ -10,7 +10,6 @@ import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -64,7 +63,7 @@ public class MlgTroll extends Troll {
         EssentialsUtil.checkPlayerSuggestion(context.getSource(), CraftUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();
 
-        if (getAndToggleTroll(target)){
+        if (getAndToggleTroll(target)) {
             EssentialsUtil.sendSourceError(source, EssentialsUtil.getDisplayName(target)
                     .append(Component.text(" versucht schon ein MLG", Colors.ERROR)));
             return 0;
@@ -72,7 +71,7 @@ public class MlgTroll extends Troll {
 
         saveInventory.put(target.getUniqueId(), target.getInventory().getContents());
 
-        target.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20,100, false, false, false));
+        target.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20, 100, false, false, false));
         EssentialsUtil.sendSuccess(target, Component.text("Schaffst du den MLG?", Colors.GREEN));
         target.setInvulnerable(true);
         target.getInventory().clear();
@@ -89,7 +88,6 @@ public class MlgTroll extends Troll {
         }
 
 
-
         Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), () -> {
             target.getInventory().setContents(saveInventory.get(target.getUniqueId()));
             target.setInvulnerable(false);
@@ -100,23 +98,16 @@ public class MlgTroll extends Troll {
         }, 20 * 10);
 
 
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
+                .append(Component.text(" versucht nun ein MLG!", Colors.SUCCESS)));
 
-        //success message
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
-                    .append(Component.text(" versucht nun ein MLG!", Colors.SUCCESS)));
-        }else{
-            source.sendSuccess(EssentialsUtil.getMinecraftDisplayName(target)
-                    .copy().append(net.minecraft.network.chat.Component.literal(" now tries a MLG!")
-                            .withStyle(ChatFormatting.GREEN)), false);
-        }
         return 1;
     }
 
-    public static void restoreInventoryFromMlgTroll(){
+    public static void restoreInventoryFromMlgTroll() {
         saveInventory.forEach((uuid, itemStacks) -> {
             Player player = Bukkit.getPlayer(uuid);
-            if (player != null){
+            if (player != null) {
                 player.getInventory().setContents(itemStacks);
                 player.setInvulnerable(false);
             }
@@ -125,7 +116,7 @@ public class MlgTroll extends Troll {
 
     }
 
-    public static void restoreInventoryFromMlgTroll(@NotNull Player player){
+    public static void restoreInventoryFromMlgTroll(@NotNull Player player) {
         if (!saveInventory.containsKey(player.getUniqueId())) return;
         player.getInventory().setContents(saveInventory.get(player.getUniqueId()));
         player.setInvulnerable(false);

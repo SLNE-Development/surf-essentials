@@ -1,12 +1,15 @@
 package dev.slne.surf.essentials.utils.abtract;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.nms.brigadier.Suggestion;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -15,10 +18,11 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * A utility class for handling suggestions.
+ *
  * @author twisti
  * @since 1.0.2
  */
-public abstract class SuggestionUtil extends OfflineUtil{
+public abstract class SuggestionUtil extends OfflineUtil {
     /**
      * A {@link Map} that contains all valid color and formatting codes for Minecraft chat messages.
      */
@@ -29,11 +33,12 @@ public abstract class SuggestionUtil extends OfflineUtil{
      * <p></p>
      * See here for an example:
      * <p></p><img src="https://commandapi.jorel.dev/9.0.1/images/emojimsg.gif" alt="Following Suggestions">
+     *
      * @param builder the {@link SuggestionsBuilder} to modify
      * @return the modified {@link SuggestionsBuilder}
      */
 
-    public static SuggestionsBuilder followingSuggestionBuilder(@NotNull SuggestionsBuilder builder){
+    public static SuggestionsBuilder followingSuggestionBuilder(@NotNull SuggestionsBuilder builder) {
         return builder.createOffset(builder.getStart() + builder.getRemaining().length());
     }
 
@@ -48,22 +53,26 @@ public abstract class SuggestionUtil extends OfflineUtil{
         return builder.buildFuture();
     }
 
+    @Contract(pure = true)
+    public static @NotNull SuggestionProvider<CommandSourceStack> suggestAllColorCodes() {
+        return (context, builder) -> suggestAllColorCodes(builder);
+    }
+
     /**
      * Creates the actual following suggestion using the {@link #followingSuggestionBuilder(SuggestionsBuilder)}
-     * @param builder the {@link SuggestionsBuilder}
+     *
+     * @param builder     the {@link SuggestionsBuilder}
      * @param suggestions an array of {@link Suggestion}s to display
      * @return a {@link CompletableFuture<Suggestions>}
      */
     @SuppressWarnings("unused")
-    public static CompletableFuture<Suggestions> followingSuggestions(SuggestionsBuilder builder, Suggestion... suggestions){
+    public static CompletableFuture<Suggestions> followingSuggestions(SuggestionsBuilder builder, Suggestion... suggestions) {
         builder = followingSuggestionBuilder(builder);
         for (Suggestion suggestion : suggestions) {
             builder.suggest(suggestion.suggestion(), suggestion.getMinecraftTooltip());
         }
         return builder.buildFuture();
     }
-
-
 
 
     static {

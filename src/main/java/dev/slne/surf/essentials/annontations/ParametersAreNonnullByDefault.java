@@ -10,4 +10,5 @@ import java.lang.annotation.RetentionPolicy;
 @NotNull(exception = NullPointerException.class, value = "Parameter is null!")
 @TypeQualifierDefault(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ParametersAreNonnullByDefault {}
+public @interface ParametersAreNonnullByDefault {
+}

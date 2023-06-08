@@ -60,33 +60,24 @@ public class FlyCommand extends BrigadierCommand {
             }
             successfulChanges++;
             EssentialsUtil.sendSuccess(target, Component.text("Du kannst nun ", Colors.GREEN)
-                            .append(Component.text((target.getAbilities().mayfly) ? "fliegen!" : "nicht mehr fliegen!", Colors.GREEN)));
+                    .append(Component.text((target.getAbilities().mayfly) ? "fliegen!" : "nicht mehr fliegen!", Colors.GREEN)));
         }
 
-        if (source.isPlayer()) {
-            if (successfulChanges == 1) {
-                if (source.getPlayerOrException() == targets.iterator().next()) return 1;
-                EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(targets.iterator().next())
-                        .append(Component.text(" kann nun " + ((targets.iterator().next().getAbilities().mayfly) ? "fliegen!" : "nicht mehr fliegen!"))));
-            } else {
-                if (toggle) {
-                    EssentialsUtil.sendSuccess(source, Component.text("Die Flugfunktion wurde für ", Colors.SUCCESS)
-                            .append(Component.text(successfulChanges, Colors.TERTIARY))
-                            .append(Component.text(" Spieler umgeschaltet!", Colors.SUCCESS)));
-                } else {
-                    EssentialsUtil.sendSuccess(source, Component.text("Die Flugfunktion wurde für ", Colors.SUCCESS)
-                            .append(Component.text(successfulChanges, Colors.TERTIARY))
-                            .append(Component.text(" Spieler ", Colors.SUCCESS))
-                            .append(Component.text((allowFly) ? "aktiviert" : "deaktiviert", Colors.TERTIARY))
-                            .append(Component.text("!", Colors.SUCCESS)));
-                }
-            }
+        if (successfulChanges == 1) {
+            if (source.isPlayer() && source.getPlayerOrException() == targets.iterator().next()) return 1;
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(targets.iterator().next())
+                    .append(Component.text(" kann nun " + ((targets.iterator().next().getAbilities().mayfly) ? "fliegen!" : "nicht mehr fliegen!"))));
         } else {
             if (toggle) {
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("fly mode toggled for " + successfulChanges + " players!"), false);
+                EssentialsUtil.sendSuccess(source, Component.text("Die Flugfunktion wurde für ", Colors.SUCCESS)
+                        .append(Component.text(successfulChanges, Colors.TERTIARY))
+                        .append(Component.text(" Spieler umgeschaltet!", Colors.SUCCESS)));
             } else {
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("fly mode " + (allowFly ? "enabled" : "disabled") + " for " + successfulChanges +
-                        " players"), false);
+                EssentialsUtil.sendSuccess(source, Component.text("Die Flugfunktion wurde für ", Colors.SUCCESS)
+                        .append(Component.text(successfulChanges, Colors.TERTIARY))
+                        .append(Component.text(" Spieler ", Colors.SUCCESS))
+                        .append(Component.text((allowFly) ? "aktiviert" : "deaktiviert", Colors.TERTIARY))
+                        .append(Component.text("!", Colors.SUCCESS)));
             }
         }
         return successfulChanges;

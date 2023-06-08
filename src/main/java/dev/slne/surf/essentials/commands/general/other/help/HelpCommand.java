@@ -6,7 +6,6 @@ import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.TextComponent;
@@ -87,7 +86,7 @@ public class HelpCommand extends BrigadierCommand {
                     .append(newLine()));
         }
 
-        source.sendSuccess(PaperAdventure.asVanilla(builder.build()), false);
+        EssentialsUtil.sendSuccess(source, builder.build());
 
         return 1;
     }
@@ -126,35 +125,35 @@ public class HelpCommand extends BrigadierCommand {
             builder.append(Component.text("────────", Colors.GRAY));
         }
 
-        source.sendSuccess(PaperAdventure.asVanilla(builder.build()), false);
+        EssentialsUtil.sendSuccess(source, builder.build());
 
         return 1;
     }
 
 
-    private Component prefix(){
+    private Component prefix() {
         return Component.text(">> ", Colors.DARK_GRAY)
                 .append(Component.text("Help", Colors.GREEN))
                 .append(Component.text(" | ", Colors.DARK_GRAY));
     }
 
-    private Component header(){
+    private Component header() {
         return Component.text("╾────────── ", Colors.GRAY)
                 .append(Component.text("Help", Colors.GREEN))
                 .append(Component.text(" ──────────╼", Colors.GRAY));
     }
 
-    private Component correctUsage(String usage){
+    private Component correctUsage(String usage) {
         return Component.text("Korrekte Benutzung: ", TextColor.fromHexString("#e67e22"))
                 .append(Component.text(usage, Colors.TERTIARY)).colorIfAbsent(Colors.TERTIARY);
     }
 
-    private Component description(String description){
+    private Component description(String description) {
         return Component.text("Beschreibung: ", TextColor.fromHexString("#e67e22"))
                 .append(Component.text(description, Colors.TERTIARY));
     }
 
-    private Component aliases(List<String> aliases){
+    private Component aliases(List<String> aliases) {
         ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
         builder.append(Component.text("Aliases: ", TextColor.fromHexString("#e67e22")));
 
@@ -166,22 +165,22 @@ public class HelpCommand extends BrigadierCommand {
         return builder.build();
     }
 
-    private Component permission(String permission){
+    private Component permission(String permission) {
         return Component.text("Permission: ", TextColor.fromHexString("#e67e22"))
                 .append(Component.text(permission, Colors.TERTIARY));
     }
 
-    private Component newLine(){
+    private Component newLine() {
         return Component.newline().append(prefix());
     }
 
-    private String[] getAllCommandsFromPlugin(@Nullable CommandSourceStack source, @NotNull Plugin plugin){
+    private String[] getAllCommandsFromPlugin(@Nullable CommandSourceStack source, @NotNull Plugin plugin) {
         source = (source == null) ? MinecraftServer.getServer().createCommandSourceStack() : source;
 
         HelpMap helpMap = Bukkit.getServer().getHelpMap();
         HelpTopic topic = helpMap.getHelpTopic(plugin.getName());
 
-        if (topic == null){
+        if (topic == null) {
             return new String[]{"§cNo help for " + plugin.getName()};
         }
 
