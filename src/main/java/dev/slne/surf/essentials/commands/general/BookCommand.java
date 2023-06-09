@@ -21,6 +21,8 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Consumer;
+
 public class BookCommand extends BrigadierCommand {
     @Override
     public String[] names() {
@@ -66,7 +68,7 @@ public class BookCommand extends BrigadierCommand {
         ItemStack book = new ItemStack(Material.WRITABLE_BOOK);
         BookMeta mbook = (BookMeta) book.getItemMeta();
 
-        if (hasNotPerm(source, net.minecraft.world.item.ItemStack.fromBukkitCopy(originalBook))) return 0;
+        checkPerm(source, net.minecraft.world.item.ItemStack.fromBukkitCopy(originalBook));
 
         setBookMeta(originalBookMeta, mbook);
         book.setItemMeta(mbook);
@@ -79,20 +81,8 @@ public class BookCommand extends BrigadierCommand {
     }
 
     private static int changeTitle(CommandSourceStack source, String title) throws CommandSyntaxException {
-        net.minecraft.world.item.ItemStack mainHandItem = source.getPlayerOrException().getMainHandItem();
+        final var mainHandItem = editMainHandItemCompound(source, compoundTag1 -> compoundTag1.putString("title", title));
 
-        if (!mainHandItem.is(Items.WRITTEN_BOOK)){
-            EssentialsUtil.sendError(source, "Du musst ein Buch in deiner Hand halten!");
-            return 0;
-        }
-        if (hasNotPerm(source, mainHandItem)) return 0;
-
-        CompoundTag compoundTag = mainHandItem.getTag();
-        if (compoundTag == null){
-            compoundTag = new CompoundTag();
-        }
-        compoundTag.putString("title", title);
-        mainHandItem.setTag(compoundTag);
         EssentialsUtil.sendSuccess(source, Component.text("Der Title vom Buch ", Colors.SUCCESS)
                 .append(PaperAdventure.asAdventure(mainHandItem.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
                 .append(Component.text(" wurde geändert!", Colors.SUCCESS)));
@@ -100,25 +90,32 @@ public class BookCommand extends BrigadierCommand {
     }
 
     private static int changeAuthor(CommandSourceStack source, String author) throws CommandSyntaxException {
+        final var mainHandItem = editMainHandItemCompound(source, compoundTag1 -> compoundTag1.putString("author", author));
+
+        EssentialsUtil.sendSuccess(source, Component.text("Der Autor vom Buch ", Colors.SUCCESS)
+                .append(PaperAdventure.asAdventure(mainHandItem.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                .append(Component.text(" wurde geändert!", Colors.SUCCESS)));
+        return 1;
+    }
+
+    private static net.minecraft.world.item.ItemStack editMainHandItemCompound(CommandSourceStack source, Consumer<CompoundTag> compoundTagConsumer) throws CommandSyntaxException {
         net.minecraft.world.item.ItemStack mainHandItem = source.getPlayerOrException().getMainHandItem();
 
         if (!mainHandItem.is(Items.WRITTEN_BOOK)){
-            EssentialsUtil.sendError(source, "Du musst ein Buch in deiner Hand halten!");
-            return 0;
+            throw EssentialsUtil.createException(Component.text("Du musst ein Buch in deiner Hand halten!", Colors.ERROR));
         }
 
-        if (hasNotPerm(source, mainHandItem)) return 0;
+        checkPerm(source, mainHandItem);
 
         CompoundTag compoundTag = mainHandItem.getTag();
         if (compoundTag == null){
             compoundTag = new CompoundTag();
         }
-        compoundTag.putString("author", author);
+
+        compoundTagConsumer.accept(compoundTag);
         mainHandItem.setTag(compoundTag);
-        EssentialsUtil.sendSuccess(source, Component.text("Der Autor vom Buch ", Colors.SUCCESS)
-                .append(PaperAdventure.asAdventure(mainHandItem.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                .append(Component.text(" wurde geändert!", Colors.SUCCESS)));
-        return 1;
+
+        return mainHandItem;
     }
 
     private static void setBookMeta(@NotNull BookMeta originalBookMeta, @NotNull BookMeta mbook){
@@ -137,11 +134,9 @@ public class BookCommand extends BrigadierCommand {
         }
     }
 
-    private static boolean hasNotPerm(@NotNull CommandSourceStack source, net.minecraft.world.item.@NotNull ItemStack mainHandItem) throws CommandSyntaxException {
+    private static void checkPerm(@NotNull CommandSourceStack source, net.minecraft.world.item.@NotNull ItemStack mainHandItem) throws CommandSyntaxException {
         if (mainHandItem.getTag() != null && !(mainHandItem.getTag().getString("author").equals(source.getPlayerOrException().getName().getString())) && !source.hasPermission(4, Permissions.BOOK_PERMISSION_BYPASS)) {
-            EssentialsUtil.sendError(source, "Du hast keine Berechtigung, Bücher von anderen Spielern zu bearbeiten!");
-            return true;
+            throw EssentialsUtil.createException(Component.text("Du hast keine Berechtigung, Bücher von anderen Spielern zu bearbeiten!", Colors.ERROR));
         }
-        return false;
     }
 }

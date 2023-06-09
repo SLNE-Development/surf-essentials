@@ -82,7 +82,7 @@ public class SpawnerChangeCommand extends BrigadierCommand {
         return 1;
     }
 
-    private static int querySpawner(CommandSourceStack source, BlockPos blockPos) throws CommandSyntaxException {
+    private static int querySpawner(CommandSourceStack source, BlockPos blockPos) {
         if (!isSpawner(source, blockPos)) return 0;
 
         BlockEntity blockEntity = source.getLevel().getBlockEntity(blockPos);
@@ -113,7 +113,7 @@ public class SpawnerChangeCommand extends BrigadierCommand {
 
     }
 
-    private static int modifySpawner(CommandSourceStack source, BlockPos blockPos, EntityType<?> type, Integer minSpawnDelay, Integer maxSpawnDelay, Integer spawnRange, Integer requiredPlayerRange) throws CommandSyntaxException {
+    private static int modifySpawner(CommandSourceStack source, BlockPos blockPos, EntityType<?> type, Integer minSpawnDelay, Integer maxSpawnDelay, Integer spawnRange, Integer requiredPlayerRange) {
         if (!isSpawner(source, blockPos)) return 0;
 
         BlockEntity blockEntity = source.getLevel().getBlockEntity(blockPos);
@@ -152,7 +152,7 @@ public class SpawnerChangeCommand extends BrigadierCommand {
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private static boolean isSpawner(CommandSourceStack source, BlockPos blockPos) throws CommandSyntaxException {
+    private static boolean isSpawner(CommandSourceStack source, BlockPos blockPos) {
         if (source.getLevel().getBlockIfLoaded(blockPos) != Blocks.SPAWNER) {
             if (source.isPlayer()) {
                 EssentialsUtil.sendError(source, "An der Position befindet sich kein Spawner");

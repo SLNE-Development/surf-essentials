@@ -55,7 +55,7 @@ public class DifficultyCommand extends BrigadierCommand {
 
     }
 
-    private static int getDifficulty(CommandSourceStack source) throws CommandSyntaxException {
+    private static int getDifficulty(CommandSourceStack source) {
         Difficulty difficulty = EssentialsUtil.getMinecraftServer().getWorldData().getDifficulty();
 
         EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Schwierigkeit ist ", Colors.INFO)

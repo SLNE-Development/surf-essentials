@@ -32,7 +32,7 @@ public class HerobrineTroll extends Troll {
 
         GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "Herobrine");
 
-        ServerPlayer herobrineNpc = new ServerPlayer(source.getServer(), target.level.getMinecraftWorld(), gameProfile);
+        ServerPlayer herobrineNpc = new ServerPlayer(source.getServer(), target.serverLevel(), gameProfile);
         herobrineNpc.setPos(target.position());
 
         //Herobrine skin from user "HER0BRINE"

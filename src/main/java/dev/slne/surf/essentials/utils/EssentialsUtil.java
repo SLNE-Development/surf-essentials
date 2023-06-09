@@ -489,7 +489,7 @@ public final class EssentialsUtil extends LoggingUtil {
      */
     public static @NotNull FallingBlockEntity spawnFakeFallingBlock(Player player, @NotNull Block block, @NotNull Location location) {
         final var serverPlayer = EssentialsUtil.toServerPlayer(player);
-        final var fallingBlockEntity = new FallingBlockEntity(serverPlayer.level, location.x(), location.y(), location.z(), block.defaultBlockState());
+        final var fallingBlockEntity = new FallingBlockEntity(serverPlayer.level(), location.x(), location.y(), location.z(), block.defaultBlockState());
 
         fallingBlockEntity.setNoGravity(false);
         fallingBlockEntity.setInvulnerable(false);

@@ -101,48 +101,27 @@ public class TitlebroadcastCommand extends BrigadierCommand {
             successfullyShowed++;
         }
 
+        EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
+                .append(Component.text("Titel", Colors.TERTIARY)
+                        .hoverEvent(HoverEvent.showText(Component.text("Titel: ", Colors.INFO)
+                                .append(titleComponent)
+                                .append(Component.newline())
+                                .append(Component.text("Einblenden: ", Colors.INFO)
+                                        .append(Component.text(EssentialsUtil.ticksToString(fadeInTicks), Colors.TERTIARY)))
+                                .append(Component.newline())
+                                .append(Component.text("Dauer: ", Colors.INFO)
+                                        .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
+                                .append(Component.newline())
+                                .append(Component.text("Ausblenden: ", Colors.INFO)
+                                        .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
+                                .append(Component.newline())
+                                .append(Component.text("Untertitel: ", Colors.INFO))
+                                .append(subTitleComponent))))
+                .append(Component.text(" wurde ", Colors.SUCCESS))
+                .append(successfullyShowed == 1 ? EssentialsUtil.getDisplayName(targets.iterator().next()) : Component.text(successfullyShowed, Colors.TERTIARY)
+                        .append(Component.text(" Spielern", Colors.SUCCESS)))
+                .append(Component.text(" gezeigt!", Colors.SUCCESS)));
 
-        if (successfullyShowed == 1) {
-            EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
-                    .append(Component.text("Titel", Colors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text("Titel: ", Colors.INFO)
-                                    .append(titleComponent)
-                                    .append(Component.newline())
-                                    .append(Component.text("Einblenden: ", Colors.INFO)
-                                            .append(Component.text(EssentialsUtil.ticksToString(fadeInTicks), Colors.TERTIARY)))
-                                    .append(Component.newline())
-                                    .append(Component.text("Dauer: ", Colors.INFO)
-                                            .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
-                                    .append(Component.newline())
-                                    .append(Component.text("Ausblenden: ", Colors.INFO)
-                                            .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
-                                    .append(Component.newline())
-                                    .append(Component.text("Untertitel: ", Colors.INFO))
-                                    .append(subTitleComponent))))
-                    .append(Component.text(" wurde ", Colors.SUCCESS))
-                    .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                    .append(Component.text(" gezeigt!", Colors.SUCCESS)));
-        } else {
-            EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
-                    .append(Component.text("Titel", Colors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text("Titel: ", Colors.INFO)
-                                    .append(titleComponent)
-                                    .append(Component.newline())
-                                    .append(Component.text("Einblenden: ", Colors.INFO)
-                                            .append(Component.text(EssentialsUtil.ticksToString(fadeInTicks), Colors.TERTIARY)))
-                                    .append(Component.newline())
-                                    .append(Component.text("Dauer: ", Colors.INFO)
-                                            .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
-                                    .append(Component.newline())
-                                    .append(Component.text("Ausblenden: ", Colors.INFO)
-                                            .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
-                                    .append(Component.newline())
-                                    .append(Component.text("Untertitel: ", Colors.INFO))
-                                    .append(subTitleComponent))))
-                    .append(Component.text(" wurde ", Colors.SUCCESS))
-                    .append(Component.text(successfullyShowed, Colors.TERTIARY))
-                    .append(Component.text(" Spielern gezeigt!", Colors.SUCCESS)));
-        }
         return successfullyShowed;
     }
 }

@@ -1,7 +1,6 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
@@ -34,7 +33,7 @@ public class SeedCommand extends BrigadierCommand {
         literal.executes(context -> getSeed(context.getSource()));
     }
 
-    private int getSeed(CommandSourceStack source) throws CommandSyntaxException {
+    private int getSeed(CommandSourceStack source) {
         long seed = source.getLevel().getSeed();
 
         EssentialsUtil.sendSourceSuccess(source, Component.text("Der Seed in ", Colors.SUCCESS)

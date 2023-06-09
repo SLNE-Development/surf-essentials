@@ -19,6 +19,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 
+import java.io.IOException;
 import java.util.Collection;
 
 
@@ -80,8 +81,12 @@ public class GiveCommand extends BrigadierCommand {
                         entityItem.makeFakeItem();
                     }
 
-                    target.level.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ITEM_PICKUP,
-                            SoundSource.PLAYERS, 0.2F, ((target.getRandom().nextFloat() - target.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                    try (final var level = target.level()) {
+                        level.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ITEM_PICKUP,
+                                SoundSource.PLAYERS, 0.2F, ((target.getRandom().nextFloat() - target.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                    } catch (IOException ignored) {
+                    }
+
                     target.containerMenu.broadcastChanges();
 
                 } else {

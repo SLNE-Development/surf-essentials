@@ -41,7 +41,6 @@ public class PlayerHeadCommand extends BrigadierCommand {
                 .executes(context -> getPlayerHead(context.getSource(), EntityArgument.getPlayer(context, "player"))));
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     private int getPlayerHead(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException {
         var playerTarget = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked).getBukkitEntity();
         var sender = source.getPlayerOrException().getBukkitEntity();
