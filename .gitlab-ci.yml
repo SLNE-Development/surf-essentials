@@ -70,3 +70,20 @@ deploy:
         - "mvn $MAVEN_CLI_OPTS -s $MAVEN_SETTINGS deploy"
     tags:
         - java
+
+stages:
+    - build
+
+before_script:
+    - mvn ca.bkaw:paper-nms-maven-plugin:1.3.2:remap
+
+build:
+    stage: build
+    script:
+        - mvn clean install
+    rules:
+        - exists:
+              - pom.xml
+    artifacts:
+        paths:
+            - target/
