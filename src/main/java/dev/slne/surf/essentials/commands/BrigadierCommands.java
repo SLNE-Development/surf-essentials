@@ -7,166 +7,123 @@ import dev.slne.surf.essentials.commands.general.*;
 import dev.slne.surf.essentials.commands.general.other.ActionbarBroadcast;
 import dev.slne.surf.essentials.commands.general.other.TimerCommand;
 import dev.slne.surf.essentials.commands.general.other.TitlebroadcastCommand;
+import dev.slne.surf.essentials.commands.general.other.help.HelpCommand;
 import dev.slne.surf.essentials.commands.general.other.poll.PollCommand;
 import dev.slne.surf.essentials.commands.general.other.poll.VoteCommand;
 import dev.slne.surf.essentials.commands.general.other.troll.TrollManager;
 import dev.slne.surf.essentials.commands.general.other.world.WorldCommand;
-import dev.slne.surf.essentials.commands.general.sign.SignToggleCommand;
 import dev.slne.surf.essentials.commands.minecraft.*;
+import dev.slne.surf.essentials.commands.minecraft.internal.SpawnArmorTrimsCommand;
 import dev.slne.surf.essentials.commands.tp.*;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import net.minecraft.commands.CommandSourceStack;
 
+/**
+ * This class is responsible for registering and unregistering all the commands provided by the plugin using Brigadier.
+ *
+ * @author twisti
+ * @since 1.0.0
+ */
 public class BrigadierCommands {
-    public synchronized void register(){
-        //world-broadcast command
-        BroadcastWorldCommand.register();
-        //list command
-        ListCommand.register();
-        //lighting command
-        LightningCommand.register();
-        //kill command
-        KillCommand.register();
-        //enchant command
-        EnchantCommand.register();
-        //workbench command
-        WorkbenchCommand.register();
-        //anvil command
-        AnvilCommand.register();
-        //smithing table command
-        SmithingTableCommand.register();
-        //cartographytable command
-        CartographyTableCommand.register();
-        //grindtsone command
-        GrindstoneCommand.register();
-        //loom command
-        LoomCommand.register();
-        //stonecutter
-        StonecutterCommand.register();
-        //give command
-        GiveCommand.register();
-        //getpos command
-        GetPosCommand.register();
-        //troll command
-        TrollManager.register();
-        //hurt command
-        HurtCommand.register();
-        //bossbar command
-        BossbarCommand.register();
-        //op command
-        OpCommand.register();
-        //deop command
-        DeopCommand.register();
-        //effect command
-        EffectCommand.register();
-        //default game mode command
-        DefaultGamemodeCommand.register();
-        //difficulty command
-        DifficultyCommand.register();
-        //experience command
-        ExperienceCommand.register();
-        //forceload command
-        ForceloadCommand.register();
-        //game mode command
-        GamemodeCommand.register();
-        //gamerule command
-        GameruleCommand.register();
-        //particle command
-        ParticleCommand.register();
-        //fill stack command
-        FillStackCommand.register();
-        //fly command
-        FlyCommand.register();
-        //feed command
-        FoodCommand.register();
-        //godmode command
-        GodmodeCommand.register();
-        //heal command
-        HealCommand.register();
-        //repair command
-        RepairCommand.register();
-        //speed command
-        SpeedCommand.register();
-        // suicide command
-        SuicideCommand.register();
-        //time command
-        TimeCommand.register();
-        //weather command
-        WeatherCommand.register();
-        //poll command
-        PollCommand.register();
-        //vote command
-        VoteCommand.register();
-        //alert command
-        AlertCommand.register();
-        //book command
-        BookCommand.register();
-        //info command
-        InfoCommand.register();
-        //rule command
-        RuleCommand.register();
-        //spawner command
-        SpawnerChangeCommand.register();
-        //title-broadcast command
-        TitlebroadcastCommand.register();
-        //actionbar-broadcast command
+
+    /**
+     * Registers all the commands provided by the plugin using Brigadier.
+     */
+    public void register() {
+        new BroadcastWorldCommand();
+        new ListCommand();
+        new LightningCommand();
+        new KillCommand();
+        new EnchantCommand();
+        new WorkbenchCommand();
+        new AnvilCommand();
+        new SmithingTableCommand();
+        new CartographyTableCommand();
+        new GrindstoneCommand();
+        new LoomCommand();
+        new StonecutterCommand();
+        new GiveCommand();
+        new GetPosCommand();
+        new TrollManager();
+        new HurtCommand();
+        new BossbarCommand();
+        new OpCommand();
+        new DeopCommand();
+        new EffectCommand();
+        new DefaultGamemodeCommand();
+        new DifficultyCommand();
+        new ExperienceCommand();
+        new ForceloadCommand();
+        new GamemodeCommand();
+        new GameruleCommand();
+        new ParticleCommand();
+        new FillStackCommand();
+        new FlyCommand();
+        new FoodCommand();
+        new GodmodeCommand();
+        new HealCommand();
+        new RepairCommand();
+        new SuicideCommand();
+        new TimeCommand();
+        new WeatherCommand();
+        new PollCommand();
+        new VoteCommand();
+        new AlertCommand();
+        new BookCommand();
+        new InfoCommand();
+        new RuleCommand();
+        new SpawnerChangeCommand();
+        new TitlebroadcastCommand();
         new ActionbarBroadcast();
-        //teleport offline
         new TeleportOffline();
-        // set item name command
         new SetItemNameCommand();
-        // set item lore command
         new SetItemLoreCommand();
-        // back command
         new TeleportBackCommand();
-        // random teleport
         new RandomTeleportCommand();
-        // clear item command
         new ClearItemCommand();
-        // infinity command
         new InfinityCommand();
-        // unhat command
         new UnhatCommand();
-        // hat command
         new HatCommand();
-        // timer command
         new TimerCommand();
-        // chat clear command
         new ChatClearCommand();
-        // teleport command
         new TeleportCommand();
-        // clear inventory command
         new ClearInventoryCommand();
-        // help command
         new HelpCommand();
-        // seed command
         new SeedCommand();
-        // set world spawn command
         new SetWorldSpawnCommand();
-        // spectate command
         new SpectateCommand();
-        // summon command
         new SummonCommand();
-        // tptop command
         new TeleportToTopCommand();
-        // sign toggle command
-        new SignToggleCommand();
-        // world command
         new WorldCommand();
-        // fill command
         new FillCommand();
-        // set block command
         new SetBlockCommand();
-        // ride commands
         new RideCommand();
-        // damage command
         new DamageCommand();
+        new SpawnCommand();
+        new LatestDeathCommand();
+        new PlayerHeadCommand();
+        new TrashCommand();
+        new SpeedCommand();
+        new WhitelistCommand();
+        new ScreamCommand();
+        new NearCommand();
+        new DataPackCommand();
+        new AttributeCommand();
+        new ReloadCommand();
+        new FillBiomeCommand();
+        new SpawnArmorTrimsCommand();
+        new ExecuteCommand();
+        new SetPlayerIdleTimeoutCommand();
+        new PlaySoundCommand();
+        new AdvancementCommand();
     }
 
+    /**
+     * Unregisters all commands registered by this plugin from the server's {@link com.mojang.brigadier.CommandDispatcher<net.minecraft.commands.CommandSourceStack>}.
+     * <p>
+     * This should be called in the plugins {@link org.bukkit.plugin.Plugin#onDisable()} method to ensure that no remaining {@link CommandNode<net.minecraft.commands.CommandSourceStack>}s
+     * exist on the server after the plugin has been unloaded.
+     */
     public synchronized void unregister() {
-        for (CommandNode<CommandSourceStack> registeredCommand : EssentialsUtil.getRegisteredCommands()) {
-            EssentialsUtil.sendDebug("Unregistering command: " + registeredCommand.getName());
-            EssentialsUtil.getRoot().removeCommand(registeredCommand.getName());
-        }
+        EssentialsUtil.unregisterDispatcherCommand(EssentialsUtil.getRegisteredCommands().stream().map(CommandNode::getName).toList());
     }
 }

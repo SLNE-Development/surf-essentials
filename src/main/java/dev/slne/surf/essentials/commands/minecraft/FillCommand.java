@@ -5,9 +5,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.blocks.BlockStatePos;
-import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.blocks.BlockStatePos;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -21,7 +21,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Clearable;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -69,7 +68,7 @@ public class FillCommand extends BrigadierCommand {
 
         literal.then(Commands.argument("fromLocation", BlockPosArgument.blockPos())
                 .then(Commands.argument("toLocation", BlockPosArgument.blockPos())
-                        .then(Commands.argument("material", BlockStateArgument.block(EssentialsUtil.buildContext()))
+                        .then(Commands.argument("material", BlockStateArgument.block(this.commandBuildContext))
                                 .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                         BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                         Mode.REPLACE, null))
@@ -78,7 +77,7 @@ public class FillCommand extends BrigadierCommand {
                                         .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                 BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                 Mode.REPLACE, null))
-                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                                 .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                         BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                         Mode.REPLACE, BlockPredicateArgument.getBlockPredicate(context, "filter")))))
@@ -87,7 +86,7 @@ public class FillCommand extends BrigadierCommand {
                                         .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                 BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                 Mode.OUTLINE, null))
-                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                                 .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                         BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                         Mode.OUTLINE, BlockPredicateArgument.getBlockPredicate(context, "filter")))))
@@ -96,7 +95,7 @@ public class FillCommand extends BrigadierCommand {
                                         .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                 BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                 Mode.HOLLOW, null))
-                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                                 .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                         BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                         Mode.HOLLOW, BlockPredicateArgument.getBlockPredicate(context, "filter")))))
@@ -105,7 +104,7 @@ public class FillCommand extends BrigadierCommand {
                                         .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                 BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                 Mode.DESTROY, null))
-                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                                 .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                         BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                         Mode.DESTROY, BlockPredicateArgument.getBlockPredicate(context, "filter")))))
@@ -116,7 +115,7 @@ public class FillCommand extends BrigadierCommand {
                                                 Mode.REPLACE, blockInWorld -> blockInWorld.getLevel().isEmptyBlock(blockInWorld.getPos()))))
 
                                 .then(Commands.literal("filter")
-                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                        .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                                 .executes(context -> fill(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "fromLocation"),
                                                         BlockPosArgument.getLoadedBlockPos(context, "toLocation"), BlockStateArgument.getBlock(context, "material"),
                                                         Mode.REPLACE, BlockPredicateArgument.getBlockPredicate(context, "filter"))))))));
@@ -125,7 +124,7 @@ public class FillCommand extends BrigadierCommand {
     private int fill(@NotNull CommandSourceStack source, @NotNull BlockPos from, @NotNull BlockPos to, @NotNull BlockInput block, @NotNull Mode fillMode, @Nullable Predicate<BlockInWorld> filter) throws CommandSyntaxException {
         BoundingBox boundingBox = BoundingBox.fromCorners(from, to);
         int totalBlocks = boundingBox.getXSpan() * boundingBox.getYSpan() * boundingBox.getZSpan();
-        int maxFillArea = source.getLevel().getGameRules().getInt(GameRules.RULE_COMMAND_MODIFICATION_BLOCK_LIMIT);
+        int maxFillArea = EssentialsUtil.modificationBlockLimit(source);
 
         if (totalBlocks > maxFillArea) throw ERROR_AREA_TOO_LARGE.create(maxFillArea, totalBlocks);
 
@@ -152,6 +151,13 @@ public class FillCommand extends BrigadierCommand {
 
                 blockPosList.add(currentBlockPos.immutable());
                 filledBlocks.getAndIncrement();
+
+                EssentialsUtil.logBlockChange(
+                        source,
+                        serverLevel,
+                        currentBlockPos,
+                        filteredBlockInput.getState()
+                );
             }
         });
 
@@ -162,14 +168,11 @@ public class FillCommand extends BrigadierCommand {
 
         if (filledBlocks.get() == 0) throw ERROR_FAILED.create();
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Es " + ((filledBlocks.get() == 1) ? "wurde " : "wurden "), Colors.SUCCESS)
-                    .append(net.kyori.adventure.text.Component.text(filledBlocks.get(), Colors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(((filledBlocks.get() == 1) ? " Block " : " Blöcke ") + "platziert.", Colors.SUCCESS)));
-            BLOCKS.put(source.getPlayerOrException().getUUID(), blockStatePos);
-        }else {
-            source.sendSuccess(Component.translatable("commands.fill.success", filledBlocks.get()), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Es " + ((filledBlocks.get() == 1) ? "wurde " : "wurden "), Colors.SUCCESS)
+                .append(net.kyori.adventure.text.Component.text(filledBlocks.get(), Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text(((filledBlocks.get() == 1) ? " Block " : " Blöcke ") + "platziert.", Colors.SUCCESS)));
+        BLOCKS.put(source.getPlayerOrException().getUUID(), blockStatePos);
 
         return filledBlocks.get();
     }
@@ -186,10 +189,19 @@ public class FillCommand extends BrigadierCommand {
 
         for (BlockStatePos statePos : blockStatePos) {
             ServerLevel level = statePos.serverLevel();
-            BlockState blockState = level.getBlockState(statePos.blockPos());
-            newBlockStatePos.add(new BlockStatePos(blockState, statePos.blockPos(), level));
+            BlockPos pos = statePos.blockPos();
+            BlockState blockState = level.getBlockState(pos);
+            newBlockStatePos.add(new BlockStatePos(blockState, pos, level));
 
-            level.setBlockAndUpdate(statePos.blockPos().immutable(), statePos.blockState());
+            if (level.setBlockAndUpdate(pos.immutable(), statePos.blockState())) {
+                EssentialsUtil.logBlockChange(
+                        source,
+                        level,
+                        pos,
+                        statePos.blockState()
+                );
+            }
+
             level.blockUpdated(statePos.blockPos(), statePos.blockState().getBlock());
             undoneBlocks.getAndIncrement();
         }

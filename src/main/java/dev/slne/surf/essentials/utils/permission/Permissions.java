@@ -1,133 +1,425 @@
 package dev.slne.surf.essentials.utils.permission;
 
-public class Permissions {
+import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.utils.EssentialsUtil;
+import org.bukkit.permissions.Permission;
+import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * The {@link Permissions} class defines all permissions used by the plugin.
+ * <p></p>
+ * It contains permission strings for various commands and groups, as well as parent permissions.
+ * <p>
+ * Permissions are registered automatically when the class is loaded.
+ */
+public final class Permissions {
 
     /**
      * These are the permissions for the 'cheat' commands
      */
-    public static final String FILL_STACK_PERMISSION = "surf.essentials.commands.more";
-    public static final String FLY_SELF_PERMISSION = "surf.essentials.commands.fly";
-    public static final String FLY_OTHER_PERMISSION = "surf.essentials.commands.fly.others";
-    public static final String FEED_SELF_PERMISSION = "surf.essentials.commands.feed";
-    public static final String FEED_OTHER_PERMISSION = "surf.essentials.commands.feed.others";
-    public static final String GOD_MODE_SELF_PERMISSION = "surf.essentials.commands.godmode";
-    public static final String GOD_MODE_OTHER_PERMISSION = "surf.essentials.commands.godmode.others";
-    public static final String HEAL_SELF_PERMISSION = "surf.essentials.commands.heal";
-    public static final String HEAL_OTHER_PERMISSION = "surf.essentials.commands.heal.others";
-    public static final String REPAIR_SELF_PERMISSION = "surf.essentials.commands.repair";
-    public static final String REPAIR_OTHER_PERMISSION = "surf.essentials.commands.repair.others";
-    public static final String SPEED_SELF_PERMISSION = "surf.essentials.commands.speed";
-    public static final String SPEED_OTHER_PERMISSION = "surf.essentials.commands.speed.others";
-    public static final String SUICIDE_PERMISSION = "surf.essentials.commands.suicide";
-    public static final String HURT_PERMISSION = "surf.essentials.commands.hurt";
-    public static final String ANVIL_SELF_PERMISSION = "surf.essentials.commands.anvil";
-    public static final String ANVIL_OTHER_PERMISSION = "surf.essentials.commands.anvil.others";
-    public static final String CARTOGRAPHY_TABLE_SELF_PERMISSION = "surf.essentials.commands.cartographytable";
-    public static final String CARTOGRAPHY_TABLE_OTHER_PERMISSION = "surf.essentials.commands.cartographytable.others";
-    public static final String GRINDSTONE_SELF_PERMISSION = "surf.essentials.commands.grindstone";
-    public static final String GRINDSTONE_OTHER_PERMISSION = "surf.essentials.commands.grindstone.others";
-    public static final String LOOM_SELF_PERMISSION = "surf.essentials.commands.loom";
-    public static final String LOOM_OTHER_PERMISSION = "surf.essentials.commands.loom.others";
-    public static final String SMITHING_TABLE_SELF_PERMISSION = "surf.essentials.commands.smithingtable";
-    public static final String SMITHING_TABLE_OTHER_PERMISSION = "surf.essentials.commands.smithingtable.others";
-    public static final String STONECUTTER_SELF_PERMISSION = "surf.essentials.commands.stonecutter";
-    public static final String STONECUTTER_OTHER_PERMISSION = "surf.essentials.commands.stonecutter.others";
-    public static final String WORKBENCH_SELF_PERMISSION = "surf.essentials.commands.workbench";
-    public static final String WORKBENCH_OTHER_PERMISSION = "surf.essentials.commands.workbench.others";
-    public static final String HAT_SELF_PERMISSION = "surf.essentials.commands.hat";
-    public static final String HAT_OTHER_PERMISSION = "surf.essentials.commands.hat.others";
-    public static final String UNHAT_SELF_PERMISSION = "surf.essentials.commands.unhat";
-    public static final String UNHAT_OTHER_PERMISSION = "surf.essentials.commands.unhat.others";
-    public static final String LIGHTING_PERMISSION = "surf.essentials.commands.lighting";
+    public static final String FILL_STACK_PERMISSION;
+    public static final String FLY_SELF_PERMISSION;
+    public static final String FLY_OTHER_PERMISSION;
+    public static final String FEED_SELF_PERMISSION;
+    public static final String FEED_OTHER_PERMISSION;
+    public static final String GOD_MODE_SELF_PERMISSION;
+    public static final String GOD_MODE_OTHER_PERMISSION;
+    public static final String HEAL_SELF_PERMISSION;
+    public static final String HEAL_OTHER_PERMISSION;
+    public static final String REPAIR_SELF_PERMISSION;
+    public static final String REPAIR_OTHER_PERMISSION;
+    public static final String SUICIDE_PERMISSION;
+    public static final String HURT_PERMISSION;
+    public static final String ANVIL_SELF_PERMISSION;
+    public static final String ANVIL_OTHER_PERMISSION;
+    public static final String CARTOGRAPHY_TABLE_SELF_PERMISSION;
+    public static final String CARTOGRAPHY_TABLE_OTHER_PERMISSION;
+    public static final String GRINDSTONE_SELF_PERMISSION;
+    public static final String GRINDSTONE_OTHER_PERMISSION;
+    public static final String LOOM_SELF_PERMISSION;
+    public static final String LOOM_OTHER_PERMISSION;
+    public static final String SMITHING_TABLE_SELF_PERMISSION;
+    public static final String SMITHING_TABLE_OTHER_PERMISSION;
+    public static final String STONECUTTER_SELF_PERMISSION;
+    public static final String STONECUTTER_OTHER_PERMISSION;
+    public static final String WORKBENCH_SELF_PERMISSION;
+    public static final String WORKBENCH_OTHER_PERMISSION;
+    public static final String HAT_SELF_PERMISSION;
+    public static final String HAT_OTHER_PERMISSION;
+    public static final String UNHAT_SELF_PERMISSION;
+    public static final String UNHAT_OTHER_PERMISSION;
+    public static final String LIGHTING_PERMISSION;
+    public static final String TRASH_PERMISSION_SELF;
+    public static final String TRASH_PERMISSION_OTHER;
+    public static final String SPEED_PERMISSION_SELF;
+    public static final String SPEED_PERMISSION_OTHER;
+    public static final String POSE_SELF_PERMISSION;
+    public static final String POSE_OTHER_PERMISSION;
+
 
     /**
      * Permission for the recreated 'minecraft' commands
      */
-    public static final String BOSSBAR_PERMISSION = "surf.essentials.commands.bossbar";
-    public static final String DEFAULT_GAMEMODE_PERMISSION = "surf.essentials.commands.defaultgamemode";
-    public static final String DEOP_PERMISSION = "surf.essentials.commands.deop";
-    public static final String DIFFICULTY_PERMISSION = "surf.essentials.commands.difficulty";
-    public static final String EFFECT_PERMISSION = "surf.essentials.commands.effect";
-    public static final String ENCHANT_PERMISSION = "surf.essentials.commands.enchant";
-    public static final String EXPERIENCE_PERMISSION = "surf.essentials.commands.experience";
-    public static final String FORCELOAD_PERMISSION = "surf.essentials.commands.forceload";
+    public static final String ATTRIBUTE_PERMISSION;
+    public static final String BOSSBAR_PERMISSION;
+    public static final String CLONE_PERMISSION;
+    public static final String DATAPACK_PERMISSION;
+    public static final String DEFAULT_GAMEMODE_PERMISSION;
+    public static final String DEOP_PERMISSION;
+    public static final String DIFFICULTY_PERMISSION;
+    public static final String EFFECT_PERMISSION;
+    public static final String ENCHANT_PERMISSION;
+    public static final String EXPERIENCE_PERMISSION;
+    public static final String FORCELOAD_PERMISSION;
 
-    public static final String GAMEMODE_CREATIVE_SELF_PERMISSION = "surf.essentials.commands.gamemode.creative";
-    public static final String GAMEMODE_CREATIVE_OTHER_PERMISSION = "surf.essentials.commands.gamemode.creative.others";
-    public static final String GAMEMODE_CREATIVE_OTHER_OFFLINE_PERMISSION = "surf.essentials.commands.gamemode.creative.others.offline";
-    public static final String GAMEMODE_SURVIVAL_SELF_PERMISSION = "surf.essentials.commands.gamemode.survival";
-    public static final String GAMEMODE_SURVIVAL_OTHER_PERMISSION = "surf.essentials.commands.gamemode.survival.others";
-    public static final String GAMEMODE_SURVIVAL_OTHER_OFFLINE_PERMISSION = "surf.essentials.commands.gamemode.survival.others.offline";
-    public static final String GAMEMODE_SPECTATOR_SELF_PERMISSION = "surf.essentials.commands.gamemode.spectator";
-    public static final String GAMEMODE_SPECTATOR_OTHER_PERMISSION = "surf.essentials.commands.gamemode.spectator.others";
-    public static final String GAMEMODE_SPECTATOR_OTHER_OFFLINE_PERMISSION = "surf.essentials.commands.gamemode.spectator.others.offline";
-    public static final String GAMEMODE_ADVENTURE_SELF_PERMISSION = "surf.essentials.commands.gamemode.adventure";
-    public static final String GAMEMODE_ADVENTURE_OTHER_PERMISSION = "surf.essentials.commands.gamemode.adventure.others";
-    public static final String GAMEMODE_ADVENTURE_OTHER_OFFLINE_PERMISSION = "surf.essentials.commands.gamemode.adventure.others.offline";
+    public static final String GAMEMODE_CREATIVE_SELF_PERMISSION;
+    public static final String GAMEMODE_CREATIVE_OTHER_PERMISSION;
+    public static final String GAMEMODE_CREATIVE_OTHER_OFFLINE_PERMISSION;
+    public static final String GAMEMODE_SURVIVAL_SELF_PERMISSION;
+    public static final String GAMEMODE_SURVIVAL_OTHER_PERMISSION;
+    public static final String GAMEMODE_SURVIVAL_OTHER_OFFLINE_PERMISSION;
+    public static final String GAMEMODE_SPECTATOR_SELF_PERMISSION;
+    public static final String GAMEMODE_SPECTATOR_OTHER_PERMISSION;
+    public static final String GAMEMODE_SPECTATOR_OTHER_OFFLINE_PERMISSION;
+    public static final String GAMEMODE_ADVENTURE_SELF_PERMISSION;
+    public static final String GAMEMODE_ADVENTURE_OTHER_PERMISSION;
+    public static final String GAMEMODE_ADVENTURE_OTHER_OFFLINE_PERMISSION;
 
-    public static final String GAMERULE_PERMISSION = "surf.essentials.commands.gamerule";
-    public static final String GIVE_PERMISSION = "surf.essentials.commands.give";
-    public static final String KILL_SELF_PERMISSION = "surf.essentials.commands.kill";
-    public static final String KILL_OTHER_PERMISSION = "surf.essentials.commands.kill.others";
-    public static final String LIST_PERMISSION = "surf.essentials.commands.list";
-    public static final String OP_PERMISSION = "surf.essentials.commands.op";
-    public static final String PARTICLE_PERMISSION = "surf.essentials.commands.particle";
-    public static final String TIME_PERMISSION = "surf.essentials.commands.time";
-    public static final String WEATHER_PERMISSION = "surf.essentials.commands.weather";
-    public static final String CLEAR_SELF_PERMISSION = "surf.essentials.commands.clear";
-    public static final String CLEAR_OTHER_PERMISSION = "surf.essentials.commands.clear.others";
-    public static final String HELP_PERMISSION = "surf.essentials.commands.help";
-    public static final String SEED_PERMISSION = "surf.essentials.commands.seed";
-    public static final String SET_WORLD_SPAWN_PERMISSION = "surf.essentials.commands.setworldspawn";
-    public static final String SPECTATE_SELF_PERMISSION = "surf.essentials.commands.spectate";
-    public static final String SPECTATE_OTHER_PERMISSION = "surf.essentials.commands.spectate.others";
-    public static final String SUMMON_PERMISSION = "surf.essentials.commands.summon";
-    public static final String FILL_PERMISSION = "surf.essentials.commands.fill";
-    public static final String SET_BLOCK_PERMISSION = "surf.essentials.commands.setblock";
-    public static final String RIDE_PERMISSION = "surf.essentials.commands.ride";
-    public static final String DAMAGE_PERMISSION = "surf.essentials.commands.damage";
+    public static final String GAMERULE_PERMISSION;
+    public static final String GIVE_PERMISSION;
+    public static final String KILL_SELF_PERMISSION;
+    public static final String KILL_OTHER_PERMISSION;
+    public static final String LIST_PERMISSION;
+    public static final String OP_PERMISSION;
+    public static final String PARTICLE_PERMISSION;
+    public static final String TIME_PERMISSION;
+    public static final String WEATHER_PERMISSION;
+    public static final String CLEAR_SELF_PERMISSION;
+    public static final String CLEAR_OTHER_PERMISSION;
+    public static final String HELP_PERMISSION;
+    public static final String SEED_PERMISSION;
+    public static final String SET_WORLD_SPAWN_PERMISSION;
+    public static final String SPECTATE_LEAVE_PERMISSION;
+    public static final String SPECTATE_OTHER_PERMISSION;
+    public static final String SUMMON_PERMISSION;
+    public static final String FILL_PERMISSION;
+    public static final String SET_BLOCK_PERMISSION;
+    public static final String RIDE_PERMISSION;
+    public static final String DAMAGE_PERMISSION;
+    public static final String WHITELIST_PERMISSION;
+    public static final String RELOAD_PERMISSION;
+    public static final String FUNCTION_PERMISSION;
+    public static final String FILL_BIOME_PERMISSION;
+    public static final String SPAWN_ARMOR_TRIMS_PERMISSION;
+    public static final String EXECUTE_COMMAND_PERMISSION;
+    public static final String SET_PLAYER_IDLE_TIMEOUT_PERMISSION;
+    public static final String PLAY_SOUND_PERMISSION;
+    public static final String ADVANCEMENT_PERMISSION;
 
 
     /**
      * Permissions for the 'general' commands
      */
-    public static final String ACTION_BAR_BROADCAST_PERMISSION = "surf.essentials.commands.actionbarbroadcast";
-    public static final String ALERT_PERMISSION = "surf.essentials.commands.alert";
-    public static final String BOOK_PERMISSION = "surf.essentials.commands.book";
-    public static final String BOOK_PERMISSION_BYPASS = "surf.essentials.book.bypass";
-    public static final String BROADCAST_WORLD_PERMISSION = "surf.essentials.commands.broadcastworld";
-    public static final String GET_POS_SELF_PERMISSION = "surf.essentials.commands.getpos";
-    public static final String GET_POS_OTHER_PERMISSION = "surf.essentials.commands.getpos.others";
-    public static final String INFO_PERMISSION = "surf.essentials.commands.info";
-    public static final String RULE_SELF_PERMISSION = "surf.essentials.commands.rule";
-    public static final String RULE_OTHER_PERMISSION = "surf.essentials.commands.rule.others";
-    public static final String SPAWNER_PERMISSION = "surf.essentials.commands.spawner";
-    public static final String EDIT_SIGN_PERMISSION = "surf.essentials.listeners.sign.edit";
-    public static final String TOGGLE_SIGN_PERMISSION = "surf.essentials.commands.sign.toggle";
-    public static final String TROLL_PERMISSION = "surf.essentials.commands.trolls";
-    public static final String POLL_PERMISSION = "surf.essentials.commands.polls";
-    public static final String VOTE_PERMISSION = "surf.essentials.commands.vote";
-    public static final String TITLE_BROADCAST_PERMISSION = "surf.essentials.commands.titlebroadcast";
-    public static final String OFFLINE_TELEPORT_PERMISSION = "surf.essentials.commands.tpoff";
-    public static final String SET_ITEM_NAME_PERMISSION = "surf.essentials.commands.setname";
-    public static final String SET_ITEM_LORE_PERMISSION = "surf.essentials.commands.setlore";
-    public static final String TELEPORT_BACK_PERMISSION = "surf.essentials.commands.back";
-    public static final String TELEPORT_RANDOM_PERMISSION = "surf.essentials.commands.tpr";
-    public static final String CLEAR_ITEM_SELF_PERMISSION = "surf.essentials.commands.clearitem";
-    public static final String CLEAR_ITEM_OTHER_PERMISSION = "surf.essentials.commands.clearitem.others";
-    public static final String INFINITY_PERMISSION = "surf.essentials.commands.infinity";
-    public static final String TIMER_PERMISSION = "surf.essentials.commands.timer";
-    public static final String CHAT_CLEAR_SELF_PERMISSION = "surf.essentials.commands.chatclear";
-    public static final String CHAT_CLEAR_OTHER_PERMISSION = "surf.essentials.commands.chatclear.others";
-    public static final String CHAT_CLEAR_BYPASS_PERMISSION = "surf.essentials.commands.chatclear.bypass";
-    public static final String TELEPORT_PERMISSION = "surf.essentials.commands.teleport";
-    public static final String TELEPORT_TOP_SELF_PERMISSION = "surf.essentials.commands.tptop";
-    public static final String TELEPORT_TOP_OTHER_PERMISSION = "surf.essentials.commands.tptop.other";
-    public static final String WORLD_CREATE_PERMISSION = "surf.essentials.commands.world.create";
-    public static final String WORLD_CHANGE_PERMISSION = "surf.essentials.commands.world.change";
-    public static final String WORLD_LOAD_PERMISSION = "surf.essentials.commands.world.load";
-    public static final String WORLD_UNLOAD_PERMISSION = "surf.essentials.commands.world.unload";
-    public static final String WORLD_REMOVE_PERMISSION = "surf.essentials.commands.world.remove";
-    public static final String WORLD_GUI_PERMISSION = "surf.essentials.commands.world.gui";
-    public static final String WORLD_QUERY_PERMISSION = "surf.essentials.commands.world.query";
+    public static final String ACTION_BAR_BROADCAST_PERMISSION;
+    public static final String ALERT_PERMISSION;
+    public static final String BOOK_PERMISSION;
+    public static final String BOOK_PERMISSION_BYPASS;
+    public static final String BROADCAST_WORLD_PERMISSION;
+    public static final String GET_POS_SELF_PERMISSION;
+    public static final String GET_POS_OTHER_PERMISSION;
+    public static final String INFO_PERMISSION;
+    public static final String RULE_SELF_PERMISSION;
+    public static final String RULE_OTHER_PERMISSION;
+    public static final String SPAWNER_PERMISSION;
+    public static final String POLL_PERMISSION;
+    public static final String VOTE_PERMISSION;
+    public static final String TITLE_BROADCAST_PERMISSION;
+    public static final String OFFLINE_TELEPORT_PERMISSION;
+    public static final String SET_ITEM_NAME_PERMISSION;
+    public static final String SET_ITEM_LORE_PERMISSION;
+    public static final String TELEPORT_BACK_PERMISSION;
+    public static final String TELEPORT_RANDOM_PERMISSION;
+    public static final String CLEAR_ITEM_SELF_PERMISSION;
+    public static final String CLEAR_ITEM_OTHER_PERMISSION;
+    public static final String INFINITY_PERMISSION;
+    public static final String TIMER_PERMISSION;
+    public static final String CHAT_CLEAR_SELF_PERMISSION;
+    public static final String CHAT_CLEAR_OTHER_PERMISSION;
+    public static final String CHAT_CLEAR_BYPASS_PERMISSION;
+    public static final String TELEPORT_PERMISSION;
+    public static final String TELEPORT_TOP_SELF_PERMISSION;
+    public static final String TELEPORT_TOP_OTHER_PERMISSION;
+    public static final String WORLD_CREATE_PERMISSION;
+    public static final String WORLD_CHANGE_PERMISSION;
+    public static final String WORLD_LOAD_PERMISSION;
+    public static final String WORLD_UNLOAD_PERMISSION;
+    public static final String WORLD_REMOVE_PERMISSION;
+    public static final String WORLD_GUI_PERMISSION;
+    public static final String WORLD_QUERY_PERMISSION;
+    public static final String TELEPORT_SPAWN_SELF;
+    public static final String TELEPORT_SPAWN_OTHER;
+    public static final String DEATH_LOCATION_PERMISSION_SELF;
+    public static final String DEATH_LOCATION_PERMISSION_OTHER;
+    public static final String PLAYER_HEAD_PERMISSION;
+    public static final String SCREAM_PERMISSION;
+    public static final String SCREAM_BYPASS_PERMISSION;
+    public static final String NEAR_PERMISSION;
+
+
+    /**
+     * Permission for the 'trolls'
+     */
+    public static final String TROLL_ALL_PERMISSION;
+    public static final String TROLL_BOOM_PERMISSION;
+    public static final String TROLL_DEMO_PERMISSION;
+    public static final String TROLL_ILLUSIONER_PERMISSION;
+    public static final String TROLL_ANVIL_PERMISSION;
+    public static final String TROLL_VILLAGER_PERMISSION;
+    public static final String TROLL_WATER_PERMISSION;
+    public static final String TROLL_MLG_PERMISSION;
+    public static final String TROLL_BELL_PERMISSION;
+    public static final String TROLL_HEROBRINE_PERMISSION;
+    public static final String TROLL_CAGE_PERMISSION;
+    public static final String TROLL_CRASH_PERMISSION;
+    public static final String TROLL_FAKE_BLOCK_PERMISSION;
+    public static final String TROLL_FOLLOW_BLOCK_PERMISSION;
+
+
+    /**
+     * Parent permissions
+     */
+    public static final Permission playerPermission;
+    public static final Permission modPermission;
+
+
+    private static final PluginManager pluginManager;
+    private static final Permission parentPermission;
+
+
+    /**
+     * Registers a new {@link Permission} with the given name and optionally parent permissions.
+     *
+     * @param permission The name of the permission to register.
+     * @param parents    The optionally parent permissions of the permission.
+     * @return The name of the registered permission.
+     */
+    @Contract("_, _ -> param1")
+    private static String register(final @NotNull String permission, Permission @NotNull ... parents) {
+        EssentialsUtil.sendDebug("Registering permission: " + permission);
+        final var bukkitPermission = new Permission(permission);
+
+        EssentialsUtil.sendDebug("Linking permissions: " + permission + " -> " + parentPermission.getName());
+        bukkitPermission.addParent(parentPermission, true);
+
+        for (Permission parent : parents) {
+            bukkitPermission.addParent(parent, true);
+        }
+
+        pluginManager.addPermission(bukkitPermission);
+        return permission;
+    }
+
+    /**
+     * Registers a new parent permission with the given name and optional description.
+     *
+     * @param permission  The name of the permission to register.
+     * @param description The optional description of the permission.
+     * @return The registered parent permission.
+     */
+    private static @NotNull Permission registerParent(@NotNull String permission, @Nullable String description) {
+        final var perm = new Permission(permission, description);
+        EssentialsUtil.sendDebug("Adding parent permission: " + perm.getName());
+        pluginManager.addPermission(perm);
+        return perm;
+    }
+
+    /**
+     * Registers a new parent permission with the given name and no description.
+     *
+     * @param permission The name of the permission to register.
+     * @return The registered parent permission.
+     */
+    @SuppressWarnings("unused")
+    private static @NotNull Permission registerParent(@NotNull String permission) {
+        return registerParent(permission, null);
+    }
+
+
+    /*
+     * Initializes all permissions by registering them with Bukkit's PluginManager.
+     * This method is called automatically when the class is loaded.
+     */
+    static {
+        EssentialsUtil.sendDebug("Initializing permissions...");
+        pluginManager = SurfEssentials.getInstance().getServer().getPluginManager();
+
+        parentPermission = registerParent("surf.essentials.*", "Allows access to all essentials commands but also alerts (e.g. gamemode change)");
+        playerPermission = registerParent("surf.essentials.groups.player", "A permission set for normal players");
+        modPermission = registerParent("surf.essentials.groups.mod", "A permission set for moderators");
+
+
+        // 'cheat' permissions
+        FILL_STACK_PERMISSION = register("surf.essentials.commands.more");
+        FLY_SELF_PERMISSION = register("surf.essentials.commands.fly", modPermission);
+        FLY_OTHER_PERMISSION = register("surf.essentials.commands.fly.others");
+        FEED_SELF_PERMISSION = register("surf.essentials.commands.feed", modPermission);
+        FEED_OTHER_PERMISSION = register("surf.essentials.commands.feed.others");
+        GOD_MODE_SELF_PERMISSION = register("surf.essentials.commands.godmode", modPermission);
+        GOD_MODE_OTHER_PERMISSION = register("surf.essentials.commands.godmode.others");
+        HEAL_SELF_PERMISSION = register("surf.essentials.commands.heal", modPermission);
+        HEAL_OTHER_PERMISSION = register("surf.essentials.commands.heal.others");
+        REPAIR_SELF_PERMISSION = register("surf.essentials.commands.repair");
+        REPAIR_OTHER_PERMISSION = register("surf.essentials.commands.repair.others");
+        SUICIDE_PERMISSION = register("surf.essentials.commands.suicide");
+        HURT_PERMISSION = register("surf.essentials.commands.hurt");
+        ANVIL_SELF_PERMISSION = register("surf.essentials.commands.anvil.self", modPermission);
+        ANVIL_OTHER_PERMISSION = register("surf.essentials.commands.anvil.others");
+        CARTOGRAPHY_TABLE_SELF_PERMISSION = register("surf.essentials.commands.cartographytable.self", modPermission);
+        CARTOGRAPHY_TABLE_OTHER_PERMISSION = register("surf.essentials.commands.cartographytable.others");
+        GRINDSTONE_SELF_PERMISSION = register("surf.essentials.commands.grindstone.self", modPermission);
+        GRINDSTONE_OTHER_PERMISSION = register("surf.essentials.commands.grindstone.others");
+        LOOM_SELF_PERMISSION = register("surf.essentials.commands.loom.self", modPermission);
+        LOOM_OTHER_PERMISSION = register("surf.essentials.commands.loom.others");
+        SMITHING_TABLE_SELF_PERMISSION = register("surf.essentials.commands.smithingtable.self", modPermission);
+        SMITHING_TABLE_OTHER_PERMISSION = register("surf.essentials.commands.smithingtable.others");
+        STONECUTTER_SELF_PERMISSION = register("surf.essentials.commands.stonecutter.self", modPermission);
+        STONECUTTER_OTHER_PERMISSION = register("surf.essentials.commands.stonecutter.others");
+        WORKBENCH_SELF_PERMISSION = register("surf.essentials.commands.workbench.self", modPermission);
+        WORKBENCH_OTHER_PERMISSION = register("surf.essentials.commands.workbench.others");
+        HAT_SELF_PERMISSION = register("surf.essentials.commands.hat.self", playerPermission, modPermission);
+        HAT_OTHER_PERMISSION = register("surf.essentials.commands.hat.others");
+        UNHAT_SELF_PERMISSION = register("surf.essentials.commands.unhat.self", playerPermission, modPermission);
+        UNHAT_OTHER_PERMISSION = register("surf.essentials.commands.unhat.others");
+        LIGHTING_PERMISSION = register("surf.essentials.commands.lighting");
+        TRASH_PERMISSION_SELF = register("surf.essentials.commands.trash.self", modPermission);
+        TRASH_PERMISSION_OTHER = register("surf.essentials.commands.trash.others");
+        SPEED_PERMISSION_SELF = register("surf.essentials.commands.speed.self", modPermission);
+        SPEED_PERMISSION_OTHER = register("surf.essentials.commands.speed.others");
+        POSE_SELF_PERMISSION = register("surf.essentials.commands.pose.self", playerPermission, modPermission);
+        POSE_OTHER_PERMISSION = register("surf.essentials.commands.pose.others", modPermission);
+
+
+        // 'minecraft' permissions
+        ATTRIBUTE_PERMISSION = register("surf.essentials.commands.attribute");
+        BOSSBAR_PERMISSION = register("surf.essentials.commands.bossbar");
+        CLONE_PERMISSION = register("surf.essentials.commands.clone");
+        DATAPACK_PERMISSION = register("surf.essentials.commands.datapack");
+        DEFAULT_GAMEMODE_PERMISSION = register("surf.essentials.commands.defaultgamemode");
+        DEOP_PERMISSION = register("surf.essentials.commands.deop");
+        DIFFICULTY_PERMISSION = register("surf.essentials.commands.difficulty");
+        EFFECT_PERMISSION = register("surf.essentials.commands.effect");
+        ENCHANT_PERMISSION = register("surf.essentials.commands.enchant");
+        EXPERIENCE_PERMISSION = register("surf.essentials.commands.experience");
+        FORCELOAD_PERMISSION = register("surf.essentials.commands.forceload");
+        GAMERULE_PERMISSION = register("surf.essentials.commands.gamerule");
+        GIVE_PERMISSION = register("surf.essentials.commands.give");
+        KILL_SELF_PERMISSION = register("surf.essentials.commands.kill.self", modPermission);
+        KILL_OTHER_PERMISSION = register("surf.essentials.commands.kill.others");
+        LIST_PERMISSION = register("surf.essentials.commands.list", modPermission);
+        OP_PERMISSION = register("surf.essentials.commands.op");
+        PARTICLE_PERMISSION = register("surf.essentials.commands.particle");
+        TIME_PERMISSION = register("surf.essentials.commands.time", modPermission);
+        WEATHER_PERMISSION = register("surf.essentials.commands.weather", modPermission);
+        CLEAR_SELF_PERMISSION = register("surf.essentials.commands.clear.self");
+        CLEAR_OTHER_PERMISSION = register("surf.essentials.commands.clear.others");
+        HELP_PERMISSION = register("surf.essentials.commands.help");
+        SEED_PERMISSION = register("surf.essentials.commands.seed");
+        SET_WORLD_SPAWN_PERMISSION = register("surf.essentials.commands.setworldspawn");
+        SPECTATE_LEAVE_PERMISSION = register("surf.essentials.commands.spectate.leave", modPermission);
+        SPECTATE_OTHER_PERMISSION = register("surf.essentials.commands.spectate.others", modPermission);
+        SUMMON_PERMISSION = register("surf.essentials.commands.summon");
+        FILL_PERMISSION = register("surf.essentials.commands.fill");
+        SET_BLOCK_PERMISSION = register("surf.essentials.commands.setblock");
+        RIDE_PERMISSION = register("surf.essentials.commands.ride");
+        DAMAGE_PERMISSION = register("surf.essentials.commands.damage");
+        WHITELIST_PERMISSION = register("surf.essentials.commands.whitelist");
+        RELOAD_PERMISSION = register("surf.essentials.commands.reload");
+        FUNCTION_PERMISSION = register("surf.essentials.commands.function");
+        FILL_BIOME_PERMISSION = register("surf.essentials.commands.fillBiome");
+        SPAWN_ARMOR_TRIMS_PERMISSION = register("surf.essentials.commands.internal.spawn_armor_trims", modPermission);
+        EXECUTE_COMMAND_PERMISSION = register("surf.essentials.commands.execute");
+        SET_PLAYER_IDLE_TIMEOUT_PERMISSION = register("surf.essentials.commands.setPlayerIdleTimeout");
+        PLAY_SOUND_PERMISSION = register("surf.essentials.commands.playsound");
+        ADVANCEMENT_PERMISSION = register("surf.essentials.commands.advancement");
+
+        GAMEMODE_CREATIVE_SELF_PERMISSION = register("surf.essentials.commands.gamemode.creative.self");
+        GAMEMODE_CREATIVE_OTHER_PERMISSION = register("surf.essentials.commands.gamemode.creative.others");
+        GAMEMODE_CREATIVE_OTHER_OFFLINE_PERMISSION = register("surf.essentials.commands.gamemode.creative.others.offline");
+        GAMEMODE_SURVIVAL_SELF_PERMISSION = register("surf.essentials.commands.gamemode.survival.self", modPermission);
+        GAMEMODE_SURVIVAL_OTHER_PERMISSION = register("surf.essentials.commands.gamemode.survival.others");
+        GAMEMODE_SURVIVAL_OTHER_OFFLINE_PERMISSION = register("surf.essentials.commands.gamemode.survival.others.offline");
+        GAMEMODE_SPECTATOR_SELF_PERMISSION = register("surf.essentials.commands.gamemode.spectator.self", modPermission);
+        GAMEMODE_SPECTATOR_OTHER_PERMISSION = register("surf.essentials.commands.gamemode.spectator.others");
+        GAMEMODE_SPECTATOR_OTHER_OFFLINE_PERMISSION = register("surf.essentials.commands.gamemode.spectator.others.offline");
+        GAMEMODE_ADVENTURE_SELF_PERMISSION = register("surf.essentials.commands.gamemode.adventure.self", modPermission);
+        GAMEMODE_ADVENTURE_OTHER_PERMISSION = register("surf.essentials.commands.gamemode.adventure.others");
+        GAMEMODE_ADVENTURE_OTHER_OFFLINE_PERMISSION = register("surf.essentials.commands.gamemode.adventure.others.offline");
+
+
+        // 'general' permissions
+        ACTION_BAR_BROADCAST_PERMISSION = register("surf.essentials.commands.actionbarbroadcast");
+        ALERT_PERMISSION = register("surf.essentials.commands.alert");
+        BOOK_PERMISSION = register("surf.essentials.commands.book");
+        BOOK_PERMISSION_BYPASS = register("surf.essentials.book.bypass");
+        BROADCAST_WORLD_PERMISSION = register("surf.essentials.commands.broadcastworld");
+        GET_POS_SELF_PERMISSION = register("surf.essentials.commands.getpos.self", playerPermission, modPermission);
+        GET_POS_OTHER_PERMISSION = register("surf.essentials.commands.getpos.others", modPermission);
+        INFO_PERMISSION = register("surf.essentials.commands.info");
+        RULE_SELF_PERMISSION = register("surf.essentials.commands.rule.self", playerPermission, modPermission);
+        RULE_OTHER_PERMISSION = register("surf.essentials.commands.rule.others", modPermission);
+        SPAWNER_PERMISSION = register("surf.essentials.commands.spawner");
+        POLL_PERMISSION = register("surf.essentials.commands.polls", modPermission);
+        VOTE_PERMISSION = register("surf.essentials.commands.vote", playerPermission, modPermission);
+        TITLE_BROADCAST_PERMISSION = register("surf.essentials.commands.titlebroadcast");
+        OFFLINE_TELEPORT_PERMISSION = register("surf.essentials.commands.tpoff", modPermission);
+        SET_ITEM_NAME_PERMISSION = register("surf.essentials.commands.setname", modPermission);
+        SET_ITEM_LORE_PERMISSION = register("surf.essentials.commands.setlore", modPermission);
+        TELEPORT_BACK_PERMISSION = register("surf.essentials.commands.back", modPermission);
+        TELEPORT_RANDOM_PERMISSION = register("surf.essentials.commands.tpr", modPermission);
+        CLEAR_ITEM_SELF_PERMISSION = register("surf.essentials.commands.clearitem.self");
+        CLEAR_ITEM_OTHER_PERMISSION = register("surf.essentials.commands.clearitem.others");
+        INFINITY_PERMISSION = register("surf.essentials.commands.infinity", modPermission);
+        TIMER_PERMISSION = register("surf.essentials.commands.timer");
+        CHAT_CLEAR_SELF_PERMISSION = register("surf.essentials.commands.chatclear.self", modPermission);
+        CHAT_CLEAR_OTHER_PERMISSION = register("surf.essentials.commands.chatclear.others", modPermission);
+        CHAT_CLEAR_BYPASS_PERMISSION = register("surf.essentials.commands.chatclear.bypass");
+        TELEPORT_PERMISSION = register("surf.essentials.commands.teleport", modPermission);
+        TELEPORT_TOP_SELF_PERMISSION = register("surf.essentials.commands.tptop.self", modPermission);
+        TELEPORT_TOP_OTHER_PERMISSION = register("surf.essentials.commands.tptop.other", modPermission);
+        WORLD_CREATE_PERMISSION = register("surf.essentials.commands.world.create");
+        WORLD_CHANGE_PERMISSION = register("surf.essentials.commands.world.change", modPermission);
+        WORLD_LOAD_PERMISSION = register("surf.essentials.commands.world.load");
+        WORLD_UNLOAD_PERMISSION = register("surf.essentials.commands.world.unload");
+        WORLD_REMOVE_PERMISSION = register("surf.essentials.commands.world.remove");
+        WORLD_GUI_PERMISSION = register("surf.essentials.commands.world.gui");
+        WORLD_QUERY_PERMISSION = register("surf.essentials.commands.world.query", modPermission);
+        TELEPORT_SPAWN_SELF = register("surf.essentials.commands.spawntp.self", modPermission);
+        TELEPORT_SPAWN_OTHER = register("surf.essentials.commands.spawntp.other", modPermission);
+        DEATH_LOCATION_PERMISSION_SELF = register("surf.essentials.commands.deathlocation.self", modPermission);
+        DEATH_LOCATION_PERMISSION_OTHER = register("surf.essentials.commands.deathlocation.other", modPermission);
+        PLAYER_HEAD_PERMISSION = register("surf.essentials.commands.playerhead");
+        SCREAM_PERMISSION = register("surf.essentials.commands.scream", playerPermission, modPermission);
+        SCREAM_BYPASS_PERMISSION = register("surf.essentials.commands.scream.bypass", modPermission);
+        NEAR_PERMISSION = register("surf.essentials.commands.near", playerPermission, modPermission);
+
+
+        // 'troll' permissions
+        TROLL_ALL_PERMISSION = register("surf.essentials.commands.trolls");
+        TROLL_BOOM_PERMISSION = register("surf.essentials.commands.troll.boom");
+        TROLL_DEMO_PERMISSION = register("surf.essentials.commands.troll.demo");
+        TROLL_ILLUSIONER_PERMISSION = register("surf.essentials.commands.troll.illusioner");
+        TROLL_ANVIL_PERMISSION = register("surf.essentials.commands.troll.anvil");
+        TROLL_VILLAGER_PERMISSION = register("surf.essentials.commands.troll.villager");
+        TROLL_WATER_PERMISSION = register("surf.essentials.commands.troll.water");
+        TROLL_MLG_PERMISSION = register("surf.essentials.commands.troll.mlg");
+        TROLL_BELL_PERMISSION = register("surf.essentials.commands.troll.bell");
+        TROLL_HEROBRINE_PERMISSION = register("surf.essentials.commands.troll.herobrine");
+        TROLL_CAGE_PERMISSION = register("surf.essentials.commands.troll.cage");
+        TROLL_CRASH_PERMISSION = register("surf.essentials.commands.troll.crash");
+        TROLL_FAKE_BLOCK_PERMISSION = register("surf.essentials.commands.troll.fakeBlock");
+        TROLL_FOLLOW_BLOCK_PERMISSION = register("surf.essentials.commands.troll.followBlock");
+    }
 }

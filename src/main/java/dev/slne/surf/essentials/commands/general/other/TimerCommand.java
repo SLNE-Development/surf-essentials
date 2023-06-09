@@ -6,12 +6,11 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -93,7 +92,7 @@ public class TimerCommand extends BrigadierCommand {
                         .executes(context -> removeTitles(context.getSource()))));
     }
 
-    private int actionbarTimer(CommandSourceStack source, int timeInTicks, Collection<ServerPlayer> targetsUnchecked, String timerName) throws CommandSyntaxException{
+    private int actionbarTimer(CommandSourceStack source, int timeInTicks, Collection<ServerPlayer> targetsUnchecked, String timerName) throws CommandSyntaxException {
         Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         Collection<UUID> targetUUIDS = targets.stream().map(Entity::getUUID).collect(Collectors.toSet());
 
@@ -115,10 +114,10 @@ public class TimerCommand extends BrigadierCommand {
             timeInSeconds.getAndDecrement();
         }, 0, 20);
 
-       return sendSuccess(source, timeInTicks);
+        return sendSuccess(source, timeInTicks);
     }
 
-    private int titleTimer(CommandSourceStack source, int timeInTicks, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException{
+    private int titleTimer(CommandSourceStack source, int timeInTicks, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
         Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         Collection<UUID> targetUUIDS = targets.stream().map(Entity::getUUID).collect(Collectors.toSet());
         AtomicInteger timeInSeconds = new AtomicInteger(timeInTicks / 20);
@@ -142,7 +141,7 @@ public class TimerCommand extends BrigadierCommand {
         return sendSuccess(source, timeInTicks);
     }
 
-    private int bossbarTimer(CommandSourceStack source, int timeInTicks, Collection<ServerPlayer> targetsUnchecked, String timerName) throws CommandSyntaxException{
+    private int bossbarTimer(CommandSourceStack source, int timeInTicks, Collection<ServerPlayer> targetsUnchecked, String timerName) throws CommandSyntaxException {
         Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         Collection<UUID> targetUUIDS = targets.stream().map(Entity::getUUID).collect(Collectors.toSet());
         AtomicInteger timeInSeconds = new AtomicInteger(timeInTicks / 20);
@@ -167,7 +166,7 @@ public class TimerCommand extends BrigadierCommand {
         }
 
         Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), bukkitTask -> {
-            if (timeInSeconds.get() <= 0 || isCanceled(customBossEvent)){
+            if (timeInSeconds.get() <= 0 || isCanceled(customBossEvent)) {
                 customBossEvent.removeAllPlayers();
                 customBossEvents.remove(customBossEvent);
                 bukkitTask.cancel();
@@ -184,52 +183,40 @@ public class TimerCommand extends BrigadierCommand {
         return sendSuccess(source, timeInTicks);
     }
 
-    private int removeBossbars(CommandSourceStack source) throws CommandSyntaxException {
-        isBossbarCanceled.replaceAll((customBossEvent, canceled) -> canceled = true);
+    private int removeBossbars(CommandSourceStack source) {
+        isBossbarCanceled.replaceAll((customBossEvent, canceled) -> true);
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, "Alle Bossbar-Timer wurden abgebrochen!");
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.literal("All boss bar timers were canceled!")
-                    .withStyle(ChatFormatting.GREEN), false);
-        }
+        EssentialsUtil.sendSuccess(source, "Alle Bossbar-Timer wurden abgebrochen!");
+
         return 1;
     }
 
-    private int removeTitles(CommandSourceStack source) throws CommandSyntaxException {
+    private int removeTitles(CommandSourceStack source) {
         for (Integer titleTaskId : titleTaskIds) {
             Bukkit.getScheduler().cancelTask(titleTaskId);
         }
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, "Alle Titel-Timer wurden abgebrochen!");
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.literal("All title timers were canceled!")
-                    .withStyle(ChatFormatting.GREEN), false);
-        }
+        EssentialsUtil.sendSuccess(source, "Alle Titel-Timer wurden abgebrochen!");
+
         return 1;
     }
 
-    private int removeActionbars(CommandSourceStack source) throws CommandSyntaxException {
+    private int removeActionbars(CommandSourceStack source) {
         for (Integer actionbarTaskId : actionbarTaskIds) {
             Bukkit.getScheduler().cancelTask(actionbarTaskId);
         }
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, "Alle Actionbar-Timer wurden abgebrochen!");
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.literal("All actionbar timers were canceled!")
-                    .withStyle(ChatFormatting.GREEN), false);
-        }
+        EssentialsUtil.sendSuccess(source, "Alle Actionbar-Timer wurden abgebrochen!");
+
         return 1;
     }
 
-    private void sendTimerPacket(Collection<UUID> targetsUUIDS, Packet<?>... packets){
+    private void sendTimerPacket(Collection<UUID> targetsUUIDS, Packet<?>... packets) {
         ClientboundSetTitlesAnimationPacket animationPacket = new ClientboundSetTitlesAnimationPacket(0, 20, 20);
 
         for (UUID uuid : targetsUUIDS) {
             ServerPlayer player = MinecraftServer.getServer().getPlayerList().getPlayer(uuid);
-            if (player != null){
+            if (player != null) {
                 player.connection.send(animationPacket);
                 for (Packet<?> packet : packets) {
                     player.connection.send(packet);
@@ -238,8 +225,8 @@ public class TimerCommand extends BrigadierCommand {
         }
     }
 
-    private void playSounds(Collection<ServerPlayer> targets, int timeInSeconds){
-        switch (timeInSeconds){
+    private void playSounds(Collection<ServerPlayer> targets, int timeInSeconds) {
+        switch (timeInSeconds) {
             case 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 -> {
                 for (ServerPlayer target : targets) {
                     target.playSound(SoundEvents.NOTE_BLOCK_PLING.value(), 1f, 2f);
@@ -248,29 +235,26 @@ public class TimerCommand extends BrigadierCommand {
         }
     }
 
-    private void playStartSound(Collection<ServerPlayer> targets){
+    private void playStartSound(Collection<ServerPlayer> targets) {
         for (ServerPlayer target : targets) {
             target.playSound(SoundEvents.PLAYER_LEVELUP, 1f, 0.9f);
         }
     }
 
-    private int sendSuccess(CommandSourceStack source, int timeInTicks) throws CommandSyntaxException {
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Ein ", Colors.SUCCESS)
-                    .append(Component.text(EssentialsUtil.ticksToString(timeInTicks), Colors.TERTIARY))
-                    .append(Component.text(" Timer wurde gestartet!")));
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.literal("A " + EssentialsUtil.ticksToString(timeInTicks) + " timer was started")
-                    .withStyle(ChatFormatting.GRAY), false);
-        }
+    private int sendSuccess(CommandSourceStack source, int timeInTicks) {
+
+        EssentialsUtil.sendSuccess(source, Component.text("Ein ", Colors.SUCCESS)
+                .append(Component.text(EssentialsUtil.ticksToString(timeInTicks), Colors.TERTIARY))
+                .append(Component.text(" Timer wurde gestartet!")));
+
         return 1;
     }
 
-    private boolean isCanceled(CustomBossEvent customBossEvent){
+    private boolean isCanceled(CustomBossEvent customBossEvent) {
         return isBossbarCanceled.getOrDefault(customBossEvent, false);
     }
 
-    public static void removeRemainingBossbars(){
+    public static void removeRemainingBossbars() {
         isBossbarCanceled.forEach((customBossEvent, aBoolean) -> MinecraftServer.getServer().getCustomBossEvents().remove(customBossEvent));
     }
 }

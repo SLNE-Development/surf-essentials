@@ -3,8 +3,8 @@ package dev.slne.surf.essentials.commands.cheat;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -36,8 +36,9 @@ public class InfinityCommand extends BrigadierCommand {
         literal.executes(context -> infinity(context.getSource()));
     }
 
+    @SuppressWarnings("SameReturnValue")
     private int infinity(CommandSourceStack source) throws CommandSyntaxException {
-        ServerPlayer player = source.getPlayerOrException();
+        final var player = source.getPlayerOrException();
 
         if (playersInInfinity.contains(player)){
             playersInInfinity.remove(player);

@@ -6,13 +6,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.IntBinaryTag;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -30,17 +30,26 @@ import java.util.UUID;
 
 import static net.kyori.adventure.nbt.BinaryTagIO.Compression.GZIP;
 
-public class GamemodeCommand {
-
-    public static void register() {
-        SurfEssentials.registerPluginBrigadierCommand("gamemode", GamemodeCommand::literal);
+public class GamemodeCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"gamemode"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GAMEMODE_CREATIVE_SELF_PERMISSION) ||
-                sourceStack.hasPermission(2, Permissions.GAMEMODE_SPECTATOR_SELF_PERMISSION) ||
-                sourceStack.hasPermission(2, Permissions.GAMEMODE_SURVIVAL_SELF_PERMISSION) ||
-                sourceStack.hasPermission(2, Permissions.GAMEMODE_ADVENTURE_SELF_PERMISSION));
+    @Override
+    public String usage() {
+        return "/gamemode <creative | survival | adventure | spectator> [<players>]";
+    }
+
+    @Override
+    public String description() {
+        return "Change the gamemode of the targets";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.GAMEMODE_CREATIVE_SELF_PERMISSION, Permissions.GAMEMODE_SPECTATOR_SELF_PERMISSION,
+                Permissions.GAMEMODE_SURVIVAL_SELF_PERMISSION, Permissions.GAMEMODE_ADVENTURE_SELF_PERMISSION));
 
 
         registerGameModes(literal, GameType.SURVIVAL, Permissions.GAMEMODE_SURVIVAL_SELF_PERMISSION, Permissions.GAMEMODE_SURVIVAL_OTHER_PERMISSION,
@@ -61,11 +70,12 @@ public class GamemodeCommand {
         int successfulChanges = 0;
 
         if (targets.size() == 1) {
-            targets.iterator().next().setGameMode(gameMode);
-            EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Dein Gamemode wurde auf ", Colors.SUCCESS))
+            var target = targets.iterator().next();
+            target.setGameMode(gameMode);
+            EssentialsUtil.sendSuccess(target, (net.kyori.adventure.text.Component.text("Dein Gamemode wurde auf ", Colors.SUCCESS))
                     .append(PaperAdventure.asAdventure(gameMode.getLongDisplayName()).colorIfAbsent(Colors.TERTIARY))
                     .append(net.kyori.adventure.text.Component.text(" gesetzt!", Colors.SUCCESS)));
-            logSingleChange(targets.iterator().next(), gameMode);
+            logSingleChange(target, gameMode);
 
         } else {
             for (ServerPlayer target : targets) {
@@ -85,7 +95,7 @@ public class GamemodeCommand {
         GameProfile gameProfile = profiles.iterator().next();
         UUID targetUUID = gameProfile.getId();
 
-        if (source.getServer().getPlayerList().getPlayer(targetUUID) != null){
+        if (source.getServer().getPlayerList().getPlayer(targetUUID) != null) {
             setMode(source, Collections.singleton(source.getServer().getPlayerList().getPlayer(targetUUID)), gameType);
             return 1;
         }
@@ -100,23 +110,11 @@ public class GamemodeCommand {
             e.printStackTrace();
         }
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, Component.text("Der Gamemode von ", Colors.SUCCESS)
-                    .append(Component.text(gameProfile.getName(), Colors.TERTIARY))
-                    .append(Component.text(" wurde auf ", Colors.SUCCESS))
-                    .append(PaperAdventure.asAdventure(gameType.getLongDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                    .append(Component.text(" gesetzt!", Colors.SUCCESS)));
-        } else {
-            source.sendSuccess(net.minecraft.network.chat.Component.literal("Set ")
-                    .withStyle(ChatFormatting.GRAY)
-                    .append(gameProfile.getName())
-                    .withStyle(ChatFormatting.GOLD)
-                    .append("´s gamemode to ")
-                    .withStyle(ChatFormatting.GRAY)
-                    .append(gameType.getLongDisplayName())
-                    .append("!")
-                    .withStyle(ChatFormatting.GRAY), false);
-        }
+        EssentialsUtil.sendSuccess(source, Component.text("Der Gamemode von ", Colors.SUCCESS)
+                .append(EssentialsUtil.getDisplayName(gameProfile))
+                .append(Component.text(" wurde auf ", Colors.SUCCESS))
+                .append(PaperAdventure.asAdventure(gameType.getLongDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                .append(Component.text(" gesetzt!", Colors.SUCCESS)));
 
         return 1;
     }
@@ -156,19 +154,19 @@ public class GamemodeCommand {
                                           String permissionSelf, String permissionOthers, String permissionOthersOffline) {
 
         literal.then(Commands.literal(gameType.getName().toLowerCase())
-                .requires(sourceStack -> sourceStack.hasPermission(2, permissionSelf))
+                .requires(EssentialsUtil.checkPermissions(permissionSelf))
                 .executes(context -> setMode(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), gameType))
                 .then(Commands.argument("players", EntityArgument.players())
-                        .requires(sourceStack -> sourceStack.hasPermission(2, permissionOthers))
+                        .requires(EssentialsUtil.checkPermissions(permissionOthers))
                         .executes(context -> setMode(context.getSource(), EntityArgument.getPlayers(context, "players"), gameType)))
 
                 .then(Commands.literal("offline")
-                        .requires(sourceStack -> sourceStack.hasPermission(2, permissionOthersOffline))
+                        .requires(EssentialsUtil.checkPermissions(permissionOthersOffline))
                         .then(Commands.argument("offlinePlayer", GameProfileArgument.gameProfile())
                                 .executes(context -> setOfflineMode(context.getSource(), gameType, GameProfileArgument.getGameProfiles(context, "offlinePlayer"))))));
     }
 
-    private static void setModeInFile(GameType gameType, File dataFile) throws IOException{
+    private static void setModeInFile(GameType gameType, File dataFile) throws IOException {
         CompoundBinaryTag rawTag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), GZIP);
         CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder().put(rawTag);
 

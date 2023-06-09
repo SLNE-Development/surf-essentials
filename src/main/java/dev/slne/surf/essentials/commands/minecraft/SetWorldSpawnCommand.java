@@ -1,10 +1,9 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -41,18 +40,14 @@ public class SetWorldSpawnCommand extends BrigadierCommand {
                         .executes(context -> set(context.getSource(), BlockPosArgument.getSpawnablePos(context, "pos"), AngleArgument.getAngle(context, "angle")))));
     }
 
-    private int set(CommandSourceStack source, BlockPos pos, float angle) throws CommandSyntaxException {
+    private int set(CommandSourceStack source, BlockPos pos, float angle) {
         source.getLevel().setDefaultSpawnPos(pos, angle);
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Der Welt spawn wurde bei ", Colors.SUCCESS)
-                    .append(Component.text("%s %s %s".formatted(pos.getX(), pos.getY(), pos.getZ()), Colors.TERTIARY))
-                    .append(Component.text(" mit einem Winkel von ", Colors.SUCCESS))
-                    .append(Component.text(angle, Colors.TERTIARY))
-                    .append(Component.text(" gesetzt.", Colors.SUCCESS)));
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.setworldspawn.success", pos.getX(), pos.getY(), pos.getZ(), angle), false);
-        }
+        EssentialsUtil.sendSuccess(source, Component.text("Der Welt spawn wurde bei ", Colors.SUCCESS)
+                .append(Component.text("%s %s %s".formatted(pos.getX(), pos.getY(), pos.getZ()), Colors.TERTIARY))
+                .append(Component.text(" mit einem Winkel von ", Colors.SUCCESS))
+                .append(Component.text(angle, Colors.TERTIARY))
+                .append(Component.text(" gesetzt.", Colors.SUCCESS)));
 
         return 1;
     }

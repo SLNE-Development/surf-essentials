@@ -2,51 +2,58 @@ package dev.slne.surf.essentials.commands.general;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.text.DecimalFormat;
-
-public class GetPosCommand {
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("getpos", GetPosCommand::literal);
-        SurfEssentials.registerPluginBrigadierCommand("position", GetPosCommand::literal);
+public class GetPosCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"getpos", "position"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GET_POS_SELF_PERMISSION));
-        literal.executes(context -> getpos(context.getSource(), context.getSource().getPlayerOrException()));
+    @Override
+    public String usage() {
+        return "/position [<target>]";
+    }
+
+    @Override
+    public String description() {
+        return "Get the position of the target";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.GET_POS_SELF_PERMISSION, Permissions.GET_POS_OTHER_PERMISSION));
+        literal.executes(context -> getPos(context.getSource(), context.getSource().getPlayerOrException()));
+
         literal.then(Commands.argument("player", EntityArgument.player())
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.GET_POS_OTHER_PERMISSION))
-                .executes(context -> getpos(context.getSource(), EntityArgument.getPlayer(context, "player"))));
+                .requires(EssentialsUtil.checkPermissions(Permissions.GET_POS_OTHER_PERMISSION))
+                .executes(context -> getPos(context.getSource(), EntityArgument.getPlayer(context, "player"))));
     }
 
-    private static int getpos(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException {
-        ServerPlayer player = EssentialsUtil.checkSinglePlayerSuggestion(source, playerUnchecked);
-        double posX = Double.parseDouble(new DecimalFormat("#.#").format(player.getX()));
-        double posY = Double.parseDouble(new DecimalFormat("#.#").format(player.getY()));
-        double posZ = Double.parseDouble(new DecimalFormat("#.#").format(player.getZ()));
+    private int getPos(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException {
+        ServerPlayer player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
+        double posX = EssentialsUtil.makeDoubleReadable(player.getX());
+        double posY = EssentialsUtil.makeDoubleReadable(player.getY());
+        double posZ = EssentialsUtil.makeDoubleReadable(player.getZ());
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Die Position von ", Colors.INFO)
-                    .append(player.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                    .append(Component.text(" ist: ", Colors.INFO))
-                    .append(Component.text("%s, %s, %s".formatted(posX, posY, posZ), Colors.TERTIARY)));
-        }else {
-            source.sendSuccess(player.getDisplayName()
-                    .copy().append(net.minecraft.network.chat.Component.literal("'s position: ")
-                            .withStyle(ChatFormatting.GRAY)
-                            .append(posX + ", " + posY + ", " + posZ)
-                                    .withStyle(ChatFormatting.GOLD)), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, Component.text("Die Position von ", Colors.INFO)
+                .append(EssentialsUtil.getDisplayName(player))
+                .append(Component.text(" ist: ", Colors.INFO))
+                .append(Component.text("%s, %s, %s".formatted(posX, posY, posZ), Colors.TERTIARY)
+                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum Kopieren", Colors.INFO)))
+                        .clickEvent(ClickEvent.copyToClipboard("%s %s %s".formatted(posX, posY, posZ)))));
+
         return 1;
     }
 }

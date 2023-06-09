@@ -7,12 +7,13 @@ import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.abtract.CraftUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.gui.GuiUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +23,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 public class TrollGuiItems {
@@ -30,7 +30,7 @@ public class TrollGuiItems {
      * A boarder {@link GuiItem} using {@link Material#GRAY_STAINED_GLASS_PANE}
      * @return the {@link GuiItem}
      */
-    public static final GuiItem boarder(){
+    public static  GuiItem boarder(){
         GuiItem guiItem = new GuiItem(new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1));
         rename(guiItem, "");
         return guiItem;
@@ -40,7 +40,7 @@ public class TrollGuiItems {
      * Creates a new anvil troll {@link GuiItem} using {@link Material#ANVIL}
      * @return the troll {@link GuiItem}
      */
-    public static final GuiItem anvilTroll(){
+    public static  GuiItem anvilTroll(){
         GuiItem guiItem = new GuiItem(new ItemStack(Material.ANVIL, 1));
 
         rename(guiItem, "Anvil Troll");
@@ -54,7 +54,7 @@ public class TrollGuiItems {
      * Creates a new bell troll {@link GuiItem} using {@link Material#BELL}
      * @return the troll {@link GuiItem}
      */
-    public static final GuiItem bellTroll(){
+    public static  GuiItem bellTroll(){
         GuiItem guiItem = new GuiItem(new ItemStack(Material.BELL, 1));
 
         rename(guiItem, "Bell Troll");
@@ -68,7 +68,7 @@ public class TrollGuiItems {
      * Creates a new boom troll {@link GuiItem} using {@link Material#TNT}
      * @return the troll {@link GuiItem}
      */
-    public static final GuiItem boomTroll(){
+    public static  GuiItem boomTroll(){
         GuiItem guiItem = new GuiItem(new ItemStack(Material.TNT, 1));
 
         rename(guiItem, "Boom Troll");
@@ -82,7 +82,7 @@ public class TrollGuiItems {
      * Creates a new cage troll {@link GuiItem} using {@link Material#IRON_BARS}
      * @return the troll {@link GuiItem}
      */
-    public static final GuiItem cageTroll(){
+    public static  GuiItem cageTroll(){
         GuiItem guiItem = new GuiItem(new ItemStack(Material.IRON_BARS, 1));
 
         rename(guiItem, "Cage Troll");
@@ -96,7 +96,7 @@ public class TrollGuiItems {
      * Creates a new demo troll {@link GuiItem} using {@link Material#LIGHT_GRAY_WOOL}
      * @return the troll {@link GuiItem}
      */
-    public static final GuiItem demoTroll(){
+    public static  GuiItem demoTroll(){
         GuiItem guiItem = new GuiItem(new ItemStack(Material.LIGHT_GRAY_WOOL, 1));
 
         rename(guiItem, "Demo Troll");
@@ -110,7 +110,7 @@ public class TrollGuiItems {
      * Creates a new herobrine troll {@link GuiItem} using {@link Material#PLAYER_HEAD}
      * @return the troll {@link GuiItem}
      */
-    public static final GuiItem herobrineTroll(){
+    public static  GuiItem herobrineTroll(){
         GuiItem guiItem = new GuiItem(new ItemStack(Material.PLAYER_HEAD, 1));
 
         rename(guiItem, "Herobrine Troll");
@@ -124,7 +124,7 @@ public class TrollGuiItems {
      * Creates a new illusioner troll {@link GuiItem} using {@link Material#ALLAY_SPAWN_EGG}
      * @return the troll {@link GuiItem}
      */
-    public static final GuiItem illusionerTroll(){
+    public static  GuiItem illusionerTroll(){
         GuiItem guiItem = new GuiItem(new ItemStack(Material.ALLAY_SPAWN_EGG, 1));
 
         rename(guiItem, "Illusioner Troll");
@@ -138,7 +138,7 @@ public class TrollGuiItems {
      * Creates a new mlg troll {@link GuiItem} using {@link Material#WATER_BUCKET}
      * @return the troll {@link GuiItem}
      */
-    public static final GuiItem mlgTroll(){
+    public static  GuiItem mlgTroll(){
         GuiItem guiItem = new GuiItem(new ItemStack(Material.WATER_BUCKET, 1));
 
         rename(guiItem, "MLG Troll");
@@ -152,11 +152,11 @@ public class TrollGuiItems {
      * Creates a new villager-annoy troll {@link GuiItem} using {@link Material#VILLAGER_SPAWN_EGG}
      * @return the troll {@link GuiItem}
      */
-    public static final GuiItem villagerAnnoyTroll(){
+    public static  GuiItem villagerAnnoyTroll(){
         GuiItem guiItem = new GuiItem(new ItemStack(Material.VILLAGER_SPAWN_EGG, 1));
 
         rename(guiItem, "Villager annoy Troll");
-        lore(guiItem, "Spieler nervige villager geräusche für den Spieler ab");
+        lore(guiItem, "Spielt nervige villager geräusche für den Spieler ab");
         guiItem.setAction(clickAndShowOnlinePlayers(new String[]{"villager", ""}));
 
         return guiItem;
@@ -166,7 +166,7 @@ public class TrollGuiItems {
      * Creates a new water troll {@link GuiItem} using {@link Material#SPLASH_POTION}
      * @return the troll {@link GuiItem}
      */
-    public static final GuiItem waterTroll(){
+    public static  GuiItem waterTroll(){
         GuiItem guiItem = new GuiItem(new ItemStack(Material.SPLASH_POTION, 1));
 
         rename(guiItem, "Water Troll");
@@ -176,8 +176,17 @@ public class TrollGuiItems {
         return guiItem;
     }
 
+    public static GuiItem crashTroll(){
+        var item = new GuiItem(new ItemStack(Material.TNT_MINECART, 1));
+
+        rename(item, "Crash Troll");
+        lore(item, "Lässt das Spiel von einem Spieler zum absturz bringen");
+
+        return item;
+    }
+
     /** A page forward {@link GuiItem} */
-    public static final GuiItem FORWARD_BUTTON() {
+    public static  GuiItem FORWARD_BUTTON() {
         ItemStack item = getHeadFromValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3Rl" +
                 "eHR1cmUvMmI0ZTM0ZDA0ZDNhNTY1ZjYxNjY4YzcwOTMwN2MzNTE5YTRmNzA2YTY5ZjBkZTIwZDJmMDNiZGJjMTdlOTIwNSJ9fX0=");
 
@@ -188,7 +197,7 @@ public class TrollGuiItems {
     }
 
     /** A page backward {@link GuiItem} */
-    public static final GuiItem BACKWARD_BUTTON() {
+    public static  GuiItem BACKWARD_BUTTON() {
         ItemStack item = getHeadFromValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3Rl" +
                 "eHR1cmUvNzc4ZWY4ZDEzYWU1M2FhNDMxNDNhMWZlNzU5YjVjNjIwNDEwNDZiMTc0NmI1MGZhNDUyZGYwZDUzNGM2YTNkIn19fQ==");
 
@@ -199,7 +208,7 @@ public class TrollGuiItems {
     }
 
     /** A close {@link GuiItem} using {@link Material#BARRIER} */
-    public static final GuiItem CLOSE_BUTTON() {
+    public static  GuiItem CLOSE_BUTTON() {
         GuiItem guiItem = new GuiItem(new ItemStack(Material.BARRIER, 1));
 
         rename(guiItem, Component.text("Schließen", Colors.RED));
@@ -213,7 +222,7 @@ public class TrollGuiItems {
      *
      * @param trollName the name of the troll for the command that will be executed
      */
-    public static final Consumer<InventoryClickEvent> clickAndShowOnlinePlayers(String[] trollName){
+    public static  Consumer<InventoryClickEvent> clickAndShowOnlinePlayers(String[] trollName){
         return clickEvent ->{
             Player player = (Player) clickEvent.getWhoClicked();
             ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("Spieler Auswählen", Colors.SECONDARY)));
@@ -256,7 +265,7 @@ public class TrollGuiItems {
                     ((Player) inventoryClickEvent.getWhoClicked()).performCommand("troll " + trollName[0] + " " + onlinePlayer.getName() + " " + trollName[1]);
                 });
 
-                if (EssentialsUtil.canPlayerSeePlayer(((CraftPlayer)player).getHandle(), (((CraftPlayer)onlinePlayer).getHandle()))) {
+                if (EssentialsUtil.canPlayerSeePlayer(EssentialsUtil.toServerPlayer(player), CraftUtil.toServerPlayer(onlinePlayer))) {
                     pages.get(currentPage).addItem(playerHead, Slot.fromIndex(currentSlot));
                     currentSlot++;
                 }
@@ -348,12 +357,7 @@ public class TrollGuiItems {
      * @return the head {@link ItemStack}
      */
     private static ItemStack getHeadFromValue(String value) {
-        ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
-        UUID hashAsId = new UUID(value.hashCode(), value.hashCode());
-
-        return Bukkit.getUnsafe().modifyItemStack(skull,
-                "{SkullOwner:{Id:\"" + hashAsId + "\",Properties:{textures:[{Value:\"" + value + "\"}]}}}"
-        );
+        return GuiUtils.getHeadFromValue(value);
     }
 
     /**

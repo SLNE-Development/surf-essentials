@@ -11,8 +11,6 @@ import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -25,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
 public class ActionbarBroadcast {
-    public ActionbarBroadcast(){
+    public ActionbarBroadcast() {
         SurfEssentials.registerPluginBrigadierCommand("actionbarbroadcast", this::literal);
     }
 
@@ -37,8 +35,7 @@ public class ActionbarBroadcast {
                 .then(Commands.argument("actionbar", StringArgumentType.string())
                         .suggests((context, builder) -> {
                             builder.suggest("\"!&cExample &aactionbar\"");
-                            EssentialsUtil.suggestAllColorCodes(builder, context, "actionbar");
-                            return builder.buildFuture();
+                            return EssentialsUtil.suggestAllColorCodes(builder);
                         })
                         .executes(context -> broadcast(context.getSource(), EntityArgument.getPlayers(context, "players"), StringArgumentType.getString(context, "actionbar"), null, null))
 
@@ -56,11 +53,11 @@ public class ActionbarBroadcast {
 
         int successfullyShowed = 0;
         int fadeInTicks = 20;
-        stayTicks = (stayTicks == null) ? 20*7 : stayTicks;
+        stayTicks = (stayTicks == null) ? 20 * 7 : stayTicks;
         fadeOutTicks = (fadeOutTicks == null) ? 10 : fadeOutTicks;
 
 
-        Component actionBarText = LegacyComponentSerializer.legacyAmpersand().deserialize(actionbar).colorIfAbsent(Colors.TERTIARY);
+        Component actionBarText = EssentialsUtil.deserialize(actionbar).colorIfAbsent(Colors.TERTIARY);
 
         ClientboundSetTitlesAnimationPacket animationPacket = new ClientboundSetTitlesAnimationPacket(fadeInTicks, stayTicks, fadeOutTicks);
         ClientboundSetActionBarTextPacket actionBarTextPacket = new ClientboundSetActionBarTextPacket(PaperAdventure.asVanilla(actionBarText));
@@ -71,53 +68,36 @@ public class ActionbarBroadcast {
             successfullyShowed++;
         }
 
-        if (source.isPlayer()){
-            if (successfullyShowed == 1) {
-                EssentialsUtil.sendSuccess(source, Component.text("Die ", Colors.SUCCESS)
-                        .append(Component.text("Actionbar", Colors.TERTIARY)
-                                .hoverEvent(HoverEvent.showText(Component.text("Text: ", Colors.INFO)
-                                        .append(actionBarText)
-                                        .append(Component.newline())
-                                        .append(Component.text("Dauer: ", Colors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
-                                        .append(Component.newline())
-                                        .append(Component.text("Ausblenden: ", Colors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
-                                        .append(Component.newline()))))
-                        .append(Component.text(" wurde ", Colors.SUCCESS))
-                        .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                        .append(Component.text(" gezeigt!", Colors.SUCCESS)));
-            }else {
-                EssentialsUtil.sendSuccess(source, Component.text("Die ", Colors.SUCCESS)
-                        .append(Component.text("Actionbar", Colors.TERTIARY)
-                                .hoverEvent(HoverEvent.showText(Component.text("Text: ", Colors.INFO)
-                                        .append(actionBarText)
-                                        .append(Component.newline())
-                                        .append(Component.text("Dauer: ", Colors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
-                                        .append(Component.newline())
-                                        .append(Component.text("Ausblenden: ", Colors.INFO)
-                                                .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
-                                        .append(Component.newline()))))
-                        .append(Component.text(" wurde ", Colors.SUCCESS))
-                        .append(Component.text(successfullyShowed, Colors.TERTIARY))
-                        .append(Component.text(" Spielern gezeigt!", Colors.SUCCESS)));
-            }
-        }else {
-            if (successfullyShowed == 1) {
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("Showed ")
-                        .withStyle(ChatFormatting.GREEN)
-                        .append(targets.iterator().next().getDisplayName())
-                        .append(" the actionbar!")
-                        .withStyle(ChatFormatting.GREEN), false);
-            }else {
-                source.sendSuccess(net.minecraft.network.chat.Component.literal("Showed ")
-                        .withStyle(ChatFormatting.GREEN)
-                        .append(String.valueOf(successfullyShowed))
-                        .withStyle(ChatFormatting.GOLD)
-                        .append(" players the actionbar!")
-                        .withStyle(ChatFormatting.GREEN), false);
-            }
+        if (successfullyShowed == 1) {
+            EssentialsUtil.sendSuccess(source, Component.text("Die ", Colors.SUCCESS)
+                    .append(Component.text("Actionbar", Colors.TERTIARY)
+                            .hoverEvent(HoverEvent.showText(Component.text("Text: ", Colors.INFO)
+                                    .append(actionBarText)
+                                    .append(Component.newline())
+                                    .append(Component.text("Dauer: ", Colors.INFO)
+                                            .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
+                                    .append(Component.newline())
+                                    .append(Component.text("Ausblenden: ", Colors.INFO)
+                                            .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
+                                    .append(Component.newline()))))
+                    .append(Component.text(" wurde ", Colors.SUCCESS))
+                    .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                    .append(Component.text(" gezeigt!", Colors.SUCCESS)));
+        } else {
+            EssentialsUtil.sendSuccess(source, Component.text("Die ", Colors.SUCCESS)
+                    .append(Component.text("Actionbar", Colors.TERTIARY)
+                            .hoverEvent(HoverEvent.showText(Component.text("Text: ", Colors.INFO)
+                                    .append(actionBarText)
+                                    .append(Component.newline())
+                                    .append(Component.text("Dauer: ", Colors.INFO)
+                                            .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
+                                    .append(Component.newline())
+                                    .append(Component.text("Ausblenden: ", Colors.INFO)
+                                            .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
+                                    .append(Component.newline()))))
+                    .append(Component.text(" wurde ", Colors.SUCCESS))
+                    .append(Component.text(successfullyShowed, Colors.TERTIARY))
+                    .append(Component.text(" Spielern gezeigt!", Colors.SUCCESS)));
         }
         return successfullyShowed;
     }

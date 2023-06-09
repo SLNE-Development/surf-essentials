@@ -4,8 +4,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -40,8 +40,7 @@ public class SetItemLoreCommand extends BrigadierCommand {
         literal.then(Commands.argument("lore", StringArgumentType.greedyString())
                 .suggests((context, builder) -> {
                     builder.suggest("\n", net.minecraft.network.chat.Component.literal("Create a new line"));
-                    EssentialsUtil.suggestAllColorCodes(builder);
-                    return builder.buildFuture();
+                    return EssentialsUtil.suggestAllColorCodes(builder);
                 })
                 .executes(context -> setLore(context.getSource(), StringArgumentType.getString(context, "lore"))));
     }

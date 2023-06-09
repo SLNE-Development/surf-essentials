@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>dev.slne</groupId>
     <artifactId>surf-essentials</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>SurfEssentials</name>
     <url>https://git.slne.dev/surf/surf-essentials</url>
@@ -17,11 +17,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.mainPackage>surf.essentials</project.mainPackage>
 
-        <project.apiVersion>1.19</project.apiVersion>
+        <project.apiVersion>1.20</project.apiVersion>
         <project.authors>'twisti', 'SLNE Dev Team'</project.authors>
-        <project.mainClass>${groupId}.${project.mainPackage}.SurfEssentials</project.mainClass>
-        <project.bootstrapper>${groupId}.${project.mainPackage}.SurfEssentialsBootstrap</project.bootstrapper>
-        <project.loader>${groupId}.${project.mainPackage}.SurfEssentialsLoader</project.loader>
+        <project.mainClass>${project.groupId}.${project.mainPackage}.SurfEssentials</project.mainClass>
+        <project.bootstrapper>${project.groupId}.${project.mainPackage}.SurfEssentialsBootstrap</project.bootstrapper>
+        <project.loader>${project.groupId}.${project.mainPackage}.SurfEssentialsLoader</project.loader>
     </properties>
 
     <dependencies>
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.19.4-R0.1-SNAPSHOT</version>
+            <version>1.20-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- https://docs.adventure.kyori.net/getting-started.html -->
@@ -37,17 +37,20 @@
             <groupId>net.kyori</groupId>
             <artifactId>adventure-nbt</artifactId>
             <version>4.13.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
             <version>4.13.0</version>
+            <scope>provided</scope>
         </dependency>
         <!-- https://github.com/Alvinn8/paper-nms-maven-plugin -->
+        <!--suppress VulnerableLibrariesLocal -->
         <dependency>
             <groupId>ca.bkaw</groupId>
             <artifactId>paper-nms</artifactId>
-            <version>1.19.4-SNAPSHOT</version>
+            <version>1.20-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -55,8 +58,24 @@
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>IF</artifactId>
-            <version>0.10.8</version>
+            <version>0.10.9</version>
+            <scope>compile</scope>
         </dependency>
+
+        <!-- https://github.com/PlayPro/CoreProtect#api -->
+        <dependency>
+            <groupId>net.coreprotect</groupId>
+            <artifactId>coreprotect</artifactId>
+            <version>21.3</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>brigadier</artifactId>
+            <version>1.0.18</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
@@ -64,9 +83,10 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
+            <id>playpro-repo</id>
+            <url>https://maven.playpro.com</url>
         </repository>
     </repositories>
 
@@ -192,17 +212,19 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
+
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+
                     <artifactSet>
                         <includes>
                             <include>com.github.stefvanschie.inventoryframework</include>
                         </includes>
                     </artifactSet>
 
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
                     <relocations>
                         <relocation>
                             <pattern>com.github.stefvanschie.inventoryframework</pattern>
-                            <shadedPattern>${groupId}.${project.mainPackage}.libs.inventoryFramework</shadedPattern>
+                            <shadedPattern>dev.slne.surf.essentials.libs.inventoryframework</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

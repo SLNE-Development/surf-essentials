@@ -4,20 +4,18 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+
 public class HatCommand extends BrigadierCommand {
     @Override
     public String[] names() {
@@ -45,27 +43,21 @@ public class HatCommand extends BrigadierCommand {
     }
 
     private int hat(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException {
-        ServerPlayer player = EssentialsUtil.checkSinglePlayerSuggestion(source, playerUnchecked);
-        Inventory playerInventory = player.getInventory();
-        ItemStack itemStackInMainHand = player.getMainHandItem();
-        ItemStack itemStackOnHead = playerInventory.getArmor(EquipmentSlot.HEAD.getIndex());
+        final var player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
+        final var playerInventory = player.getInventory();
+        final var itemStackInMainHand = player.getMainHandItem();
+        final var itemStackOnHead = playerInventory.getArmor(EquipmentSlot.HEAD.getIndex());
 
-        if(itemStackInMainHand.is(Items.AIR)) throw ERROR_NO_ITEM.create(player.getName().getString());
+        if (itemStackInMainHand.is(Items.AIR)) throw ERROR_NO_ITEM.create(player.getName().getString());
 
         playerInventory.setItem(playerInventory.selected, itemStackOnHead);
         playerInventory.setItem(playerInventory.getContainerSize() - 2, itemStackInMainHand);
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
-                    .append(Component.text(" hat das Item ", Colors.SUCCESS)
-                            .append(PaperAdventure.asAdventure(itemStackInMainHand.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                            .append(Component.text(" aufgesetzt bekommen.", Colors.SUCCESS))));
-        }else {
-            source.sendSuccess(player.getDisplayName()
-                    .copy().append(net.minecraft.network.chat.Component.literal(" has put on the item ")
-                            .withStyle(ChatFormatting.GREEN)
-                            .append(itemStackInMainHand.getDisplayName())), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+                .append(Component.text(" hat das Item ", Colors.SUCCESS)
+                        .append(PaperAdventure.asAdventure(itemStackInMainHand.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                        .append(Component.text(" aufgesetzt bekommen.", Colors.SUCCESS))));
 
         return 1;
     }

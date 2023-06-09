@@ -6,16 +6,17 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+
+import java.io.IOException;
 
 public class RideCommand extends BrigadierCommand {
     @Override
@@ -51,18 +52,22 @@ public class RideCommand extends BrigadierCommand {
 
         if (entity != null) throw ERROR_ALREADY_RIDING.create(rider.getDisplayName(), entity.getDisplayName());
         if (vehicle.getType() == EntityType.PLAYER) throw ERROR_MOUNTING_PLAYER.create();
-        if (rider.getSelfAndPassengers().anyMatch(passenger -> passenger == vehicle)) throw ERROR_MOUNTING_LOOP.create();
-        if (rider.getLevel() != vehicle.getLevel()) throw ERROR_WRONG_DIMENSION.create();
-        if (!rider.startRiding(vehicle, true)) throw ERROR_MOUNT_FAILED.create(rider.getDisplayName(), vehicle.getDisplayName());
+        if (rider.getSelfAndPassengers().anyMatch(passenger -> passenger == vehicle))
+            throw ERROR_MOUNTING_LOOP.create();
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, PaperAdventure.asAdventure(rider.getDisplayName()).colorIfAbsent(Colors.TERTIARY)
-                    .append(net.kyori.adventure.text.Component.text(" reitet nun ", Colors.SUCCESS))
-                    .append(PaperAdventure.asAdventure(vehicle.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(".", Colors.SUCCESS)));
-        }else {
-            source.sendSuccess(Component.translatable("commands.ride.mount.success", rider.getDisplayName(), vehicle.getDisplayName()), false);
+        try (final var riderLevel = rider.level(); final var vehicleLevel = vehicle.level()) {
+            if (riderLevel != vehicleLevel) throw ERROR_WRONG_DIMENSION.create();
+        } catch (IOException ignored) {
         }
+
+        if (!rider.startRiding(vehicle, true))
+            throw ERROR_MOUNT_FAILED.create(rider.getDisplayName(), vehicle.getDisplayName());
+
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(rider)
+                .append(net.kyori.adventure.text.Component.text(" reitet nun ", Colors.SUCCESS))
+                .append(EssentialsUtil.getDisplayName(vehicle))
+                .append(net.kyori.adventure.text.Component.text(".", Colors.SUCCESS)));
+
         return 1;
     }
 
@@ -72,14 +77,10 @@ public class RideCommand extends BrigadierCommand {
 
         rider.stopRiding();
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, PaperAdventure.asAdventure(rider.getDisplayName()).colorIfAbsent(Colors.TERTIARY)
-                    .append(net.kyori.adventure.text.Component.text(" reitet nicht mehr ", Colors.SUCCESS))
-                    .append(PaperAdventure.asAdventure(entity.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(".", Colors.TERTIARY)));
-        } else {
-            source.sendSuccess(Component.translatable("commands.ride.dismount.success", rider.getDisplayName(), entity.getDisplayName()), true);
-        }
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(rider)
+                .append(net.kyori.adventure.text.Component.text(" reitet nicht mehr ", Colors.SUCCESS))
+                .append(EssentialsUtil.getDisplayName(entity))
+                .append(net.kyori.adventure.text.Component.text(".", Colors.TERTIARY)));
         return 1;
 
     }

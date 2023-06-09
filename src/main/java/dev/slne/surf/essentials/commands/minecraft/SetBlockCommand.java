@@ -4,9 +4,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.blocks.BlockStatePos;
-import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.blocks.BlockStatePos;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.minecraft.commands.CommandSourceStack;
@@ -35,6 +35,7 @@ import java.util.function.Predicate;
 public class SetBlockCommand extends BrigadierCommand {
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.setblock.failed"));
     private static final Map<UUID, BlockStatePos> BLOCK = new HashMap<>();
+
     @Override
     public String[] names() {
         return new String[]{"setblock"};
@@ -55,14 +56,14 @@ public class SetBlockCommand extends BrigadierCommand {
         literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SET_BLOCK_PERMISSION));
 
         literal.then(Commands.argument("location", BlockPosArgument.blockPos())
-                .then(Commands.argument("block", BlockStateArgument.block(EssentialsUtil.buildContext()))
+                .then(Commands.argument("block", BlockStateArgument.block(this.commandBuildContext))
                         .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                 BlockStateArgument.getBlock(context, "block"), Mode.REPLACE, null))
 
                         .then(Commands.literal("keep")
                                 .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                         BlockStateArgument.getBlock(context, "block"), Mode.REPLACE, (pos) -> pos.getLevel().isEmptyBlock(pos.getPos())))
-                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                         .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                                 BlockStateArgument.getBlock(context, "block"), Mode.REPLACE,
                                                 BlockPredicateArgument.getBlockPredicate(context, "filter")))))
@@ -70,7 +71,7 @@ public class SetBlockCommand extends BrigadierCommand {
                         .then(Commands.literal("replace")
                                 .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                         BlockStateArgument.getBlock(context, "block"), Mode.REPLACE, null))
-                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                         .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                                 BlockStateArgument.getBlock(context, "block"), Mode.REPLACE,
                                                 BlockPredicateArgument.getBlockPredicate(context, "filter")))))
@@ -78,17 +79,16 @@ public class SetBlockCommand extends BrigadierCommand {
                         .then(Commands.literal("destroy")
                                 .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                         BlockStateArgument.getBlock(context, "block"), Mode.DESTROY, null))
-                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                         .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                                 BlockStateArgument.getBlock(context, "block"), Mode.DESTROY,
                                                 BlockPredicateArgument.getBlockPredicate(context, "filter")))))
 
                         .then(Commands.literal("filter")
-                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(EssentialsUtil.buildContext()))
+                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
                                         .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
                                                 BlockStateArgument.getBlock(context, "block"), Mode.DESTROY,
                                                 BlockPredicateArgument.getBlockPredicate(context, "filter")))))));
-
 
 
         literal.then(Commands.literal("undo")
@@ -116,21 +116,21 @@ public class SetBlockCommand extends BrigadierCommand {
 
         if (bl && !blockInput.place(serverLevel, blockPos, 2)) throw ERROR_FAILED.create();
 
+        EssentialsUtil.logBlockChange(source, serverLevel, blockPos, blockInput.getState());
+
         serverLevel.blockUpdated(blockPos, blockInput.getState().getBlock());
 
-        if (source.isPlayer()){
+        if (source.isPlayer()) {
             BLOCK.put(source.getPlayerOrException().getUUID(), new BlockStatePos(oldBlockState, blockPos, serverLevel));
-
-            EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Der Block ", Colors.SUCCESS)
-                    .append(PaperAdventure.asAdventure(oldBlockState.getBlock().getName()).colorIfAbsent(Colors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(" bei ", Colors.SUCCESS))
-                    .append(net.kyori.adventure.text.Component.text("%s %s %s".formatted(blockPos.getX(), blockPos.getY(), blockPos.getZ())))
-                    .append(net.kyori.adventure.text.Component.text(" wurde zu ", Colors.SUCCESS))
-                    .append(PaperAdventure.asAdventure(blockInput.getState().getBlock().getName()).colorIfAbsent(Colors.TERTIARY))
-                    .append(net.kyori.adventure.text.Component.text(" geändert.", Colors.SUCCESS)));
-        } else {
-            source.sendSuccess(Component.translatable("commands.setblock.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), false);
         }
+
+        EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Der Block ", Colors.SUCCESS)
+                .append(PaperAdventure.asAdventure(oldBlockState.getBlock().getName()).colorIfAbsent(Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text(" bei ", Colors.SUCCESS))
+                .append(net.kyori.adventure.text.Component.text("%s %s %s".formatted(blockPos.getX(), blockPos.getY(), blockPos.getZ())))
+                .append(net.kyori.adventure.text.Component.text(" wurde zu ", Colors.SUCCESS))
+                .append(PaperAdventure.asAdventure(blockInput.getState().getBlock().getName()).colorIfAbsent(Colors.TERTIARY))
+                .append(net.kyori.adventure.text.Component.text(" geändert.", Colors.SUCCESS)));
         return 1;
     }
 
@@ -142,11 +142,14 @@ public class SetBlockCommand extends BrigadierCommand {
         if (blockStatePos == null) throw FillCommand.ERROR_NOTHING_TO_UNDO.create();
 
         ServerLevel level = blockStatePos.serverLevel();
+        BlockPos pos = blockStatePos.blockPos();
 
-        BlockState blockState = level.getBlockState(blockStatePos.blockPos());
-        BLOCK.put(uuid, new BlockStatePos(blockState, blockStatePos.blockPos(), level));
+        BlockState blockState = level.getBlockState(pos);
+        BLOCK.put(uuid, new BlockStatePos(blockState, pos, level));
 
-        level.setBlockAndUpdate(blockStatePos.blockPos().immutable(), blockStatePos.blockState());
+        if (level.setBlockAndUpdate(pos.immutable(), blockStatePos.blockState())) {
+            EssentialsUtil.logBlockChange(source, level, pos, blockStatePos.blockState());
+        }
         level.blockUpdated(blockStatePos.blockPos(), blockStatePos.blockState().getBlock());
 
         EssentialsUtil.sendSuccess(source, "Der Block wurde rückgängig gemacht");
@@ -154,19 +157,15 @@ public class SetBlockCommand extends BrigadierCommand {
     }
 
 
-
-
-
-
     public enum Mode {
         REPLACE,
         DESTROY;
 
-        Mode(){
+        Mode() {
         }
     }
 
-    public interface Filter{
+    public interface Filter {
         @Nullable
         BlockInput filter(BoundingBox box, BlockPos pos, BlockInput block, ServerLevel world);
     }

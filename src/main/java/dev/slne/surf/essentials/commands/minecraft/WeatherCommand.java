@@ -3,25 +3,35 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerLevel;
 
-public class WeatherCommand {
-
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("weather", WeatherCommand::literal);
+public class WeatherCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"weather"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    @Override
+    public String usage() {
+        return "/weather <clear | rain | thunder> [<duration>]";
+    }
 
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.WEATHER_PERMISSION));
+    @Override
+    public String description() {
+        return "Change game weather";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.WEATHER_PERMISSION));
 
         literal.executes(context -> queryWeather(context.getSource()));
 
@@ -41,7 +51,7 @@ public class WeatherCommand {
                         .executes(context -> setThunder(context.getSource(), IntegerArgumentType.getInteger(context, "duration")))));
     }
 
-    private static int queryWeather(CommandSourceStack source) throws CommandSyntaxException{
+    private static int queryWeather(CommandSourceStack source) throws CommandSyntaxException {
         ServerLevel serverLevel = source.getLevel();
 
         boolean isClear = !serverLevel.isThundering() && !serverLevel.isRaining();
@@ -50,71 +60,45 @@ public class WeatherCommand {
         int rainDuration = serverLevel.serverLevelData.getRainTime();
         int thunderDuration = serverLevel.serverLevelData.getThunderTime();
 
-        if (isClear){
-            if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, weatherComponent$adventure("Klar", serverLevel, clearDuration));
-            }else {
-                source.sendSuccess(weatherComponent("clear", serverLevel, clearDuration), false);
-            }
-        }else if (serverLevel.isRaining()){
-            if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, weatherComponent$adventure("Regen", serverLevel, rainDuration));
-            }else {
-                source.sendSuccess(weatherComponent("rain", serverLevel, rainDuration), false);
-            }
-        }else {
-            if (source.isPlayer()){
-                EssentialsUtil.sendSuccess(source, weatherComponent$adventure("Gewitter", serverLevel, thunderDuration));
-            }else {
-                source.sendSuccess(weatherComponent("thunder", serverLevel, thunderDuration), false);
-            }
+        if (isClear) {
+            EssentialsUtil.sendSuccess(source, weatherComponent$adventure("Klar", serverLevel, clearDuration));
+        } else if (serverLevel.isRaining()) {
+            EssentialsUtil.sendSuccess(source, weatherComponent$adventure("Regen", serverLevel, rainDuration));
+        } else {
+            EssentialsUtil.sendSuccess(source, weatherComponent$adventure("Gewitter", serverLevel, thunderDuration));
         }
         return 1;
     }
 
-    private static int setClear(CommandSourceStack source, int durationInSeconds) throws CommandSyntaxException{
+    private static int setClear(CommandSourceStack source, int durationInSeconds) throws CommandSyntaxException {
         ServerLevel serverLevel = source.getLevel();
+        serverLevel.setWeatherParameters(durationInSeconds, 0, false, false);
 
-        serverLevel.setWeatherParameters(durationInSeconds,0, false, false);
+        EssentialsUtil.sendSuccess(source, weatherSetComponent$adventure("Klar", serverLevel, durationInSeconds));
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, weatherSetComponent$adventure("Klar", serverLevel, durationInSeconds));
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.weather.set.clear"), false);
-        }
         return durationInSeconds;
     }
 
-    private static int setRain(CommandSourceStack source, int durationInSeconds) throws CommandSyntaxException{
+    private static int setRain(CommandSourceStack source, int durationInSeconds) throws CommandSyntaxException {
         ServerLevel serverLevel = source.getLevel();
-
         serverLevel.setWeatherParameters(0, durationInSeconds, true, false);
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, weatherSetComponent$adventure("Regen", serverLevel, durationInSeconds));
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.weather.set.rain"), false);
-        }
+        EssentialsUtil.sendSuccess(source, weatherSetComponent$adventure("Regen", serverLevel, durationInSeconds));
+
         return durationInSeconds;
     }
 
-    private static int setThunder(CommandSourceStack source, int durationInSeconds) throws CommandSyntaxException{
+    private static int setThunder(CommandSourceStack source, int durationInSeconds) throws CommandSyntaxException {
         ServerLevel serverLevel = source.getLevel();
-
         serverLevel.setWeatherParameters(0, durationInSeconds, true, true);
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, weatherSetComponent$adventure("Gewitter", serverLevel, durationInSeconds));
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.weather.set.thunder"), false);
-        }
+        EssentialsUtil.sendSuccess(source, weatherSetComponent$adventure("Gewitter", serverLevel, durationInSeconds));
+
         return durationInSeconds;
     }
 
 
-
-
-    private static Component weatherComponent$adventure(String weather, ServerLevel serverLevel, int durationInTicks){
+    private static Component weatherComponent$adventure(String weather, ServerLevel serverLevel, int durationInTicks) {
         return Component.text("Das Wetter in der Welt ", Colors.INFO)
                 .append(Component.text(serverLevel.dimension().location().toString(), Colors.TERTIARY))
                 .append(Component.text(" ist ", Colors.INFO))
@@ -123,7 +107,7 @@ public class WeatherCommand {
                 .append(Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.TERTIARY));
     }
 
-    private static Component weatherSetComponent$adventure(String weather, ServerLevel serverLevel, int durationInTicks){
+    private static Component weatherSetComponent$adventure(String weather, ServerLevel serverLevel, int durationInTicks) {
         return Component.text("Das Wetter in der Welt ", Colors.INFO)
                 .append(Component.text(serverLevel.dimension().location().toString(), Colors.TERTIARY))
                 .append(Component.text(" wurde auf ", Colors.INFO))
@@ -131,20 +115,5 @@ public class WeatherCommand {
                 .append(Component.text(" für ", Colors.INFO))
                 .append(Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.TERTIARY))
                 .append(Component.text(" gesetzt.", Colors.INFO));
-    }
-
-    private static net.minecraft.network.chat.Component weatherComponent(String weather, ServerLevel serverLevel, int durationInTicks){
-        return net.minecraft.network.chat.Component.literal("The weather in the world ")
-                .withStyle(ChatFormatting.GRAY)
-                .append(serverLevel.dimension().location().toString())
-                .withStyle(ChatFormatting.GOLD)
-                .append(net.minecraft.network.chat.Component.literal(" is "))
-                .withStyle(ChatFormatting.GRAY)
-                .append(net.minecraft.network.chat.Component.literal(weather))
-                .withStyle(ChatFormatting.YELLOW)
-                .append(net.minecraft.network.chat.Component.literal(" for "))
-                .withStyle(ChatFormatting.GRAY)
-                .append(net.minecraft.network.chat.Component.literal(EssentialsUtil.ticksToString(durationInTicks)))
-                .withStyle(ChatFormatting.GREEN);
     }
 }

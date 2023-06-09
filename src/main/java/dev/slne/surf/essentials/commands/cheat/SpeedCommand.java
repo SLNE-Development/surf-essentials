@@ -3,83 +3,152 @@ package dev.slne.surf.essentials.commands.cheat;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
-import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Range;
 
-public class SpeedCommand {
+import java.util.Collection;
+import java.util.Collections;
 
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("speed", SpeedCommand::literal);
+public class SpeedCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"speed", "flyspeed", "walkspeed"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SPEED_SELF_PERMISSION));
-
-        literal.then(Commands.argument("speed", FloatArgumentType.floatArg(-1, 1))
-                .executes(context -> speed(context.getSource(), context.getSource().getPlayerOrException(), FloatArgumentType.getFloat(context, "speed")))
-                .then(Commands.argument("player", EntityArgument.player())
-                        .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SPEED_OTHER_PERMISSION))
-                        .executes(context -> speed(context.getSource(), EntityArgument.getPlayer(context, "player"), FloatArgumentType.getFloat(context, "speed")))))
-                .then(Commands.literal("default")
-                        .executes(context -> speed(context.getSource(), context.getSource().getPlayerOrException(), null)));
+    @Override
+    public String usage() {
+        return "/speed <speed> <walk | fly> [<players>]";
     }
 
-    private static int speed(CommandSourceStack source, ServerPlayer targetUnchecked, Float speed) throws CommandSyntaxException {
-        ServerPlayer target = EssentialsUtil.checkSinglePlayerSuggestion(source, targetUnchecked);
-        Player bukkitTarget = target.getBukkitEntity();
-        if (speed == null){ //reset the speed to default
-            bukkitTarget.setFlySpeed(0.1f);
-            bukkitTarget.setWalkSpeed(0.2f);
+    @Override
+    public String description() {
+        return "Change walk / fly speed";
+    }
 
-            if (source.isPlayer()){
-                if (source.getPlayerOrException() == target){
-                    EssentialsUtil.sendSuccess(source, "Deine Geh- und Fluggeschwindigkeit wurde zurückgesetzt!");
-                }else {
-                    EssentialsUtil.sendSuccess(target.getBukkitEntity(), EssentialsUtil.getPrefix()
-                            .append(Component.text("Deine Geh- und Fluggeschwindigkeit wurde zurückgesetzt!", Colors.INFO)));
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.SPEED_PERMISSION_SELF, Permissions.SPEED_PERMISSION_OTHER));
 
-                    EssentialsUtil.sendSuccess(source, Component.text("Die Geh- und Fluggeschwindigkeit von ", Colors.SUCCESS)
-                            .append(target.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                            .append(Component.text(" wurde zurückgesetzt!", Colors.SUCCESS)));
-                }
+        literal.then(Commands.argument("speed", FloatArgumentType.floatArg(-10, 10))
+                .executes(context -> detect(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()),
+                        FloatArgumentType.getFloat(context, "speed")))
+                .then(Commands.literal("walk")
+                        .executes(context -> changeWalkSpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()),
+                                FloatArgumentType.getFloat(context, "speed")))
+                        .then(Commands.argument("players", EntityArgument.players())
+                                .requires(EssentialsUtil.checkPermissions(Permissions.SPEED_PERMISSION_OTHER))
+                                .executes(context -> changeWalkSpeed(context.getSource(), EntityArgument.getPlayers(context, "players"),
+                                        FloatArgumentType.getFloat(context, "speed")))))
+                .then(Commands.literal("fly")
+                .executes(context -> changeFlySpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()),
+                        FloatArgumentType.getFloat(context, "speed")))
+                .then(Commands.argument("players", EntityArgument.players())
+                        .requires(EssentialsUtil.checkPermissions(Permissions.SPEED_PERMISSION_OTHER))
+                        .executes(context -> changeFlySpeed(context.getSource(), EntityArgument.getPlayers(context, "players"),
+                                FloatArgumentType.getFloat(context, "speed"))))));
+
+        literal.then(Commands.literal("default")
+                .executes(context -> {
+                    changeWalkSpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), 2);
+                    return changeFlySpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), 2);
+                })
+                .then(Commands.literal("walk")
+                        .executes(context -> changeWalkSpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), 2)))
+                .then(Commands.literal("fly")
+                        .executes(context -> changeFlySpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), 2))));
+    }
+
+    private int detect(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) float speed) throws CommandSyntaxException {
+        final var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
+        float calculatedSpeed = speed / 10f;
+        int successes = 0;
+
+        for (ServerPlayer player : players) {
+            if (player.getAbilities().flying){
+                player.getBukkitEntity().setFlySpeed(calculatedSpeed);
+                successPlayer(player, "Fluggeschwindigkeit", speed);
             }else {
-                source.sendSuccess(target.getDisplayName()
-                        .copy().append(net.minecraft.network.chat.Component.literal("´s walking and flying speed has been reset")), false);
+                player.getBukkitEntity().setWalkSpeed(calculatedSpeed);
+                successPlayer(player, "Gehgeschwindigkeit", speed);
             }
-            return 1;
+            successes++;
+        }
+        successSource(source, true, successes, speed, players);
+        return successes;
+    }
+
+    private int changeFlySpeed(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) float speed) throws CommandSyntaxException {
+        final var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
+        return changeSpeed(source, players, speed, false);
+    }
+
+    private int changeWalkSpeed(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) float speed) throws CommandSyntaxException {
+        final var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
+        return changeSpeed(source, players, speed, true);
+    }
+
+    private int changeSpeed(CommandSourceStack source, Collection<ServerPlayer> players, @Range(from = -10, to = 10) float speed, boolean isWalkSpeed) throws CommandSyntaxException {
+        float calculatedSpeed = speed / 10f;
+        int successes = 0;
+
+        for (ServerPlayer player : players) {
+            if (isWalkSpeed){
+                player.getBukkitEntity().setWalkSpeed(calculatedSpeed);
+                successPlayer(player, "Gehgeschwindigkeit", speed);
+            }else {
+                player.getBukkitEntity().setFlySpeed(calculatedSpeed);
+                successPlayer(player, "Fluggeschwindigkeit", speed);
+            }
+            successes++;
         }
 
-        bukkitTarget.setFlySpeed(speed);
-        bukkitTarget.setWalkSpeed(speed);
+       successSource(source, isWalkSpeed, successes, speed, players);
+        return successes;
+    }
 
+    private void successPlayer(ServerPlayer player, String mode, @Range(from = -10, to = 10) float speed) {
+        EssentialsUtil.sendSuccess(player, Component.text("Deine %s wurde auf ".formatted(mode), Colors.SUCCESS)
+                .append(Component.text(speed, Colors.TERTIARY))
+                .append(Component.text(" gesetzt", Colors.SUCCESS)));
+    }
+
+    private void successSource(CommandSourceStack source, boolean isWalkSpeed, int successes, @Range(from = -10, to = 10) float speed,  Collection<ServerPlayer> players) throws CommandSyntaxException {
         if (source.isPlayer()){
-            if (source.getPlayerOrException() == target){
-                EssentialsUtil.sendSuccess(source, Component.text("Deine Geh- und Fluggeschwindigkeit wurde auf ", Colors.SUCCESS)
-                        .append(Component.text(speed, Colors.TERTIARY))
-                        .append(Component.text(" gesetzt!", Colors.SUCCESS)));
-            }else {
-                EssentialsUtil.sendSuccess(target, (Component.text("Deine Geh- und Fluggeschwindigkeit wurde auf ", Colors.INFO))
-                        .append(Component.text(speed, Colors.TERTIARY))
-                        .append(Component.text(" gesetzt!", Colors.INFO)));
-
-                EssentialsUtil.sendSuccess(source, Component.text("Die Geh- und Fluggeschwindigkeit von ", Colors.SUCCESS)
-                        .append(target.adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+            String mode = (isWalkSpeed) ? "Gehgeschwindigkeit" : "Fluggeschwindigkeit";
+            if (successes == 1 && source.getPlayerOrException().getUUID() != players.iterator().next().getUUID()){
+                EssentialsUtil.sendSuccess(source, Component.text("Die %s von ".formatted(mode), Colors.SUCCESS)
+                        .append(EssentialsUtil.getDisplayName(players.iterator().next()))
                         .append(Component.text(" wurde auf ", Colors.SUCCESS))
                         .append(Component.text(speed, Colors.TERTIARY))
-                        .append(Component.text(" gesetzt!", Colors.SUCCESS)));
+                        .append(Component.text(" gesetzt", Colors.SUCCESS)));
+            }else if (source.getPlayerOrException().getUUID() != players.iterator().next().getUUID()){
+                EssentialsUtil.sendSuccess(source, Component.text("Die %s von ".formatted(mode), Colors.SUCCESS)
+                        .append(Component.text(successes, Colors.TERTIARY))
+                        .append(Component.text("  Spielern wurde auf ", Colors.SUCCESS))
+                        .append(Component.text(speed, Colors.TERTIARY))
+                        .append(Component.text(" gesetzt", Colors.SUCCESS)));
             }
         }else {
-            source.sendSuccess(target.getDisplayName()
-                    .copy().append(net.minecraft.network.chat.Component.literal("´s walking and flying speed has been set to " + speed)), false);
+            String mode = (isWalkSpeed) ? "walk" : "fly";
+            if (successes == 1){
+                EssentialsUtil.sendSourceSuccess(source, EssentialsUtil.getDisplayName(players.iterator().next())
+                        .append(Component.text("´s %s speed was set to ".formatted(mode), Colors.SUCCESS))
+                        .append(Component.text(speed, Colors.TERTIARY)));
+            }else {
+                EssentialsUtil.sendSourceSuccess(source, Component.text("Set the %s speed to ".formatted(mode), Colors.SUCCESS)
+                        .append(Component.text(speed, Colors.TERTIARY))
+                        .append(Component.text(" for ", Colors.SUCCESS))
+                        .append(Component.text(successes, Colors.TERTIARY))
+                        .append(Component.text(" players", Colors.SUCCESS)));
+            }
         }
-        return 1;
     }
 }

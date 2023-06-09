@@ -1,91 +1,95 @@
 package dev.slne.surf.essentials.utils;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.RootCommandNode;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.annontations.UpdateRequired;
+import dev.slne.surf.essentials.utils.abtract.LoggingUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
-import net.kyori.adventure.nbt.*;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.metadata.MetadataValue;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.time.Duration;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
-import static net.kyori.adventure.nbt.BinaryTagIO.Compression.GZIP;
+/**
+ * The final util class wich contains miscellaneous methods
+ */
+@SuppressWarnings("unused")
+public final class EssentialsUtil extends LoggingUtil {
+    private EssentialsUtil() {
+    } // Util class
 
-@SuppressWarnings({"unused"})
-public abstract class EssentialsUtil {
-    private static Component prefix;
+    private static Component prefix; // plugins prefix
+    private static final CommandBuildContext buildContext; // the build context
+    private static final DamageSources damageSources; // damage sources instance
+
 
     /**
-     * An array of {@link Sound} objects representing the sounds that can be played to
-     * scare the player.
+     * The maximum food value that a player can have.
      */
-    public static Sound[] scareSounds = new Sound[]{Sound.ENTITY_LIGHTNING_BOLT_THUNDER, Sound.ENTITY_WOLF_HOWL,
-            Sound.ENTITY_BAT_DEATH, Sound.ENTITY_GHAST_SCREAM, Sound.ENTITY_GHAST_HURT};
-
-    public static final DynamicCommandExceptionType ERROR_POSITION_IN_UNLOADED_WORLD = new DynamicCommandExceptionType(gameProfile ->
-            net.minecraft.network.chat.Component.literal(((GameProfile) gameProfile).getName() + " has logged out in an unloaded world."));
-
-    private static final List<CommandNode<CommandSourceStack>> REGISTERED_COMMANDS = new ArrayList<>();
-
+    @UpdateRequired(minVersion = "unknown", updateReason = "Maybe one day Mojang will change this")
     public static final int MAX_FOOD = 20;
 
+    /**
+     * An array of sounds that are used to scare players.
+     */
+    public static final Sound[] scareSounds = new Sound[]{Sound.ENTITY_LIGHTNING_BOLT_THUNDER, Sound.ENTITY_WOLF_HOWL,
+            Sound.ENTITY_BAT_DEATH, Sound.ENTITY_GHAST_SCREAM, Sound.ENTITY_GHAST_HURT};
+
 
     /**
+     * Creates a gradient of text with the given input, first color and second color.
      *
-     * Converts the color from the input string to a gradient.
-     *
-     * @param input  the string to convert the color from
-     * @param firstHex  the first hex color
-     * @param secondHex  the second hex color
+     * @param input     the input text
+     * @param firstHex  the hex value of the first color
+     * @param secondHex the hex value of the second color
+     * @return a gradient of text with the given input, first color and second color
      */
     public static Component gradientify(@NotNull String input, @NotNull String firstHex, @NotNull String secondHex) {
+        final var gradientFirst = TextColor.fromHexString(firstHex);
+        final var gradientSecond = TextColor.fromHexString(secondHex);
 
-        TextColor gradientFirst = TextColor.fromHexString(firstHex);
-        TextColor gradientSecond = TextColor.fromHexString(secondHex);
+        if (gradientFirst == null || gradientSecond == null) return Component.text(input);
 
-        if (gradientFirst == null || gradientSecond == null) {
-            return Component.text(input);
-        }
-
-        TextComponent.Builder builder = Component.text();
-        float step = 1.0f / (input.length() - 1);
+        final var builder = Component.text();
+        final float step = 1.0f / (input.length() - 1);
         float current = 0.0f;
+
         for (char c : input.toCharArray()) {
             builder.append(Component.text(c, TextColor.lerp(current, gradientFirst, gradientSecond)));
             current += step;
@@ -94,12 +98,12 @@ public abstract class EssentialsUtil {
         return builder.build();
     }
 
+
     /**
+     * Converts a number of ticks to a formatted string representing days, hours, minutes, and seconds.
      *
-     * converts ticks in a time format.
-     *
-     * @param ticks  the ticks to convert
-     * @return Time format in string
+     * @param ticks the number of ticks to convert
+     * @return a formatted string representing days, hours, minutes, and seconds
      */
     public static String ticksToString(int ticks) {
         int totalSeconds = ticks / 20;
@@ -127,339 +131,71 @@ public abstract class EssentialsUtil {
     }
 
     /**
-     * Returns whether the given player is vanished or not.
-     * A player is considered vanished if they have a "vanished" metadata value
-     * set to `true`.
-     *
-     * @param player the player to check
-     * @return `true` if the player is vanished, `false` otherwise
-     */
-    public static boolean isVanished(@NotNull Player player) {
-        for (MetadataValue meta : player.getMetadata("vanished")) {
-            if (meta.asBoolean()) return true;
-        }
-        return false;
-    }
-
-    /**
-     * Suggests all possible color codes to the given {@link SuggestionsBuilder}.
-     *
-     * @param builder the {@link SuggestionsBuilder} to which the color codes will be added
-     */
-    public static void suggestAllColorCodes(@NotNull SuggestionsBuilder builder) {
-        // <editor-fold defaultstate="collapsed" desc="allColorCodes">
-        builder.suggest("&0", net.minecraft.network.chat.Component.literal("Black").withStyle(ChatFormatting.BLACK));
-        builder.suggest("&2", net.minecraft.network.chat.Component.literal("Dark Green").withStyle(ChatFormatting.DARK_GREEN));
-        builder.suggest("&4", net.minecraft.network.chat.Component.literal("Dark Red").withStyle(ChatFormatting.DARK_RED));
-        builder.suggest("&6", net.minecraft.network.chat.Component.literal("Gold").withStyle(ChatFormatting.GOLD));
-        builder.suggest("&8", net.minecraft.network.chat.Component.literal("Dark Gray").withStyle(ChatFormatting.DARK_GRAY));
-        builder.suggest("&a", net.minecraft.network.chat.Component.literal("Green").withStyle(ChatFormatting.GREEN));
-        builder.suggest("&c", net.minecraft.network.chat.Component.literal("Red").withStyle(ChatFormatting.RED));
-        builder.suggest("&e", net.minecraft.network.chat.Component.literal("Yellow").withStyle(ChatFormatting.YELLOW));
-        builder.suggest("&1", net.minecraft.network.chat.Component.literal("Dark Blue").withStyle(ChatFormatting.DARK_BLUE));
-        builder.suggest("&3", net.minecraft.network.chat.Component.literal("Dark Aqua").withStyle(ChatFormatting.DARK_AQUA));
-        builder.suggest("&5", net.minecraft.network.chat.Component.literal("Dark Purple").withStyle(ChatFormatting.DARK_PURPLE));
-        builder.suggest("&7", net.minecraft.network.chat.Component.literal("Gray").withStyle(ChatFormatting.GRAY));
-        builder.suggest("&9", net.minecraft.network.chat.Component.literal("Blue").withStyle(ChatFormatting.BLUE));
-        builder.suggest("&b", net.minecraft.network.chat.Component.literal("Aqua").withStyle(ChatFormatting.AQUA));
-        builder.suggest("&d", net.minecraft.network.chat.Component.literal("Light Purple").withStyle(ChatFormatting.LIGHT_PURPLE));
-        builder.suggest("&f", net.minecraft.network.chat.Component.literal("White").withStyle(ChatFormatting.WHITE));
-
-        builder.suggest("&k", net.minecraft.network.chat.Component.literal("Obfuscated").withStyle(ChatFormatting.OBFUSCATED));
-        builder.suggest("&m", net.minecraft.network.chat.Component.literal("Strikethrough").withStyle(ChatFormatting.STRIKETHROUGH));
-        builder.suggest("&o", net.minecraft.network.chat.Component.literal("Italic").withStyle(ChatFormatting.ITALIC));
-        builder.suggest("&l", net.minecraft.network.chat.Component.literal("Bold").withStyle(ChatFormatting.BOLD));
-        builder.suggest("&n", net.minecraft.network.chat.Component.literal("Underline").withStyle(ChatFormatting.UNDERLINE));
-        builder.suggest("&r", net.minecraft.network.chat.Component.literal("Reset").withStyle(ChatFormatting.RESET));
-        // </editor-fold>
-        builder.buildFuture();
-    }
-
-    /**
-     * Suggests all possible color codes to the given {@link SuggestionsBuilder} with the {@link StringArgumentType} input.
-     *
-     * @param builder            the {@link SuggestionsBuilder} to which the color codes will be added
-     * @param context            the {@link CommandContext<CommandSourceStack>}
-     * @param stringArgumentType the {@link StringArgumentType} from the current argument
-     */
-    public static void suggestAllColorCodes(@NotNull SuggestionsBuilder builder, @NotNull CommandContext<CommandSourceStack> context, @NotNull String stringArgumentType) {
-        String input;
-        try {
-            input = context.getArgument(stringArgumentType, String.class);
-        }catch (IllegalArgumentException ignored) {
-            input = "";
-        }
-
-        // <editor-fold defaultstate="collapsed" desc="allColorCodes">
-        builder.suggest("\"" + input + "&0", net.minecraft.network.chat.Component.literal("Black").withStyle(ChatFormatting.BLACK));
-        builder.suggest("\"" + input + "&2", net.minecraft.network.chat.Component.literal("Dark Green").withStyle(ChatFormatting.DARK_GREEN));
-        builder.suggest("\"" + input + "&4", net.minecraft.network.chat.Component.literal("Dark Red").withStyle(ChatFormatting.DARK_RED));
-        builder.suggest("\"" + input + "&6", net.minecraft.network.chat.Component.literal("Gold").withStyle(ChatFormatting.GOLD));
-        builder.suggest("\"" + input + "&8", net.minecraft.network.chat.Component.literal("Dark Gray").withStyle(ChatFormatting.DARK_GRAY));
-        builder.suggest("\"" + input + "&a", net.minecraft.network.chat.Component.literal("Green").withStyle(ChatFormatting.GREEN));
-        builder.suggest("\"" + input + "&c", net.minecraft.network.chat.Component.literal("Red").withStyle(ChatFormatting.RED));
-        builder.suggest("\"" + input + "&e", net.minecraft.network.chat.Component.literal("Yellow").withStyle(ChatFormatting.YELLOW));
-        builder.suggest("\"" + input + "&1", net.minecraft.network.chat.Component.literal("Dark Blue").withStyle(ChatFormatting.DARK_BLUE));
-        builder.suggest("\"" + input + "&3", net.minecraft.network.chat.Component.literal("Dark Aqua").withStyle(ChatFormatting.DARK_AQUA));
-        builder.suggest("\"" + input + "&5", net.minecraft.network.chat.Component.literal("Dark Purple").withStyle(ChatFormatting.DARK_PURPLE));
-        builder.suggest("\"" + input + "&7", net.minecraft.network.chat.Component.literal("Gray").withStyle(ChatFormatting.GRAY));
-        builder.suggest("\"" + input + "&9", net.minecraft.network.chat.Component.literal("Blue").withStyle(ChatFormatting.BLUE));
-        builder.suggest("\"" + input + "&b", net.minecraft.network.chat.Component.literal("Aqua").withStyle(ChatFormatting.AQUA));
-        builder.suggest("\"" + input + "&d", net.minecraft.network.chat.Component.literal("Light Purple").withStyle(ChatFormatting.LIGHT_PURPLE));
-        builder.suggest("\"" + input + "&f", net.minecraft.network.chat.Component.literal("White").withStyle(ChatFormatting.WHITE));
-
-        builder.suggest("\"" + input + "&k", net.minecraft.network.chat.Component.literal("Obfuscated").withStyle(ChatFormatting.OBFUSCATED));
-        builder.suggest("\"" + input + "&m", net.minecraft.network.chat.Component.literal("Strikethrough").withStyle(ChatFormatting.STRIKETHROUGH));
-        builder.suggest("\"" + input + "&o", net.minecraft.network.chat.Component.literal("Italic").withStyle(ChatFormatting.ITALIC));
-        builder.suggest("\"" + input + "&l", net.minecraft.network.chat.Component.literal("Bold").withStyle(ChatFormatting.BOLD));
-        builder.suggest("\"" + input + "&n", net.minecraft.network.chat.Component.literal("Underline").withStyle(ChatFormatting.UNDERLINE));
-        builder.suggest("\"" + input + "&r", net.minecraft.network.chat.Component.literal("Reset").withStyle(ChatFormatting.RESET));
-        // </editor-fold>
-        builder.buildFuture();
-    }
-
-    /**
-     * Scares the player by playing a random scare sound from the {@link #scareSounds} array and
-     * applying a {@link PotionEffectType#DARKNESS} effect to the player for 7 seconds.
+     * Plays a random scare sound and adds a "Darkness" potion effect to a given player.
      *
      * @param player the player to scare
      */
     public static void scarePlayer(@NotNull Player player) {
-        Random random = new Random();
-        int scareIndex = random.nextInt(scareSounds.length - 1);
-        Sound scareSound = scareSounds[scareIndex];
+        final int scareIndex = getRandomInt(scareSounds.length - 1);
+        final var scareSound = scareSounds[scareIndex];
+        final var scareEffect = new PotionEffect(PotionEffectType.DARKNESS, 20 * 7, 1, false, false, false);
+
         player.playSound(player.getLocation(), scareSound, 1.0F, 1.0F);
-        PotionEffect scareEffect = new PotionEffect(PotionEffectType.DARKNESS, 20*7, 1, false, false, false);
         player.addPotionEffect(scareEffect);
     }
 
 
     /**
-     Sends an error message to the player.
-     @param source the command source
-     @param error the error message to send
-     @throws CommandSyntaxException if an error occurs while sending the message
-     */
-    public static void sendError(CommandSourceStack source, String error) throws CommandSyntaxException {
-       source.getPlayerOrException().getBukkitEntity().sendMessage(getPrefix()
-                .append(net.kyori.adventure.text.Component.text(error, Colors.ERROR)));
-    }
-
-    /**
-     Sends an error message to the player.
-     @param source the command source
-     @param error the error message to send
-     @throws CommandSyntaxException if an error occurs while sending the message
-     */
-    public static void sendError(CommandSourceStack source, Component error) throws CommandSyntaxException {
-        source.getPlayerOrException().getBukkitEntity().sendMessage(getPrefix()
-                .append(error));
-    }
-
-    /**
-     * Sends a success message to the player associated with the specified command source stack.
+     * Gets the {@link CommandBuildContext} object using the current Minecraft server instance.
      *
-     * @param source the {@link CommandSourceStack} to get the player from
-     * @param success the success message to send as a String
-     * @throws CommandSyntaxException if the player cannot be found
+     * @return the {@link CommandBuildContext} object
      */
-    public static void sendSuccess(CommandSourceStack source, String success) throws CommandSyntaxException {
-        source.getPlayerOrException().getBukkitEntity().sendMessage(getPrefix()
-                .append(Component.text(success, Colors.SUCCESS)));
-    }
-
-    public static<T extends Player> void sendSuccess(T player, String success) {
-        player.sendMessage(getPrefix()
-                .append(Component.text(success, Colors.SUCCESS)));
-    }
-    public static<T extends Player>  void sendSuccess(T player, Component success) {
-        player.sendMessage(getPrefix()
-                .append(success));
-    }
-    public static<T extends net.minecraft.world.entity.player.Player> void sendSuccess(T player, Component success){
-        player.sendSystemMessage(PaperAdventure.asVanilla(getPrefix()
-                .append(success.colorIfAbsent(Colors.SUCCESS))));
-    }
-
-    public static<T extends net.minecraft.world.entity.player.Player> void sendSuccess(T player, String success){
-        sendSuccess(player, Component.text(success, Colors.SUCCESS));
+    @Contract(pure = true)
+    public static @NotNull CommandBuildContext buildContext() {
+        return buildContext;
     }
 
     /**
-     * Sends a success message to the player associated with the specified command source stack.
+     * Deserializes the given string using the legacy ampersand format and returns the resulting component.
      *
-     * @param source the {@link CommandSourceStack} to get the player from
-     * @param success the success message to send as a {@link Component}
-     * @throws CommandSyntaxException if the player cannot be found
+     * @param toDeserialize the string to deserialize
+     * @return the deserialized component
      */
-    public static void sendSuccess(CommandSourceStack source, Component success) throws CommandSyntaxException {
-        source.getPlayerOrException().getBukkitEntity().sendMessage(getPrefix()
-                .append(success));
-    }
-
-    public static void sendInfo(CommandSourceStack source, Component info) throws CommandSyntaxException {
-        source.getPlayerOrException().getBukkitEntity().sendMessage(getPrefix()
-                .append(info));
-    }
-
-    public static void sendInfo(CommandSourceStack source, String info) throws CommandSyntaxException {
-        sendInfo(source, Component.text(info, Colors.INFO));
-    }
-
-    public static<T extends net.minecraft.world.entity.player.Player> void sendInfo(T player, Component info){
-        player.sendSystemMessage(PaperAdventure.asVanilla(info.colorIfAbsent(Colors.INFO)));
-    }
-
-    public static<T extends net.minecraft.world.entity.player.Player> void sendInfo(T player, String info){
-        sendInfo(player, Component.text(info));
-    }
-
-    public static<T extends Player> void sendInfo(T player, Component info){
-        player.sendMessage(info.colorIfAbsent(Colors.INFO));
-    }
-
-    public static<T extends Player> void sendInfo(T player, String info){
-        sendInfo(player, Component.text(info));
-    }
-
-
-
-    /**
-     * Builds a command build context.
-     *
-     * @return the built command build context
-     */
-    public static @NotNull CommandBuildContext buildContext(){
-        return CommandBuildContext.configurable(MinecraftServer.getServer().registryAccess(),
-            MinecraftServer.getServer().getWorldData().getDataConfiguration().enabledFeatures());
-    }
-
-    public static boolean canPlayerSeePlayer(@NotNull ServerPlayer player, @NotNull ServerPlayer playerToCheck){
-        if (!isVanished(playerToCheck.getBukkitEntity())) return true;
-        return player.getBukkitEntity().canSee(playerToCheck.getBukkitEntity());
-    }
-
-    public static Collection<ServerPlayer> checkPlayerSuggestion(CommandSourceStack source, Collection<ServerPlayer> targets) throws CommandSyntaxException {
-        if (!source.isPlayer()) return targets;
-        if (targets.size() == 1) {
-            ServerPlayer player = targets.iterator().next();
-
-            if (canPlayerSeePlayer(source.getPlayerOrException(), player)) return targets;
-            throw EntityArgument.NO_PLAYERS_FOUND.create();
-        } else {
-            for (ServerPlayer target : targets) {
-                if (canPlayerSeePlayer(source.getPlayerOrException(), target)) continue;
-                targets.remove(target);
-            }
-            return targets;
-        }
-    }
-
-    public static Collection<? extends Entity> checkEntitySuggestion(CommandSourceStack source, Collection<? extends Entity> targets) throws CommandSyntaxException {
-        if (!source.isPlayer()) return targets;
-        if (targets.size() == 1) {
-            Entity entity = targets.iterator().next();
-
-            if (entity instanceof ServerPlayer serverPlayer) {
-                if (canPlayerSeePlayer(source.getPlayerOrException(), serverPlayer)) return targets;
-                throw EntityArgument.NO_ENTITIES_FOUND.create();
-            }
-        } else {
-            for (Entity target : targets) {
-                if (target instanceof ServerPlayer serverPlayer) {
-                    if (canPlayerSeePlayer(source.getPlayerOrException(), serverPlayer)) continue;
-                    targets.remove(target);
-                }
-            }
-        }
-        return targets;
-    }
-
-    public static <T extends ServerPlayer> ServerPlayer checkSinglePlayerSuggestion(CommandSourceStack source, T player) throws CommandSyntaxException {
-        Collection<ServerPlayer> players = checkPlayerSuggestion(source, Collections.singleton(player));
-        return players.iterator().next();
-    }
-
-    public static <T extends Entity> Entity checkSingleEntitySuggestion(CommandSourceStack source, T entity) throws CommandSyntaxException{
-        Collection<? extends Entity> entities = checkEntitySuggestion(source, Collections.singleton(entity));
-        return entities.iterator().next();
-    }
-
-    public static Component deserialize(String toDeserialize){
+    public static @NotNull Component deserialize(String toDeserialize) {
         return LegacyComponentSerializer.legacyAmpersand().deserialize(toDeserialize);
     }
 
-    public static <T extends Double> double makeDoubleReadable(T value){
+    /**
+     * Formats the given double value to a readable format with one decimal point precision.
+     *
+     * @param value the double value to format
+     * @param <T>   the type of the double value
+     * @return the formatted double value as a double
+     */
+    public static <T extends Double> double makeDoubleReadable(T value) {
         return Double.parseDouble(new DecimalFormat("#.#").format(value));
     }
 
-    public static File getPlayerFile(UUID uuid) {
-        for (World world : Bukkit.getWorlds()) {
-            File worldFolder = world.getWorldFolder();
-            if (!worldFolder.isDirectory()) continue;
-            File playerDataFolder = new File(worldFolder, "playerdata");
-            if (!playerDataFolder.isDirectory()) continue;
-            File playerFile = new File(playerDataFolder, uuid.toString() + ".dat");
-            if (playerFile.exists()) return playerFile;
-        }
-        return null;
-    }
-
-    public static Location getLocation(GameProfile gameProfile) throws IOException, CommandSyntaxException {
-        File dataFile = getPlayerFile(gameProfile.getId());
-
-        if (dataFile == null) return null;
-        CompoundBinaryTag tag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), GZIP);
-        ListBinaryTag posTag = tag.getList("Pos");
-        ListBinaryTag rotTag = tag.getList("Rotation");
-
-        long worldUUIDMost = tag.getLong("WorldUUIDMost");
-        long worldUUIDLeast = tag.getLong("WorldUUIDLeast");
-
-        World world = Bukkit.getWorld(new UUID(worldUUIDMost, worldUUIDLeast));
-
-        if (world == null) throw ERROR_POSITION_IN_UNLOADED_WORLD.create(gameProfile);
-
-        return new Location(world, posTag.getDouble(0), posTag.getDouble(1), posTag.getDouble(2), rotTag.getFloat(0), rotTag.getFloat(1));
-    }
-
-    public static void setLocation(UUID uuid, Location location) throws IOException{
-        File dataFile = EssentialsUtil.getPlayerFile(uuid);
-
-        if (dataFile == null) return;
-        CompoundBinaryTag rawTag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), GZIP);
-        CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder().put(rawTag);
-
-        ListBinaryTag.Builder<BinaryTag> posTag = ListBinaryTag.builder();
-        posTag.add(DoubleBinaryTag.of(location.getX()));
-        posTag.add(DoubleBinaryTag.of(location.getY()));
-        posTag.add(DoubleBinaryTag.of(location.getZ()));
-
-        ListBinaryTag.Builder<BinaryTag> rotTag = ListBinaryTag.builder();
-        rotTag.add(FloatBinaryTag.of(location.getYaw()));
-        rotTag.add(FloatBinaryTag.of(location.getPitch()));
-
-        builder.put("Pos", posTag.build());
-        builder.put("Rotation", rotTag.build());
-
-        long worldUUIDLeast = location.getWorld().getUID().getLeastSignificantBits();
-        long worldUUIDMost = location.getWorld().getUID().getMostSignificantBits();
-        builder.putLong("WorldUUIDLeast", worldUUIDLeast);
-        builder.putLong("WorldUUIDMost", worldUUIDMost);
-
-        BinaryTagIO.writer().write(builder.build(), dataFile.toPath(), GZIP);
-    }
-
-    public static boolean isNmsSupported(){
+    /**
+     * Checks if the NMS (net.minecraft.server) package is supported by the server.
+     *
+     * @return true if NMS is supported, false otherwise
+     */
+    public static boolean isNmsSupported() {
         try {
-            Class.forName(CraftWorld.class.getName());
+            Class.forName(NMS_CLASS);
             return true;
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
             return false;
         }
     }
 
-    public static Component getPrefix(){
+    /**
+     * Returns the prefix component from this plugin.
+     *
+     * @return the prefix component
+     */
+    public static Component getPrefix() {
         if (prefix == null) {
             return Component.text(">> ", Colors.DARK_GRAY)
                     .append(gradientify("SurfEssentials", "#46B5C9", "#3A7FF2")
@@ -468,71 +204,416 @@ public abstract class EssentialsUtil {
         return prefix;
     }
 
-    public static void setPrefix(){
+    /**
+     * Sets the plugin prefix from the plugin configuration file.
+     */
+    public static void setPrefix() {
         FileConfiguration config = SurfEssentials.getInstance().getConfig();
         String prefixString = config.getString("prefix");
-        if(prefixString == null || prefixString.isBlank() || prefixString.isEmpty()) return;
+        if (prefixString == null || prefixString.isBlank() || prefixString.isEmpty()) return;
 
         prefix = MiniMessage.miniMessage().deserialize(prefixString);
     }
 
-    public static void callEvent(@NotNull Event event){
+    /**
+     * Calls the specified event.
+     *
+     * @param event the event to call
+     */
+    public static void callEvent(@NotNull Event event) {
         sendDebug("Calling event: " + event.getEventName());
         SurfEssentials.getInstance().getServer().getPluginManager().callEvent(event);
     }
 
-    public static CommandDispatcher<CommandSourceStack> getDispatcher(){
-        return SurfEssentials.getMinecraftServer().getCommands().getDispatcher();
-    }
-
-    public static RootCommandNode<CommandSourceStack> getRoot(){
-        return getDispatcher().getRoot();
-    }
-    public static <T extends String> CommandNode<CommandSourceStack> unregisterDispatcherCommand(T name){
-        var command = getRoot().getChild(name);
-        sendDebug("Removing command: " + name);
-        getRoot().removeCommand(name);
-        return command;
-    }
-    public static void syncCommands(){
-        sendDebug("Syncing commands...");
-        ((CraftServer)Bukkit.getServer()).syncCommands();
-    }
-
-    public static <T> T make(T object, Consumer<T> initializer) {
+    /**
+     * Initializes and returns an object using the specified initializer.
+     *
+     * @param object      the object to initialize
+     * @param initializer the initializer function to use
+     * @param <T>         the type of object to initialize
+     * @return the initialized object
+     */
+    @Contract("_, _ -> param1")
+    public static <T> T make(T object, @NotNull Consumer<T> initializer) {
         initializer.accept(object);
         return object;
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean isDebugging(){
-        return SurfEssentials.getInstance().getConfig().getBoolean("debug");
+    /**
+     * Initializes and returns an object.
+     *
+     * @param object the object to initialize
+     * @param <T>    the type of object to initialize
+     * @return the initialized object
+     */
+    @Contract("_ -> param1")
+    public static <T> T make(T object) {
+        return make(object, something -> {
+        });
     }
 
-    public static void sendDebug(CommandSourceStack sourceStack, Component debug){
-        if (!isDebugging()) return;
-        sourceStack.getBukkitSender().sendMessage(debug.colorIfAbsent(Colors.DEBUG));
+    /**
+     * Gets the display name of the specified {@link Entity} as an Adventure Component.
+     *
+     * @param entity the entity whose display name to retrieve
+     * @param <E>    the type of entity
+     * @return the display name of the specified {@link Entity} as an Adventure Component
+     */
+    public static <E extends Entity> @NotNull Component getDisplayName(E entity) {
+        if (entity instanceof ServerPlayer serverPlayer) {
+            return serverPlayer.adventure$displayName.colorIfAbsent(Colors.TERTIARY);
+        }
+        return PaperAdventure.asAdventure(entity.getDisplayName()).colorIfAbsent(Colors.TERTIARY);
     }
 
-    public static void sendDebug(CommandSourceStack sourceStack, String debug){
-        sendDebug(sourceStack, Component.text(debug));
+    /**
+     * Returns the display name of the given {@link org.bukkit.entity.Entity}.
+     *
+     * @param entity the entity whose display name is to be returned
+     * @param <E>    the type of entity to retrieve the display name of
+     * @return a Component representing the display name of the given entity, with color set to TERTIARY if not already set
+     */
+    public static <E extends org.bukkit.entity.Entity> @NotNull Component getDisplayName(E entity) {
+        Component displayName;
+        if (entity instanceof Player player) {
+            displayName = player.displayName();
+        } else if (entity.customName() != null) {
+            displayName = Objects.requireNonNull(entity.customName());
+        } else {
+            displayName = entity.name();
+        }
+        return displayName.colorIfAbsent(Colors.TERTIARY);
     }
 
-    public static void sendDebug(Component debug){
-        if (!isDebugging()) return;
-        SurfEssentials.logger().info(debug.colorIfAbsent(Colors.DEBUG));
+    /**
+     * Gets the display name of the specified Bukkit entity as a vanilla Minecraft component.
+     *
+     * @param entity the Bukkit entity
+     * @param <E>    the type of the entity
+     * @return the display name as a vanilla Minecraft component
+     */
+    public static <E extends org.bukkit.entity.Entity> net.minecraft.network.chat.Component getMinecraftDisplayName(E entity) {
+        return PaperAdventure.asVanilla(getDisplayName(entity));
     }
 
-    public static void sendDebug(String debug){
-        sendDebug(Component.text(debug));
+    /**
+     * Gets the display name of the specified entity as a vanilla Minecraft component.
+     *
+     * @param entity the entity
+     * @param <E>    the type of the entity
+     * @return the display name as a vanilla Minecraft component
+     */
+    public static <E extends Entity> net.minecraft.network.chat.Component getMinecraftDisplayName(E entity) {
+        return PaperAdventure.asVanilla(getDisplayName(entity));
     }
 
-    public static <T extends CommandNode<CommandSourceStack>> void registerCommand(T command){
-        getRoot().addChild(command);
-        REGISTERED_COMMANDS.add(command);
+    /**
+     * Gets the display name of the specified game profile as a component.
+     *
+     * @param gameProfile the game profile
+     * @return the display name as a component
+     */
+    public static Component getDisplayName(GameProfile gameProfile) {
+        final var player = getServerPlayer(gameProfile.getId());
+        if (player != null) {
+            return getDisplayName(player);
+        }
+        return Component.text(gameProfile.getName(), Colors.TERTIARY);
     }
 
-    public static List<CommandNode<CommandSourceStack>> getRegisteredCommands(){
-        return REGISTERED_COMMANDS;
+    /**
+     * Gets the display name component for a player with the given name.
+     * <p>
+     * If a player with the given name is online, the display name component of that player
+     * is returned. Otherwise, a text component with the given name and tertiary color is returned.
+     * </p>
+     *
+     * @param name the name of the player
+     * @return the display name component
+     * @since 1.0.4
+     */
+    public static Component getDisplayName(String name) {
+        final var player = Bukkit.getPlayer(name);
+
+        if (player != null) return getDisplayName(player);
+        return Component.text(name, Colors.TERTIARY);
+    }
+
+    /**
+     * Gets the display name of an OfflinePlayer if online otherwise just the String name
+     *
+     * @param offlinePlayer   the OfflinePlayer
+     * @param <OfflinePlayer> the type of the OfflinePlayer
+     * @return the display name
+     */
+    public static <OfflinePlayer extends org.bukkit.OfflinePlayer> Component getOfflineDisplayName(OfflinePlayer offlinePlayer) {
+        final var name = offlinePlayer.getName();
+        if (!offlinePlayer.isOnline())
+            return name != null ? Component.text(name, Colors.VARIABLE_VALUE) : Component.empty();
+
+        return getDisplayName(offlinePlayer.getPlayer());
+    }
+
+    /**
+     * Gets the display name of the specified entity as a vanilla Minecraft component.
+     *
+     * @param entity the entity
+     * @param <E>    the type of the entity
+     * @return the display name as a vanilla Minecraft component
+     */
+    public static <E extends Entity> net.minecraft.network.chat.Component getDisplayNameAsVanilla(E entity) {
+        return PaperAdventure.asVanilla(getDisplayName(entity));
+    }
+
+    /**
+     * Returns the given value if it is not null, otherwise returns the default value.
+     *
+     * @param toCheck      the value to check for null
+     * @param defaultValue the default value to return if toCheck is null
+     * @param <Value>      the type of the values being compared
+     * @return toCheck if it is not null, otherwise defaultValue
+     */
+    @Contract(value = "null, _ -> param2; !null, _ -> param1", pure = true)
+    public static <Value> Value getDefaultIfNull(@Nullable Value toCheck, @NotNull Value defaultValue) {
+        return (toCheck == null) ? Objects.requireNonNull(defaultValue) : toCheck;
+    }
+
+    /**
+     * Returns the instance of the {@link DamageSources} class.
+     *
+     * @return the instance of the {@link DamageSources} class
+     */
+    @Contract(pure = true)
+    public static DamageSources getDamageSources() {
+        return damageSources;
+    }
+
+    /**
+     * Returns the {@link ServerPlayer} with the given UUID.
+     *
+     * @param uuid the UUID of the player
+     * @return the {@link ServerPlayer} with the given UUID
+     */
+    public static ServerPlayer getServerPlayer(@NotNull UUID uuid) {
+        return getMinecraftServer().getPlayerList().getPlayer(uuid);
+    }
+
+    /**
+     * Changes the display name of the given {@link ItemMeta}.
+     *
+     * @param meta the {@link ItemMeta} to modify
+     * @param name the new display name
+     * @param <T>  the type of the {@link ItemMeta}
+     * @return the modified {@link ItemMeta}
+     */
+    @Contract("_, _ -> param1")
+    public static <T extends ItemMeta> @NotNull T changeName(@NotNull T meta, Component name) {
+        meta.displayName(name);
+        return meta;
+    }
+
+    /**
+     * Changes the display name of the given {@link ItemStack}.
+     *
+     * @param stack the {@link ItemStack} to modify
+     * @param name  the new display name
+     * @return the modified {@link ItemStack}
+     */
+    @Contract("_, _ -> param1")
+    public static @NotNull ItemStack changeName(ItemStack stack, Component name) {
+        stack.setItemMeta(changeName(stack.getItemMeta(), name));
+        stack.editMeta(itemMeta -> changeName(itemMeta, name));
+        return stack;
+    }
+
+    /**
+     * Returns a {@link Predicate<Player>} that checks if a {@link Player} has permission for any game mode.
+     *
+     * @return the predicate for checking game mode permissions
+     */
+    @Contract(pure = true)
+    public static @NotNull Predicate<Player> hasGameModePermission() {
+        return player -> player.hasPermission(Permissions.GAMEMODE_ADVENTURE_SELF_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_ADVENTURE_OTHER_PERMISSION)
+                || player.hasPermission(Permissions.GAMEMODE_ADVENTURE_OTHER_OFFLINE_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_CREATIVE_SELF_PERMISSION)
+                || player.hasPermission(Permissions.GAMEMODE_CREATIVE_OTHER_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_CREATIVE_OTHER_OFFLINE_PERMISSION)
+                || player.hasPermission(Permissions.GAMEMODE_SURVIVAL_SELF_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_SURVIVAL_OTHER_PERMISSION)
+                || player.hasPermission(Permissions.GAMEMODE_SURVIVAL_OTHER_OFFLINE_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_SPECTATOR_OTHER_PERMISSION)
+                || player.hasPermission(Permissions.GAMEMODE_SPECTATOR_SELF_PERMISSION) || player.hasPermission(Permissions.GAMEMODE_SPECTATOR_OTHER_OFFLINE_PERMISSION);
+    }
+
+    /**
+     * Checks if an {@link Enchantment} is compatible with an {@link ItemStack}.
+     *
+     * @param enchantment the {@link Enchantment} to check compatibility with
+     * @param stack       the {@link ItemStack} to check compatibility for
+     * @return true if the enchantment is compatible with the item stack, false otherwise
+     */
+    public static boolean isEnchantmentCompatible(@NotNull Enchantment enchantment, ItemStack stack) {
+        if (!enchantment.canEnchantItem(stack)) return false;
+
+        for (Enchantment otherEnchantment : stack.getEnchantments().keySet()) {
+            if (enchantment.conflictsWith(otherEnchantment)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Gets the block ID of a given {@link Block}.
+     *
+     * @param block the block to get the ID for
+     * @return the ID of the block
+     */
+    public static int getBlockId(@NotNull Block block) {
+        return Block.getId(block.defaultBlockState());
+    }
+
+    /**
+     * Gets the item ID of a given {@link Item}.
+     *
+     * @param item the item to get the ID for
+     * @return the ID of the item
+     */
+    public static int getItemId(Item item) {
+        return Item.getId(item);
+    }
+
+    /**
+     * Spawns a fake {@link FallingBlockEntity} at the specified location for the given {@link Player}.
+     *
+     * @param player   the {@link Player} for whom the fake falling block is spawned
+     * @param block    the block type of the fake falling block
+     * @param location the location where the fake falling block is spawned
+     * @return the spawned FallingBlockEntity
+     */
+    public static @NotNull FallingBlockEntity spawnFakeFallingBlock(Player player, @NotNull Block block, @NotNull Location location) {
+        final var serverPlayer = EssentialsUtil.toServerPlayer(player);
+        final var fallingBlockEntity = new FallingBlockEntity(serverPlayer.level, location.x(), location.y(), location.z(), block.defaultBlockState());
+
+        fallingBlockEntity.setNoGravity(false);
+        fallingBlockEntity.setInvulnerable(false);
+        fallingBlockEntity.dropItem = false;
+
+        final var packet = new ClientboundAddEntityPacket(fallingBlockEntity, EssentialsUtil.getBlockId(block));
+
+        EssentialsUtil.sendPackets(player, packet);
+        return fallingBlockEntity;
+    }
+
+    /**
+     * Spawns a fake {@link FallingBlockEntity} at the specified location for the given {@link Player} and removes it after a certain duration.
+     *
+     * @param player   the {@link Player} for whom the fake falling block is spawned
+     * @param block    the block type of the fake falling block
+     * @param location the location where the fake falling block is spawned
+     * @param duration the duration after which the fake falling block is removed
+     * @return the spawned FallingBlockEntity
+     */
+    public static @NotNull FallingBlockEntity spawnFakeFallingBlock(Player player, Block block, Location location, @NotNull Duration duration) {
+        final var packet = spawnFakeFallingBlock(player, block, location);
+        Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), () -> sendRemoveEntitiesPacket(player, packet.getId()), duration.toMillis() / 50);
+        return packet;
+    }
+
+    /**
+     * Returns the command modification block limit for the given {@link CommandSourceStack}.
+     *
+     * @param source the command source
+     * @return the {@link GameRules#RULE_COMMAND_MODIFICATION_BLOCK_LIMIT}
+     */
+    public static int modificationBlockLimit(@NotNull CommandSourceStack source) {
+        return source.getLevel().getGameRules().getInt(GameRules.RULE_COMMAND_MODIFICATION_BLOCK_LIMIT);
+    }
+
+    /**
+     * Returns the command modification block limit for the given {@link org.bukkit.entity.Entity}.
+     *
+     * @param entity the entity
+     * @return the {@link GameRule#COMMAND_MODIFICATION_BLOCK_LIMIT}
+     */
+    @SuppressWarnings("DataFlowIssue")
+    public static int modificationBlockLimit(org.bukkit.entity.@NotNull Entity entity) {
+        return entity.getWorld().getGameRuleValue(GameRule.COMMAND_MODIFICATION_BLOCK_LIMIT);
+    }
+
+    /**
+     * Formats a {@link BoundingBox} location with the specified color.
+     *
+     * @param color       the color to use for formatting
+     * @param boundingBox the bounding box to format
+     * @return the formatted location as a Component
+     */
+    public static @NotNull Component formatLocation(TextColor color, @NotNull BoundingBox boundingBox) {
+        return Component.text(" von ", color)
+                .append(formatLocation(Colors.SPACER, boundingBox.minX(), boundingBox.minY(), boundingBox.minZ()))
+                .append(Component.text(" bis ", color))
+                .append(formatLocation(Colors.SPACER, boundingBox.maxX(), boundingBox.maxY(), boundingBox.maxZ()));
+    }
+
+    /**
+     * Formats a {@link org.bukkit.util.BoundingBox} location with the specified color.
+     *
+     * @param color       the color to use for formatting
+     * @param boundingBox the BoundingBox to format
+     * @return the formatted location as a Component
+     */
+    public static @NotNull Component formatLocation(TextColor color, org.bukkit.util.@NotNull BoundingBox boundingBox) {
+        return Component.text(" von ", color)
+                .append(formatLocation(Colors.SPACER, boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getMinZ()))
+                .append(Component.text(" bis ", color))
+                .append(formatLocation(Colors.SPACER, boundingBox.getMaxX(), boundingBox.getMaxY(), boundingBox.getMaxZ()));
+    }
+
+    /**
+     * Formats a {@link Location} with the specified color and displays the world if requested.
+     *
+     * @param color        the color to use for formatting
+     * @param location     the Location to format
+     * @param displayWorld whether to display the world information
+     * @return the formatted location as a Component
+     */
+    public static @NotNull Component formatLocation(TextColor color, @NotNull Location location, boolean displayWorld) {
+        final var builder = Component.text();
+
+        builder.append(formatLocation(Colors.SPACER, location.x(), location.y(), location.z()));
+
+        if (displayWorld) {
+            try (final var serverLevel = EssentialsUtil.toServerLevel(location.getWorld())) {
+
+                builder.append(Component.text(" in ", color))
+                        .append(Component.text(serverLevel.dimension().location().toString(), Colors.VARIABLE_VALUE));
+
+            } catch (IOException ignored) {
+            }
+        }
+
+        return builder.build();
+    }
+
+    /**
+     * Formats the location coordinates with the specified spacer color.
+     *
+     * @param spacer the color to use for the spacer
+     * @param x      the X-coordinate
+     * @param y      the Y-coordinate
+     * @param z      the Z-coordinate
+     * @param <T>    the type of the coordinates (Number)
+     * @return the formatted location as a Component
+     */
+    public static <T extends Number> @NotNull Component formatLocation(TextColor spacer, @NotNull T x, @NotNull T y, @NotNull T z) {
+        return Component.text(x.doubleValue(), Colors.VARIABLE_VALUE)
+                .append(Component.text(", ", spacer))
+                .append(Component.text(y.doubleValue(), Colors.VARIABLE_VALUE))
+                .append(Component.text(", ", spacer))
+                .append(Component.text(z.doubleValue(), Colors.VARIABLE_VALUE));
+    }
+
+
+    static {
+        buildContext = CommandBuildContext.configurable(getMinecraftServer().registryAccess(),
+                getMinecraftServer().getWorldData().getDataConfiguration().enabledFeatures());
+
+        damageSources = new DamageSources(getMinecraftServer().registryAccess());
     }
 }

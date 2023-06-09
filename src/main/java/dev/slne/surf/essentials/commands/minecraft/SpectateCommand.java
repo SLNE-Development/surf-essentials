@@ -4,10 +4,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -37,7 +36,7 @@ public class SpectateCommand extends BrigadierCommand {
 
     @Override
     public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SPECTATE_SELF_PERMISSION));
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.SPECTATE_LEAVE_PERMISSION, Permissions.SPECTATE_OTHER_PERMISSION));
 
         literal.executes(context -> spectate(context.getSource(), null, context.getSource().getPlayerOrException()));
 
@@ -53,38 +52,22 @@ public class SpectateCommand extends BrigadierCommand {
         ServerPlayer player = EssentialsUtil.checkPlayerSuggestion(source, Collections.singleton(playerUnchecked)).iterator().next();
 
         if (player == entity) throw ERROR_SELF.create();
-        if (player.gameMode.getGameModeForPlayer() != GameType.SPECTATOR){
+        if (player.gameMode.getGameModeForPlayer() != GameType.SPECTATOR) {
             player.setGameMode(GameType.SPECTATOR);
         }
 
         player.setCamera(entity);
 
-        if (source.isPlayer()){
-            if (entity != null){
-                EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
-                        .append(Component.text(" beobachtet nun ", Colors.SUCCESS))
-                        .append(getEntityDisplayName(entity))
-                        .append(Component.text(".", Colors.SUCCESS)));
-            }else {
-                EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
-                        .append(Component.text(" beobachtet nun niemanden mehr.", Colors.SUCCESS)));
-            }
-        }else {
-            if (entity != null) {
-                source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.spectate.success.started", entity.getDisplayName()), false);
-            } else {
-                source.sendSuccess(net.minecraft.network.chat.Component.translatable("commands.spectate.success.stopped"), false);
-            }
+        if (entity != null) {
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(player)
+                    .append(Component.text(" beobachtet nun ", Colors.SUCCESS))
+                    .append(EssentialsUtil.getDisplayName(entity))
+                    .append(Component.text(".", Colors.SUCCESS)));
+        } else {
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(player)
+                    .append(Component.text(" beobachtet nun niemanden mehr.", Colors.SUCCESS)));
         }
         return 1;
-    }
-
-    private Component getEntityDisplayName(Entity entity){
-        if (entity instanceof ServerPlayer player){
-            return player.adventure$displayName.colorIfAbsent(Colors.TERTIARY);
-        }else {
-            return PaperAdventure.asAdventure(entity.getDisplayName());
-        }
     }
 
     private static final SimpleCommandExceptionType ERROR_SELF = new SimpleCommandExceptionType(net.minecraft.network.chat.Component.translatable("commands.spectate.self"));

@@ -8,21 +8,20 @@ import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings({"UnstableApiUsage", "SameParameterValue", "unused"})
 public class SurfEssentialsLoader implements PluginLoader {
     @Override
     public void classloader(@NotNull PluginClasspathBuilder classpathBuilder) {
         MavenLibraryResolver resolver = new MavenLibraryResolver();
 
-        addDependency(resolver, "net.kyori", "adventure-nbt", "4.12.0");
-        addDependency(resolver, "io.papermc.paper", "paper-api", "1.19.4-R0.1-SNAPSHOT");
+        addDependency(resolver, "net.kyori", "adventure-nbt", "4.13.0");
 
-        addRepository(resolver, "jitpack.io", "https://jitpack.io");
         addRepository(resolver, "papermc", "https://repo.papermc.io/repository/maven-public/");
 
         classpathBuilder.addLibrary(resolver);
     }
 
-    private void addDependency(MavenLibraryResolver resolver, String groupId, String artifactId, String version) {
+    private void addDependency(@NotNull MavenLibraryResolver resolver, String groupId, String artifactId, String version) {
         resolver.addDependency(new Dependency(new DefaultArtifact("%s:%s:%s".formatted(groupId, artifactId, version)), null));
     }
 

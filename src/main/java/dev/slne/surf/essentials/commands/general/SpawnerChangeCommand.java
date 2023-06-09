@@ -3,9 +3,9 @@ package dev.slne.surf.essentials.commands.general;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -27,21 +27,32 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Objects;
 
-public class SpawnerChangeCommand{
-
-    public static void register(){
-        SurfEssentials.registerPluginBrigadierCommand("spawner", SpawnerChangeCommand::literal);
+public class SpawnerChangeCommand extends BrigadierCommand {
+    @Override
+    public String[] names() {
+        return new String[]{"spawner"};
     }
 
-    private static void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SPAWNER_PERMISSION));
+    @Override
+    public String usage() {
+        return "/spawner ...";
+    }
+
+    @Override
+    public String description() {
+        return "Change spawners";
+    }
+
+    @Override
+    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
+        literal.requires(EssentialsUtil.checkPermissions(Permissions.SPAWNER_PERMISSION));
 
         literal.executes(context -> giveSpawner(context.getSource()));
 
         literal.then(Commands.argument("position", BlockPosArgument.blockPos())
                 .executes(context -> querySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position")))
 
-                .then(Commands.argument("entity", ResourceArgument.resource(EssentialsUtil.buildContext(), Registries.ENTITY_TYPE))
+                .then(Commands.argument("entity", ResourceArgument.resource(this.commandBuildContext, Registries.ENTITY_TYPE))
                         .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getSummonableEntityType(context, "entity").value(),
                                 null, null, null, null))
 
@@ -117,37 +128,35 @@ public class SpawnerChangeCommand{
         baseSpawner.spawnRange = spawnRange == null ? baseSpawner.spawnRange : spawnRange;
         baseSpawner.requiredPlayerRange = requiredPlayerRange == null ? baseSpawner.requiredPlayerRange : requiredPlayerRange;
 
-        source.getLevel().sendBlockUpdated(blockEntity.getBlockPos(), oldState, blockEntity.getBlockState(), 0);
+        source.getLevel().sendBlockUpdated(blockEntity.getBlockPos(), oldState, blockEntity.getBlockState(), 3);
 
-        if (source.isPlayer()){
-            EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
-                    .append(Component.text("Spawner", Colors.TERTIARY)
-                            .hoverEvent(HoverEvent.showText(Component.text("Entity: ", Colors.INFO)
-                                    .append(PaperAdventure.asAdventure(type.getDescription()).colorIfAbsent(Colors.TERTIARY))
-                                    .append(Component.newline())
-                                    .append(Component.text("minSpawnDelay: ", Colors.INFO)
-                                            .append(Component.text(baseSpawner.minSpawnDelay, Colors.TERTIARY)))
-                                    .append(Component.newline())
-                                    .append(Component.text("maxSpawnDelay: ", Colors.INFO)
-                                            .append(Component.text(baseSpawner.maxSpawnDelay, Colors.TERTIARY)))
-                                    .append(Component.newline())
-                                    .append(Component.text("spawnRange: ", Colors.INFO)
-                                            .append(Component.text(baseSpawner.spawnRange, Colors.TERTIARY)))
-                                    .append(Component.newline())
-                                    .append(Component.text("requiredPlayerRange: ", Colors.INFO)
-                                            .append(Component.text(baseSpawner.requiredPlayerRange, Colors.TERTIARY))))))
-                    .append(Component.text(" wurde erfolgreich geändert!")));
-        }else {
-            source.sendSuccess(net.minecraft.network.chat.Component.literal("The spawner was successfully modified"), false);
-        }
+
+        EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
+                .append(Component.text("Spawner", Colors.TERTIARY)
+                        .hoverEvent(HoverEvent.showText(Component.text("Entity: ", Colors.INFO)
+                                .append(PaperAdventure.asAdventure(type.getDescription()).colorIfAbsent(Colors.TERTIARY))
+                                .append(Component.newline())
+                                .append(Component.text("minSpawnDelay: ", Colors.INFO)
+                                        .append(Component.text(baseSpawner.minSpawnDelay, Colors.TERTIARY)))
+                                .append(Component.newline())
+                                .append(Component.text("maxSpawnDelay: ", Colors.INFO)
+                                        .append(Component.text(baseSpawner.maxSpawnDelay, Colors.TERTIARY)))
+                                .append(Component.newline())
+                                .append(Component.text("spawnRange: ", Colors.INFO)
+                                        .append(Component.text(baseSpawner.spawnRange, Colors.TERTIARY)))
+                                .append(Component.newline())
+                                .append(Component.text("requiredPlayerRange: ", Colors.INFO)
+                                        .append(Component.text(baseSpawner.requiredPlayerRange, Colors.TERTIARY))))))
+                .append(Component.text(" wurde erfolgreich geändert!")));
         return 1;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean isSpawner(CommandSourceStack source, BlockPos blockPos) throws CommandSyntaxException {
-        if (source.getLevel().getBlockIfLoaded(blockPos) != Blocks.SPAWNER){
-            if (source.isPlayer()){
+        if (source.getLevel().getBlockIfLoaded(blockPos) != Blocks.SPAWNER) {
+            if (source.isPlayer()) {
                 EssentialsUtil.sendError(source, "An der Position befindet sich kein Spawner");
-            }else {
+            } else {
                 source.sendFailure(net.minecraft.network.chat.Component.literal("There is no spawner at this location."));
             }
             return false;
