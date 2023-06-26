@@ -55,10 +55,8 @@ public class RideCommand extends BrigadierCommand {
         if (rider.getSelfAndPassengers().anyMatch(passenger -> passenger == vehicle))
             throw ERROR_MOUNTING_LOOP.create();
 
-        try (final var riderLevel = rider.level(); final var vehicleLevel = vehicle.level()) {
-            if (riderLevel != vehicleLevel) throw ERROR_WRONG_DIMENSION.create();
-        } catch (IOException ignored) {
-        }
+        if (rider.level() != vehicle.level()) throw ERROR_WRONG_DIMENSION.create();
+
 
         if (!rider.startRiding(vehicle, true))
             throw ERROR_MOUNT_FAILED.create(rider.getDisplayName(), vehicle.getDisplayName());

@@ -3,7 +3,6 @@ package dev.slne.surf.essentials.commands.minecraft;
 import com.google.common.collect.Iterators;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.exceptions.InvalidStringTimeException;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
@@ -23,6 +22,7 @@ import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.event.world.TimeSkipEvent;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 public class TimeCommand extends BrigadierCommand {
@@ -77,7 +77,7 @@ public class TimeCommand extends BrigadierCommand {
                 .executes(context -> addNamedTime(context.getSource(), "Mitternacht")));
     }
 
-    private static int queryTime(CommandSourceStack source, ServerLevel serverLevel, int time, int whatTime) throws CommandSyntaxException {
+    private static int queryTime(CommandSourceStack source, ServerLevel serverLevel, int time, int whatTime) {
 
         ResourceKey<Level> resourceKey = serverLevel.dimension();
         String timeName;
@@ -99,7 +99,7 @@ public class TimeCommand extends BrigadierCommand {
         return time;
     }
 
-    private static int setTime(CommandSourceStack source, int time) throws CommandSyntaxException {
+    private static int setTime(CommandSourceStack source, int time) {
         Iterator<ServerLevel> iterator = GlobalConfiguration.get().commands.timeCommandAffectsAllWorlds ?
                 source.getServer().getAllLevels().iterator() : Iterators.singletonIterator(source.getLevel());
 
@@ -118,7 +118,7 @@ public class TimeCommand extends BrigadierCommand {
         return getDayTime(source.getLevel());
     }
 
-    private static int addTime(CommandSourceStack source, int time) throws CommandSyntaxException {
+    private static int addTime(CommandSourceStack source, int time) {
         Iterator<ServerLevel> iterator = GlobalConfiguration.get().commands.timeCommandAffectsAllWorlds ?
                 source.getServer().getAllLevels().iterator() : Iterators.singletonIterator(source.getLevel());
 
@@ -137,7 +137,7 @@ public class TimeCommand extends BrigadierCommand {
         return getDayTime(source.getLevel());
     }
 
-    private static int addNamedTime(CommandSourceStack source, String namedTime) throws CommandSyntaxException {
+    private static int addNamedTime(CommandSourceStack source, String namedTime) {
         int addTime = switch (namedTime) {
             case "Tag" -> 500;
             case "Mittag" -> 6000;
@@ -162,7 +162,8 @@ public class TimeCommand extends BrigadierCommand {
             level.setDayTime(level.getDayTime() + event.getSkipAmount());
 
             level.getPlayers(player -> {
-                player.connection.send(new ClientboundSetTimePacket(player.level.getGameTime(), player.getPlayerTime(), player.level.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)));
+                EssentialsUtil.sendPackets(player, new ClientboundSetTimePacket(player.level().getGameTime(), player.getPlayerTime(), player.level().getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)));
+
                 return true;
             });
         });

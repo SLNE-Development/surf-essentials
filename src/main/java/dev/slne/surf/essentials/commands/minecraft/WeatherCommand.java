@@ -2,7 +2,6 @@ package dev.slne.surf.essentials.commands.minecraft;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
@@ -51,7 +50,7 @@ public class WeatherCommand extends BrigadierCommand {
                         .executes(context -> setThunder(context.getSource(), IntegerArgumentType.getInteger(context, "duration")))));
     }
 
-    private static int queryWeather(CommandSourceStack source) throws CommandSyntaxException {
+    private static int queryWeather(CommandSourceStack source) {
         ServerLevel serverLevel = source.getLevel();
 
         boolean isClear = !serverLevel.isThundering() && !serverLevel.isRaining();
@@ -70,7 +69,7 @@ public class WeatherCommand extends BrigadierCommand {
         return 1;
     }
 
-    private static int setClear(CommandSourceStack source, int durationInSeconds) throws CommandSyntaxException {
+    private static int setClear(CommandSourceStack source, int durationInSeconds) {
         ServerLevel serverLevel = source.getLevel();
         serverLevel.setWeatherParameters(durationInSeconds, 0, false, false);
 
@@ -79,7 +78,7 @@ public class WeatherCommand extends BrigadierCommand {
         return durationInSeconds;
     }
 
-    private static int setRain(CommandSourceStack source, int durationInSeconds) throws CommandSyntaxException {
+    private static int setRain(CommandSourceStack source, int durationInSeconds) {
         ServerLevel serverLevel = source.getLevel();
         serverLevel.setWeatherParameters(0, durationInSeconds, true, false);
 
@@ -88,7 +87,7 @@ public class WeatherCommand extends BrigadierCommand {
         return durationInSeconds;
     }
 
-    private static int setThunder(CommandSourceStack source, int durationInSeconds) throws CommandSyntaxException {
+    private static int setThunder(CommandSourceStack source, int durationInSeconds) {
         ServerLevel serverLevel = source.getLevel();
         serverLevel.setWeatherParameters(0, durationInSeconds, true, true);
 

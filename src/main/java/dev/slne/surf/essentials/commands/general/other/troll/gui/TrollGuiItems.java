@@ -23,6 +23,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class TrollGuiItems {
@@ -212,7 +213,7 @@ public class TrollGuiItems {
         GuiItem guiItem = new GuiItem(new ItemStack(Material.BARRIER, 1));
 
         rename(guiItem, Component.text("Schließen", Colors.RED));
-        guiItem.setAction(inventoryClickEvent -> inventoryClickEvent.getClickedInventory().close());
+        guiItem.setAction(inventoryClickEvent -> Objects.requireNonNull(inventoryClickEvent.getClickedInventory(), "Inventory may not be null").close());
 
         return guiItem;
     }
@@ -261,7 +262,7 @@ public class TrollGuiItems {
             int currentSlot = 0;
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 GuiItem playerHead = new GuiItem(getHead(onlinePlayer), inventoryClickEvent -> {
-                    inventoryClickEvent.getClickedInventory().close();
+                    Objects.requireNonNull(inventoryClickEvent.getClickedInventory()).close();
                     ((Player) inventoryClickEvent.getWhoClicked()).performCommand("troll " + trollName[0] + " " + onlinePlayer.getName() + " " + trollName[1]);
                 });
 

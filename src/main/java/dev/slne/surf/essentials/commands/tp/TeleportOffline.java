@@ -36,7 +36,7 @@ public class TeleportOffline {
         SurfEssentials.registerPluginBrigadierCommand("tpoff", this::literal);
     }
 
-    private void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
+    private void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
         literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.OFFLINE_TELEPORT_PERMISSION));
 
         literal.then(Commands.argument("player", GameProfileArgument.gameProfile())
@@ -52,44 +52,70 @@ public class TeleportOffline {
         }
 
         CommandSourceStack source = context.getSource();
-        ServerPlayer player = context.getSource().getPlayerOrException();
-        GameProfile profile = gameProfiles.iterator().next();
-        UUID uuid = profile.getId();
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+        ServerPlayer player = source.getPlayerOrException();
 
-        if (!offlinePlayer.hasPlayedBefore()) {
-            throw NO_PLAYERS_FOUND.create();
-        }
+        offlinePlayer(context, gameProfiles, offlinePlayer -> {
+            if (offlinePlayer.isOnline()) {
+                player.getBukkitEntity().teleport(Objects.requireNonNull(offlinePlayer.getPlayer()).getLocation());
 
-        if (offlinePlayer.isOnline()) {
-            player.getBukkitEntity().teleport(Objects.requireNonNull(offlinePlayer.getPlayer()).getLocation());
+            } else {
 
-        }else {
+                EssentialsUtil.sendInfo(player, "Spieler daten laden...");
 
-            EssentialsUtil.sendInfo(player, "Spieler daten laden...");
-
-            try {
-                player.getBukkitEntity().teleportAsync(EssentialsUtil.getLocation(profile), PlayerTeleportEvent.TeleportCause.COMMAND);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return 0;
+                try {
+                    player.getBukkitEntity().teleportAsync(EssentialsUtil.getLocation(gameProfiles.iterator().next()), PlayerTeleportEvent.TeleportCause.COMMAND);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        }
+        });
+
 
         EssentialsUtil.sendSuccess(source, Component.text("Du hast dich zu ", Colors.SUCCESS)
-                .append(Component.text(profile.getName(), Colors.TERTIARY))
+                .append(EssentialsUtil.getDisplayName(gameProfiles.iterator().next()))
                 .append(Component.text(" teleportiert!", Colors.SUCCESS)));
 
         return 1;
     }
 
     private int teleportPlayerToLocation(CommandContext<CommandSourceStack> context, Collection<GameProfile> gameProfiles, Vec3 newLocation) throws CommandSyntaxException {
+        final var source = context.getSource();
+        final var player = source.getPlayerOrException();
+
+        offlinePlayer(context, gameProfiles, offlinePlayer -> {
+            if (offlinePlayer.isOnline()) {
+                Objects.requireNonNull(offlinePlayer.getPlayer()).teleportAsync(new Location(offlinePlayer.getPlayer().getWorld(), newLocation.x(), newLocation.y(), newLocation.z()));
+
+            } else {
+                EssentialsUtil.sendInfo(player, "Teleportiere Spieler...");
+
+                try {
+                    EssentialsUtil.setLocation(offlinePlayer.getUniqueId(), new Location(player.level().getWorld(), newLocation.x(), newLocation.y(), newLocation.z()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+        double posX = Double.parseDouble(new DecimalFormat("#.##").format(newLocation.x()));
+        double posY = Double.parseDouble(new DecimalFormat("#.##").format(newLocation.y()));
+        double posZ = Double.parseDouble(new DecimalFormat("#.##").format(newLocation.z()));
+
+        EssentialsUtil.sendSuccess(source, Component.text("Der Spieler ", Colors.SUCCESS)
+                .append(EssentialsUtil.getDisplayName(gameProfiles.iterator().next()))
+                .append(Component.text(" wurde zu ", Colors.SUCCESS))
+                .append(Component.text("%s %s %s".formatted(posX, posY, posZ), Colors.TERTIARY))
+                .append(Component.text(" teleportiert!", Colors.SUCCESS)));
+
+        return 1;
+    }
+
+    private void offlinePlayer(CommandContext<CommandSourceStack> context, Collection<GameProfile> gameProfiles, OfflinePlayerConsumer player) throws CommandSyntaxException {
         if (gameProfiles.size() > 1) {
             throw ERROR_NOT_SINGLE_PLAYER.createWithContext(new StringReader(context.getInput()));
         }
 
-        CommandSourceStack source = context.getSource();
-        ServerPlayer player = context.getSource().getPlayerOrException();
         GameProfile profile = gameProfiles.iterator().next();
         UUID uuid = profile.getId();
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
@@ -99,31 +125,10 @@ public class TeleportOffline {
             throw NO_PLAYERS_FOUND.create();
         }
 
-        if (offlinePlayer.isOnline()) {
-            Objects.requireNonNull(offlinePlayer.getPlayer()).teleportAsync(new Location(offlinePlayer.getPlayer().getWorld(), newLocation.x(), newLocation.y(), newLocation.z()));
+        player.accept(offlinePlayer);
+    }
 
-        } else {
-
-            EssentialsUtil.sendInfo(player, "Teleportiere Spieler...");
-
-            try(final var level = player.level()) {
-                EssentialsUtil.setLocation(uuid, new Location(level.getWorld(), newLocation.x(), newLocation.y(), newLocation.z()));
-            } catch (IOException e) {
-                e.printStackTrace();
-                return 0;
-            }
-        }
-
-        double posX = Double.parseDouble(new DecimalFormat("#.##").format(newLocation.x()));
-        double posY = Double.parseDouble(new DecimalFormat("#.##").format(newLocation.y()));
-        double posZ = Double.parseDouble(new DecimalFormat("#.##").format(newLocation.z()));
-
-        EssentialsUtil.sendSuccess(source, Component.text("Der Spieler ", Colors.SUCCESS)
-                .append(Component.text(profile.getName(), Colors.TERTIARY))
-                .append(Component.text(" wurde zu ", Colors.SUCCESS))
-                .append(Component.text("%s %s %s".formatted(posX, posY, posZ), Colors.TERTIARY))
-                .append(Component.text(" teleportiert!", Colors.SUCCESS)));
-
-        return 1;
+    public interface OfflinePlayerConsumer {
+        void accept(OfflinePlayer offlinePlayer) throws CommandSyntaxException;
     }
 }

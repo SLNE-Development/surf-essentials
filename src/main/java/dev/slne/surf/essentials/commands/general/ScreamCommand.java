@@ -4,7 +4,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.Validate;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
@@ -17,7 +16,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -25,10 +23,10 @@ import org.jetbrains.annotations.Range;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ScreamCommand extends BrigadierCommand {
-    private static final Map<UUID, Integer> COOLDOWN = EssentialsUtil.make(new HashMap<>(), map -> {
-    });
+    private static final Map<UUID, Integer> COOLDOWN = EssentialsUtil.make(new HashMap<>());
 
     @Override
     public String[] names() {
@@ -47,7 +45,7 @@ public class ScreamCommand extends BrigadierCommand {
 
     @Override
     public void literal(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(0, Permissions.SCREAM_PERMISSION));
+        literal.requires(EssentialsUtil.checkPermissions(2, Permissions.SCREAM_PERMISSION));
         literal.executes(context -> scream(context.getSource()));
     }
 
@@ -64,7 +62,7 @@ public class ScreamCommand extends BrigadierCommand {
 
         if (!player.getBukkitEntity().hasPermission(Permissions.SCREAM_BYPASS_PERMISSION)) {
             COOLDOWN.put(playerUUID, 10);
-            Bukkit.getScheduler().runTaskTimerAsynchronously(SurfEssentials.getInstance(), bukkitTask ->
+            Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), bukkitTask ->
                     COOLDOWN.computeIfPresent(playerUUID, (uuid, integer) -> {
                                 --integer;
                                 if (integer <= 0) {
@@ -78,29 +76,23 @@ public class ScreamCommand extends BrigadierCommand {
 
         final BlockPos position = player.blockPosition();
         final Screams scream = Screams.getRandomScream();
-        final var counter = new Object() {
-            short distance = 0;
-        };
+        AtomicInteger distance = new AtomicInteger(0);
 
-        try (final Level level = player.level()) {
-            Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), task -> {
-                if (counter.distance >= 10) task.cancel();
+        Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), task -> {
+            if (distance.get() >= 10) task.cancel();
 
-                doBoom(player, counter.distance);
+            doBoom(player, distance.get());
 
-                counter.distance++;
-            }, 0L, 1L);
+            distance.incrementAndGet();
+        }, 0L, 1L);
 
-            level.playSound(null, position, scream.getSoundEvent(), SoundSource.MASTER, scream.getVolume(), scream.getPitch());
-        } catch (IOException ignored) {
-        }
+        player.serverLevel().playSound(null, position, scream.getSoundEvent(), SoundSource.MASTER, scream.getVolume(), scream.getPitch());
+
 
         return 1;
     }
 
-    private void doBoom(@NotNull ServerPlayer player, @Range(from = -20, to = 20) short distance) {
-        Validate.isInBound(distance, -20, 20);
-
+    private void doBoom(@NotNull ServerPlayer player, @Range(from = -20, to = 20) int distance) {
         final double x = player.getX();
         final double y = player.getY() + 1;
         final double z = player.getZ();
@@ -122,8 +114,7 @@ public class ScreamCommand extends BrigadierCommand {
     }
 
     private void spawnParticles(@NotNull ServerPlayer player, double x, double y, double z) {
-        try (final ServerLevel level = player.serverLevel()) {
-            level.sendParticles(
+            player.serverLevel().sendParticles(
                     player, // player
                     ParticleTypes.SONIC_BOOM, // particle
                     false,  // force
@@ -136,8 +127,6 @@ public class ScreamCommand extends BrigadierCommand {
                     0, // delta Z
                     10 // speed
             );
-        } catch (IOException ignored) {
-        }
     }
 
     public enum Screams {

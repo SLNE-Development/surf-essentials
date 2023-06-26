@@ -72,7 +72,7 @@ public class EffectCommand extends BrigadierCommand {
                                 .executes(context -> clearSingleEffect(context.getSource(), EntityArgument.getEntities(context, "targets"), ResourceArgument.getMobEffect(context, "effect"))))));
     }
 
-    @SuppressWarnings("DuplicatedCode")
+
     private int giveEffect(CommandSourceStack source, Collection<? extends Entity> targetsUnchecked, Holder<MobEffect> statusEffect, @Nullable Integer seconds, int amplifier, boolean showParticles) throws CommandSyntaxException {
         Collection<? extends Entity> targets = EssentialsUtil.checkEntitySuggestion(source, targetsUnchecked);
         MobEffect mobEffectList = statusEffect.value();
