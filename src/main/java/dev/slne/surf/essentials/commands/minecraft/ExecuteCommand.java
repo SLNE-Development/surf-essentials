@@ -607,6 +607,7 @@ public class ExecuteCommand extends BrigadierCommand {
                                 RangeArgument.Ints.getRange(context, "range").matches(((int) compare.test(context))))));
     }
 
+    @SuppressWarnings("unused")
     private ArgumentBuilder<CommandSourceStack, ?> compareDouble(CommandNode<CommandSourceStack> root, LiteralArgumentBuilder<CommandSourceStack> argumentBuilder, boolean positive, double compare) {
         return compareDouble(root, argumentBuilder, positive, context -> compare);
     }
@@ -854,12 +855,12 @@ public class ExecuteCommand extends BrigadierCommand {
 
     @FunctionalInterface
     private interface EntityCommandNumberPredicate {
-        double test(Entity entity) throws CommandSyntaxException;
+        double test(Entity entity);
     }
 
     @FunctionalInterface
     private interface PlayerCommandNumberPredicate {
-        double test(ServerPlayer player) throws CommandSyntaxException;
+        double test(ServerPlayer player);
     }
 
 
@@ -867,18 +868,22 @@ public class ExecuteCommand extends BrigadierCommand {
         return ((Number) from).doubleValue();
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static boolean checkIfPlayer(CommandContext<CommandSourceStack> context, String name, Predicate<ServerPlayer> playerPredicate) throws CommandSyntaxException {
         return getEntity(context, name) instanceof ServerPlayer player && playerPredicate.test(player);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static boolean checkEntity(CommandContext<CommandSourceStack> context, String name, @NotNull Predicate<Entity> entityPredicate) throws CommandSyntaxException {
         return entityPredicate.test(getEntity(context, name));
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static double getValueFromEntity(CommandContext<CommandSourceStack> context, String name, @NotNull EntityCommandNumberPredicate predicate) throws CommandSyntaxException {
         return predicate.test(EntityArgument.getEntity(context, name));
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static double getValueFromPlayer(CommandContext<CommandSourceStack> context, String name, @NotNull PlayerCommandNumberPredicate predicate) throws CommandSyntaxException {
         return predicate.test(EntityArgument.getPlayer(context, name));
     }

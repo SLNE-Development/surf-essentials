@@ -32,7 +32,7 @@ public class HerobrineTroll extends Troll {
 
         GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "Herobrine");
 
-        ServerPlayer herobrineNpc = new ServerPlayer(source.getServer(), target.level.getMinecraftWorld(), gameProfile);
+        ServerPlayer herobrineNpc = new ServerPlayer(source.getServer(), target.serverLevel(), gameProfile);
         herobrineNpc.setPos(target.position());
 
         //Herobrine skin from user "HER0BRINE"
@@ -59,12 +59,10 @@ public class HerobrineTroll extends Troll {
         EssentialsUtil.scarePlayer(target.getBukkitEntity());
 
         if (withParticles) {
-            try (final var level = herobrineNpc.serverLevel()) {
-                Bukkit.getScheduler().runTaskTimerAsynchronously(SurfEssentials.getInstance(), bukkitTask -> level.sendParticles(
-                        target, ParticleTypes.ASH, false, herobrineNpc.getEyePosition().x, herobrineNpc.getEyePosition().y,
-                        herobrineNpc.getEyePosition().z, 10, 0.5, 0.5, 0.5, 1), 2, 5);
-            } catch (IOException ignored) {
-            }
+            Bukkit.getScheduler().runTaskTimerAsynchronously(SurfEssentials.getInstance(), bukkitTask -> herobrineNpc.serverLevel().sendParticles(
+                    target, ParticleTypes.ASH, false, herobrineNpc.getEyePosition().x, herobrineNpc.getEyePosition().y,
+                    herobrineNpc.getEyePosition().z, 10, 0.5, 0.5, 0.5, 1), 2, 5);
+
         }
 
         //success message

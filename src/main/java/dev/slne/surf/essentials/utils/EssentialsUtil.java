@@ -489,7 +489,7 @@ public final class EssentialsUtil extends LoggingUtil {
      */
     public static @NotNull FallingBlockEntity spawnFakeFallingBlock(Player player, @NotNull Block block, @NotNull Location location) {
         final var serverPlayer = EssentialsUtil.toServerPlayer(player);
-        final var fallingBlockEntity = new FallingBlockEntity(serverPlayer.level, location.x(), location.y(), location.z(), block.defaultBlockState());
+        final var fallingBlockEntity = new FallingBlockEntity(serverPlayer.level(), location.x(), location.y(), location.z(), block.defaultBlockState());
 
         fallingBlockEntity.setNoGravity(false);
         fallingBlockEntity.setInvulnerable(false);
@@ -579,13 +579,9 @@ public final class EssentialsUtil extends LoggingUtil {
         builder.append(formatLocation(Colors.SPACER, location.x(), location.y(), location.z()));
 
         if (displayWorld) {
-            try (final var serverLevel = EssentialsUtil.toServerLevel(location.getWorld())) {
+            builder.append(Component.text(" in ", color))
+                    .append(Component.text(EssentialsUtil.toServerLevel(location.getWorld()).dimension().location().toString(), Colors.VARIABLE_VALUE));
 
-                builder.append(Component.text(" in ", color))
-                        .append(Component.text(serverLevel.dimension().location().toString(), Colors.VARIABLE_VALUE));
-
-            } catch (IOException ignored) {
-            }
         }
 
         return builder.build();

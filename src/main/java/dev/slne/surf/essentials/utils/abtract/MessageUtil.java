@@ -1,5 +1,7 @@
 package dev.slne.surf.essentials.utils.abtract;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.color.Colors;
 import io.papermc.paper.adventure.PaperAdventure;
@@ -447,9 +449,276 @@ public abstract class MessageUtil extends CraftUtil {
         sendSourceMessage(source, Component.text(message, Colors.GRAY));
     }
 
+    // exceptions
+    // ---------------------------------------------------------------------------------
+
+    /**
+     * Creates a new {@link CommandSyntaxException} with the specified message.
+     *
+     * @param message the message to create the exception with
+     * @return the created exception
+     */
+    public static CommandSyntaxException createException(Component message) {
+        return new SimpleCommandExceptionType(PaperAdventure.asVanilla(message)).create();
+    }
+
+    /**
+     * Creates a new {@link CommandSyntaxException} with the specified message.
+     *
+     * @param t       the object to create the exception with
+     * @param message the message to create the exception with
+     * @param <T>     the type of the object to create the exception with
+     * @return the created exception
+     */
+    public static <T> CommandSyntaxException createException(T t, ComponentConsumer<T> message) {
+        return createException(message.apply(t));
+    }
+
+    /**
+     * Creates a new {@link CommandSyntaxException} with the specified message.
+     *
+     * @param a       the first object to create the exception with
+     * @param b       the second object to create the exception with
+     * @param message the message to create the exception with
+     * @param <A>     the type of the first object to create the exception with
+     * @param <B>     the type of the second object to create the exception with
+     * @return the created exception
+     */
+    public static <A, B> CommandSyntaxException createException(A a, B b, BiComponentConsumer<A, B> message) {
+        return createException(message.apply(a, b));
+    }
+
+    /**
+     * Creates a new {@link CommandSyntaxException} with the specified message.
+     *
+     * @param a       the first object to create the exception with
+     * @param b       the second object to create the exception with
+     * @param c       the third object to create the exception with
+     * @param message the message to create the exception with
+     * @param <A>     the type of the first object to create the exception with
+     * @param <B>     the type of the second object to create the exception with
+     * @param <C>     the type of the third object to create the exception with
+     * @return the created exception
+     */
+    public static <A, B, C> CommandSyntaxException createException(A a, B b, C c, TriComponentConsumer<A, B, C> message) {
+        return createException(message.apply(a, b, c));
+    }
+
+    /**
+     * Creates a new {@link CommandSyntaxException} with the specified message.
+     *
+     * @param a       the first object to create the exception with
+     * @param b       the second object to create the exception with
+     * @param c       the third object to create the exception with
+     * @param d       the fourth object to create the exception with
+     * @param message the message to create the exception with
+     * @param <A>     the type of the first object to create the exception with
+     * @param <B>     the type of the second object to create the exception with
+     * @param <C>     the type of the third object to create the exception with
+     * @param <D>     the type of the fourth object to create the exception with
+     * @return the created exception
+     */
+    public static <A, B, C, D> CommandSyntaxException createException(A a, B b, C c, D d, QuadComponentConsumer<A, B, C, D> message) {
+        return createException(message.apply(a, b, c, d));
+    }
+
+    /**
+     * Creates a new {@link CommandSyntaxException} with the specified message.
+     *
+     * @param a       the first object to create the exception with
+     * @param b       the second object to create the exception with
+     * @param c       the third object to create the exception with
+     * @param d       the fourth object to create the exception with
+     * @param e       the fifth object to create the exception with
+     * @param message the message to create the exception with
+     * @param <A>     the type of the first object to create the exception with
+     * @param <B>     the type of the second object to create the exception with
+     * @param <C>     the type of the third object to create the exception with
+     * @param <D>     the type of the fourth object to create the exception with
+     * @param <E>     the type of the fifth object to create the exception with
+     * @return the created exception
+     */
+    public static <A, B, C, D, E> CommandSyntaxException createException(A a, B b, C c, D d, E e, PentaComponentConsumer<A, B, C, D, E> message) {
+        return createException(message.apply(a, b, c, d, e));
+    }
+
+    /**
+     * Creates a new {@link CommandSyntaxException} with the specified message.
+     *
+     * @param a       the first object to create the exception with
+     * @param b       the second object to create the exception with
+     * @param c       the third object to create the exception with
+     * @param d       the fourth object to create the exception with
+     * @param e       the fifth object to create the exception with
+     * @param f       the sixth object to create the exception with
+     * @param message the message to create the exception with
+     * @param <A>     the type of the first object to create the exception with
+     * @param <B>     the type of the second object to create the exception with
+     * @param <C>     the type of the third object to create the exception with
+     * @param <D>     the type of the fourth object to create the exception with
+     * @param <E>     the type of the fifth object to create the exception with
+     * @param <F>     the type of the sixth object to create the exception with
+     * @return the created exception
+     */
+    public static <A, B, C, D, E, F> CommandSyntaxException createException(A a, B b, C c, D d, E e, F f, HexaComponentConsumer<A, B, C, D, E, F> message) {
+        return createException(message.apply(a, b, c, d, e, f));
+    }
+
+    /**
+     * Creates a new {@link CommandSyntaxException} with the specified message.
+     *
+     * @param a       the first object to create the exception with
+     * @param b       the second object to create the exception with
+     * @param c       the third object to create the exception with
+     * @param d       the fourth object to create the exception with
+     * @param e       the fifth object to create the exception with
+     * @param f       the sixth object to create the exception with
+     * @param g       the seventh object to create the exception with
+     * @param message the message to create the exception with
+     * @param <A>     the type of the first object to create the exception with
+     * @param <B>     the type of the second object to create the exception with
+     * @param <C>     the type of the third object to create the exception with
+     * @param <D>     the type of the fourth object to create the exception with
+     * @param <E>     the type of the fifth object to create the exception with
+     * @param <F>     the type of the sixth object to create the exception with
+     * @param <G>     the type of the seventh object to create the exception with
+     * @return the created exception
+     */
+    public static <A, B, C, D, E, F, G> CommandSyntaxException createException(A a, B b, C c, D d, E e, F f, G g, HeptaComponentConsumer<A, B, C, D, E, F, G> message) {
+        return createException(message.apply(a, b, c, d, e, f, g));
+    }
+
+    /**
+     * Creates a new {@link CommandSyntaxException} with the specified message.
+     *
+     * @param a       the first object to create the exception with
+     * @param b       the second object to create the exception with
+     * @param c       the third object to create the exception with
+     * @param d       the fourth object to create the exception with
+     * @param e       the fifth object to create the exception with
+     * @param f       the sixth object to create the exception with
+     * @param g       the seventh object to create the exception with
+     * @param h       the eighth object to create the exception with
+     * @param message the message to create the exception with
+     * @param <A>     the type of the first object to create the exception with
+     * @param <B>     the type of the second object to create the exception with
+     * @param <C>     the type of the third object to create the exception with
+     * @param <D>     the type of the fourth object to create the exception with
+     * @param <E>     the type of the fifth object to create the exception with
+     * @param <F>     the type of the sixth object to create the exception with
+     * @param <G>     the type of the seventh object to create the exception with
+     * @param <H>     the type of the eighth object to create the exception with
+     * @return the created exception
+     */
+    public static <A, B, C, D, E, F, G, H> CommandSyntaxException createException(A a, B b, C c, D d, E e, F f, G g, H h, OctaComponentConsumer<A, B, C, D, E, F, G, H> message) {
+        return createException(message.apply(a, b, c, d, e, f, g, h));
+    }
+
+    /**
+     * Creates a new {@link CommandSyntaxException} with the specified message.
+     *
+     * @param a       the first object to create the exception with
+     * @param b       the second object to create the exception with
+     * @param c       the third object to create the exception with
+     * @param d       the fourth object to create the exception with
+     * @param e       the fifth object to create the exception with
+     * @param f       the sixth object to create the exception with
+     * @param g       the seventh object to create the exception with
+     * @param h       the eighth object to create the exception with
+     * @param i       the ninth object to create the exception with
+     * @param message the message to create the exception with
+     * @param <A>     the type of the first object to create the exception with
+     * @param <B>     the type of the second object to create the exception with
+     * @param <C>     the type of the third object to create the exception with
+     * @param <D>     the type of the fourth object to create the exception with
+     * @param <E>     the type of the fifth object to create the exception with
+     * @param <F>     the type of the sixth object to create the exception with
+     * @param <G>     the type of the seventh object to create the exception with
+     * @param <H>     the type of the eighth object to create the exception with
+     * @param <I>     the type of the ninth object to create the exception with
+     * @return the created exception
+     */
+    public static <A, B, C, D, E, F, G, H, I> CommandSyntaxException createException(A a, B b, C c, D d, E e, F f, G g, H h, I i, NonaComponentConsumer<A, B, C, D, E, F, G, H, I> message) {
+        return createException(message.apply(a, b, c, d, e, f, g, h, i));
+    }
+
+    /**
+     * Creates a new {@link CommandSyntaxException} with the specified message.
+     *
+     * @param a       the first object to create the exception with
+     * @param b       the second object to create the exception with
+     * @param c       the third object to create the exception with
+     * @param d       the fourth object to create the exception with
+     * @param e       the fifth object to create the exception with
+     * @param f       the sixth object to create the exception with
+     * @param g       the seventh object to create the exception with
+     * @param h       the eighth object to create the exception with
+     * @param i       the ninth object to create the exception with
+     * @param j       the tenth object to create the exception with
+     * @param message the message to create the exception with
+     * @param <A>     the type of the first object to create the exception with
+     * @param <B>     the type of the second object to create the exception with
+     * @param <C>     the type of the third object to create the exception with
+     * @param <D>     the type of the fourth object to create the exception with
+     * @param <E>     the type of the fifth object to create the exception with
+     * @param <F>     the type of the sixth object to create the exception with
+     * @param <G>     the type of the seventh object to create the exception with
+     * @param <H>     the type of the eighth object to create the exception with
+     * @param <I>     the type of the ninth object to create the exception with
+     * @param <J>     the type of the tenth object to create the exception with
+     * @return the created exception
+     */
+    public static <A, B, C, D, E, F, G, H, I, J> CommandSyntaxException createException(A a, B b, C c, D d, E e, F f, G g, H h, I i, J j, DecaComponentConsumer<A, B, C, D, E, F, G, H, I, J> message) {
+        return createException(message.apply(a, b, c, d, e, f, g, h, i, j));
+    }
+
 
     static {
         IS_DEBUGGING = SurfEssentials.getInstance().getConfig().getBoolean("debug");
         COMPONENT_LOGGER = SurfEssentials.logger();
+    }
+
+    /**
+     * Creates a new {@link CommandSyntaxException} with the specified message.
+     * @param <T> the type of the object to create the exception with
+     */
+    private interface ComponentConsumer<T> {
+        Component apply(T t);
+    }
+
+    private interface BiComponentConsumer<A, B> {
+        Component apply(A a, B b);
+    }
+
+    private interface TriComponentConsumer<A, B, C> {
+        Component apply(A a, B b, C c);
+    }
+
+    private interface QuadComponentConsumer<A, B, C, D> {
+        Component apply(A a, B b, C c, D d);
+    }
+
+    private interface PentaComponentConsumer<A, B, C, D, E> {
+        Component apply(A a, B b, C c, D d, E e);
+    }
+
+    private interface HexaComponentConsumer<A, B, C, D, E, F> {
+        Component apply(A a, B b, C c, D d, E e, F f);
+    }
+
+    private interface HeptaComponentConsumer<A, B, C, D, E, F, G> {
+        Component apply(A a, B b, C c, D d, E e, F f, G g);
+    }
+
+    private interface OctaComponentConsumer<A, B, C, D, E, F, G, H> {
+        Component apply(A a, B b, C c, D d, E e, F f, G g, H h);
+    }
+
+    private interface NonaComponentConsumer<A, B, C, D, E, F, G, H, I> {
+        Component apply(A a, B b, C c, D d, E e, F f, G g, H h, I i);
+    }
+
+    private interface DecaComponentConsumer<A, B, C, D, E, F, G, H, I, J> {
+        Component apply(A a, B b, C c, D d, E e, F f, G g, H h, I i, J j);
     }
 }

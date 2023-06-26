@@ -74,7 +74,7 @@ public class WhitelistCommand extends BrigadierCommand {
                         .executes(context -> removeAll(context.getSource()))));
     }
 
-    private int query(CommandSourceStack source) throws CommandSyntaxException {
+    private int query(CommandSourceStack source) {
         var isEnabled = source.getServer().getPlayerList().isUsingWhitelist();
 
         if (source.isPlayer()){
@@ -119,7 +119,7 @@ public class WhitelistCommand extends BrigadierCommand {
         return 1;
     }
 
-    private int reload(CommandSourceStack source) throws CommandSyntaxException {
+    private int reload(CommandSourceStack source) {
         source.getServer().getPlayerList().reloadWhiteList();
         source.getServer().kickUnlistedPlayers(source);
 
@@ -131,7 +131,7 @@ public class WhitelistCommand extends BrigadierCommand {
         return 1;
     }
 
-    private int list(CommandSourceStack source) throws CommandSyntaxException {
+    private int list(CommandSourceStack source) {
         var nameList = source.getServer().getPlayerList().getWhiteList()
                 .getEntries()
                 .stream()

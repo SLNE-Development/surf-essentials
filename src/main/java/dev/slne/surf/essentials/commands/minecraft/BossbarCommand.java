@@ -154,7 +154,7 @@ public class BossbarCommand extends BrigadierCommand {
         }
     }
 
-    private static int list(CommandSourceStack source) throws CommandSyntaxException {
+    private static int list(CommandSourceStack source) {
         Collection<CustomBossEvent> collection = source.getServer().getCustomBossEvents().getEvents();
         if (collection.isEmpty()) {
             EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Es sind keine Bossbar´s aktiv!", Colors.INFO)));
@@ -175,7 +175,7 @@ public class BossbarCommand extends BrigadierCommand {
         return collection.size();
     }
 
-    private static int getValue(CommandSourceStack source, CustomBossEvent bossBar) throws CommandSyntaxException {
+    private static int getValue(CommandSourceStack source, CustomBossEvent bossBar) {
 
         EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.INFO))
                 .append(convertBossbar(bossBar))
@@ -186,7 +186,7 @@ public class BossbarCommand extends BrigadierCommand {
         return bossBar.getValue();
     }
 
-    private static int getMax(CommandSourceStack source, CustomBossEvent bossBar) throws CommandSyntaxException {
+    private static int getMax(CommandSourceStack source, CustomBossEvent bossBar) {
 
         EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.INFO))
                 .append(convertBossbar(bossBar))
@@ -197,7 +197,7 @@ public class BossbarCommand extends BrigadierCommand {
         return bossBar.getMax();
     }
 
-    private static int getPlayers(CommandSourceStack source, CustomBossEvent bossBar) throws CommandSyntaxException {
+    private static int getPlayers(CommandSourceStack source, CustomBossEvent bossBar) {
         if (bossBar.getPlayers().isEmpty()) {
 
             EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Bei der Bossbar", Colors.INFO))
@@ -224,7 +224,7 @@ public class BossbarCommand extends BrigadierCommand {
         return bossBar.getPlayers().size();
     }
 
-    private static int getVisible(CommandSourceStack source, CustomBossEvent bossBar) throws CommandSyntaxException {
+    private static int getVisible(CommandSourceStack source, CustomBossEvent bossBar) {
         if (bossBar.isVisible()) {
 
             EssentialsUtil.sendSuccess(source, (net.kyori.adventure.text.Component.text("Die Bossbar", Colors.INFO))
@@ -242,7 +242,7 @@ public class BossbarCommand extends BrigadierCommand {
         }
     }
 
-    private static int remove(CommandSourceStack source, CustomBossEvent bossBar) throws CommandSyntaxException {
+    private static int remove(CommandSourceStack source, CustomBossEvent bossBar) {
         CustomBossEvents customBossEvents = source.getServer().getCustomBossEvents();
         bossBar.removeAllPlayers();
         customBossEvents.remove(bossBar);
@@ -340,7 +340,7 @@ public class BossbarCommand extends BrigadierCommand {
         return bossBar.getPlayers().size();
     }
 
-    private static int setStyle(CommandSourceStack source, CustomBossEvent bossBar, BossEvent.BossBarOverlay style) throws CommandSyntaxException {
+    private static int setStyle(CommandSourceStack source, CustomBossEvent bossBar, BossEvent.BossBarOverlay style) {
         if (bossBar.getOverlay().equals(style)) {
             sendError(source, "Die Bossbar hat bereits diese Einteilung!");
 
@@ -354,7 +354,7 @@ public class BossbarCommand extends BrigadierCommand {
         return 0;
     }
 
-    private static int setValue(CommandSourceStack source, CustomBossEvent bossBar, int value) throws CommandSyntaxException {
+    private static int setValue(CommandSourceStack source, CustomBossEvent bossBar, int value) {
         if (bossBar.getValue() == value) {
             sendError(source, "Die Bossbar hat bereits diesen Wert!");
 

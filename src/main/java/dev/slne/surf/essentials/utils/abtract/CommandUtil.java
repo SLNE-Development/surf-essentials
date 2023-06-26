@@ -82,6 +82,7 @@ public abstract class CommandUtil extends VanishUtil {
      * @param command the command node to register
      * @param <T>     the type of the command node
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static <T extends CommandNode<CommandSourceStack>> T registerCommand(T command) {
         getRoot().addChild(command);
         REGISTERED_COMMANDS.add(command);
