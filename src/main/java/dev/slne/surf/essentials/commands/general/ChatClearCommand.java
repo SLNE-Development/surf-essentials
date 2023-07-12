@@ -1,58 +1,43 @@
 package dev.slne.surf.essentials.commands.general;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
-import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
-public class ChatClearCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"chatclear", "cc"};
+public class ChatClearCommand extends EssentialsCommand {
+    private static final int CLEAR_LINES = 100;
+
+    public ChatClearCommand() {
+        super("chatclear", "chatclear [<players>]", "Clears the chat from the targets except they have the bypass permission", "cc");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.CHAT_CLEAR_SELF_PERMISSION, Permissions.CHAT_CLEAR_OTHER_PERMISSION));
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> clearChat(sender.getCallee(), List.of(getPlayerOrException(sender))));
+
+        then(playersArgument("players")
+                .withPermission(Permissions.CHAT_CLEAR_OTHER_PERMISSION)
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> clearChat(sender.getCallee(), args.getUnchecked("players"))));
     }
 
-    @Override
-    public String usage() {
-        return "/chatclear [<players>]";
-    }
-
-    @Override
-    public String description() {
-        return "Clears the chat from the targets except they have the bypass permission";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.CHAT_CLEAR_SELF_PERMISSION));
-        literal.executes(context -> clearChat(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
-
-        literal.then(Commands.argument("players", EntityArgument.players())
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.CHAT_CLEAR_OTHER_PERMISSION))
-                .executes(context -> clearChat(context.getSource(), EntityArgument.getPlayers(context, "players"))));
-    }
-
-    private int clearChat(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
-        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+    private int clearChat(CommandSender source, Collection<Player> targetsUnchecked) throws WrapperCommandSyntaxException {
+        val targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulClears = 0;
-        int countEmptyLines = 100;
-        ClientboundSystemChatPacket emptyChatPacket = new ClientboundSystemChatPacket(net.minecraft.network.chat.Component.empty(), false);
 
-        for (ServerPlayer target : targets) {
-            if (target.getBukkitEntity().hasPermission(Permissions.CHAT_CLEAR_BYPASS_PERMISSION)) continue;
+        for (CommandSender target : targets) {
+            if (target.hasPermission(Permissions.CHAT_CLEAR_BYPASS_PERMISSION)) continue;
 
-            for (int i = 0; i < countEmptyLines; i++) {
-                target.connection.send(emptyChatPacket);
+            for (int i = 0; i < CLEAR_LINES; i++) {
+                target.sendMessage(Component.empty());
             }
             successfulClears++;
 
@@ -60,7 +45,7 @@ public class ChatClearCommand extends BrigadierCommand {
         }
 
         if (successfulClears == 1) {
-            if (targets.iterator().next() != source.getPlayerOrException()) {
+            if (!(source instanceof Player player && player.equals(targets.iterator().next()))) {
                 EssentialsUtil.sendSuccess(source, Component.text("Der Chat von ", Colors.SUCCESS)
                         .append(EssentialsUtil.getDisplayName(targets.iterator().next()))
                         .append(Component.text(" wurde gelöscht.", Colors.SUCCESS)));

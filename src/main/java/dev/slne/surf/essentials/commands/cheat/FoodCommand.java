@@ -1,62 +1,53 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
-public class FoodCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"feed"};
+public class FoodCommand extends EssentialsCommand {
+    public FoodCommand() {
+        super("feed", "feed [<players>]", "Feeds the players.");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.FEED_SELF_PERMISSION, Permissions.FEED_OTHER_PERMISSION));
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> feed(sender.getCallee(), List.of(getPlayerOrException(sender))));
+        then(playersArgument("players")
+                .withPermission(Permissions.FEED_OTHER_PERMISSION)
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> feed(sender.getCallee(), args.getUnchecked("players"))));
     }
 
-    @Override
-    public String usage() {
-        return "/feed [<players>]";
-    }
-
-    @Override
-    public String description() {
-        return "Feeds the players";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.FEED_SELF_PERMISSION, Permissions.FEED_OTHER_PERMISSION));
-
-        literal.executes(context -> feed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
-        literal.then(Commands.argument("players", EntityArgument.players())
-                .requires(EssentialsUtil.checkPermissions(Permissions.FEED_OTHER_PERMISSION))
-                .executes(context -> feed(context.getSource(), EntityArgument.getPlayers(context, "players"))));
-    }
-
-    private int feed(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
-        final var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+    private int feed(CommandSender source, Collection<Player> targetsUnchecked) throws WrapperCommandSyntaxException {
+        val targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulFeeds = 0;
 
-        for (ServerPlayer target : targets) {
-            target.getFoodData().eat(EssentialsUtil.MAX_FOOD, 2f);
-            target.getBukkitEntity().sendHealthUpdate();
+        for (Player target : targets) {
+            target.setFoodLevel(20);
+            target.setSaturation(20);
+            target.sendHealthUpdate();
             successfulFeeds++;
 
-            target.playSound(SoundEvents.STRIDER_EAT, 1f, 0f);
+            target.playSound(Sound.sound(builder -> {
+                builder.type(org.bukkit.Sound.ENTITY_STRIDER_EAT.key());
+                builder.volume(1f);
+                builder.pitch(0f);
+            }));
+
             EssentialsUtil.sendSuccess(target, Component.text("Du wurdest gefüttert!", Colors.GREEN));
 
         }
 
-        boolean isSelf = source.isPlayer() && source.getPlayerOrException() == targets.iterator().next();
+        boolean isSelf = source instanceof Player player && player == targets.iterator().next();
         if (successfulFeeds == 1 && !isSelf) {
             EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(targets.iterator().next())
                     .append(Component.text(" wurde gefüttert!", Colors.SUCCESS)));
@@ -66,6 +57,4 @@ public class FoodCommand extends BrigadierCommand {
         }
         return successfulFeeds;
     }
-
-
 }

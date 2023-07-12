@@ -1,21 +1,19 @@
 package dev.slne.surf.essentials.commands;
 
 import com.mojang.brigadier.tree.CommandNode;
+import dev.jorel.commandapi.CommandAPI;
 import dev.slne.surf.essentials.commands.cheat.*;
-import dev.slne.surf.essentials.commands.cheat.gui.*;
+import dev.slne.surf.essentials.commands.cheat.gui.GuiCommands;
 import dev.slne.surf.essentials.commands.general.*;
-import dev.slne.surf.essentials.commands.general.other.ActionbarBroadcast;
+import dev.slne.surf.essentials.commands.general.other.ActionbarBroadcastCommand;
 import dev.slne.surf.essentials.commands.general.other.TimerCommand;
 import dev.slne.surf.essentials.commands.general.other.TitlebroadcastCommand;
 import dev.slne.surf.essentials.commands.general.other.help.HelpCommand;
 import dev.slne.surf.essentials.commands.general.other.poll.PollCommand;
 import dev.slne.surf.essentials.commands.general.other.poll.VoteCommand;
-import dev.slne.surf.essentials.commands.general.other.troll.TrollManager;
 import dev.slne.surf.essentials.commands.general.other.world.WorldCommand;
 import dev.slne.surf.essentials.commands.minecraft.*;
-import dev.slne.surf.essentials.commands.minecraft.internal.SpawnArmorTrimsCommand;
 import dev.slne.surf.essentials.commands.tp.*;
-import dev.slne.surf.essentials.utils.EssentialsUtil;
 
 /**
  * This class is responsible for registering and unregistering all the commands provided by the plugin using Brigadier.
@@ -25,96 +23,89 @@ import dev.slne.surf.essentials.utils.EssentialsUtil;
  */
 public class BrigadierCommands {
 
-    /**
-     * Registers all the commands provided by the plugin using Brigadier.
-     */
-    public void register() {
-        new BroadcastWorldCommand();
-        new ListCommand();
-        new LightningCommand();
-        new KillCommand();
-        new EnchantCommand();
-        new WorkbenchCommand();
-        new AnvilCommand();
-        new SmithingTableCommand();
-        new CartographyTableCommand();
-        new GrindstoneCommand();
-        new LoomCommand();
-        new StonecutterCommand();
-        new GiveCommand();
-        new GetPosCommand();
-        new TrollManager();
-        new HurtCommand();
-        new BossbarCommand();
-        new OpCommand();
-        new DeopCommand();
-        new EffectCommand();
-        new DefaultGamemodeCommand();
-        new DifficultyCommand();
-        new ExperienceCommand();
-        new ForceloadCommand();
-        new GamemodeCommand();
-        new GameruleCommand();
-        new ParticleCommand();
+    public BrigadierCommands() {
         new FillStackCommand();
         new FlyCommand();
         new FoodCommand();
         new GodmodeCommand();
+        new HatCommand();
         new HealCommand();
+        new HurtCommand();
+        new InfinityCommand();
+        new LatestDeathCommand();
+        new LightningCommand();
         new RepairCommand();
+        new SpeedCommand();
         new SuicideCommand();
-        new TimeCommand();
-        new WeatherCommand();
+        new TrashCommand();
+        new UnhatCommand();
+        new GuiCommands();
+        new HelpCommand();
         new PollCommand();
         new VoteCommand();
+        new WorldCommand();
+        new ActionbarBroadcastCommand();
+        new TimerCommand();
+        new TitlebroadcastCommand();
         new AlertCommand();
         new BookCommand();
-        new InfoCommand();
-        new RuleCommand();
-        new SpawnerChangeCommand();
-        new TitlebroadcastCommand();
-        new ActionbarBroadcast();
-        new TeleportOffline();
-        new SetItemNameCommand();
-        new SetItemLoreCommand();
-        new TeleportBackCommand();
-        new RandomTeleportCommand();
-        new ClearItemCommand();
-        new InfinityCommand();
-        new UnhatCommand();
-        new HatCommand();
-        new TimerCommand();
         new ChatClearCommand();
-        new TeleportCommand();
+        new ClearItemCommand();
+        new GetPosCommand();
+        new InfoCommand();
+        new PlayerHeadCommand();
+        new RuleCommand();
+        new SetItemLoreCommand();
+        new SetItemNameCommand();
+        new SpawnerChangeCommand();
+        new AdvancementCommand();
         new ClearInventoryCommand();
-        new HelpCommand();
+        new DefaultGamemodeCommand();
+        new DeopCommand();
+        new DifficultyCommand();
+        new EffectCommand();
+        new EnchantCommand();
+        new ExecuteCommandAddon();
+        new FillCommand();
+        new ForceloadCommand();
+        new GamemodeCommand();
+        new GiveCommand();
+        new KillCommand();
+        new ListCommand();
+        new OpCommand();
+        new ParticleCommand();
+        new ReloadCommand();
         new SeedCommand();
+        new SetBlockCommand();
+        new SetPlayerIdleTimeoutCommand();
         new SetWorldSpawnCommand();
         new SpectateCommand();
         new SummonCommand();
-        new TeleportToTopCommand();
-        new WorldCommand();
-        new FillCommand();
-        new SetBlockCommand();
-        new RideCommand();
-        new DamageCommand();
-        new SpawnCommand();
-        new LatestDeathCommand();
-        new PlayerHeadCommand();
-        new TrashCommand();
-        new SpeedCommand();
+        new TimerCommand();
+        new WeatherCommand();
         new WhitelistCommand();
-        new ScreamCommand();
+        new RandomTeleportCommand();
+        new SpawnCommand();
+        new TeleportOffline();
+        new TimeCommand();
+        new BroadcastWorldCommand();
         new NearCommand();
-        new DataPackCommand();
-        new AttributeCommand();
-        new ReloadCommand();
-        new FillBiomeCommand();
-        new SpawnArmorTrimsCommand();
-        new ExecuteCommand();
-        new SetPlayerIdleTimeoutCommand();
-        new PlaySoundCommand();
-        new AdvancementCommand();
+        new ScreamCommand();
+        new ExperienceCommand();
+        new FunctionCommand();
+        new TeleportBackCommand();
+        new TeleportToTopCommand();
+        new TeleportCommand();
+
+    }
+
+    /**
+     * Registers all the commands provided by the plugin using Brigadier.
+     */
+    public void register() {
+        for (EssentialsCommand command : EssentialsCommand.COMMANDS) {
+            command.register();
+        }
     }
 
     /**
@@ -124,6 +115,6 @@ public class BrigadierCommands {
      * exist on the server after the plugin has been unloaded.
      */
     public synchronized void unregister() {
-        EssentialsUtil.unregisterDispatcherCommand(EssentialsUtil.getRegisteredCommands().stream().map(CommandNode::getName).toList());
+        EssentialsCommand.COMMANDS.forEach(essentialsCommand -> CommandAPI.unregister(essentialsCommand.getName()));
     }
 }

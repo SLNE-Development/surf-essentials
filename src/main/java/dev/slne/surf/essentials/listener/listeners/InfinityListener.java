@@ -1,7 +1,7 @@
 package dev.slne.surf.essentials.listener.listeners;
 
 import dev.slne.surf.essentials.commands.cheat.InfinityCommand;
-import dev.slne.surf.essentials.utils.abtract.CraftUtil;
+import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -29,7 +29,7 @@ public class InfinityListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (InfinityCommand.getPlayersInInfinity().contains(CraftUtil.toServerPlayer(event.getPlayer()))) {
+        if (InfinityCommand.getPlayersInInfinity().contains(event.getPlayer())) {
             regainItems(event.getPlayer(), event.getItemInHand(), event.getHand());
         }
     }
@@ -43,9 +43,11 @@ public class InfinityListener implements Listener {
      */
     @EventHandler
     public void onSpawnEggPlace(PlayerInteractEvent event) {
-        if (InfinityCommand.getPlayersInInfinity().contains(CraftUtil.toServerPlayer(event.getPlayer()))) {
+        if (InfinityCommand.getPlayersInInfinity().contains(event.getPlayer())) {
 
-            if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getInventory().getItemInMainHand().getItemMeta() instanceof SpawnEggMeta) {
+            val inventory = event.getPlayer().getInventory();
+
+            if (event.getAction() == Action.RIGHT_CLICK_AIR && event.getItem().getItemMeta() instanceof SpawnEggMeta) { // TODO
                 regainItems(event.getPlayer(), event.getItem(), event.getHand());
             }
         }
@@ -59,7 +61,7 @@ public class InfinityListener implements Listener {
      */
     @EventHandler
     public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
-        if (InfinityCommand.getPlayersInInfinity().contains(CraftUtil.toServerPlayer(event.getPlayer()))) {
+        if (InfinityCommand.getPlayersInInfinity().contains(event.getPlayer())) {
             regainItems(event.getPlayer(), event.getItem(), event.getHand());
         }
     }
@@ -79,7 +81,5 @@ public class InfinityListener implements Listener {
         } else if (hand == EquipmentSlot.OFF_HAND) {
             inventory.setItemInOffHand(eventItem);
         }
-
-        player.updateInventory();
     }
 }

@@ -1,172 +1,196 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import dev.jorel.commandapi.arguments.LocationType;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.blocks.BlockStatePos;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.blocks.BlockStatePos;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.blocks.BlockInput;
-import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
-import net.minecraft.commands.arguments.blocks.BlockStateArgument;
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Clearable;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import lombok.val;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.BlockInventoryHolder;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-public class SetBlockCommand extends BrigadierCommand {
-    private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.setblock.failed"));
+public class SetBlockCommand extends EssentialsCommand { // TODO test filter
+
     private static final Map<UUID, BlockStatePos> BLOCK = new HashMap<>();
 
-    @Override
-    public String[] names() {
-        return new String[]{"setblock"};
+    public SetBlockCommand() {
+        super("setblock", "setblock <undo | location <block> [destroy | keep | replace]>", "Change the block at the given location");
+
+        withPermission(Permissions.SET_BLOCK_PERMISSION);
+
+
+        then(locationArgument("location", LocationType.BLOCK_POSITION)
+                .then(blockStateArgument("block")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
+                                sender.getCallee(),
+                                args.getUnchecked("location"),
+                                args.getUnchecked("block"),
+                                Mode.REPLACE,
+                                Optional.empty()
+                        ))
+                        .then(literal("keep")
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
+                                        sender.getCallee(),
+                                        args.getUnchecked("location"),
+                                        args.getUnchecked("block"),
+                                        Mode.REPLACE,
+                                        Optional.empty()
+                                ))
+                                .then(blockPredicateArgument("filter")
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
+                                                sender.getCallee(),
+                                                args.getUnchecked("location"),
+                                                args.getUnchecked("block"),
+                                                Mode.REPLACE,
+                                                Optional.ofNullable(args.getUnchecked("filter"))
+                                        ))
+                                )
+                        )
+                        .then(literal("destroy")
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
+                                        sender.getCallee(),
+                                        args.getUnchecked("location"),
+                                        args.getUnchecked("block"),
+                                        Mode.DESTROY,
+                                        Optional.empty()
+                                ))
+                                .then(blockPredicateArgument("filter")
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
+                                                sender.getCallee(),
+                                                args.getUnchecked("location"),
+                                                args.getUnchecked("block"),
+                                                Mode.DESTROY,
+                                                Optional.ofNullable(args.getUnchecked("filter"))
+                                        ))
+                                )
+                        )
+                        .then(literal("replace")
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
+                                        sender.getCallee(),
+                                        args.getUnchecked("location"),
+                                        args.getUnchecked("block"),
+                                        Mode.REPLACE,
+                                        Optional.empty()
+                                ))
+                                .then(blockPredicateArgument("filter")
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
+                                                sender.getCallee(),
+                                                args.getUnchecked("location"),
+                                                args.getUnchecked("block"),
+                                                Mode.REPLACE,
+                                                Optional.ofNullable(args.getUnchecked("filter"))
+                                        ))
+                                )
+                        )
+                        .then(literal("filter")
+                                .then(blockPredicateArgument("filter")
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
+                                                sender.getCallee(),
+                                                args.getUnchecked("location"),
+                                                args.getUnchecked("block"),
+                                                Mode.REPLACE,
+                                                Optional.ofNullable(args.getUnchecked("filter"))
+                                        ))
+                                )
+                        )
+                )
+        );
+
+        then(literal("undo")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> undo(getPlayerOrException(sender))));
     }
 
-    @Override
-    public String usage() {
-        return "/setblock <undo | location <block> [destroy | keep | replace]>";
-    }
+    private int setBlock(@NotNull CommandSender source, @NotNull Location blockPos, @NotNull BlockData blockInput, @NotNull Mode mode, Optional<Predicate<Block>> condition) throws WrapperCommandSyntaxException {
+        val world = blockPos.getWorld();
+        val newBlockState = blockInput.createBlockState();
 
-    @Override
-    public String description() {
-        return "Change the block at the given location";
-    }
+        if (condition.isPresent() && !condition.get().test(blockPos.getBlock())) throw Exceptions.ERROR_BLOCK_NOT_SET;
 
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SET_BLOCK_PERMISSION));
-
-        literal.then(Commands.argument("location", BlockPosArgument.blockPos())
-                .then(Commands.argument("block", BlockStateArgument.block(this.commandBuildContext))
-                        .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
-                                BlockStateArgument.getBlock(context, "block"), Mode.REPLACE, null))
-
-                        .then(Commands.literal("keep")
-                                .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
-                                        BlockStateArgument.getBlock(context, "block"), Mode.REPLACE, (pos) -> pos.getLevel().isEmptyBlock(pos.getPos())))
-                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
-                                        .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
-                                                BlockStateArgument.getBlock(context, "block"), Mode.REPLACE,
-                                                BlockPredicateArgument.getBlockPredicate(context, "filter")))))
-
-                        .then(Commands.literal("replace")
-                                .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
-                                        BlockStateArgument.getBlock(context, "block"), Mode.REPLACE, null))
-                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
-                                        .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
-                                                BlockStateArgument.getBlock(context, "block"), Mode.REPLACE,
-                                                BlockPredicateArgument.getBlockPredicate(context, "filter")))))
-
-                        .then(Commands.literal("destroy")
-                                .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
-                                        BlockStateArgument.getBlock(context, "block"), Mode.DESTROY, null))
-                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
-                                        .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
-                                                BlockStateArgument.getBlock(context, "block"), Mode.DESTROY,
-                                                BlockPredicateArgument.getBlockPredicate(context, "filter")))))
-
-                        .then(Commands.literal("filter")
-                                .then(Commands.argument("filter", BlockPredicateArgument.blockPredicate(this.commandBuildContext))
-                                        .executes(context -> setBlock(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "location"),
-                                                BlockStateArgument.getBlock(context, "block"), Mode.DESTROY,
-                                                BlockPredicateArgument.getBlockPredicate(context, "filter")))))));
-
-
-        literal.then(Commands.literal("undo")
-                .executes(context -> undo(context.getSource())));
-    }
-
-    private int setBlock(@NotNull CommandSourceStack source, @NotNull BlockPos blockPos, @NotNull BlockInput blockInput, @NotNull Mode mode, @Nullable Predicate<BlockInWorld> condition) throws CommandSyntaxException {
-        ServerLevel serverLevel = source.getLevel();
-
-        if (condition != null && !condition.test(new BlockInWorld(serverLevel, blockPos, true)))
-            throw ERROR_FAILED.create();
-
-        boolean bl;
-
-        BlockState oldBlockState = serverLevel.getBlockState(blockPos);
+        boolean success;
+        val oldBlock = world.getBlockAt(blockPos);
+        val oldBlockState = oldBlock.getState();
+        val oldBlockMaterial = oldBlock.getType();
 
         if (mode == Mode.DESTROY) {
-            serverLevel.destroyBlock(blockPos, true);
-            bl = !blockInput.getState().isAir() || !serverLevel.getBlockState(blockPos).isAir();
+            oldBlock.breakNaturally();
+            success = !newBlockState.getType().isAir() || !world.getBlockState(blockPos).getType().isAir();
         } else {
-            BlockEntity blockEntity = serverLevel.getBlockEntity(blockPos);
-            Clearable.tryClear(blockEntity);
-            bl = true;
+            if (oldBlock instanceof BlockInventoryHolder blockInventoryHolder) { // TODO: Check if this works
+                blockInventoryHolder.getInventory().clear();
+            }
+            success = true;
         }
 
-        if (bl && !blockInput.place(serverLevel, blockPos, 2)) throw ERROR_FAILED.create();
+        if (!success) throw Exceptions.ERROR_BLOCK_NOT_SET;
 
-        EssentialsUtil.logBlockChange(source, serverLevel, blockPos, blockInput.getState());
 
-        serverLevel.blockUpdated(blockPos, blockInput.getState().getBlock());
+        oldBlock.setBlockData(blockInput);
+        EssentialsUtil.logBlockChange(
+                source,
+                world,
+                blockPos,
+                newBlockState
+        );
 
-        if (source.isPlayer()) {
-            BLOCK.put(source.getPlayerOrException().getUUID(), new BlockStatePos(oldBlockState, blockPos, serverLevel));
+        // TODO: maybe update block state?
+
+        if (source instanceof Player player) {
+
+            BLOCK.put(player.getUniqueId(), new BlockStatePos(oldBlockState, blockPos.toBlock(), world));
         }
 
-        EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Der Block ", Colors.SUCCESS)
-                .append(PaperAdventure.asAdventure(oldBlockState.getBlock().getName()).colorIfAbsent(Colors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text(" bei ", Colors.SUCCESS))
-                .append(net.kyori.adventure.text.Component.text("%s %s %s".formatted(blockPos.getX(), blockPos.getY(), blockPos.getZ())))
-                .append(net.kyori.adventure.text.Component.text(" wurde zu ", Colors.SUCCESS))
-                .append(PaperAdventure.asAdventure(blockInput.getState().getBlock().getName()).colorIfAbsent(Colors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text(" geändert.", Colors.SUCCESS)));
+        EssentialsUtil.sendSuccess(source, Component.text("Der Block ", Colors.SUCCESS)
+                .append(EssentialsUtil.getDisplayName(oldBlockMaterial))
+                .append(Component.text(" bei ", Colors.SUCCESS))
+                .append(Component.text("%s %s %s".formatted(blockPos.getX(), blockPos.getY(), blockPos.getZ())))
+                .append(Component.text(" wurde zu ", Colors.SUCCESS))
+                .append(EssentialsUtil.getDisplayName(newBlockState.getType()))
+                .append(Component.text(" geändert.", Colors.SUCCESS)));
         return 1;
     }
 
-    private int undo(@NotNull CommandSourceStack source) throws CommandSyntaxException {
-        ServerPlayer player = source.getPlayerOrException();
-        UUID uuid = player.getUUID();
-        BlockStatePos blockStatePos = BLOCK.get(uuid);
+    private int undo(@NotNull Player player) throws WrapperCommandSyntaxException {
+        val uuid = player.getUniqueId();
+        val blockStatePos = BLOCK.get(uuid);
 
-        if (blockStatePos == null) throw FillCommand.ERROR_NOTHING_TO_UNDO.create();
+        if (blockStatePos == null) throw Exceptions.ERROR_NOTHING_TO_UNDO;
 
-        ServerLevel level = blockStatePos.serverLevel();
-        BlockPos pos = blockStatePos.blockPos();
+        val level = blockStatePos.world();
+        val pos = blockStatePos.blockPos().toLocation(level);
+        val blockState = level.getBlockState(pos);
+        val newBlockState = blockStatePos.blockState();
 
-        BlockState blockState = level.getBlockState(pos);
-        BLOCK.put(uuid, new BlockStatePos(blockState, pos, level));
+        BLOCK.put(uuid, new BlockStatePos(blockState, pos.toBlock(), level));
+        pos.getBlock().setBlockData(newBlockState.getBlockData());
+        EssentialsUtil.logBlockChange(
+                player,
+                level,
+                pos,
+                newBlockState
+        );
 
-        if (level.setBlockAndUpdate(pos.immutable(), blockStatePos.blockState())) {
-            EssentialsUtil.logBlockChange(source, level, pos, blockStatePos.blockState());
-        }
-        level.blockUpdated(blockStatePos.blockPos(), blockStatePos.blockState().getBlock());
-
-        EssentialsUtil.sendSuccess(source, "Der Block wurde rückgängig gemacht");
+        EssentialsUtil.sendSuccess(player, "Der Block wurde rückgängig gemacht");
         return 1;
     }
 
-
-    public enum Mode {
+    private enum Mode {
         REPLACE,
-        DESTROY;
-
-        Mode() {
-        }
-    }
-
-    public interface Filter {
-        @Nullable
-        BlockInput filter(BoundingBox box, BlockPos pos, BlockInput block, ServerLevel world);
+        DESTROY
     }
 }

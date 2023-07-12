@@ -2,6 +2,7 @@ package dev.slne.surf.essentials.listener;
 
 
 import dev.slne.surf.essentials.listener.listeners.*;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A class that manages listeners.
  */
+@RequiredArgsConstructor
 public class ListenerManager {
     private final Plugin plugin;
     private final PluginManager pluginManager;
@@ -35,6 +37,7 @@ public class ListenerManager {
         pluginManager.registerEvents(new JoinListener(), plugin);
         pluginManager.registerEvents(new AdvancementListener(), plugin);
         pluginManager.registerEvents(new DeathListener(), plugin);
+        pluginManager.registerEvents(new FlyListener(), plugin);
     }
 
     /**

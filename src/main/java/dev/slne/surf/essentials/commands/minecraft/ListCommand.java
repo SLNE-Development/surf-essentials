@@ -1,69 +1,52 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentBuilder;
-import net.kyori.adventure.text.TextComponent;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.server.level.ServerPlayer;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.JoinConfiguration;
+import org.bukkit.command.CommandSender;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public class ListCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"list"};
+public class ListCommand extends EssentialsCommand {
+    public ListCommand() {
+        super("list", "list [<uuids>]", "Lists all players that are currently online and visible for you");
+
+        withPermission(Permissions.LIST_PERMISSION);
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> listPlayerNames(sender.getCallee(), false));
+        then(literal("uuids")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> listPlayerNames(sender.getCallee(), true)));
     }
 
-    @Override
-    public String usage() {
-        return "/list [<uuids>]";
-    }
+    private int listPlayerNames(CommandSender source, boolean withUUID) {
+        val server = source.getServer();
+        val onlinePlayers = EssentialsUtil.checkPlayerSuggestionWithoutException(source, new ArrayList<>(server.getOnlinePlayers()));
+        val maxPlayers = server.getMaxPlayers();
 
-    @Override
-    public String description() {
-        return "Lists all players that are currently online and visible";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.LIST_PERMISSION));
-        literal.executes(context -> listPlayerNames(context.getSource(), false));
-        literal.then(Commands.literal("uuids")
-                .executes(context -> listPlayerNames(context.getSource(), true)));
-    }
-
-    private int listPlayerNames(CommandSourceStack source, boolean withUUID) {
-        List<ServerPlayer> list = EssentialsUtil.checkPlayerSuggestionWithoutException(source, source.getServer().getPlayerList().getPlayers());
-
-
-        ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
-
-        builder.append(Component.text("Es sind gerade ", Colors.INFO)
-                .append(Component.text(list.size(), Colors.TERTIARY))
+        EssentialsUtil.sendSuccess(source, Component.text("Es sind gerade ", Colors.INFO)
+                .append(Component.text(onlinePlayers.size(), Colors.VARIABLE_VALUE))
                 .append(Component.text(" von ", Colors.INFO))
-                .append(Component.text(Bukkit.getServer().getMaxPlayers(), Colors.TERTIARY))
-                .append(Component.text(" Spielern online: ", Colors.INFO)));
-        for (ServerPlayer serverPlayer : list) {
-            if (withUUID) {
-                builder.append(Component.text("(", Colors.TERTIARY)
-                        .append(EssentialsUtil.getDisplayName(serverPlayer))
-                        .append(Component.text(")", Colors.TERTIARY))
-                        .append(Component.text(" %s, ".formatted(serverPlayer.getUUID()), Colors.TERTIARY)));
-            } else {
-                builder.append(EssentialsUtil.getDisplayName(serverPlayer))
-                        .append(Component.text(", ", Colors.INFO));
-            }
-        }
-
-        EssentialsUtil.sendSuccess(source, builder.build());
-
-        return list.size();
+                .append(Component.text(maxPlayers, Colors.VARIABLE_VALUE))
+                .append(Component.text(" Spieler%s online: ".formatted(maxPlayers == 1 ? "" : "n"), Colors.INFO)
+                        .append(Component.join(JoinConfiguration.commas(true), onlinePlayers.stream().map(player -> {
+                                    if (withUUID) {
+                                        return Component.text("(", Colors.VARIABLE_VALUE)
+                                                .append(EssentialsUtil.getDisplayName(player))
+                                                .append(Component.text(")", Colors.VARIABLE_VALUE))
+                                                .append(Component.text(" %s".formatted(player.getUniqueId()), Colors.VARIABLE_KEY));
+                                    } else {
+                                        return EssentialsUtil.getDisplayName(player);
+                                    }
+                                })
+                                .toList())
+                        )
+                )
+        );
+        return onlinePlayers.size();
     }
 }

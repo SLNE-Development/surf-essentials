@@ -1,184 +1,251 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.google.common.collect.Iterators;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import dev.slne.surf.essentials.exceptions.InvalidStringTimeException;
+import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.LiteralArgument;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
+import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.configuration.GlobalConfiguration;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.val;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.TimeArgument;
-import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
-import org.bukkit.event.world.TimeSkipEvent;
+import org.bukkit.World;
 
-import java.io.IOException;
-import java.util.Iterator;
+import java.util.Collections;
 
-public class TimeCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"time"};
-    }
+public class TimeCommand extends EssentialsCommand {
+    private boolean currentlySkipping = false;
 
-    @Override
-    public String usage() {
-        return "/time <query | add | set | day | noon | night | midnight>";
-    }
+    public TimeCommand() {
+        super("time", "time <set|add|query> <value>", "Sets the time to a specific value");
 
-    @Override
-    public String description() {
-        return "Change game time";
-    }
+        withPermission(Permissions.TIME_PERMISSION);
 
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.TIME_PERMISSION));
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> queryTime(
+                sender,
+                QueryTime.DAYTIME
+        ));
 
-        literal.executes(context -> queryTime(context.getSource(), context.getSource().getLevel(), getDayTime(context.getSource().getLevel()), 1));
+        then(addQueryTimes());
+        then(literal("add")
+                .then(timeArgument("time")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> addTime(
+                                sender,
+                                args.getUnchecked("time")
+                        ))
+                )
+        );
+        then(literal("set")
+                .then(timeArgument("time")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> setTime(
+                                sender,
+                                args.getUnchecked("time")
+                        ))
+                )
+        );
 
-        literal.then(Commands.literal("query")
-                .then(Commands.literal("day")
-                        .executes(context -> queryTime(context.getSource(), context.getSource().getLevel(), (int) (context.getSource().getLevel().getDayTime() / 24000L % 2147483647L), 0)))
-                .then(Commands.literal("daytime")
-                        .executes(context -> queryTime(context.getSource(), context.getSource().getLevel(), getDayTime(context.getSource().getLevel()), 1)))
-                .then(Commands.literal("gametime")
-                        .executes(context -> queryTime(context.getSource(), context.getSource().getLevel(), (int) context.getSource().getLevel().getGameTime(), 2))));
-
-
-        literal.then(Commands.literal("add")
-                .then(Commands.argument("time", TimeArgument.time())
-                        .executes(context -> addTime(context.getSource(), IntegerArgumentType.getInteger(context, "time")))));
-
-        literal.then(Commands.literal("set")
-                .then(Commands.argument("time", TimeArgument.time())
-                        .executes(context -> setTime(context.getSource(), IntegerArgumentType.getInteger(context, "time")))));
-
-        literal.then(Commands.literal("day")
-                .executes(context -> addNamedTime(context.getSource(), "Tag")));
-
-        literal.then(Commands.literal("noon")
-                .executes(context -> addNamedTime(context.getSource(), "Mittag")));
-
-        literal.then(Commands.literal("night")
-                .executes(context -> addNamedTime(context.getSource(), "Nacht")));
-
-        literal.then(Commands.literal("midnight")
-                .executes(context -> addNamedTime(context.getSource(), "Mitternacht")));
-    }
-
-    private static int queryTime(CommandSourceStack source, ServerLevel serverLevel, int time, int whatTime) {
-
-        ResourceKey<Level> resourceKey = serverLevel.dimension();
-        String timeName;
-        switch (whatTime) {
-            case 0 -> timeName = "Zeit";
-            case 1 -> timeName = "Tageszeit";
-            case 2 -> timeName = "gesamte Zeit";
-            default -> timeName = "undefined";
+        for (NamedTime namedTime : NamedTime.values()) {
+            then(literal(namedTime.name().toLowerCase())
+                    .executesNative((NativeResultingCommandExecutor) (sender, args) -> addNamedTime(
+                            sender,
+                            namedTime
+                    ))
+            );
         }
-        EssentialsUtil.sendSuccess(source, Component.text("Die ", Colors.INFO)
-                .append(Component.text(timeName, Colors.TERTIARY))
+    }
+
+    private Argument<?> addQueryTimes() {
+        LiteralArgument literal = literal("query");
+        for (QueryTime time : QueryTime.values()) {
+            literal.then(literal(time.name().toLowerCase())
+                    .executesNative((NativeResultingCommandExecutor) (sender, args) -> queryTime(
+                            sender,
+                            time
+                    ))
+            );
+        }
+        return literal;
+    }
+
+    private int queryTime(NativeProxyCommandSender source, QueryTime queryTime) {
+        val world = source.getWorld();
+        val time = queryTime.getTime(world);
+        EssentialsUtil.sendSuccess(source.getCallee(), Component.text("Die ", Colors.INFO)
+                .append(Component.text(queryTime.name, Colors.VARIABLE_KEY))
                 .append(Component.text(" in der Welt ", Colors.INFO))
-                .append(Component.text(resourceKey.location().toString().replace("minecraft:", ""), Colors.TERTIARY))
+                .append(EssentialsUtil.getDisplayName(world))
                 .append(Component.text(" beträgt ", Colors.INFO))
-                .append(Component.text(time, Colors.TERTIARY)
+                .append(Component.text(time, Colors.VARIABLE_VALUE)
                         .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), Colors.INFO))))
                 .append(Component.text(" Ticks!", Colors.INFO)));
 
-        return time;
+        return (int) time;
     }
 
-    private static int setTime(CommandSourceStack source, int time) {
-        Iterator<ServerLevel> iterator = GlobalConfiguration.get().commands.timeCommandAffectsAllWorlds ?
-                source.getServer().getAllLevels().iterator() : Iterators.singletonIterator(source.getLevel());
+    private int setTime(NativeProxyCommandSender source, int time) {
+        val senderWorld = source.getWorld();
+        val worlds = EssentialsUtil.timeCommandAffectsAllWorlds() ?
+                source.getServer().getWorlds() : Collections.singletonList(senderWorld);
 
-        iterator.forEachRemaining(level -> {
-            TimeSkipEvent timeSkipEvent = new TimeSkipEvent(level.getWorld(), TimeSkipEvent.SkipReason.COMMAND, time - level.getDayTime());
-            EssentialsUtil.callEvent(timeSkipEvent);
-            if (!timeSkipEvent.isCancelled()) level.setDayTime(level.getDayTime() + timeSkipEvent.getSkipAmount());
-        });
+        if (currentlySkipping) {
+            EssentialsUtil.sendError(source, Component.text("Es wird bereits Zeit übersprungen!", Colors.ERROR));
+            return getDayTime(senderWorld);
+        }
 
+        for (World world : worlds) {
+            world.setFullTime(time);
+        }
 
-        EssentialsUtil.sendSuccess(source, Component.text("Die Zeit wurde auf ", Colors.SUCCESS)
-                .append(Component.text(time, Colors.TERTIARY)
+        EssentialsUtil.sendSuccess(source.getCallee(), Component.text("Die Zeit wurde auf ", Colors.SUCCESS)
+                .append(Component.text(time, Colors.VARIABLE_VALUE)
                         .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), Colors.INFO))))
                 .append(Component.text(" Ticks gesetzt!", Colors.SUCCESS)));
 
-        return getDayTime(source.getLevel());
+        return getDayTime(senderWorld);
     }
 
-    private static int addTime(CommandSourceStack source, int time) {
-        Iterator<ServerLevel> iterator = GlobalConfiguration.get().commands.timeCommandAffectsAllWorlds ?
-                source.getServer().getAllLevels().iterator() : Iterators.singletonIterator(source.getLevel());
+    private int addTime(NativeProxyCommandSender source, int time) {
+        val senderWorld = source.getWorld();
+        val worlds = EssentialsUtil.timeCommandAffectsAllWorlds() ?
+                source.getServer().getWorlds() : Collections.singletonList(senderWorld);
 
-        iterator.forEachRemaining(level -> {
-            TimeSkipEvent timeSkipEvent = new TimeSkipEvent(level.getWorld(), TimeSkipEvent.SkipReason.COMMAND, time);
-            EssentialsUtil.callEvent(timeSkipEvent);
-            if (!timeSkipEvent.isCancelled()) level.setDayTime(level.getDayTime() + timeSkipEvent.getSkipAmount());
-        });
+        if (currentlySkipping) {
+            EssentialsUtil.sendError(source.getCallee(), Component.text("Es wird bereits Zeit übersprungen!", Colors.ERROR));
+            return getDayTime(senderWorld);
+        }
 
+        for (World world : worlds) {
+            if (time > 24000) {
+                world.setFullTime(world.getFullTime() + time);
+            } else {
+                smoothTimeSkip(world, time);
+            }
+        }
 
-        EssentialsUtil.sendSuccess(source, Component.text("Es wurden ", Colors.SUCCESS)
-                .append(Component.text(time, Colors.TERTIARY)
+        EssentialsUtil.sendSuccess(source.getCallee(), Component.text("Es wurden ", Colors.SUCCESS)
+                .append(Component.text(time, Colors.VARIABLE_VALUE)
                         .hoverEvent(HoverEvent.showText(Component.text(EssentialsUtil.ticksToString(time), Colors.INFO))))
                 .append(Component.text(" Ticks zur Zeit hinzugefügt!", Colors.SUCCESS)));
 
-        return getDayTime(source.getLevel());
+        return getDayTime(senderWorld);
     }
 
-    private static int addNamedTime(CommandSourceStack source, String namedTime) {
-        int addTime = switch (namedTime) {
-            case "Tag" -> 500;
-            case "Mittag" -> 6000;
-            case "Nacht" -> 13000;
-            case "Mitternacht" -> 18000;
-            default -> throw new InvalidStringTimeException("Invalid time: \"" + namedTime + "\"");
-        };
-        Iterator<ServerLevel> iterator = GlobalConfiguration.get().commands.timeCommandAffectsAllWorlds ?
-                source.getServer().getAllLevels().iterator() : Iterators.singletonIterator(source.getLevel());
+    private int addNamedTime(NativeProxyCommandSender source, NamedTime namedTime) {
+        val senderWorld = source.getWorld();
+        val worlds = EssentialsUtil.timeCommandAffectsAllWorlds() ?
+                source.getServer().getWorlds() : Collections.singletonList(senderWorld);
 
-        iterator.forEachRemaining(level -> {
-            long timeDifference = (addTime - level.getDayTime()) % 24000;
-            if (timeDifference < 0) timeDifference += 24000;
-            long time = level.getDayTime() + timeDifference;
+        if (currentlySkipping) {
+            EssentialsUtil.sendError(source.getCallee(), Component.text("Es wird bereits Zeit übersprungen!", Colors.ERROR));
+            return getDayTime(senderWorld);
+        }
 
-            TimeSkipEvent event = new TimeSkipEvent(level.getWorld(), TimeSkipEvent.SkipReason.CUSTOM, time - level.getDayTime());
-            Bukkit.getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
+        for (World world : worlds) {
+            long margin = (namedTime.time - world.getFullTime()) % 24_000L; // TODO test
+            if (margin < 0L) {
+                margin += 24000L;
+            }
+            smoothTimeSkip(world, margin);
+        }
+
+        EssentialsUtil.sendSuccess(source.getCallee(), Component.text("Die Zeit wurde auf ", Colors.SUCCESS)
+                .append(Component.text(namedTime.name, Colors.VARIABLE_VALUE))
+                .append(Component.text(" gesetzt!")));
+
+        return getDayTime(senderWorld);
+    }
+
+    /**
+     * Smoothly skips the given amount of time in the given world
+     *
+     * @param world     the world
+     * @param timeToAdd the time to add
+     */
+    private void smoothTimeSkip(World world, long timeToAdd) {
+        long goalTime = (world.getFullTime() + timeToAdd);
+        Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), (bukkitTask) -> {
+            long newTime = (world.getFullTime() + 100);
+
+            if (newTime >= goalTime) {
+                bukkitTask.cancel();
+                currentlySkipping = false;
+                world.setFullTime(goalTime);
                 return;
             }
 
-            level.setDayTime(level.getDayTime() + event.getSkipAmount());
-
-            level.getPlayers(player -> {
-                try (final var playerLevel = player.level()) {
-                    EssentialsUtil.sendPackets(player, new ClientboundSetTimePacket(playerLevel.getGameTime(), player.getPlayerTime(), playerLevel.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)));
-                } catch (IOException ignored) {
-                }
-
-                return true;
-            });
-        });
-
-        EssentialsUtil.sendSuccess(source, Component.text("Die Zeit wurde auf ", Colors.SUCCESS)
-                .append(Component.text(namedTime, Colors.TERTIARY))
-                .append(Component.text(" gesetzt!")));
-
-        return 0;
+            currentlySkipping = true;
+            world.setFullTime(newTime);
+        }, 0, 1);
     }
 
-    private static int getDayTime(ServerLevel world) {
-        return (int) (world.getDayTime() % 24000L);
+    /**
+     * Gets the day time of the given world
+     *
+     * @param world the world
+     * @return the day time
+     */
+    private static int getDayTime(World world) {
+        return (int) (world.getFullTime() % 24_000L);
+    }
+
+    /**
+     * An enum that represents the different time queries.
+     */
+    @RequiredArgsConstructor
+    @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+    private enum QueryTime {
+        DAY("Zeit", world -> world.getFullTime() / 24_000L % Integer.MAX_VALUE),
+        DAYTIME("Tageszeit", TimeCommand::getDayTime),
+        GAME_TIME("gesamte Zeit", World::getGameTime);
+
+        String name; // the name of the query
+        World2Long timeFunction; // the function that returns the time
+
+        /**
+         * Gets the time of the given world
+         *
+         * @param world the world
+         * @return the time
+         */
+        public long getTime(World world) {
+            return timeFunction.apply(world);
+        }
+    }
+
+    /**
+     * An enum that represents the different named times.
+     */
+    @RequiredArgsConstructor
+    @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+    private enum NamedTime {
+        DAY("Tag", 500),
+        NOON("Mittag", 6_000),
+        NIGHT("Nacht", 13_000),
+        MIDNIGHT("Mitternacht", 18_000);
+
+        String name; // the name of the time
+        int time; // the time
+    }
+
+    /**
+     * A function that takes a world and returns a long
+     */
+    @FunctionalInterface
+    private interface World2Long {
+
+        /**
+         * Applies this function to the given argument.
+         *
+         * @param world the function argument
+         * @return the function result
+         */
+        long apply(World world);
     }
 }

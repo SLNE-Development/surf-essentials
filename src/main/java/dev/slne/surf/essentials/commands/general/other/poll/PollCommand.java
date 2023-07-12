@@ -1,127 +1,90 @@
 package dev.slne.surf.essentials.commands.general.other.poll;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.minecraft.ChatFormatting;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 
-public class PollCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"poll"};
+import java.util.Collection;
+import java.util.Objects;
+
+public class PollCommand extends EssentialsCommand {
+    public PollCommand() {
+        super("poll", "poll <create | end | remove | list>", "Manage polls");
+
+        withPermission(Permissions.POLL_PERMISSION);
+
+        then(literal("create")
+                .then(wordArgument("name")
+                        .then(integerArgument("durationInSeconds", 1, 21600)
+                                .then(greedyStringArgument("question")
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> createPoll(sender.getCallee(), args.getUnchecked("name"),
+                                                args.getUnchecked("durationInSeconds"), args.getUnchecked("question")))))));
+
+        then(literal("end")
+                .then(pollArgument("poll")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> endPoll(sender.getCallee(), Objects.requireNonNull(args.getUnchecked("poll"))))));
+
+        then(literal("remove")
+                .then(pollArgument("poll")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> removePoll(sender.getCallee(), Objects.requireNonNull(args.getUnchecked("poll"))))));
+
+        then(literal("list")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> listPolls(sender.getCallee())));
     }
 
-    @Override
-    public String usage() {
-        return "/poll <create | end | remove | list>";
-    }
-
-    @Override
-    public String description() {
-        return "Manage polls";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.POLL_PERMISSION));
-
-        literal.then(Commands.literal("create")
-                .then(Commands.argument("name", StringArgumentType.word())
-                        .then(Commands.argument("durationInSeconds", IntegerArgumentType.integer(1, 21600))
-                                .then(Commands.argument("question", StringArgumentType.greedyString())
-                                        .executes(context -> createPoll(context.getSource(), StringArgumentType.getString(context, "name"),
-                                                IntegerArgumentType.getInteger(context, "durationInSeconds"), StringArgumentType.getString(context, "question")))))));
-
-        literal.then(Commands.literal("end")
-                .then(Commands.argument("name", StringArgumentType.word())
-                        .suggests(activePollSuggestions())
-                        .executes(context -> endPoll(context.getSource(), StringArgumentType.getString(context, "name")))));
-
-        literal.then(Commands.literal("remove")
-                .then(Commands.argument("name", StringArgumentType.word())
-                        .suggests(activePollSuggestions())
-                        .executes(context -> removePoll(context.getSource(), StringArgumentType.getString(context, "name")))));
-
-        literal.then(Commands.literal("list")
-                .executes(context -> listPolls(context.getSource())));
-    }
-
-    private int createPoll(CommandSourceStack source, String name, int durationInSeconds, String question) {
+    private int createPoll(CommandSender source, String name, Integer durationInSeconds, String question) {
         if (Poll.checkPollExists(name)) {
-            if (source.isPlayer()) {
-                final var poll = Poll.getPoll(name).join();
-                EssentialsUtil.sendError(source, Component.text("Es läuft bereits eine Umfrage mit dem Namen ", Colors.ERROR)
-                        .append(Component.text(poll.getName(), Colors.TERTIARY)
-                                .hoverEvent(HoverEvent.showText(Component.text("Zeit: ", Colors.INFO)
-                                        .append(Component.text(EssentialsUtil.ticksToString(poll.getDuration() * 20), Colors.GREEN))
-                                        .appendNewline()
-                                        .append(Component.text("Frage: ", Colors.INFO))
-                                        .append(Component.newline())
-                                        .append(Component.text(poll.getQuestion(), Colors.TERTIARY)))))
-                        .append(Component.text("!", Colors.ERROR)));
-            } else {
-                source.sendFailure(net.minecraft.network.chat.Component.literal("The poll ")
-                        .withStyle(ChatFormatting.RED)
-                        .append(name)
-                        .withStyle(ChatFormatting.GOLD)
-                        .append(" already exists!")
-                        .withStyle(ChatFormatting.RED));
-            }
+            val poll = Poll.getPoll(name);
+            EssentialsUtil.sendError(source, Component.text("Es läuft bereits eine Umfrage mit dem Namen ", Colors.ERROR)
+                    .append(Component.text(poll.getName(), Colors.TERTIARY)
+                            .hoverEvent(HoverEvent.showText(Component.text("Zeit: ", Colors.INFO)
+                                    .append(Component.text(EssentialsUtil.ticksToString(poll.getDuration() * 20), Colors.GREEN))
+                                    .appendNewline()
+                                    .append(Component.text("Frage: ", Colors.INFO))
+                                    .append(Component.newline())
+                                    .append(Component.text(poll.getQuestion(), Colors.TERTIARY)))))
+                    .append(Component.text("!", Colors.ERROR)));
             return 0;
         }
 
-        Poll.createPoll(name, question, durationInSeconds).thenAcceptAsync(poll -> {
-            poll.startMessage(Bukkit.getOnlinePlayers());
-            poll.startTimer();
-        });
+        val poll = Poll.builder()
+                .name(name)
+                .question(question)
+                .durationInSeconds(durationInSeconds)
+                .build();
+
+        poll.startMessage(Bukkit.getOnlinePlayers());
+        poll.startTimer();
+
         return 1;
     }
 
-    private int endPoll(CommandSourceStack source, String name) {
-        if (!testPoll(name, source)) {
-            return 0;
-        }
-
-        Poll.getPoll(name).thenAcceptAsync(Poll::stop);
-
+    private int endPoll(CommandSender source, Poll poll) {
+        poll.stop();
         EssentialsUtil.sendSuccess(source, "Die Umfrage wird beendet.");
-
         return 1;
     }
 
-    private int removePoll(CommandSourceStack source, String name) {
-        if (!testPoll(name, source)) {
-            return 0;
-        }
-
-        Poll.getPoll(name).thenAcceptAsync(poll -> {
-            poll.setStopSilent(true);
-            poll.stop();
-        });
+    private int removePoll(CommandSender source, Poll poll) {
+        poll.setStopSilent(true);
+        poll.stop();
 
         EssentialsUtil.sendSuccess(source, "Die Umfrage wird gelöscht.");
         return 1;
     }
 
-    private static int listPolls(CommandSourceStack source) {
-        final var polls = Poll.getPolls();
+    private static int listPolls(CommandSender source) {
+        final Collection<Poll> polls = Poll.getPolls();
         if (polls.size() == 0) {
-            if (source.isPlayer()) {
-                EssentialsUtil.sendError(source, "Aktuell laufen keine Umfragen!");
-            } else {
-                source.sendFailure(net.minecraft.network.chat.Component.literal("No polls are active right now."));
-            }
+            EssentialsUtil.sendError(source, "Aktuell laufen keine Umfragen!");
             return polls.size();
         }
 
@@ -135,37 +98,8 @@ public class PollCommand extends BrigadierCommand {
                                                 .append(Component.text(EssentialsUtil.ticksToString(poll.getDuration() * 20), Colors.GREEN))
                                                 .append(Component.newline())
                                                 .append(Component.text("Frage: ", Colors.INFO))
-                                                .append(Component.text(poll.getQuestion(), Colors.TERTIARY))))).toArray(Component[]::new)))
+                                                .append(Component.text(poll.getQuestion(), Colors.TERTIARY))))).toList()))
         );
         return polls.size();
-    }
-
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean testPoll(String name, CommandSourceStack source) {
-        if (!Poll.checkPollExists(name)) {
-            if (source.isPlayer()) {
-                EssentialsUtil.sendError(source, Component.text("Die Umfrage ", Colors.ERROR)
-                        .append(Component.text(name, Colors.TERTIARY))
-                        .append(Component.text(" existiert nicht!")));
-            } else {
-                source.sendFailure(net.minecraft.network.chat.Component.literal("The poll ")
-                        .withStyle(ChatFormatting.RED)
-                        .append(name)
-                        .withStyle(ChatFormatting.GOLD)
-                        .append(" does not exist!")
-                        .withStyle(ChatFormatting.RED));
-            }
-            return false;
-        }
-        return true;
-    }
-
-    public static SuggestionProvider<CommandSourceStack> activePollSuggestions() {
-        return (context, builder) -> {
-            for (Poll poll : Poll.getPolls()) {
-                builder.suggest(poll.getName(), net.minecraft.network.chat.Component.literal(poll.getQuestion()).withStyle(ChatFormatting.GRAY));
-            }
-            return builder.buildFuture();
-        };
     }
 }

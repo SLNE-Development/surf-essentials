@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.commands.general.other.troll.trolls;
 
+/**
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -90,4 +91,5 @@ public class BellTroll extends Troll {
         return 1;
     }
 }
+ */
 

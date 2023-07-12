@@ -1,74 +1,65 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
-public class GodmodeCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"godmode", "god"};
+public class GodmodeCommand extends EssentialsCommand { // TODO
+    public GodmodeCommand() {
+        super("godmode", "god [<enable | disable> <players>]", "Change the godmode of players", "god");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.GOD_MODE_SELF_PERMISSION, Permissions.GOD_MODE_OTHER_PERMISSION));
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> godMode(
+                sender.getCallee(),
+                List.of(getEntityOrException(sender)),
+                !getEntityOrException(sender).isInvulnerable()
+        ));
+
+        then(literal("enable")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> godMode(sender.getCallee(), List.of(getEntityOrException(sender)), true))
+                .then(entitiesArgument("entities")
+                        .withPermission(Permissions.GOD_MODE_OTHER_PERMISSION)
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> godMode(sender.getCallee(), args.getUnchecked("entities"), true))));
+
+        then(literal("disable")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> godMode(sender.getCallee(), List.of(getEntityOrException(sender)), false))
+                .then(playersArgument("entities")
+                        .withPermission(Permissions.GOD_MODE_OTHER_PERMISSION)
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> godMode(sender.getCallee(), args.getUnchecked("entities"), false))));
     }
 
-    @Override
-    public String usage() {
-        return "/god [<enable | disable> <players>] ";
-    }
-
-    @Override
-    public String description() {
-        return "Change the godmode of players";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.GOD_MODE_SELF_PERMISSION, Permissions.GOD_MODE_OTHER_PERMISSION));
-
-        literal.executes(context -> godMode(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), !context.getSource().getPlayerOrException().isInvulnerable()));
-        literal.then(Commands.literal("enable")
-                .executes(context -> godMode(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), true))
-                .then(Commands.argument("players", EntityArgument.players())
-                        .requires(EssentialsUtil.checkPermissions(Permissions.GOD_MODE_OTHER_PERMISSION))
-                        .executes(context -> godMode(context.getSource(), EntityArgument.getPlayers(context, "players"), true))));
-
-        literal.then(Commands.literal("disable")
-                .executes(context -> godMode(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), false))
-                .then(Commands.argument("players", EntityArgument.players())
-                        .requires(EssentialsUtil.checkPermissions(Permissions.GOD_MODE_OTHER_PERMISSION))
-                        .executes(context -> godMode(context.getSource(), EntityArgument.getPlayers(context, "players"), false))));
-    }
-
-    private int godMode(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, boolean enable) throws CommandSyntaxException {
-        final var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+    private int godMode(CommandSender source, Collection<Entity> targetsUnchecked, boolean enable) throws WrapperCommandSyntaxException {
+        val targets = EssentialsUtil.checkEntitySuggestion(source, targetsUnchecked);
         int successfulChanges = 0;
 
-        for (ServerPlayer target : targets) {
+        for (Entity target : targets) {
             target.setInvulnerable(enable);
             successfulChanges++;
             EssentialsUtil.sendSuccess(target, (Component.text("Du bist nun ", Colors.GREEN))
                     .append(Component.text(target.isInvulnerable() ? "unverwundbar!" : "verwundbar!", Colors.GREEN)));
         }
 
-        final var target = targets.iterator().next();
-        boolean isSelf = source.isPlayer() && source.getPlayerOrException() == target;
+        val target = targets.iterator().next();
+        boolean isSelf = source instanceof Player player && player.equals(target);
         if (successfulChanges == 1 && !isSelf) {
             EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
                     .append(Component.text(" ist nun ", Colors.SUCCESS))
                     .append(Component.text(target.isInvulnerable() ? "unverwundbar!" : "verwundbar!", Colors.SUCCESS)));
-        } else if (successfulChanges >= 1 && source.getPlayerOrException() != target) {
+        } else if (successfulChanges >= 1 && !isSelf) {
             EssentialsUtil.sendSuccess(source, Component.text(successfulChanges, Colors.TERTIARY)
-                    .append(Component.text(" Spieler sind nun ", Colors.SUCCESS))
+                    .append(Component.text(" Entities sind nun ", Colors.SUCCESS))
                     .append(Component.text(enable ? "unverwundbar!" : "verwundbar!", Colors.SUCCESS)));
         }
         return successfulChanges;

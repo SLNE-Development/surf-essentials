@@ -1,59 +1,37 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.server.level.ServerPlayer;
+import lombok.Getter;
+import lombok.val;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class InfinityCommand extends BrigadierCommand {
-    private static final List<ServerPlayer> playersInInfinity = new ArrayList<>();
+public class InfinityCommand extends EssentialsCommand {
+    @Getter
+    private static final List<Player> playersInInfinity = new ArrayList<>();
 
-    @Override
-    public String[] names() {
-        return new String[]{"infinity"};
-    }
+    public InfinityCommand() {
+        super("infinity", "infinity", "Never run out of the Item you are currently holding");
 
-    @Override
-    public String usage() {
-        return "/infinity";
-    }
+        withPermission(Permissions.INFINITY_PERMISSION);
 
-    @Override
-    public String description() {
-        return "Never run out of the Item you currently holding";
-    }
+        executesNative((sender, args) -> {
+            val player = getPlayerOrException(sender);
+            if (playersInInfinity.contains(player)){
+                playersInInfinity.remove(player);
+                EssentialsUtil.sendSuccess(player, "Du hast nun nicht mehr unbegrenzt Items");
 
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.INFINITY_PERMISSION));
+                return 1;
+            }
 
-        literal.executes(context -> infinity(context.getSource()));
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    private int infinity(CommandSourceStack source) throws CommandSyntaxException {
-        final var player = source.getPlayerOrException();
-
-        if (playersInInfinity.contains(player)){
-            playersInInfinity.remove(player);
-            EssentialsUtil.sendSuccess(source, "Du hast nun nicht mehr unbegrenzt Items");
+            playersInInfinity.add(player);
+            EssentialsUtil.sendSuccess(player, "Du hast nun unbegrenzt Items");
 
             return 1;
-        }
-
-        playersInInfinity.add(player);
-        EssentialsUtil.sendSuccess(source, "Du hast nun unbegrenzt Items");
-
-        return 1;
-    }
-
-    public static List<ServerPlayer> getPlayersInInfinity() {
-        return playersInInfinity;
+        });
     }
 }

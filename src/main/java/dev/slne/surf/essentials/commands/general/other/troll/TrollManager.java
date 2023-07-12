@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.commands.general.other.troll;
 
+/**
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
@@ -8,7 +9,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.commands.general.other.troll.gui.Boarders;
 import dev.slne.surf.essentials.commands.general.other.troll.gui.TrollGuiItems;
 import dev.slne.surf.essentials.commands.general.other.troll.trolls.*;
-import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import net.kyori.adventure.text.Component;
@@ -16,7 +16,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
-import static dev.slne.surf.essentials.utils.permission.Permissions.*;
 
 public class TrollManager extends BrigadierCommand {
     @Override
@@ -36,9 +35,11 @@ public class TrollManager extends BrigadierCommand {
 
     @Override
     public void literal(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal){
+
         literal.requires(EssentialsUtil.checkPermissions(TROLL_ALL_PERMISSION, TROLL_BOOM_PERMISSION, TROLL_DEMO_PERMISSION,
                 TROLL_ILLUSIONER_PERMISSION, TROLL_ANVIL_PERMISSION, TROLL_VILLAGER_PERMISSION, TROLL_WATER_PERMISSION,
                 TROLL_MLG_PERMISSION, TROLL_BELL_PERMISSION, TROLL_HEROBRINE_PERMISSION, TROLL_CAGE_PERMISSION, TROLL_CRASH_PERMISSION));
+
 
         literal.executes(context -> gui(context.getSource()));
 
@@ -84,3 +85,5 @@ public class TrollManager extends BrigadierCommand {
         return 1;
     }
 }
+*/
+

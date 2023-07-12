@@ -1,59 +1,52 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.google.common.collect.ImmutableList;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.world.entity.Entity;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
 
 import java.util.Collection;
+import java.util.List;
 
-public class KillCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"kill"};
+public class KillCommand extends EssentialsCommand {
+    public KillCommand() {
+        super("kill", "[<targets>]", "Kill the targets");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.KILL_SELF_PERMISSION, Permissions.KILL_OTHER_PERMISSION));
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> kill(sender.getCallee(), List.of(getSpecialEntityOrException(sender, Damageable.class))));
+        then(entitiesArgument("targets")
+                .withPermission(Permissions.KILL_OTHER_PERMISSION)
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> kill(sender.getCallee(), args.getUnchecked("targets"))));
     }
 
-    @Override
-    public String usage() {
-        return "/kill <targets>";
-    }
+    private int kill(CommandSender sender, Collection<Entity> targetsUnchecked) throws WrapperCommandSyntaxException {
+        val targets = EssentialsUtil.checkEntitySuggestion(sender, targetsUnchecked);
+        val livingEntities = targets.stream()
+                .filter(entity -> entity instanceof Damageable)
+                .map(entity -> (Damageable) entity)
+                .toList();
 
-    @Override
-    public String description() {
-        return "kill you or the targets";
-    }
+        if (livingEntities.isEmpty() && targets.size() == 1)
+            throw Exceptions.ERROR_NOT_VALID_ENTITY_FOR_COMMAND.create(targets.iterator().next());
 
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.KILL_SELF_PERMISSION, Permissions.KILL_OTHER_PERMISSION));
-        literal.executes(context -> kill(context, ImmutableList.of(context.getSource().getEntityOrException())));
-
-        literal.then(Commands.argument("targets", EntityArgument.entities())
-                .requires(EssentialsUtil.checkPermissions(Permissions.KILL_OTHER_PERMISSION))
-                .executes(context -> kill(context, EntityArgument.getEntities(context, "targets"))));
-    }
-
-    private static int kill(CommandContext<CommandSourceStack> context, Collection<? extends Entity> targetsUnchecked) throws CommandSyntaxException {
-        var targets = EssentialsUtil.checkEntitySuggestion(context.getSource(), targetsUnchecked);
-
-        for (Entity entity : targets) {
-            entity.kill();
+        for (Damageable entity : livingEntities) {
+            entity.setHealth(0);
         }
 
-        if (targets.size() == 1) {
-            EssentialsUtil.sendSuccess(context.getSource(), EssentialsUtil.getDisplayName(targets.iterator().next())
+        if (livingEntities.size() == 1) {
+            EssentialsUtil.sendSuccess(sender, EssentialsUtil.getDisplayName(livingEntities.iterator().next())
                     .append(Component.text(" wurde getötet!", Colors.SUCCESS)));
         } else {
-            EssentialsUtil.sendSuccess(context.getSource(), Component.text(targets.size(), Colors.TERTIARY)
+            EssentialsUtil.sendSuccess(sender, Component.text(livingEntities.size(), Colors.TERTIARY)
                     .append(Component.text(" entities wurden getötet!", Colors.SUCCESS)));
         }
 

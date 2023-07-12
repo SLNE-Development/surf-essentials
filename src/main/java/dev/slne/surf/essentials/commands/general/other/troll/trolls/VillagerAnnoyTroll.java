@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.commands.general.other.troll.trolls;
 
+/**
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -7,7 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.commands.general.other.troll.Troll;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.abtract.CraftUtil;
+import dev.slne.surf.essentials.utils.abtract.PacketUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.kyori.adventure.text.Component;
@@ -42,7 +43,7 @@ public class VillagerAnnoyTroll extends Troll {
     }
 
     private int annoyVillager(CommandContext<CommandSourceStack> context, Player target, int timeInSeconds) throws CommandSyntaxException {
-        EssentialsUtil.checkPlayerSuggestion(context.getSource(), CraftUtil.toServerPlayer(target));
+        EssentialsUtil.checkPlayerSuggestion(context.getSource(), PacketUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();
 
         if (!getAndToggleTroll(target)) {
@@ -74,3 +75,4 @@ public class VillagerAnnoyTroll extends Troll {
         return 1;
     }
 }
+ */

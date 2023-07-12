@@ -1,153 +1,215 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.copy.Mth;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.val;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
-public class ExperienceCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"experience", "xp"};
+public class ExperienceCommand extends EssentialsCommand {
+    public ExperienceCommand() {
+        super("experience", "experience <query | add | set>", "Query, add or set the experience of the targets", "xp");
+
+        withPermission(Permissions.EXPERIENCE_PERMISSION);
+
+        then(literal("query")
+                .then(playerArgument("player")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> query(
+                                sender.getCallee(),
+                                args.getUnchecked("player"),
+                                Type.POINTS
+                        ))
+                        .then(literal("levels")
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> query(
+                                        sender.getCallee(),
+                                        args.getUnchecked("player"),
+                                        Type.LEVELS
+                                ))
+                        )
+                        .then(literal("points")
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> query(
+                                        sender.getCallee(),
+                                        args.getUnchecked("player"),
+                                        Type.POINTS
+                                ))
+                        )
+                )
+        );
+
+        then(literal("add")
+                .then(playersArgument("players")
+                        .then(integerArgument("amount")
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> give(
+                                        sender.getCallee(),
+                                        args.getUnchecked("players"),
+                                        args.getUnchecked("amount"),
+                                        Type.POINTS
+                                ))
+                                .then(literal("levels")
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> give(
+                                                sender.getCallee(),
+                                                args.getUnchecked("players"),
+                                                args.getUnchecked("amount"),
+                                                Type.LEVELS
+                                        ))
+                                )
+                                .then(literal("points")
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> give(
+                                                sender.getCallee(),
+                                                args.getUnchecked("players"),
+                                                args.getUnchecked("amount"),
+                                                Type.POINTS
+                                        ))
+                                )
+                        )
+                )
+        );
+
+        then(literal("set")
+                .then(playersArgument("players")
+                        .then(integerArgument("amount")
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> set(
+                                        sender.getCallee(),
+                                        args.getUnchecked("players"),
+                                        args.getUnchecked("amount"),
+                                        Type.POINTS
+                                ))
+                                .then(literal("levels")
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> set(
+                                                sender.getCallee(),
+                                                args.getUnchecked("players"),
+                                                args.getUnchecked("amount"),
+                                                Type.LEVELS
+                                        ))
+                                )
+                                .then(literal("points")
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> set(
+                                                sender.getCallee(),
+                                                args.getUnchecked("players"),
+                                                args.getUnchecked("amount"),
+                                                Type.POINTS
+                                        ))
+                                )
+                        )
+                )
+        );
+
     }
 
-    @Override
-    public String usage() {
-        return "/experience <query | add | set>";
-    }
+    private int query(CommandSender source, Player targetUnchecked, Type whatToQuery) throws WrapperCommandSyntaxException {
+        val target = EssentialsUtil.checkPlayerSuggestion(source, targetUnchecked);
+        val result = (whatToQuery == Type.LEVELS) ? target.getLevel() : Math.round(target.getExp() * (float) target.getExpToLevel());
 
-    @Override
-    public String description() {
-        return "Query, add or set the experience of the targets";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.EXPERIENCE_PERMISSION));
-
-        literal.then(Commands.literal("query")
-                .then(Commands.argument("player", EntityArgument.player())
-                        .executes(context -> query(context.getSource(), EntityArgument.getPlayer(context, "player"), 1))
-                        .then(Commands.literal("levels")
-                                .executes(context -> query(context.getSource(), EntityArgument.getPlayer(context, "player"), 0)))
-                        .then(Commands.literal("points")
-                                .executes(context -> query(context.getSource(), EntityArgument.getPlayer(context, "player"), 1)))));
-
-        literal.then(Commands.literal("add")
-                .then(Commands.argument("players", EntityArgument.players())
-                        .then(Commands.argument("amount", IntegerArgumentType.integer())
-                                .executes(context -> give(context.getSource(), EntityArgument.getPlayers(context, "players"),
-                                        IntegerArgumentType.getInteger(context, "amount"), 1))
-                                .then(Commands.literal("levels")
-                                        .executes(context -> give(context.getSource(), EntityArgument.getPlayers(context, "players"),
-                                                IntegerArgumentType.getInteger(context, "amount"), 0)))
-                                .then(Commands.literal("points")
-                                        .executes(context -> give(context.getSource(), EntityArgument.getPlayers(context, "players"),
-                                                IntegerArgumentType.getInteger(context, "amount"), 1))))));
-
-        literal.then(Commands.literal("set")
-                .then(Commands.argument("players", EntityArgument.players())
-                        .then(Commands.argument("amount", IntegerArgumentType.integer())
-                                .executes(context -> set(context.getSource(), EntityArgument.getPlayers(context, "players"),
-                                        IntegerArgumentType.getInteger(context, "amount"), 1))
-                                .then(Commands.literal("levels")
-                                        .executes(context -> set(context.getSource(), EntityArgument.getPlayers(context, "players"),
-                                                IntegerArgumentType.getInteger(context, "amount"), 0)))
-                                .then(Commands.literal("points")
-                                        .executes(context -> set(context.getSource(), EntityArgument.getPlayers(context, "players"),
-                                                IntegerArgumentType.getInteger(context, "amount"), 1))))));
-    }
-
-    private static int query(CommandSourceStack source, ServerPlayer targetUnchecked, int whatToQuery) throws CommandSyntaxException {
-        ServerPlayer target = EssentialsUtil.checkPlayerSuggestion(source, targetUnchecked);
-        if (whatToQuery != 0 && whatToQuery != 1)
-            throw new IllegalArgumentException("'whatToQuery' can only be 0 or 1.");
-        int result = (whatToQuery == 0) ? target.experienceLevel : Math.round(target.experienceProgress * (float) target.getXpNeededForNextLevel());
-
-        String whatToQueryName = (whatToQuery == 0) ? " Erfahrungslevel" : " Erfahrungspunkte";
-
-        EssentialsUtil.sendSuccess(source, PaperAdventure.asAdventure(target.getDisplayName()).colorIfAbsent(Colors.TERTIARY)
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
                 .append(Component.text(" hat ", Colors.INFO))
-                .append(Component.text(result, Colors.GREEN))
-                .append(Component.text(whatToQueryName, Colors.TERTIARY))
+                .append(Component.text(result + " ", Colors.VARIABLE_VALUE))
+                .append((result == 0) ? whatToQuery.getSingularComponent() : whatToQuery.getPluralComponent())
                 .append(Component.text("!", Colors.INFO)));
 
         return 1;
     }
 
-    private static int give(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, int amount, int whatToGive) throws CommandSyntaxException {
-        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
-        if (whatToGive != 0 && whatToGive != 1) throw new IllegalArgumentException("'whatToGive' can only be 0 or 1.");
+    private int give(CommandSender source, Collection<Player> targetsUnchecked, int amount, Type whatToGive) throws WrapperCommandSyntaxException {
+        val targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
 
-        for (ServerPlayer player : targets) {
-            if ((whatToGive == 0)) player.giveExperienceLevels(amount);
-            else player.giveExperiencePoints(amount);
+        for (Player player : targets) {
+            if (whatToGive == Type.LEVELS) player.giveExpLevels(amount);
+            else player.giveExp(amount);
         }
 
-        String whatToGiveName = (whatToGive == 0) ? " Erfahrungslevel" : " Erfahrungspunkte";
-
         if (targets.size() == 1) {
-            ServerPlayer target = targets.iterator().next();
-            int experience = (whatToGive == 0) ? target.experienceLevel : Math.round(target.experienceProgress * (float) target.getXpNeededForNextLevel());
+            val target = targets.iterator().next();
+            val experience = (whatToGive == Type.LEVELS) ? target.getLevel() : Math.round(target.getExp() * (float) target.getExpToLevel());
 
-            EssentialsUtil.sendSuccess(source, targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(targets.iterator().next())
                     .append(Component.text(" hat ", Colors.SUCCESS))
-                    .append(Component.text(amount, Colors.GREEN))
-                    .append(Component.text(whatToGiveName, Colors.TERTIARY))
+                    .append(Component.text(amount, Colors.VARIABLE_VALUE))
+                    .append((amount == 0) ? whatToGive.getSingularComponent() : whatToGive.getPluralComponent())
                     .append(Component.text(" erhalten!", Colors.SUCCESS))
                     .hoverEvent(HoverEvent.showText(Component.text("Insgesamt: ", Colors.INFO)
                             .append(Component.text(experience, Colors.GREEN)))));
         } else {
-            EssentialsUtil.sendSuccess(source, Component.text(targets.size(), Colors.TERTIARY)
+            EssentialsUtil.sendSuccess(source, Component.text(targets.size(), Colors.VARIABLE_VALUE)
                     .append(Component.text(" Spieler haben ", Colors.SUCCESS))
-                    .append(Component.text(amount, Colors.GREEN))
-                    .append(Component.text(whatToGiveName, Colors.TERTIARY))
+                    .append(Component.text(amount, Colors.VARIABLE_VALUE))
+                    .append((amount == 0) ? whatToGive.getSingularComponent() : whatToGive.getPluralComponent())
                     .append(Component.text(" erhalten!", Colors.SUCCESS)));
         }
         return 1;
     }
 
-    private static int set(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, int amount, int whatToSet) throws CommandSyntaxException {
-        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
-        if (whatToSet != 0 && whatToSet != 1) throw new IllegalArgumentException("'whatToSet' can only be 0 or 1.");
+    private int set(CommandSender source, Collection<Player> targetsUnchecked, int amount, Type whatToSet) throws WrapperCommandSyntaxException {
+        val targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
 
-        for (ServerPlayer player : targets) {
-            if ((whatToSet == 0)) player.setExperienceLevels(amount);
-            else player.setExperiencePoints(amount);
+        for (Player player : targets) {
+            if ((whatToSet == Type.LEVELS)) player.setLevel(amount);
+            else setExperiencePoints(player, amount);
         }
 
-        String whatToSetName = (whatToSet == 0) ? " Erfahrungslevel" : " Erfahrungspunkte";
-
-        if (targets.size() == 1) {
-            EssentialsUtil.sendSuccess(source, Component.text("Die", Colors.SUCCESS)
-                    .append(Component.text(whatToSetName, Colors.TERTIARY))
-                    .append(Component.text(" von ", Colors.SUCCESS))
-                    .append(targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                    .append(Component.text(" wurden auf ", Colors.SUCCESS))
-                    .append(Component.text(amount, Colors.GREEN))
-                    .append(Component.text(" gesetzt!", Colors.SUCCESS)));
-        } else {
-            EssentialsUtil.sendSuccess(source, Component.text("Die", Colors.SUCCESS)
-                    .append(Component.text(whatToSetName, Colors.TERTIARY))
-                    .append(Component.text(" von ", Colors.SUCCESS))
-                    .append(Component.text(targets.size(), Colors.TERTIARY))
-                    .append(Component.text(" Spielern wurden auf ", Colors.SUCCESS))
-                    .append(Component.text(amount, Colors.GREEN))
-                    .append(Component.text(" gesetzt!", Colors.SUCCESS)));
-        }
+        EssentialsUtil.sendSuccess(source, Component.text("Die ", Colors.SUCCESS)
+                .append(whatToSet.getPluralComponent())
+                .append(Component.text(" von ", Colors.SUCCESS))
+                .append((targets.size() == 1) ? EssentialsUtil.getDisplayName(targets.iterator().next()) : Component.text(targets.size(), Colors.TERTIARY))
+                .append(Component.text(" %s auf ".formatted(targets.size() == 1 ? "wurden" : "Spielern wurden"), Colors.SUCCESS))
+                .append(Component.text(amount, Colors.VARIABLE_VALUE))
+                .append(Component.text(" gesetzt!", Colors.SUCCESS)));
 
         return 1;
+    }
+
+    /**
+     * Sets the experience points of a player
+     *
+     * @param player The player to set the experience points of
+     * @param points The amount of experience points to set
+     */
+    public void setExperiencePoints(Player player, int points) {
+        final float expToLevel = player.getExpToLevel();
+        player.setExp(Mth.clamp((points / expToLevel), 0.0F, ((expToLevel - 1.0F) / expToLevel)));
+    }
+
+    /**
+     * The type of experience to query, add or set
+     */
+    @Getter
+    @RequiredArgsConstructor
+    @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+    private enum Type {
+        LEVELS("Erfahrungslevel", "Erfahrungslevel"),
+        POINTS("Erfahrungspunkt", "Erfahrungspunkte");
+
+        String nameSingular;
+        String namePlural;
+
+        /**
+         * Gets the singular component of this type of experience
+         *
+         * @return The singular component of this type of experience
+         */
+        public Component getSingularComponent() {
+            return Component.text(getNameSingular(), Colors.VARIABLE_VALUE);
+        }
+
+        /**
+         * Gets the plural component of this type of experience
+         *
+         * @return The plural component of this type of experience
+         */
+        public Component getPluralComponent() {
+            return Component.text(getNamePlural(), Colors.VARIABLE_VALUE);
+        }
     }
 }

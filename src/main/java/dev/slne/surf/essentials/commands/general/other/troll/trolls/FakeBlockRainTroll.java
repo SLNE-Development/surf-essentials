@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.commands.general.other.troll.trolls;
 
+/**
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -7,7 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.commands.general.other.troll.Troll;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.abtract.CraftUtil;
+import dev.slne.surf.essentials.utils.abtract.PacketUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.adventure.PaperAdventure;
@@ -53,7 +54,7 @@ public class FakeBlockRainTroll extends Troll {
 
     @SuppressWarnings("SameReturnValue")
     private int spawnBlock(CommandContext<CommandSourceStack> context, Player target, Holder.Reference<Block> blockReference, int timeInSeconds) throws CommandSyntaxException {
-        EssentialsUtil.checkPlayerSuggestion(context.getSource(), CraftUtil.toServerPlayer(target));
+        EssentialsUtil.checkPlayerSuggestion(context.getSource(), PacketUtil.toServerPlayer(target));
         CommandSourceStack source = context.getSource();
 
         if (!getAndToggleTroll(target)) {
@@ -68,7 +69,10 @@ public class FakeBlockRainTroll extends Troll {
                 Location blockPosition = new Location(location.getWorld(), location.getX(), location.getY() + 5, location.getZ());
 
                 if (blockPosition.getBlock().getType() == Material.AIR) {
-                    EssentialsUtil.spawnFakeFallingBlock(target, blockReference.value(), blockPosition, Duration.ofSeconds(timeInSeconds));
+                    try {
+                        EssentialsUtil.spawnFakeFallingBlock(target, blockReference.value(), blockPosition, Duration.ofSeconds(timeInSeconds));
+                    } catch (CommandSyntaxException ignored) {
+                    }
                 }
                 timeLeft.getAndDecrement();
                 TASK_IDS.put(target.getUniqueId(), bukkitTask.getTaskId());
@@ -96,3 +100,4 @@ public class FakeBlockRainTroll extends Troll {
 
     }
 }
+ */

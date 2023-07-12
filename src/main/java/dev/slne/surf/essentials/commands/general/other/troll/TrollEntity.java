@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.commands.general.other.troll;
 
+/**
 import net.minecraft.world.entity.Entity;
 
 public class TrollEntity<T extends Entity> {
@@ -23,3 +24,4 @@ public class TrollEntity<T extends Entity> {
         isTrollActive = trollActive;
     }
 }
+ */

@@ -1,78 +1,54 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.GameModeArgument;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.GameType;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent.Cause;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import lombok.val;
+import net.kyori.adventure.text.Component;
+import org.bukkit.GameMode;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.HumanEntity;
 
-@DefaultQualifier(NotNull.class)
-public class DefaultGamemodeCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"defaultgamemode"};
+public class DefaultGamemodeCommand extends EssentialsCommand {
+    public DefaultGamemodeCommand() {
+        super("defaultgamemode", "defaultgamemode [<defaultgamemode>]", "Change default gamemode");
+
+        withPermission(Permissions.DEFAULT_GAMEMODE_PERMISSION);
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> getGameMode(sender.getCallee()));
+        then(gameModeArgument("gamemode")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> setGameMode(sender.getCallee(), args.getUnchecked("gamemode"))));
     }
 
-    @Override
-    public String usage() {
-        return "/defaultgamemode [<gamemode>]";
-    }
 
-    @Override
-    public String description() {
-        return "Set the default gamemode for players";
-    }
-
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.DEFAULT_GAMEMODE_PERMISSION));
-
-        literal.executes(context -> getGameMode(context.getSource()));
-        literal.then(Commands.argument("gamemode", GameModeArgument.gameMode())
-                .executes(context -> setGameMode(context.getSource(), GameModeArgument.getGameMode(context, "gamemode"))));
-    }
-
-    private static int setGameMode(CommandSourceStack source, GameType newGameMode) {
-        MinecraftServer server = EssentialsUtil.getMinecraftServer();
+    private int setGameMode(CommandSender source, GameMode newGameMode) {
+        val server = source.getServer();
         int playersUpdated = 0;
 
-        server.setDefaultGameType(newGameMode);
-        @Nullable GameType forcedGameType = server.getForcedGameType();
-        if (forcedGameType != null) {
-            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-                PlayerGameModeChangeEvent event = player.setGameMode(forcedGameType, Cause.DEFAULT_GAMEMODE, net.kyori.adventure.text.Component.empty());
-                if (event.isCancelled() && event.cancelMessage() != null) {
-                    EssentialsUtil.sendSuccess(source, event.cancelMessage());
-                    continue;
-                }
+        server.setDefaultGameMode(newGameMode);
+
+        if (EssentialsUtil.properties_forceGamemode()) {
+            for (HumanEntity player : server.getOnlinePlayers()) {
+                player.setGameMode(newGameMode);
                 playersUpdated++;
             }
         }
 
-        EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Der standard Spielmodus wurde auf ", Colors.SUCCESS)
-                .append(net.kyori.adventure.text.Component.text(newGameMode.getLongDisplayName().getString(), Colors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text(" gesetzt!", Colors.SUCCESS)));
+        EssentialsUtil.sendSuccess(source, Component.text("Der standard Spielmodus wurde auf ", Colors.SUCCESS)
+                .append(Component.translatable(newGameMode.translationKey(), Colors.VARIABLE_VALUE))
+                .append(Component.text(" gesetzt!", Colors.SUCCESS)));
         return playersUpdated;
     }
 
-    private static int getGameMode(CommandSourceStack source) {
-        GameType gameType = EssentialsUtil.getMinecraftServer().getDefaultGameType();
+    private int getGameMode(CommandSender source) {
+        val gameType = source.getServer().getDefaultGameMode();
 
-        EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Der standard Spielmodus ist ", Colors.INFO)
-                .append(net.kyori.adventure.text.Component.text(gameType.getLongDisplayName().getString(), Colors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text("!", Colors.INFO)));
+        EssentialsUtil.sendSuccess(source, Component.text("Der standard Spielmodus ist ", Colors.INFO)
+                .append(Component.translatable(gameType.translationKey(), Colors.VARIABLE_VALUE))
+                .append(Component.text("!", Colors.INFO)));
 
         return 1;
     }
-
 }

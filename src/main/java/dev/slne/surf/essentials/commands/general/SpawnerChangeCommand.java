@@ -1,166 +1,213 @@
 package dev.slne.surf.essentials.commands.general;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.arguments.LocationType;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.CommandArguments;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.jorel.commandapi.executors.ResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
+import lombok.val;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.ResourceArgument;
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.BaseSpawner;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.CreatureSpawner;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
+import java.util.Optional;
 
-public class SpawnerChangeCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"spawner"};
+public class SpawnerChangeCommand extends EssentialsCommand {
+    public SpawnerChangeCommand() {
+        super("spawnerchange", "spawnerchange <entity>", "Change the entity of a spawner", "spawner");
+
+        withPermission(Permissions.SPAWNER_PERMISSION);
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> giveSpawner(getSpecialEntityOrException(sender, HumanEntity.class)));
+        then(locationArgument("pos", LocationType.BLOCK_POSITION)
+                .executes((ResultingCommandExecutor) (sender, args) -> querySpawner(sender, getLocation(args, "pos")))
+                .then(entityTypeArgument("entity")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> modifySpawner(
+                                sender.getCallee(),
+                                getLocation(args, "pos"),
+                                Optional.of(getEntityType(args, "entity")),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty())
+                        )
+                        .then(integerArgument("minSpawnDelay", 1)
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> modifySpawner(
+                                        sender.getCallee(),
+                                        getLocation(args, "pos"),
+                                        Optional.of(getEntityType(args, "entity")),
+                                        Optional.of(getInteger(args, "minSpawnDelay")),
+                                        Optional.empty(),
+                                        Optional.empty(),
+                                        Optional.empty())
+                                )
+                                .then(integerArgument("maxSpawnDelay", 1)
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> modifySpawner(
+                                                sender.getCallee(),
+                                                getLocation(args, "pos"),
+                                                Optional.of(getEntityType(args, "entity")),
+                                                Optional.of(getInteger(args, "minSpawnDelay")),
+                                                Optional.of(getInteger(args, "maxSpawnDelay")),
+                                                Optional.empty(),
+                                                Optional.empty())
+                                        )
+                                        .then(integerArgument("spawnRange", 1)
+                                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> modifySpawner(
+                                                        sender.getCallee(),
+                                                        getLocation(args, "pos"),
+                                                        Optional.of(getEntityType(args, "entity")),
+                                                        Optional.of(getInteger(args, "minSpawnDelay")),
+                                                        Optional.of(getInteger(args, "maxSpawnDelay")),
+                                                        Optional.of(getInteger(args, "spawnRange")),
+                                                        Optional.empty())
+                                                )
+                                                .then(integerArgument("requiredPlayerRange", 1)
+                                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> modifySpawner(
+                                                                sender.getCallee(),
+                                                                getLocation(args, "pos"),
+                                                                Optional.of(getEntityType(args, "entity")),
+                                                                Optional.of(getInteger(args, "minSpawnDelay")),
+                                                                Optional.of(getInteger(args, "maxSpawnDelay")),
+                                                                Optional.of(getInteger(args, "spawnRange")),
+                                                                Optional.of(getInteger(args, "requiredPlayerRange"))
+                                                        ))
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
     }
 
-    @Override
-    public String usage() {
-        return "/spawner ...";
-    }
 
-    @Override
-    public String description() {
-        return "Change spawners";
-    }
+    private static int giveSpawner(HumanEntity source) throws WrapperCommandSyntaxException {
+        if (!source.getInventory().addItem(new ItemStack(Material.SPAWNER)).isEmpty())
+            throw Exceptions.NO_SPACE_IN_INVENTORY.create(source);
 
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.SPAWNER_PERMISSION));
-
-        literal.executes(context -> giveSpawner(context.getSource()));
-
-        literal.then(Commands.argument("position", BlockPosArgument.blockPos())
-                .executes(context -> querySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position")))
-
-                .then(Commands.argument("entity", ResourceArgument.resource(this.commandBuildContext, Registries.ENTITY_TYPE))
-                        .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getSummonableEntityType(context, "entity").value(),
-                                null, null, null, null))
-
-                        .then(Commands.argument("minSpawnDelay", IntegerArgumentType.integer(1))
-                                .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getSummonableEntityType(context, "entity").value(),
-                                        IntegerArgumentType.getInteger(context, "minSpawnDelay"), null, null, null))
-
-                                .then(Commands.argument("maxSpawnDelay", IntegerArgumentType.integer(1))
-                                        .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getSummonableEntityType(context, "entity").value(),
-                                                IntegerArgumentType.getInteger(context, "minSpawnDelay"), IntegerArgumentType.getInteger(context, "maxSpawnDelay"),
-                                                null, null))
-
-                                        .then(Commands.argument("spawnRange", IntegerArgumentType.integer(1, 50))
-                                                .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getSummonableEntityType(context, "entity").value(),
-                                                        IntegerArgumentType.getInteger(context, "minSpawnDelay"), IntegerArgumentType.getInteger(context, "maxSpawnDelay"),
-                                                        IntegerArgumentType.getInteger(context, "spawnRange"), null))
-
-                                                .then(Commands.argument("requiredPlayerRange", IntegerArgumentType.integer(0))
-                                                        .executes(context -> modifySpawner(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "position"), ResourceArgument.getSummonableEntityType(context, "entity").value(),
-                                                                IntegerArgumentType.getInteger(context, "minSpawnDelay"), IntegerArgumentType.getInteger(context, "maxSpawnDelay"),
-                                                                IntegerArgumentType.getInteger(context, "spawnRange"), IntegerArgumentType.getInteger(context, "requiredPlayerRange")))))))));
-    }
-
-    private static int giveSpawner(CommandSourceStack source) throws CommandSyntaxException {
-        source.getPlayerOrException().getInventory().add(new net.minecraft.world.item.ItemStack(Items.SPAWNER));
         EssentialsUtil.sendSuccess(source, "Dir wurde ein spawner gegeben!");
         return 1;
     }
 
-    private static int querySpawner(CommandSourceStack source, BlockPos blockPos) {
-        if (!isSpawner(source, blockPos)) return 0;
-
-        BlockEntity blockEntity = source.getLevel().getBlockEntity(blockPos);
-        SpawnerBlockEntity spawnerTileEntity = (SpawnerBlockEntity) blockEntity;
-        BaseSpawner baseSpawner = Objects.requireNonNull(spawnerTileEntity).getSpawner();
+    private static int querySpawner(CommandSender sender, Location location) throws WrapperCommandSyntaxException {
+        if (!(location.getBlock().getState(true) instanceof CreatureSpawner spawner)) throw Exceptions.ERROR_NO_SPAWNER_AT_LOCATION;
 
 
-        String entityName = Objects.requireNonNull(baseSpawner.nextSpawnData).getEntityToSpawn().getString("id");
+        val entityType = spawner.getSpawnedType();
+        val entityName = (entityType != null) ? entityType.getKey().asString() : "__unknown__";
+        val minSpawnDelay = spawner.getMinSpawnDelay();
+        val maxSpawnDelay = spawner.getMaxSpawnDelay();
+        val spawnRange = spawner.getSpawnRange();
+        val requiredPlayerRange = spawner.getRequiredPlayerRange();
 
-        EssentialsUtil.sendSuccess(source, Component.text("Spawner", Colors.TERTIARY)
+        EssentialsUtil.sendSuccess(sender, Component.text("Spawner", Colors.TERTIARY)
                 .hoverEvent(HoverEvent.showText(Component.text("Entity: ", Colors.INFO)
                         .append(Component.text(entityName, Colors.TERTIARY))
                         .append(Component.newline())
                         .append(Component.text("minSpawnDelay: ", Colors.INFO)
-                                .append(Component.text(baseSpawner.minSpawnDelay, Colors.TERTIARY)))
+                                .append(Component.text(minSpawnDelay, Colors.TERTIARY)))
                         .append(Component.newline())
                         .append(Component.text("maxSpawnDelay: ", Colors.INFO)
-                                .append(Component.text(baseSpawner.maxSpawnDelay, Colors.TERTIARY)))
+                                .append(Component.text(maxSpawnDelay, Colors.TERTIARY)))
                         .append(Component.newline())
                         .append(Component.text("spawnRange: ", Colors.INFO)
-                                .append(Component.text(baseSpawner.spawnRange, Colors.TERTIARY)))
+                                .append(Component.text(spawnRange, Colors.TERTIARY)))
                         .append(Component.newline())
                         .append(Component.text("requiredPlayerRange: ", Colors.INFO)
-                                .append(Component.text(baseSpawner.requiredPlayerRange, Colors.TERTIARY)))))
+                                .append(Component.text(requiredPlayerRange, Colors.TERTIARY)))))
                 .append(Component.text(" bei ", Colors.INFO)
-                        .append(Component.text("%d %d %d".formatted(blockPos.getX(), blockPos.getY(), blockPos.getX()), Colors.TERTIARY))));
+                        .append(EssentialsUtil.formatLocationWithoutSpacer(location))));
         return 1;
 
     }
 
-    private static int modifySpawner(CommandSourceStack source, BlockPos blockPos, EntityType<?> type, Integer minSpawnDelay, Integer maxSpawnDelay, Integer spawnRange, Integer requiredPlayerRange) {
-        if (!isSpawner(source, blockPos)) return 0;
+    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType"})
+    private static int modifySpawner(
+            CommandSender source,
+            Location location,
+            Optional<EntityType> optionalEntityType,
+            Optional<Integer> optionalMinSpawnDelay,
+            Optional<Integer> optionalMaxSpawnDelay,
+            Optional<Integer> optionalSpawnRange,
+            Optional<Integer> optionalRequiredPlayerRange
+    ) throws WrapperCommandSyntaxException {
+        if (!(location.getBlock().getState(true) instanceof CreatureSpawner spawner)) throw Exceptions.ERROR_NO_SPAWNER_AT_LOCATION;
 
-        BlockEntity blockEntity = source.getLevel().getBlockEntity(blockPos);
-        BlockState oldState = Objects.requireNonNull(blockEntity).getBlockState();
-        SpawnerBlockEntity spawnerTileEntity = (SpawnerBlockEntity) blockEntity;
-        BaseSpawner baseSpawner = spawnerTileEntity.getSpawner();
+        val type = optionalEntityType.orElse(spawner.getSpawnedType());
+        final int minSpawnDelay = optionalMinSpawnDelay.orElse(spawner.getMinSpawnDelay());
+        final int maxSpawnDelay = optionalMaxSpawnDelay.orElse(spawner.getMaxSpawnDelay());
+        final int spawnRange = optionalSpawnRange.orElse(spawner.getSpawnRange());
+        final int requiredPlayerRange = optionalRequiredPlayerRange.orElse(spawner.getRequiredPlayerRange());
 
-        spawnerTileEntity.setEntityId(type, RandomSource.create());
 
-        baseSpawner.minSpawnDelay = minSpawnDelay == null ? baseSpawner.minSpawnDelay : minSpawnDelay;
-        baseSpawner.maxSpawnDelay = maxSpawnDelay == null ? baseSpawner.maxSpawnDelay : maxSpawnDelay;
-        baseSpawner.spawnRange = spawnRange == null ? baseSpawner.spawnRange : spawnRange;
-        baseSpawner.requiredPlayerRange = requiredPlayerRange == null ? baseSpawner.requiredPlayerRange : requiredPlayerRange;
+        if (minSpawnDelay < maxSpawnDelay) throw Exceptions.MIN_SPAWN_DELAY_MUST_BE_LESS_THAN_MAX_SPAWN_DELAY;
+        if (minSpawnDelay > maxSpawnDelay) throw Exceptions.MAX_SPAWN_DELAY_MUST_BE_GREATER_THAN_MIN_SPAWN_DELAY;
 
-        source.getLevel().sendBlockUpdated(blockEntity.getBlockPos(), oldState, blockEntity.getBlockState(), 3);
-
+        spawner.setSpawnedType(type);
+        spawner.setMinSpawnDelay(minSpawnDelay);
+        spawner.setMaxSpawnDelay(maxSpawnDelay);
+        spawner.setSpawnRange(spawnRange);
+        spawner.setRequiredPlayerRange(requiredPlayerRange);
+        spawner.update(true, true);
 
         EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
                 .append(Component.text("Spawner", Colors.TERTIARY)
                         .hoverEvent(HoverEvent.showText(Component.text("Entity: ", Colors.INFO)
-                                .append(PaperAdventure.asAdventure(type.getDescription()).colorIfAbsent(Colors.TERTIARY))
+                                .append(Component.text((type != null) ? type.getKey().asString() : "__unknown__", Colors.TERTIARY))
                                 .append(Component.newline())
                                 .append(Component.text("minSpawnDelay: ", Colors.INFO)
-                                        .append(Component.text(baseSpawner.minSpawnDelay, Colors.TERTIARY)))
+                                        .append(Component.text(minSpawnDelay, Colors.TERTIARY)))
                                 .append(Component.newline())
                                 .append(Component.text("maxSpawnDelay: ", Colors.INFO)
-                                        .append(Component.text(baseSpawner.maxSpawnDelay, Colors.TERTIARY)))
+                                        .append(Component.text(maxSpawnDelay, Colors.TERTIARY)))
                                 .append(Component.newline())
                                 .append(Component.text("spawnRange: ", Colors.INFO)
-                                        .append(Component.text(baseSpawner.spawnRange, Colors.TERTIARY)))
+                                        .append(Component.text(spawnRange, Colors.TERTIARY)))
                                 .append(Component.newline())
                                 .append(Component.text("requiredPlayerRange: ", Colors.INFO)
-                                        .append(Component.text(baseSpawner.requiredPlayerRange, Colors.TERTIARY))))))
+                                        .append(Component.text(requiredPlayerRange, Colors.TERTIARY))))))
                 .append(Component.text(" wurde erfolgreich geändert!")));
         return 1;
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private static boolean isSpawner(CommandSourceStack source, BlockPos blockPos) {
-        if (source.getLevel().getBlockIfLoaded(blockPos) != Blocks.SPAWNER) {
-            if (source.isPlayer()) {
-                EssentialsUtil.sendError(source, "An der Position befindet sich kein Spawner");
-            } else {
-                source.sendFailure(net.minecraft.network.chat.Component.literal("There is no spawner at this location."));
-            }
-            return false;
+    protected Location getLocation(@NotNull CommandArguments args, String nodeName) {
+        val loc = args.get(nodeName);
+
+        if (!(loc instanceof Location location)) {
+            throw new IllegalArgumentException("Location argument '%s' is not a location".formatted(nodeName));
         }
-        return true;
+
+        return location;
+    }
+
+    protected EntityType getEntityType(@NotNull CommandArguments args, String nodeName) {
+        val type = args.get(nodeName);
+
+        if (!(type instanceof EntityType entityType)) {
+            throw new IllegalArgumentException("Entity type argument '%s' is not an entity type".formatted(nodeName));
+        }
+
+        return entityType;
+    }
+
+    protected int getInteger(@NotNull CommandArguments args, String nodeName) {
+        val integer = args.get(nodeName);
+
+        if (!(integer instanceof Integer i)) {
+            throw new IllegalArgumentException("Integer argument '%s' is not an integer".formatted(nodeName));
+        }
+
+        return i;
     }
 }

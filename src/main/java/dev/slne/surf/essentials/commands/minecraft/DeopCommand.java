@@ -1,73 +1,42 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.players.PlayerList;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 
-import java.util.Collection;
+import java.util.Objects;
 
-public class DeopCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"deop"};
+public class DeopCommand extends EssentialsCommand {
+    public DeopCommand() {
+        super("deop", "deop <player>", "Deop a player");
+
+        withPermission(Permissions.DEOP_PERMISSION);
+
+        then(offlinePlayerArgument("player")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> deop(sender.getCallee(), Objects.requireNonNull(args.getUnchecked("player")))));
     }
 
-    @Override
-    public String usage() {
-        return "/deop <player>";
-    }
+    private static int deop(CommandSender source, OfflinePlayer player) throws WrapperCommandSyntaxException {
+        if (!player.isOp()) throw Exceptions.ERROR_PLAYER_WAS_NEVER_OP;
 
-    @Override
-    public String description() {
-        return "Makes the player no longer a server operator";
-    }
+        if (player.isOp()) {
+            player.setOp(false);
 
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.DEOP_PERMISSION));
+            Bukkit.broadcast(EssentialsUtil.getPrefix()
+                    .append(EssentialsUtil.getOfflineDisplayName(player))
+                    .append(Component.text(" ist durch ", Colors.INFO))
+                    .append(EssentialsUtil.getDisplayName(source))
+                    .append(Component.text(" kein Operator mehr!", Colors.INFO)), Permissions.OP_ANNOUCE_PERMISSION);
 
-        literal.then(Commands.argument("players", GameProfileArgument.gameProfile())
-                .suggests((context, builder) -> SharedSuggestionProvider.suggest(context.getSource().getServer().getPlayerList().getOpNames(), builder))
-                .executes(context -> deop(context.getSource(), GameProfileArgument.getGameProfiles(context, "players"))));
-    }
-
-    private static int deop(CommandSourceStack source, Collection<GameProfile> players) throws CommandSyntaxException {
-        PlayerList playerList = source.getServer().getPlayerList();
-        int successful = 0;
-
-        for (GameProfile gameProfile : players) {
-            if (playerList.isOp(gameProfile)) {
-                playerList.deop(gameProfile);
-                successful++;
-
-
-                Bukkit.broadcast(EssentialsUtil.getPrefix()
-                        .append(EssentialsUtil.getDisplayName(gameProfile))
-                        .append(net.kyori.adventure.text.Component.text(" ist durch ", Colors.INFO))
-                        .append(source.getPlayerOrException().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
-                        .append(net.kyori.adventure.text.Component.text(" kein Operator mehr!", Colors.INFO)), "surf.essentials.announce.op");
-            }
         }
-
-        if (successful == 0) {
-            if (source.isPlayer()) {
-                EssentialsUtil.sendError(source, "Es hat sich nicht geändert! Die Spieler sind keine Operatoren");
-            } else throw ERROR_NOT_OP.create();
-        }
-        return successful;
+        return 1;
     }
-
-    private static final SimpleCommandExceptionType ERROR_NOT_OP = new SimpleCommandExceptionType(Component.translatable("commands.deop.failed"));
 }

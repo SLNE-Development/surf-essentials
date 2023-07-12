@@ -1,53 +1,42 @@
 package dev.slne.surf.essentials.commands.general;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.annontations.UpdateRequired;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
-public class RuleCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"rule"};
+public class RuleCommand extends EssentialsCommand {
+    @UpdateRequired(updateReason = "The rules URL will changed")
+    private static final String RULES_URL = "https://castcrafter.de/subserver";
+
+    public RuleCommand() {
+        super("rules", "rules [<players>]", "Displays the rules of the server", "rule");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.RULE_SELF_PERMISSION, Permissions.RULE_OTHER_PERMISSION));
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> sendRules(sender.getCallee(), List.of(getPlayerOrException(sender))));
+        then(playersArgument("players")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> sendRules(sender.getCallee(), args.getUnchecked("players"))));
     }
 
-    @Override
-    public String usage() {
-        return "/rule [<players>]";
-    }
-
-    @Override
-    public String description() {
-        return "Sends the rules to the players";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.RULE_SELF_PERMISSION, Permissions.RULE_OTHER_PERMISSION));
-        literal.executes(context -> sendRules(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
-
-        literal.then(Commands.argument("players", EntityArgument.players())
-                .requires(EssentialsUtil.checkPermissions(Permissions.RULE_OTHER_PERMISSION))
-                .executes(context -> sendRules(context.getSource(), EntityArgument.getPlayers(context, "players"))));
-    }
-
-    private int sendRules(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
-        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+    private int sendRules(CommandSender source, Collection<Player> targetsUnchecked) throws WrapperCommandSyntaxException {
+        val targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulSends = 0;
 
-        for (ServerPlayer player : targets) {
+        for (Audience player : targets) {
             EssentialsUtil.sendSuccess(player, Component.text("Alle ", Colors.SUCCESS)
                     .append(Component.text("Regeln", Colors.GOLD))
                     .append(Component.text(" und", Colors.SUCCESS))
@@ -56,11 +45,11 @@ public class RuleCommand extends BrigadierCommand {
                     .append(Component.text("Hier", Colors.RED)
                             .decorate(TextDecoration.BOLD)
                             .hoverEvent(Component.text("Klicke um zu der Website zu kommen", Colors.GRAY))
-                            .clickEvent(ClickEvent.openUrl("https://castcrafter.de/subserver"))));
+                            .clickEvent(ClickEvent.openUrl(RULES_URL))));
             successfulSends++;
         }
 
-        boolean isSelf = source.isPlayer() && source.getPlayerOrException() == targets.iterator().next();
+        boolean isSelf = source instanceof Player player && targets.size() == 1 && targets.iterator().next().equals(player);
         if (successfulSends == 1 && !isSelf) {
             EssentialsUtil.sendSuccess(source, Component.text("Die Regeln wurden an ", Colors.SUCCESS)
                     .append(EssentialsUtil.getDisplayName(targets.iterator().next()))

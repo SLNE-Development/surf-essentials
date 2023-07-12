@@ -1,144 +1,60 @@
 package dev.slne.surf.essentials.commands.tp;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.SafeLocationFinder;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.BrigadierMessage;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.server.level.ServerPlayer;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
-import java.util.Random;
+public class RandomTeleportCommand extends EssentialsCommand { // TODO test
 
-public class RandomTeleportCommand extends BrigadierCommand {
+    public RandomTeleportCommand() {
+        super("wild", "wild [<maxRadius>]", "Teleports you to a random location", "rtp", "tpr", "teleportrandom");
 
-    private static final HashSet<Material> unsafeMaterials = EssentialsUtil.make(new HashSet<>(), materials -> {
-        materials.add(Material.LAVA);
-        materials.add(Material.FIRE);
-        materials.add(Material.CACTUS);
-        materials.add(Material.MAGMA_BLOCK);
-        materials.add(Material.POWDER_SNOW);
-        materials.add(Material.CAMPFIRE);
-        materials.add(Material.SOUL_CAMPFIRE);
-        materials.add(Material.SPAWNER);
-        materials.add(Material.SCULK_SHRIEKER);
-        materials.add(Material.SCULK_SENSOR);
-        materials.add(Material.COBWEB);
-        materials.add(Material.LAVA_CAULDRON);
-        materials.add(Material.OAK_PRESSURE_PLATE);
-        materials.add(Material.SPRUCE_PRESSURE_PLATE);
-        materials.add(Material.BIRCH_PRESSURE_PLATE);
-        materials.add(Material.JUNGLE_PRESSURE_PLATE);
-        materials.add(Material.CHERRY_PRESSURE_PLATE);
-        materials.add(Material.ACACIA_PRESSURE_PLATE);
-        materials.add(Material.DARK_OAK_PRESSURE_PLATE);
-        materials.add(Material.MANGROVE_PRESSURE_PLATE);
-        materials.add(Material.WARPED_PRESSURE_PLATE);
-        materials.add(Material.STONE_PRESSURE_PLATE);
-        materials.add(Material.POLISHED_BLACKSTONE_PRESSURE_PLATE);
-        materials.add(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
-        materials.add(Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
-        materials.add(Material.TNT);
-    });
+        withPermission(Permissions.TELEPORT_RANDOM_PERMISSION);
 
-    @Override
-    public String[] names() {
-        return new String[]{"rtp", "tpr", "wild"};
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> teleportRandom(getPlayerOrException(sender), 5000))
+                .then(integerArgument("maxRadius", 2, 20000)
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> teleportRandom(getPlayerOrException(sender), args.getUnchecked("maxRadius"))));
     }
 
-    @Override
-    public String usage() {
-        return "/tpr [<maxRadius>]";
-    }
+    private int teleportRandom(Player player, int maxRadius) {
+        EssentialsUtil.sendInfo(player, "Suche Ort...");
 
-    @Override
-    public String description() {
-        return "Teleports you to a random location";
-    }
+        val start = System.currentTimeMillis();
+        val locationFinder = new SafeLocationFinder(player.getLocation(), maxRadius);
 
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.TELEPORT_RANDOM_PERMISSION));
+        locationFinder.findSafeLocationAsync().thenAcceptAsync(optionalLocation -> {
+            val end = System.currentTimeMillis();
 
-        literal.executes(context -> teleportRandom(context.getSource(), null));
+            if (optionalLocation.isEmpty()) {
+                player.sendMessage(new BrigadierMessage(Exceptions.NO_SAFE_LOCATION_FOUND.getRawMessage()).asComponent());
+                return;
+            }
 
-        literal.then(Commands.argument("maxRadius", IntegerArgumentType.integer(2, 20000))
-                .executes(context -> teleportRandom(context.getSource(), IntegerArgumentType.getInteger(context, "maxRadius"))));
-    }
+            EssentialsUtil.sendInfo(player, "Ort gefunden (%s ms)! Teleportiere...".formatted(end - start));
 
-    private int teleportRandom(CommandSourceStack source, Integer maxRadius) throws CommandSyntaxException {
-        ServerPlayer playerToTeleport = source.getPlayerOrException();
-        Player bukkitPlayer = playerToTeleport.getBukkitEntity();
-        maxRadius = (maxRadius == null) ? 5000 : maxRadius;
+            val startTeleport = System.currentTimeMillis();
+            val location = optionalLocation.get();
 
-        EssentialsUtil.sendInfo(playerToTeleport, "Suche Ort...");
+            location.add(0.5, 0, 0.5);
 
-        Location randomLocation = generateLocation(bukkitPlayer, maxRadius);
 
-        if (randomLocation == null) {
-            EssentialsUtil.sendError(source, "Es wurde kein Sicherer Ort gefunden!");
-            return 0;
-        }
+            EssentialsUtil.teleportLazy(player, location).thenAccept(__ -> {
+                val endTeleport = System.currentTimeMillis();
 
-        randomLocation.setX(randomLocation.getX() + 0.5);
-        randomLocation.setZ(randomLocation.getZ() + 0.5);
-
-        bukkitPlayer.teleportAsync(randomLocation).thenAccept(aBoolean -> {
-            double playerX = EssentialsUtil.makeDoubleReadable(randomLocation.getX());
-            double playerY = EssentialsUtil.makeDoubleReadable(randomLocation.getY());
-            double playerZ = EssentialsUtil.makeDoubleReadable(randomLocation.getZ());
-
-            EssentialsUtil.sendSuccess(source, Component.text("Du wurdest zu ", Colors.SUCCESS)
-                    .append(Component.text("%s %s %s".formatted(playerX, playerY, playerZ), Colors.TERTIARY))
-                    .append(Component.text(" teleportiert!", Colors.SUCCESS)));
+                EssentialsUtil.sendSuccess(player, Component.text("Du wurdest zu ", Colors.SUCCESS)
+                        .append(EssentialsUtil.formatLocationWithoutSpacer(location))
+                        .append(Component.text(" teleportiert! (%s ms)".formatted(endTeleport - startTeleport), Colors.SUCCESS)));
+            });
         });
 
         return 1;
-    }
-
-    // TODO: Check the performance impact
-    int trys = 0;
-
-    private Location generateLocation(Player player, int radius) {
-        Random random = new Random();
-
-        int x = random.nextInt(player.getLocation().getBlockX() - (radius / 2), player.getLocation().getBlockX() + (radius / 2)),
-                z = random.nextInt(player.getLocation().getBlockZ() - (radius / 2), player.getLocation().getBlockZ() + (radius / 2)),
-                y = player.getWorld().getHighestBlockYAt(x, z) + 1;
-
-        Location randomLocation = new Location(player.getWorld(), x, y, z);
-
-        while (!isLocationSafe(randomLocation)) {
-            if (trys > 10) return null;
-            trys++;
-            generateLocation(player, radius);
-        }
-
-        return randomLocation;
-    }
-
-    private boolean isLocationSafe(Location location) {
-        int x = location.getBlockX(),
-                y = location.getBlockY(),
-                z = location.getBlockZ();
-
-        Block block = location.getWorld().getBlockAt(x, y, z);
-        Block below = location.getWorld().getBlockAt(x, y - 1, z);
-        Block above = location.getWorld().getBlockAt(x, y + 1, z);
-
-        if ((location.getWorld() == Bukkit.getWorlds().get(2)) && (location.getBlockY() == 0)) return false;
-        if (!location.getWorld().getWorldBorder().isInside(location)) return false;
-
-        return !(unsafeMaterials.contains(below.getType())) || (block.getType().isSolid()) || (above.getType().isSolid());
     }
 }

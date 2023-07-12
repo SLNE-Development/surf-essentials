@@ -1,62 +1,60 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.GameType;
+import org.bukkit.GameMode;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
 
-public class SpectateCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"spectate"};
+public class SpectateCommand extends EssentialsCommand {
+    public SpectateCommand() {
+        super("spectate", "spectate [<target>] [<player>]", "Spectates the given player");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.SPECTATE_SELF_PERMISSION, Permissions.SPECTATE_SELF_PERMISSION, Permissions.SPECTATE_OTHER_PERMISSION));
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> spectate(
+                sender.getCallee(),
+                null,
+                getPlayerOrException(sender)
+        ));
+        then(entityArgument("target")
+                .withRequirement(EssentialsUtil.checkPermissions(Permissions.SPECTATE_SELF_PERMISSION, Permissions.SPECTATE_OTHER_PERMISSION))
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> spectate(
+                        sender.getCallee(),
+                        args.getUnchecked("target"),
+                        getPlayerOrException(sender)
+                ))
+                .then(playerArgument("player")
+                        .withPermission(Permissions.SPECTATE_OTHER_PERMISSION)
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> spectate(
+                                sender.getCallee(),
+                                args.getUnchecked("target"),
+                                args.getUnchecked("player")
+                        ))
+                )
+        );
     }
 
-    @Override
-    public String usage() {
-        return "/spectate <target> [<player>]";
-    }
+    private int spectate(CommandSender source, @Nullable Entity entityUnchecked, Player playerUnchecked) throws WrapperCommandSyntaxException {
+        val entity = EssentialsUtil.checkEntitySuggestion(source, entityUnchecked);
+        val player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
 
-    @Override
-    public String description() {
-        return "Spectate other players";
-    }
+        if (entity != null && entity.equals(player)) throw Exceptions.ERROR_CANNOT_SPECTATE_SELF;
 
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.SPECTATE_LEAVE_PERMISSION, Permissions.SPECTATE_OTHER_PERMISSION));
-
-        literal.executes(context -> spectate(context.getSource(), null, context.getSource().getPlayerOrException()));
-
-        literal.then(Commands.argument("target", EntityArgument.entity())
-                .executes(context -> spectate(context.getSource(), EntityArgument.getEntity(context, "target"), context.getSource().getPlayerOrException()))
-                .then(Commands.argument("player", EntityArgument.player())
-                        .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SPECTATE_OTHER_PERMISSION))
-                        .executes(context -> spectate(context.getSource(), EntityArgument.getEntity(context, "target"), EntityArgument.getPlayer(context, "player")))));
-    }
-
-    private int spectate(CommandSourceStack source, @Nullable Entity entityUnchecked, ServerPlayer playerUnchecked) throws CommandSyntaxException {
-        Entity entity = EssentialsUtil.checkEntitySuggestion(source, Collections.singleton(entityUnchecked)).iterator().next();
-        ServerPlayer player = EssentialsUtil.checkPlayerSuggestion(source, Collections.singleton(playerUnchecked)).iterator().next();
-
-        if (player == entity) throw ERROR_SELF.create();
-        if (player.gameMode.getGameModeForPlayer() != GameType.SPECTATOR) {
-            player.setGameMode(GameType.SPECTATOR);
+        if (player.getGameMode() != GameMode.SPECTATOR && entity != null) {
+            player.setGameMode(GameMode.SPECTATOR);
         }
-
-        player.setCamera(entity);
+        player.setSpectatorTarget(entity);
 
         if (entity != null) {
             EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(player)
@@ -69,6 +67,4 @@ public class SpectateCommand extends BrigadierCommand {
         }
         return 1;
     }
-
-    private static final SimpleCommandExceptionType ERROR_SELF = new SimpleCommandExceptionType(net.minecraft.network.chat.Component.translatable("commands.spectate.self"));
 }

@@ -1,49 +1,32 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.minecraft.commands.CommandSourceStack;
 
-public class SeedCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"seed"};
-    }
+public class SeedCommand extends EssentialsCommand {
+    public SeedCommand() {
+        super("seed", "seed", "Shows you the world seed", "seed");
 
-    @Override
-    public String usage() {
-        return "/seed";
-    }
+        withPermission(Permissions.SEED_PERMISSION);
+        executesNative((sender, args) -> {
+            val world = sender.getWorld();
+            val seed = world.getSeed();
 
-    @Override
-    public String description() {
-        return "Shows you the world seed";
-    }
+            EssentialsUtil.sendSuccess(sender.getCallee(), Component.text("Der Seed in der Welt ", Colors.SUCCESS)
+                    .append(EssentialsUtil.getDisplayName(world))
+                    .append(Component.text(" ist [", Colors.GREEN))
+                    .append(Component.text(seed, Colors.VARIABLE_VALUE)
+                            .hoverEvent(HoverEvent.showText(Component.text("Klicke zum kopieren", Colors.INFO)))
+                            .clickEvent(ClickEvent.copyToClipboard(String.valueOf(seed))))
+                    .append(Component.text("]", Colors.GREEN)));
 
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SEED_PERMISSION));
-
-        literal.executes(context -> getSeed(context.getSource()));
-    }
-
-    private int getSeed(CommandSourceStack source) {
-        long seed = source.getLevel().getSeed();
-
-        EssentialsUtil.sendSourceSuccess(source, Component.text("Der Seed in ", Colors.SUCCESS)
-                .append(Component.text(source.getLevel().dimension().location().toString(), Colors.SECONDARY))
-                .append(Component.text(" ist [", Colors.SUCCESS))
-                .append(Component.text(seed, Colors.TERTIARY)
-                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum kopieren", Colors.INFO)))
-                        .clickEvent(ClickEvent.copyToClipboard(String.valueOf(seed))))
-                .append(Component.text("]", Colors.SUCCESS)));
-
-        return 1;
+            return 1;
+        });
     }
 }

@@ -1,67 +1,47 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.Items;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-public class HatCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"hat"};
+public class HatCommand extends EssentialsCommand {
+    public HatCommand() {
+        super("hat", "hat <player>", "Puts the item in the players main hand on the players hat");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.HAT_SELF_PERMISSION, Permissions.HAT_OTHER_PERMISSION));
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> hat(sender.getCallee(), getPlayerOrException(sender)));
+
+        then(playerArgument("player")
+                .withPermission(Permissions.HAT_OTHER_PERMISSION)
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> hat(sender.getCallee(), args.getUnchecked("player"))));
     }
 
-    @Override
-    public String usage() {
-        return "/hat";
-    }
 
-    @Override
-    public String description() {
-        return "Puts the item in your main hand on your head";
-    }
+    private int hat(CommandSender source, Player playerUnchecked) throws WrapperCommandSyntaxException {
+        val player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
+        val playerInventory = player.getInventory();
+        val itemStackInMainHand = playerInventory.getItemInMainHand();
+        val itemStackOnHead = playerInventory.getHelmet();
 
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.HAT_SELF_PERMISSION));
-        literal.executes(context -> hat(context.getSource(), context.getSource().getPlayerOrException()));
+        if (itemStackInMainHand.getType().isEmpty()) throw Exceptions.ERROR_HOLDS_NOTHING_IN_HAND.create(player);
 
-        literal.then(Commands.argument("player", EntityArgument.player())
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.HAT_OTHER_PERMISSION))
-                .executes(context -> hat(context.getSource(), EntityArgument.getPlayer(context, "player"))));
-    }
+        playerInventory.setItemInMainHand(itemStackOnHead);
+        playerInventory.setHelmet(itemStackInMainHand);
 
-    private int hat(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException {
-        final var player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
-        final var playerInventory = player.getInventory();
-        final var itemStackInMainHand = player.getMainHandItem();
-        final var itemStackOnHead = playerInventory.getArmor(EquipmentSlot.HEAD.getIndex());
-
-        if (itemStackInMainHand.is(Items.AIR)) throw ERROR_NO_ITEM.create(player.getName().getString());
-
-        playerInventory.setItem(playerInventory.selected, itemStackOnHead);
-        playerInventory.setItem(playerInventory.getContainerSize() - 2, itemStackInMainHand);
-
-
-        EssentialsUtil.sendSuccess(source, player.adventure$displayName.colorIfAbsent(Colors.TERTIARY)
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(player)
                 .append(Component.text(" hat das Item ", Colors.SUCCESS)
-                        .append(PaperAdventure.asAdventure(itemStackInMainHand.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
+                        .append(EssentialsUtil.getDisplayName(itemStackInMainHand))
                         .append(Component.text(" aufgesetzt bekommen.", Colors.SUCCESS))));
 
         return 1;
     }
-
-    private static final DynamicCommandExceptionType ERROR_NO_ITEM = new DynamicCommandExceptionType((entityName) ->
-            net.minecraft.network.chat.Component.translatable("commands.enchant.failed.itemless", entityName));
 }

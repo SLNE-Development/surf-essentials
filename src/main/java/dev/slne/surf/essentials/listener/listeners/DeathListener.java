@@ -2,6 +2,7 @@ package dev.slne.surf.essentials.listener.listeners;
 
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import lombok.val;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -19,14 +20,10 @@ public class DeathListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        var message = event.deathMessage();
+        val message = event.deathMessage();
         if (message == null) return;
 
-        message = message.replaceText(b -> b.matchLiteral(event.getPlayer().getName())
-                        .replacement(EssentialsUtil.getDisplayName(event.getPlayer())))
-                .colorIfAbsent(Colors.GRAY);
-
         event.deathMessage(EssentialsUtil.getPrefix()
-                .append(message));
+                .append(EssentialsUtil.replaceEntityName(message, event.getEntity(), Colors.GRAY)));
     }
 }

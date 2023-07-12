@@ -1,124 +1,100 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.item.ItemArgument;
-import net.minecraft.commands.arguments.item.ItemInput;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import java.io.IOException;
 import java.util.Collection;
 
+public class GiveCommand extends EssentialsCommand {
+    public GiveCommand() {
+        super("give", "give <targets> <item> [amount]", "Give items to players");
 
-public class GiveCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"give"};
+        withPermission(Permissions.GIVE_PERMISSION);
+
+        then(playersArgument("targets")
+                .then(itemStackArgument("item")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> give(
+                                sender.getCallee(),
+                                args.getUnchecked("targets"),
+                                args.getUnchecked("item"),
+                                1
+                        ))
+                        .then(integerArgument("amount", 1)
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> give(
+                                        sender.getCallee(),
+                                        args.getUnchecked("targets"),
+                                        args.getUnchecked("item"),
+                                        args.getUnchecked("amount")
+                                ))
+                        )
+                )
+        );
     }
 
-    @Override
-    public String usage() {
-        return "/give <targets> <item> [<amount>]";
-    }
+    private int give(CommandSender sender, Collection<Player> targetsUnchecked, org.bukkit.inventory.ItemStack item, int amount) throws WrapperCommandSyntaxException {
+        val targets = EssentialsUtil.checkPlayerSuggestion(sender, targetsUnchecked);
+        int maxStackSize = item.getMaxStackSize();
+        int maxAllowedAmount = maxStackSize * 100;
 
-    @Override
-    public String description() {
-        return "Gives the targets the items";
-    }
+        if (amount > maxAllowedAmount) throw Exceptions.ERROR_GIVE_TOO_MANY_ITEMS.create(maxAllowedAmount, item);
+        System.out.println("Max amount" + amount);
 
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.GIVE_PERMISSION));
-        literal.then(Commands.argument("targets", EntityArgument.players())
-                .then(Commands.argument("item", ItemArgument.item(this.commandBuildContext))
-                        .executes(context -> give(context.getSource(), EntityArgument.getPlayers(context, "targets"), ItemArgument.getItem(context, "item"), 1))
+        for (Player target : targets) {
+            val world = target.getWorld();
+            int remainingAmount = amount;
 
-                        .then(Commands.argument("amount", IntegerArgumentType.integer(1))
-                                .executes(context -> give(context.getSource(), EntityArgument.getPlayers(context, "targets"), ItemArgument.getItem(context, "item"),
-                                        IntegerArgumentType.getInteger(context, "amount"))))));
-    }
+            while (remainingAmount > 0) {
+                int stackSize = Math.min(maxStackSize, remainingAmount);
+                val stack = item.clone();
+                remainingAmount -= stackSize;
+                stack.setAmount(stackSize);
 
-    private static int give(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, ItemInput item, int amount) throws CommandSyntaxException {
-        var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
-        int maxStackSize = item.getItem().getMaxStackSize();
-        int maxGiveSize = maxStackSize * 100;
+                target.getInventory().addItem(stack).forEach((integer, remaining) -> {
+                    world.dropItem(target.getLocation(), stack, item1 -> item1.setPickupDelay(0));
+                });
 
-        if (amount > maxGiveSize) {
-            source.sendFailure(net.minecraft.network.chat.Component.translatable("commands.give.failed.toomanyitems", maxGiveSize, item.createItemStack(amount, false).getDisplayName()));
-            return 0;
-        }
+                stack.setAmount(1);
 
-        int countdownAmount = amount;
-        while (countdownAmount > 0) {
-            for (ServerPlayer target : targets) {
-                if (countdownAmount <= 0) continue;
+                world.dropItem(target.getLocation(), stack, item1 -> {
+                    item1.setCanPlayerPickup(false);
+                    item1.setCanMobPickup(false);
+                    Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), () -> item1.setHealth(-1), 2L);
+                });
 
-                int min = Math.min(maxStackSize, countdownAmount);
-                countdownAmount -= min;
-
-                ItemStack itemStack = item.createItemStack(min, false);
-                boolean successful = target.getInventory().add(itemStack);
-                ItemEntity entityItem;
-
-                if (successful && itemStack.isEmpty()) {
-                    itemStack.setCount(1);
-                    entityItem = target.drop(itemStack, false, false, false);
-
-                    if (entityItem != null) {
-                        entityItem.makeFakeItem();
-                    }
-
-                    try (final var level = target.level()) {
-                        level.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ITEM_PICKUP,
-                                SoundSource.PLAYERS, 0.2F, ((target.getRandom().nextFloat() - target.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
-                    } catch (IOException ignored) {
-                    }
-
-                    target.containerMenu.broadcastChanges();
-
-                } else {
-                    entityItem = target.drop(itemStack, false);
-
-                    if (entityItem != null) {
-                        entityItem.setNoPickUpDelay();
-                        entityItem.setTarget(target.getUUID());
-                    }
-                }
-
+                world.playSound(target, Sound.ENTITY_ITEM_PICKUP, SoundCategory.MASTER, 0.2f, ((EssentialsUtil.random().nextFloat() - EssentialsUtil.random().nextFloat()) * 0.7F + 1.0F) * 2.0F);
             }
         }
 
-
         if (targets.size() == 1) {
-            EssentialsUtil.sendSuccess(source, (targets.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+            val target = targets.iterator().next();
+            EssentialsUtil.sendSuccess(sender, EssentialsUtil.getDisplayName(target)
                     .append(Component.text(" hat ", Colors.SUCCESS))
-                    .append(Component.text(amount, Colors.TERTIARY))
-                    .append(Component.text("x ", Colors.TERTIARY))
-                    .append(item.createItemStack(amount, false).getBukkitStack().displayName())
+                    .append(Component.text(amount, Colors.VARIABLE_VALUE))
+                    .append(Component.text("x ", Colors.VARIABLE_VALUE))
+                    .append(EssentialsUtil.getDisplayName(item))
                     .append(Component.text(" erhalten!", Colors.SUCCESS)));
-
-            // If there are multiple targets
         } else {
-            EssentialsUtil.sendSuccess(source, (Component.text(targets.size()))
+            EssentialsUtil.sendSuccess(sender, (Component.text(targets.size()))
                     .append(Component.text(" Spieler haben ", Colors.SUCCESS))
-                    .append(Component.text(amount, Colors.TERTIARY))
-                    .append(Component.text("x ", Colors.TERTIARY))
-                    .append(item.createItemStack(amount, false).getBukkitStack().displayName())
+                    .append(Component.text(amount, Colors.VARIABLE_VALUE))
+                    .append(Component.text("x ", Colors.VARIABLE_VALUE))
+                    .append(EssentialsUtil.getDisplayName(item))
                     .append(Component.text(" erhalten!", Colors.SUCCESS)));
         }
+
         return targets.size();
     }
 }

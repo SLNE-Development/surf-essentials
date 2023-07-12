@@ -1,104 +1,71 @@
 package dev.slne.surf.essentials.commands.tp;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.server.level.ServerPlayer;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.UUID;
 
-public class TeleportToTopCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"tptop", "top"};
+public class TeleportToTopCommand extends EssentialsCommand {
+    public TeleportToTopCommand() {
+        super("tptop", "tptop [<player>]", "Teleports the player to the top of the world");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.TELEPORT_TOP_SELF_PERMISSION, Permissions.TELEPORT_TOP_OTHER_PERMISSION));
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> tptop(sender.getCallee(), getPlayerOrException(sender)));
+        then(offlinePlayerArgument("player") // TODO test
+                .withPermission(Permissions.TELEPORT_TOP_OTHER_PERMISSION)
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> tptop(sender.getCallee(), args.getUnchecked("player"))));
     }
 
-    @Override
-    public String usage() {
-        return "tptop [<player]";
-    }
+    private int tptop(CommandSender source, OfflinePlayer offlinePlayer) throws WrapperCommandSyntaxException {
+        val uuid = offlinePlayer.getUniqueId();
+        @Nullable val onlinePlayer = offlinePlayer.getPlayer();
+        final Location location;
 
-    @Override
-    public String description() {
-        return "Teleport players to the highest block at their position";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.TELEPORT_TOP_SELF_PERMISSION));
-        literal.executes(context -> tptop(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException().getGameProfile())));
-
-        literal.then(Commands.argument("player", GameProfileArgument.gameProfile())
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.TELEPORT_TOP_OTHER_PERMISSION))
-                .executes(context -> tptop(context.getSource(), GameProfileArgument.getGameProfiles(context, "player"))));
-    }
-
-    private int tptop(CommandSourceStack source, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
-        if (gameProfiles.size() > 1) throw EntityArgument.ERROR_NOT_SINGLE_PLAYER.create();
-
-        GameProfile gameProfile = gameProfiles.iterator().next();
-        UUID uuid = gameProfile.getId();
-        ServerPlayer player = source.getServer().getPlayerList().getPlayer(uuid);
-        Location location;
-
-        if (player != null) {
-            location = player.getBukkitEntity().getLocation();
+        if (onlinePlayer != null) {
+            location = onlinePlayer.getLocation().clone();
             location.setY((location.getWorld().getHighestBlockYAt(location.getBlockX(), location.getBlockZ())) + 2);
             location.setX(location.getBlockX() + 0.5);
             location.setZ(location.getBlockZ() + 0.5);
 
-
-            PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(player.getBukkitEntity(), player.getBukkitEntity().getLocation(),
-                    location, PlayerTeleportEvent.TeleportCause.COMMAND);
-            if (playerTeleportEvent.isCancelled()) return 0;
-            EssentialsUtil.callEvent(playerTeleportEvent);
-
-            player.getBukkitEntity().teleport(location);
+            onlinePlayer.teleportAsync(location);
         } else {
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
 
             if (!offlinePlayer.hasPlayedBefore()) {
-                throw EntityArgument.NO_PLAYERS_FOUND.create();
+                throw Exceptions.NO_PLAYERS_FOUND;
             }
 
-            if (source.isPlayer()) {
-                EssentialsUtil.sendInfo(source, "Teleportiere Spieler...");
-            }
+            EssentialsUtil.sendInfo(source, "Teleportiere Spieler...");
+
+
+            location = EssentialsUtil.getLocation(offlinePlayer);
+
+            location.setY((location.getWorld().getHighestBlockYAt(location.getBlockX(), location.getBlockZ())) + 2);
+            location.setX(location.getBlockX() + 0.5);
+            location.setZ(location.getBlockZ() + 0.5);
 
             try {
-                location = EssentialsUtil.getLocation(gameProfile);
-                Objects.requireNonNull(location).setY((location.getWorld().getHighestBlockYAt(location.getBlockX(), location.getBlockZ())) + 1);
-                location.setX(location.getBlockX() + 0.5);
-                location.setZ(location.getBlockZ() + 0.5);
                 EssentialsUtil.setLocation(uuid, location);
-            } catch (IOException | NullPointerException e) {
-                e.printStackTrace();
-                return 0;
+            } catch (IOException e) {
+                throw Exceptions.FAILED_TO_WRITE_TO_FILE_IO.create(e);
             }
         }
 
-        EssentialsUtil.sendSourceSuccess(source, EssentialsUtil.getDisplayName(gameProfile)
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getOfflineDisplayName(offlinePlayer)
                 .append(Component.text(" wurde zum höchsten Block teleportiert.", Colors.SUCCESS)
-                        .hoverEvent(HoverEvent.showText(Component.text("%s %s %s".formatted(EssentialsUtil.makeDoubleReadable(location.getX()),
-                                EssentialsUtil.makeDoubleReadable(location.getY()), EssentialsUtil.makeDoubleReadable(location.getZ())), Colors.INFO)))));
+                        .hoverEvent(HoverEvent.showText(EssentialsUtil.formatLocation(Colors.INFO, location, true)))));
         return 1;
     }
 }

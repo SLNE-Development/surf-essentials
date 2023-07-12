@@ -1,103 +1,126 @@
 package dev.slne.surf.essentials.commands.general.other;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
+import lombok.val;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
-import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
-import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
-import net.minecraft.server.level.ServerPlayer;
+import net.kyori.adventure.title.Title;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.Collection;
 
-public class TitlebroadcastCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"titlebroadcast"};
-    }
+public class TitlebroadcastCommand extends EssentialsCommand {
+    public TitlebroadcastCommand() {
+        super("titlebroadcast", "titlebroadcast <players> <message>", "Broadcast a title to the players");
 
-    @Override
-    public String usage() {
-        return "/titlebroadcast <players> <message>";
-    }
+        withPermission(Permissions.TITLE_BROADCAST_PERMISSION);
 
-    @Override
-    public String description() {
-        return "Broadcast a title to the players";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.TITLE_BROADCAST_PERMISSION));
-
-        literal.then(Commands.argument("players", EntityArgument.players())
-                .then(Commands.argument("title", StringArgumentType.string())
-                        .suggests((context, builder) -> {
+        then(playersArgument("players")
+                .then(stringArgument("title")
+                        .replaceSuggestions((info, builder) -> {
                             builder.suggest("\"!&cExample &atitle\"");
-                            return EssentialsUtil.suggestAllColorCodes(builder);
+                            EssentialsUtil.suggestColors().suggest(info, builder);
+                            return builder.buildFuture();
                         })
-                        .executes(context -> broadcast(context.getSource(), EntityArgument.getPlayers(context, "players"), StringArgumentType.getString(context, "title"),
-                                null, null, null, null))
-
-                        .then(Commands.argument("subtitle", StringArgumentType.string())
-                                .suggests((context, builder) -> {
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> broadcast(
+                                sender.getCallee(),
+                                args.getUnchecked("players"),
+                                args.getUnchecked("title"),
+                                null,
+                                null,
+                                null,
+                                null
+                        ))
+                        .then(stringArgument("subTitle")
+                                .replaceSuggestions((info, builder) -> {
                                     builder.suggest("\"!&cExample &asub-title\"");
-                                    return EssentialsUtil.suggestAllColorCodes(builder);
+                                    return EssentialsUtil.suggestColors().suggest(info, builder);
                                 })
-                                .executes(context -> broadcast(context.getSource(), EntityArgument.getPlayers(context, "players"), StringArgumentType.getString(context, "title"),
-                                        StringArgumentType.getString(context, "subtitle"), null, null, null))
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> broadcast(
+                                        sender.getCallee(),
+                                        args.getUnchecked("players"),
+                                        args.getUnchecked("title"),
+                                        args.getUnchecked("subTitle"),
+                                        null,
+                                        null,
+                                        null
+                                ))
+                                .then(timeArgument("fadeIn")
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> broadcast(
+                                                sender.getCallee(),
+                                                args.getUnchecked("players"),
+                                                args.getUnchecked("title"),
+                                                args.getUnchecked("subTitle"),
+                                                args.getUnchecked("fadeIn"),
+                                                null,
+                                                null
+                                        ))
+                                        .then(timeArgument("stay")
+                                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> broadcast(
+                                                        sender.getCallee(),
+                                                        args.getUnchecked("players"),
+                                                        args.getUnchecked("title"),
+                                                        args.getUnchecked("subTitle"),
+                                                        args.getUnchecked("fadeIn"),
+                                                        args.getUnchecked("stay"),
+                                                        null
+                                                ))
+                                                .then(timeArgument("fadeOut")
+                                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> broadcast(
+                                                                sender.getCallee(),
+                                                                args.getUnchecked("players"),
+                                                                args.getUnchecked("title"),
+                                                                args.getUnchecked("subTitle"),
+                                                                args.getUnchecked("fadeIn"),
+                                                                args.getUnchecked("stay"),
+                                                                args.getUnchecked("fadeOut")
+                                                        ))))))));
 
-                                .then(Commands.argument("fadeInTicks", IntegerArgumentType.integer(1))
-                                        .executes(context -> broadcast(context.getSource(), EntityArgument.getPlayers(context, "players"), StringArgumentType.getString(context, "title"),
-                                                StringArgumentType.getString(context, "subtitle"), IntegerArgumentType.getInteger(context, "fadeInTicks"), null, null))
-
-                                        .then(Commands.argument("stayTicks", IntegerArgumentType.integer(1))
-                                                .executes(context -> broadcast(context.getSource(), EntityArgument.getPlayers(context, "players"), StringArgumentType.getString(context, "title"),
-                                                        StringArgumentType.getString(context, "subtitle"), IntegerArgumentType.getInteger(context, "fadeInTicks"),
-                                                        IntegerArgumentType.getInteger(context, "stayTicks"), null))
-
-                                                .then(Commands.argument("fadeOutTicks", IntegerArgumentType.integer(1))
-                                                        .executes(context -> broadcast(context.getSource(), EntityArgument.getPlayers(context, "players"), StringArgumentType.getString(context, "title"),
-                                                                StringArgumentType.getString(context, "subtitle"), IntegerArgumentType.getInteger(context, "fadeInTicks"),
-                                                                IntegerArgumentType.getInteger(context, "stayTicks"), IntegerArgumentType.getInteger(context, "fadeOutTicks")))))))));
     }
 
-    private static int broadcast(@NotNull CommandSourceStack source, @NotNull Collection<ServerPlayer> targetsUnchecked, @NotNull String title,
-                                 @Nullable String subTitle, @Nullable Integer fadeInTicks, @Nullable Integer stayTicks, @Nullable Integer fadeOutTicks) throws CommandSyntaxException {
 
-        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+    private static int broadcast(
+            @NotNull CommandSender source,
+            Collection<Player> targetsUnchecked,
+            String title,
+            @Nullable String subTitle,
+            @Nullable Integer fadeIn,
+            @Nullable Integer stay,
+            @Nullable Integer fadeOut
+    ) throws WrapperCommandSyntaxException {
+
+        val targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+        subTitle = (subTitle == null) ? "" : subTitle;
+        val titleComponent = EssentialsUtil.deserialize(title).colorIfAbsent(Colors.TERTIARY);
+        val subTitleComponent = EssentialsUtil.deserialize(subTitle).colorIfAbsent(Colors.SECONDARY);
 
         int successfullyShowed = 0;
-        fadeInTicks = (fadeInTicks == null) ? 10 : fadeInTicks;
-        stayTicks = (stayTicks == null) ? 20 * 7 : stayTicks;
-        fadeOutTicks = (fadeOutTicks == null) ? 10 : fadeOutTicks;
+        fadeIn = ((fadeIn == null) ? 10 : fadeIn) * 50;
+        stay = ((stay == null) ? 20 * 7 : stay) * 50;
+        fadeOut = ((fadeOut == null) ? 10 : fadeOut) * 50;
 
-        subTitle = (subTitle == null) ? "" : subTitle;
 
-        Component titleComponent = EssentialsUtil.deserialize(title).colorIfAbsent(Colors.TERTIARY);
-        Component subTitleComponent = EssentialsUtil.deserialize(subTitle).colorIfAbsent(Colors.SECONDARY);
+        for (Audience target : targets) {
+            target.showTitle(Title.title(
+                    titleComponent,
+                    subTitleComponent,
+                    Title.Times.times(
+                            Duration.ofMillis(fadeIn),
+                            Duration.ofMillis(stay),
+                            Duration.ofMillis(fadeOut)
+                    )
+            ));
 
-        ClientboundSetTitlesAnimationPacket animationPacket = new ClientboundSetTitlesAnimationPacket(fadeInTicks, stayTicks, fadeOutTicks);
-        ClientboundSetTitleTextPacket titleTextPacket = new ClientboundSetTitleTextPacket(PaperAdventure.asVanilla(titleComponent));
-        ClientboundSetSubtitleTextPacket subtitleTextPacket = new ClientboundSetSubtitleTextPacket(PaperAdventure.asVanilla(subTitleComponent));
-
-        for (ServerPlayer target : targets) {
-            target.connection.send(animationPacket);
-            target.connection.send(titleTextPacket);
-            target.connection.send(subtitleTextPacket);
             successfullyShowed++;
         }
 
@@ -107,13 +130,13 @@ public class TitlebroadcastCommand extends BrigadierCommand {
                                 .append(titleComponent)
                                 .append(Component.newline())
                                 .append(Component.text("Einblenden: ", Colors.INFO)
-                                        .append(Component.text(EssentialsUtil.ticksToString(fadeInTicks), Colors.TERTIARY)))
+                                        .append(Component.text(EssentialsUtil.ticksToString(fadeIn / 50), Colors.TERTIARY)))
                                 .append(Component.newline())
                                 .append(Component.text("Dauer: ", Colors.INFO)
-                                        .append(Component.text(EssentialsUtil.ticksToString(stayTicks), Colors.TERTIARY)))
+                                        .append(Component.text(EssentialsUtil.ticksToString(stay / 50), Colors.TERTIARY)))
                                 .append(Component.newline())
                                 .append(Component.text("Ausblenden: ", Colors.INFO)
-                                        .append(Component.text(EssentialsUtil.ticksToString(fadeOutTicks), Colors.TERTIARY)))
+                                        .append(Component.text(EssentialsUtil.ticksToString(fadeOut / 50), Colors.TERTIARY)))
                                 .append(Component.newline())
                                 .append(Component.text("Untertitel: ", Colors.INFO))
                                 .append(subTitleComponent))))

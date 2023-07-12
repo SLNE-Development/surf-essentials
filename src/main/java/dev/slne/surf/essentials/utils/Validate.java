@@ -1,10 +1,9 @@
 package dev.slne.surf.essentials.utils;
 
-import dev.slne.surf.essentials.SurfEssentials;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.annontations.FieldsAreNonnullByDefault;
 import dev.slne.surf.essentials.annontations.MethodsReturnNonnullByDefault;
 import dev.slne.surf.essentials.annontations.ParametersAreNonnullByDefault;
-import dev.slne.surf.essentials.utils.color.Colors;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -26,36 +25,6 @@ public final class Validate {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Logs the error message and returns the throwable.
-     *
-     * @param message   the error message to log
-     * @param throwable the throwable to return
-     * @param <T>       the type of throwable to return
-     * @return the throwable
-     */
-    @Contract("_, _ -> param2")
-    public static <T extends Throwable> T makeException(Component message, T throwable) {
-        SurfEssentials.logger().error(message.colorIfAbsent(Colors.RED));
-        return throwable;
-    }
-
-
-    /**
-     * Logs the error message and returns the throwable.
-     *
-     * @param message   the error message to log
-     * @param throwable the throwable to return
-     * @param <T>       the type of throwable to return
-     * @return the throwable
-     */
-    @Contract("_, _ -> param2")
-    public static <T extends Throwable> T makeException(String message, T throwable) {
-        return makeException(Component.text(message), throwable);
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-
-    /**
      * Validates that the specified object is not null.
      *
      * @param t       the object to validate
@@ -65,8 +34,8 @@ public final class Validate {
      * @throws NullPointerException if the specified object is null
      */
     @Contract("null, _ -> fail; !null, _ -> param1")
-    public static <T> @NotNull T notNull(@Nullable T t, Component message) {
-        if (t == null) throw makeException(message, new NullPointerException());
+    public static <T> @NotNull T notNull(@Nullable T t, Component message) throws CommandSyntaxException {
+        //if (t == null) throw EssentialsUtil.createException(message);
         return t;
     }
 
@@ -80,7 +49,7 @@ public final class Validate {
      * @throws NullPointerException if the specified object is null
      */
     @Contract("null, _ -> fail; !null, _ -> param1")
-    public static <T> @NotNull T notNull(@Nullable T t, String message) {
+    public static <T> @NotNull T notNull(@Nullable T t, String message) throws CommandSyntaxException {
         return notNull(t, Component.text(message));
     }
 
@@ -93,7 +62,7 @@ public final class Validate {
      * @throws NullPointerException if the specified object is null
      */
     @Contract("!null -> param1")
-    public static <T> @NotNull T notNull(@Nullable T t) {
+    public static <T> @NotNull T notNull(@Nullable T t) throws CommandSyntaxException {
         return notNull(t, "The validated object is null");
     }
 
@@ -109,7 +78,7 @@ public final class Validate {
      * @throws NullPointerException if the specified array contains null elements
      */
     @Contract("_ -> param1")
-    public static <T> T[] noNullElements(T[] array) {
+    public static <T> T[] noNullElements(T[] array) throws CommandSyntaxException {
         notNull(array);
         for (int i = 0; i < array.length; i++) {
             notNull(array[i], "The validated array contains null element at index: " + i);
@@ -127,7 +96,7 @@ public final class Validate {
      * @throws NullPointerException if the specified array contains null elements
      */
     @Contract("_, _ -> param1")
-    public static <T> T[] noNullElements(T[] array, Component message) {
+    public static <T> T[] noNullElements(T[] array, Component message) throws CommandSyntaxException {
         notNull(array);
         for (T t : array) {
             notNull(t, message);
@@ -146,7 +115,7 @@ public final class Validate {
      * @throws NullPointerException if the specified array contains null elements
      */
     @Contract("_, _ -> param1")
-    public static <T> T[] noNullElements(T[] array, String message) {
+    public static <T> T[] noNullElements(T[] array, String message) throws CommandSyntaxException {
         return noNullElements(array, Component.text(message));
     }
 
@@ -159,7 +128,7 @@ public final class Validate {
      * @throws NullPointerException if the specified array contains null elements
      */
     @Contract("_ -> param1")
-    public static <T extends Iterable<?>> T noNullElements(T iterable) {
+    public static <T extends Iterable<?>> T noNullElements(T iterable) throws CommandSyntaxException {
         notNull(iterable);
 
         int index = 0;
@@ -181,7 +150,7 @@ public final class Validate {
      * @throws NullPointerException if the specified array contains null elements
      */
     @Contract("_, _ -> param1")
-    public static <T extends Iterable<?>> T noNullElements(T iterable, Component message) {
+    public static <T extends Iterable<?>> T noNullElements(T iterable, Component message) throws CommandSyntaxException {
         notNull(iterable);
 
         for (Object o : iterable) {
@@ -201,7 +170,7 @@ public final class Validate {
      * @throws NullPointerException if the specified array contains null elements
      */
     @Contract("_, _ -> param1")
-    public static <T extends Iterable<?>> T noNullElements(T iterable, String message) {
+    public static <T extends Iterable<?>> T noNullElements(T iterable, String message) throws CommandSyntaxException {
         return noNullElements(iterable, Component.text(message));
     }
 
@@ -217,8 +186,8 @@ public final class Validate {
      * @throws IllegalArgumentException if the specified boolean is not true
      */
     @Contract("false, _ -> fail; true, _ -> true")
-    public static boolean isTrue(boolean value, Component message) {
-        if (!value) throw makeException(message, new IllegalArgumentException());
+    public static boolean isTrue(boolean value, Component message) throws CommandSyntaxException {
+        //if (!value) throw EssentialsUtil.createException(message);
         return true;
     }
 
@@ -231,7 +200,7 @@ public final class Validate {
      * @throws IllegalArgumentException if the specified boolean is not true
      */
     @Contract("false, _ -> fail; true, _ -> true")
-    public static boolean isTrue(boolean value, String message) {
+    public static boolean isTrue(boolean value, String message) throws CommandSyntaxException {
         return isTrue(value, Component.text(message));
     }
 
@@ -243,7 +212,7 @@ public final class Validate {
      * @throws IllegalArgumentException if the specified boolean is not true
      */
     @Contract("false -> fail; true -> true")
-    public static boolean isTrue(boolean value) {
+    public static boolean isTrue(boolean value) throws CommandSyntaxException {
         return isTrue(value, "The validated expression is false");
     }
 
@@ -260,7 +229,7 @@ public final class Validate {
      * @throws IllegalArgumentException if the iterable is empty
      */
     @Contract("_, _ -> param1")
-    public static <T extends Iterable<?>> T notEmpty(T t, Component message) {
+    public static <T extends Iterable<?>> T notEmpty(T t, Component message) throws CommandSyntaxException {
         isTrue(!t.iterator().hasNext(), message);
         return t;
     }
@@ -275,7 +244,7 @@ public final class Validate {
      * @throws IllegalArgumentException if the iterable is empty
      */
     @Contract("_, _ -> param1")
-    public static <T extends Iterable<?>> T notEmpty(T t, String message) {
+    public static <T extends Iterable<?>> T notEmpty(T t, String message) throws CommandSyntaxException {
         return notEmpty(t, Component.text(message));
     }
 
@@ -288,7 +257,7 @@ public final class Validate {
      * @throws IllegalArgumentException if the iterable is empty
      */
     @Contract("_ -> param1")
-    public static <T extends Iterable<?>> T notEmpty(T t) {
+    public static <T extends Iterable<?>> T notEmpty(T t) throws CommandSyntaxException {
         return notEmpty(t, "The validated iterable is empty");
     }
 
@@ -302,7 +271,7 @@ public final class Validate {
      * @throws IllegalArgumentException if the array is empty
      */
     @Contract("_, _ -> param1")
-    public static <T> T[] notEmpty(T[] t, Component message) {
+    public static <T> T[] notEmpty(T[] t, Component message) throws CommandSyntaxException {
         isTrue(!(t.length == 0), message);
         return t;
     }
@@ -317,7 +286,7 @@ public final class Validate {
      * @throws IllegalArgumentException if the array is empty
      */
     @Contract("_, _ -> param1")
-    public static <T> T[] notEmpty(T[] t, String message) {
+    public static <T> T[] notEmpty(T[] t, String message) throws CommandSyntaxException {
         return notEmpty(t, Component.text(message));
     }
 
@@ -330,7 +299,7 @@ public final class Validate {
      * @throws IllegalArgumentException if the array is empty
      */
     @Contract("_ -> param1")
-    public static <T> T[] notEmpty(T[] t) {
+    public static <T> T[] notEmpty(T[] t) throws CommandSyntaxException {
         return notEmpty(t, "The validated array is empty");
     }
 
@@ -343,7 +312,7 @@ public final class Validate {
      * @throws IllegalArgumentException if the string is empty
      */
     @Contract("_, _ -> param1")
-    public static String notEmpty(@Nullable String s, Component message) {
+    public static String notEmpty(@Nullable String s, Component message) throws CommandSyntaxException {
         isTrue(!(s == null || s.length() == 0), message);
         return s;
     }
@@ -357,7 +326,7 @@ public final class Validate {
      * @throws IllegalArgumentException if the string is empty
      */
     @Contract("_, _ -> param1")
-    public static String notEmpty(@Nullable String s, String message) {
+    public static String notEmpty(@Nullable String s, String message) throws CommandSyntaxException {
         return notEmpty(s, Component.text(message));
     }
 
@@ -369,7 +338,7 @@ public final class Validate {
      * @throws IllegalArgumentException if the string is empty
      */
     @Contract("_ -> param1")
-    public static String notEmpty(@Nullable String s) {
+    public static String notEmpty(@Nullable String s) throws CommandSyntaxException {
         return notEmpty(s, "The validated string is empty");
     }
 
@@ -388,14 +357,14 @@ public final class Validate {
      * @throws IllegalArgumentException if an element is not of the specified class
      */
     @Contract("_, _, _ -> param1")
-    public static <T extends Iterable<?>> T allElementsOfType(T t, Class<?> clazz, Component message) {
+    public static <T extends Iterable<?>> T allElementsOfType(T t, Class<?> clazz, Component message) throws CommandSyntaxException {
         notNull(t);
         notNull(clazz);
 
-        t.iterator().forEachRemaining(o -> {
-            if (clazz.isInstance(o)) return;
-            throw makeException(message, new IllegalArgumentException());
-        });
+        for (Object value : t) {
+            if (clazz.isInstance(value)) continue;
+            //throw EssentialsUtil.createException(message);
+        }
         return t;
     }
 
@@ -411,7 +380,7 @@ public final class Validate {
      * @throws IllegalArgumentException if an element is not of the specified class
      */
     @Contract("_, _, _ -> param1")
-    public static <T extends Iterable<?>> T allElementsOfType(T t, Class<?> clazz, String message) {
+    public static <T extends Iterable<?>> T allElementsOfType(T t, Class<?> clazz, String message) throws CommandSyntaxException {
         return allElementsOfType(t, clazz, Component.text(message));
     }
 
@@ -426,17 +395,16 @@ public final class Validate {
      * @throws IllegalArgumentException if an element is not of the specified class
      */
     @Contract("_, _ -> param1")
-    public static <T extends Iterable<?>> T allElementsOfType(T t, Class<?> clazz) {
+    public static <T extends Iterable<?>> T allElementsOfType(T t, Class<?> clazz) throws CommandSyntaxException {
         notNull(t);
         notNull(clazz);
         int i = 0;
         for (Iterator<?> it = t.iterator(); it.hasNext(); i++) {
             if (clazz.isInstance(it.next())) continue;
 
-            throw makeException(
-                    "The validated iterable contains an element not of type " + clazz.getName() + " at index: " + i,
-                    new IllegalArgumentException()
-            );
+            //throw EssentialsUtil.createException(
+            //        Component.text("The validated iterable contains an element not of type " + clazz.getName() + " at index: " + i)
+            //);
         }
         return t;
     }
@@ -453,30 +421,28 @@ public final class Validate {
      * @return the validated {@link Number}
      */
     @Contract("_, _, _ -> param1")
-    public static <T extends Number> T isInBound(@NotNull T check, @NotNull T min, @NotNull T max) {
+    public static <T extends Number> T isInBound(@NotNull T check, @NotNull T min, @NotNull T max) throws CommandSyntaxException {
         notNull(check);
         notNull(min);
         notNull(max);
 
         if (check.doubleValue() > max.doubleValue() || check.doubleValue() < min.doubleValue()) {
-            throw makeException(
-                    "Index (%s) is out of bounds [%s - %s]".formatted(check.doubleValue(), min.doubleValue(), max.doubleValue()),
-                    new IndexOutOfBoundsException()
-            );
+            //throw EssentialsUtil.createException(
+             //       Component.text("Index (%s) is out of bounds [%s - %s]".formatted(check.doubleValue(), min.doubleValue(), max.doubleValue()))
+            //);
         }
         return check;
     }
 
     @Contract("_, _ -> param1")
-    public static <T extends Number> T isBigger(@NotNull T toCheck, @NotNull T against) {
+    public static <T extends Number> T isBigger(@NotNull T toCheck, @NotNull T against) throws CommandSyntaxException {
         notNull(toCheck);
         notNull(against);
 
         if (toCheck.doubleValue() <= against.doubleValue()) {
-            throw makeException(
-                    "Number is too low",
-                    new IllegalArgumentException()
-            );
+            //throw EssentialsUtil.createException(
+             //       Component.text("Number is too low")
+            //);
         }
 
         return toCheck;

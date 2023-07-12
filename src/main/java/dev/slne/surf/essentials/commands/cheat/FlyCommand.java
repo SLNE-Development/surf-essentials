@@ -1,72 +1,64 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.NamespacedKey;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
-public class FlyCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"fly", "flymode"};
+public class FlyCommand extends EssentialsCommand {
+    public static NamespacedKey PDC_IN_FLY_MODE = new NamespacedKey(SurfEssentials.getInstance(), "in_fly_mode");
+
+    public FlyCommand() {
+        super("fly", "fly [<players>] [<enable | disable>]", "Toggles the fly mode", "flymode");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.FLY_SELF_PERMISSION, Permissions.FLY_OTHER_PERMISSION));
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> fly(sender.getCallee(), List.of(getPlayerOrException(sender)), true, true));
+        then(playersArgument("players")
+                .withPermission(Permissions.FLY_OTHER_PERMISSION)
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> fly(sender.getCallee(),  args.getUnchecked("players"), true, true))
+
+                .then(literal("enable")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> fly(sender.getCallee(), args.getUnchecked("players"), false, true)))
+                .then(literal("disable")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> fly(sender.getCallee(), args.getUnchecked("players"), false, false))));
     }
 
-    @Override
-    public String usage() {
-        return "/fly [<players>] [<enable | disable>]";
-    }
-
-    @Override
-    public String description() {
-        return "Toggles the fly mode";
-    }
-
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.FLY_SELF_PERMISSION, Permissions.FLY_OTHER_PERMISSION));
-
-        literal.executes(context -> fly(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), true, true));
-
-        literal.then(Commands.argument("players", EntityArgument.players())
-                .requires(EssentialsUtil.checkPermissions(Permissions.FLY_OTHER_PERMISSION))
-                .executes(context -> fly(context.getSource(), EntityArgument.getPlayers(context, "players"), true, true))
-                .then(Commands.literal("enable")
-                        .executes(context -> fly(context.getSource(), EntityArgument.getPlayers(context, "players"), false, true)))
-                .then(Commands.literal("disable")
-                        .executes(context -> fly(context.getSource(), EntityArgument.getPlayers(context, "players"), false, false))));
-    }
-
-    private int fly(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, boolean toggle, Boolean allowFly) throws CommandSyntaxException {
-        final var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+    private int fly(CommandSender source, Collection<Player> targetsUnchecked, boolean toggle, Boolean allowFly) throws WrapperCommandSyntaxException {
+        val targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulChanges = 0;
 
-        for (ServerPlayer target : targets) {
+        for (Player target : targets) {
             if (toggle) {
-                var shouldFly = target.getBukkitEntity().getAllowFlight();
-                target.getBukkitEntity().setAllowFlight(!shouldFly);
-                target.getBukkitEntity().setFlying(!shouldFly);
+                final boolean shouldFly = target.getAllowFlight();
+                target.setAllowFlight(!shouldFly);
+                target.setFlying(!shouldFly);
             } else {
-                target.getBukkitEntity().setAllowFlight(allowFly);
-                target.getBukkitEntity().setFlying(allowFly);
+                target.setAllowFlight(allowFly);
+                target.setFlying(allowFly);
             }
             successfulChanges++;
             EssentialsUtil.sendSuccess(target, Component.text("Du kannst nun ", Colors.GREEN)
-                    .append(Component.text((target.getAbilities().mayfly) ? "fliegen!" : "nicht mehr fliegen!", Colors.GREEN)));
+                    .append(Component.text((target.getAllowFlight()) ? "fliegen!" : "nicht mehr fliegen!", Colors.GREEN)));
+            target.getPersistentDataContainer().set(PDC_IN_FLY_MODE, PersistentDataType.BOOLEAN, target.getAllowFlight());
         }
 
         if (successfulChanges == 1) {
-            if (source.isPlayer() && source.getPlayerOrException() == targets.iterator().next()) return 1;
+            if (source instanceof Player player && player == targets.iterator().next()) return 1;
             EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(targets.iterator().next())
-                    .append(Component.text(" kann nun " + ((targets.iterator().next().getAbilities().mayfly) ? "fliegen!" : "nicht mehr fliegen!"))));
+                    .append(Component.text(" kann nun " + ((targets.iterator().next().getAllowFlight()) ? "fliegen!" : "nicht mehr fliegen!"))));
         } else {
             if (toggle) {
                 EssentialsUtil.sendSuccess(source, Component.text("Die Flugfunktion wurde für ", Colors.SUCCESS)
@@ -81,6 +73,5 @@ public class FlyCommand extends BrigadierCommand {
             }
         }
         return successfulChanges;
-
     }
 }

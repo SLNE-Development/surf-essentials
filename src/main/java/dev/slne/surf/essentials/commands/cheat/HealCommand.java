@@ -1,64 +1,56 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
-public class HealCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"heal"};
+public class HealCommand extends EssentialsCommand {
+    public HealCommand() {
+        super("heal", "heal [<entities>]", "Heals the entities");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.HEAL_SELF_PERMISSION, Permissions.HEAL_OTHER_PERMISSION));
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> heal(sender.getCallee(), List.of(getEntityOrException(sender))));
+
+        then(entitiesArgument("entities")
+                .withPermission(Permissions.HEAL_OTHER_PERMISSION)
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> heal(sender.getCallee(), args.getUnchecked("entities"))));
     }
 
-    @Override
-    public String usage() {
-        return "/heal [<targets>]";
-    }
-
-    @Override
-    public String description() {
-        return "Heals the targets";
-    }
-
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.HEAL_SELF_PERMISSION, Permissions.HEAL_OTHER_PERMISSION));
-
-        literal.executes(context -> heal(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
-        literal.then(Commands.argument("players", EntityArgument.players())
-                .requires(EssentialsUtil.checkPermissions(Permissions.HEAL_OTHER_PERMISSION))
-                .executes(context -> heal(context.getSource(), EntityArgument.getPlayers(context, "players"))));
-    }
-
-    private int heal(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
-        final var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+    private int heal(CommandSender source, Collection<Entity> targetsUnchecked) throws WrapperCommandSyntaxException {
+        val targets = EssentialsUtil.checkEntitySuggestion(source, targetsUnchecked);
         int successfulChanges = 0;
 
-        for (ServerPlayer target : targets) {
-            target.heal(target.getMaxHealth(), EntityRegainHealthEvent.RegainReason.REGEN, true);
+        for (Entity target : targets) {
+            if (!(target instanceof LivingEntity livingEntity)) continue;
+
+            EssentialsUtil.heal(livingEntity, livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(), EntityRegainHealthEvent.RegainReason.REGEN, true);
             successfulChanges++;
-            EssentialsUtil.sendSuccess(target, (Component.text("Du wurdest geheilt! ", Colors.GREEN)));
+            EssentialsUtil.sendSuccess(target, Component.text("Du wurdest geheilt! ", Colors.GREEN));
         }
 
-        final var target = targets.iterator().next();
-        boolean isSelf = source.isPlayer() && source.getPlayerOrException() == target;
+        val target = targets.iterator().next();
+        boolean isSelf = source instanceof Player player && player.equals(target);
         if (successfulChanges == 1 && !isSelf) {
             EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
                     .append(Component.text(" wurde geheilt!", Colors.SUCCESS)));
-        } else if (successfulChanges >= 1 && source.getPlayerOrException() != targets.iterator().next()) {
+        } else if (successfulChanges >= 1 && !isSelf) {
             EssentialsUtil.sendSuccess(source, Component.text(successfulChanges, Colors.TERTIARY)
-                    .append(Component.text(" Spieler wurden geheilt!", Colors.SUCCESS)));
+                    .append(Component.text(" Entities wurden geheilt!", Colors.SUCCESS)));
         }
         return successfulChanges;
     }

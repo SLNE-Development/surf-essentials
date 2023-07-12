@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.commands.general.other.troll.trolls;
 
+/**
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -65,3 +66,4 @@ public class BoomTroll extends Troll {
         return 1;
     }
 }
+ */

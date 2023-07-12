@@ -1,66 +1,47 @@
 package dev.slne.surf.essentials.commands.general.other.help;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
-import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentBuilder;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.help.HelpMap;
-import org.bukkit.help.HelpTopic;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class HelpCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"help"};
-    }
+public class HelpCommand { // TODO bukkit overrides this
 
-    @Override
-    public String usage() {
-        return "/help <Command | Plugin> [<page]";
-    }
+    public HelpCommand() {
+        /**
+        super("help", "help <Command | Plugin> [<page>]", "Shows you the usage of commands");
 
-    @Override
-    public String description() {
-        return "Shows you the usage of commands";
-    }
+        withPermission(Permissions.HELP_PERMISSION);
 
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.HELP_PERMISSION));
+        Bukkit.getServer().getCommandMap().getKnownCommands().forEach((s, command) -> {
+            then(literal(s)
+                    .executesNative((NativeResultingCommandExecutor) (sender, args) -> showCommandHelp(sender.getCallee(), command)));
+        });
 
         for (Plugin plugin : Bukkit.getServer().getPluginManager().getPlugins()) {
-            literal.then(Commands.literal(plugin.getName())
-                    .executes(context -> showPluginHelp(context.getSource(), plugin, 1))
-                    .then(Commands.argument("page", IntegerArgumentType.integer(1, Arrays.stream(getAllCommandsFromPlugin(null, plugin)).toList().size()))
-                            .executes(context -> showPluginHelp(context.getSource(), plugin, IntegerArgumentType.getInteger(context, "page")))));
+            then(literal(plugin.getName())
+                    .executesNative((NativeResultingCommandExecutor) (sender, args) -> showPluginHelp(sender.getCallee(), plugin, 1))
+                    .then(integerArgument("page", 1, getAllCommandsFromPlugin(null, plugin).length)
+                            .executesNative((NativeResultingCommandExecutor) (sender, args) -> showPluginHelp(sender.getCallee(), plugin, args.getUnchecked("page")))));
         }
-
-        Bukkit.getServer().getCommandMap().getKnownCommands().forEach((s, command) -> literal.then(Commands.literal(s)
-                .executes(context -> showCommandHelp(context.getSource(), command))));
-
+         */
     }
 
-    private int showCommandHelp(CommandSourceStack source, Command command) {
-        ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
+    private int showCommandHelp(CommandSender source, Command command) {
+       val builder = Component.text();
 
         builder.append(header()
                 .append(newLine())
@@ -91,10 +72,10 @@ public class HelpCommand extends BrigadierCommand {
         return 1;
     }
 
-    private int showPluginHelp(CommandSourceStack source, Plugin plugin, int page) {
-        String[] allCommands = getAllCommandsFromPlugin(source, plugin);
-        String[] currentPageCommands = allCommands[page - 1].translateEscapes().split("\n");
-        ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
+    private int showPluginHelp(CommandSender source, Plugin plugin, Integer page) {
+        val allCommands = getAllCommandsFromPlugin(source, plugin);
+        val currentPageCommands = allCommands[page - 1].translateEscapes().split("\n");
+        val builder = Component.text();
 
         builder.append(header()
                 .append(newLine()));
@@ -130,6 +111,35 @@ public class HelpCommand extends BrigadierCommand {
         return 1;
     }
 
+    private String[] getAllCommandsFromPlugin(@Nullable CommandSender source, @NotNull Plugin plugin) {
+        source = (source == null) ? Bukkit.getConsoleSender() : source;
+
+        val helpMap = Bukkit.getServer().getHelpMap();
+        val topic = helpMap.getHelpTopic(plugin.getName());
+
+        if (topic == null) {
+            return new String[]{"§cNo help for " + plugin.getName()};
+        }
+
+        val fullText = topic.getFullText(source).translateEscapes();
+        val splitText = fullText.split("\n");
+
+        val stringArrayList = new ArrayList<String>();
+        var stringBuilder = new StringBuilder();
+        for (int i = 0; i < splitText.length; i++) {
+            stringBuilder.append(splitText[i]).append("\n");
+            if ((i + 1) % 7 == 0) {
+                stringArrayList.add(stringBuilder.toString());
+                stringBuilder = new StringBuilder();
+            }
+        }
+        if (stringBuilder.length() > 0) {
+            stringArrayList.add(stringBuilder.toString());
+        }
+
+        return stringArrayList.toArray(new String[0]);
+    }
+
 
     private Component prefix() {
         return Component.text(">> ", Colors.DARK_GRAY)
@@ -145,61 +155,28 @@ public class HelpCommand extends BrigadierCommand {
 
     private Component correctUsage(String usage) {
         return Component.text("Korrekte Benutzung: ", TextColor.fromHexString("#e67e22"))
-                .append(Component.text(usage, Colors.TERTIARY)).colorIfAbsent(Colors.TERTIARY);
+                .append(Component.text(usage, Colors.VARIABLE_VALUE))
+                .colorIfAbsent(Colors.VARIABLE_VALUE);
     }
 
     private Component description(String description) {
         return Component.text("Beschreibung: ", TextColor.fromHexString("#e67e22"))
-                .append(Component.text(description, Colors.TERTIARY));
+                .append(Component.text(description, Colors.VARIABLE_VALUE));
     }
 
     private Component aliases(List<String> aliases) {
-        ComponentBuilder<TextComponent, TextComponent.Builder> builder = Component.text();
-        builder.append(Component.text("Aliases: ", TextColor.fromHexString("#e67e22")));
-
-        for (String alias : aliases) {
-            builder.append(Component.text(alias, Colors.TERTIARY)
-                    .append(Component.text(", ", Colors.INFO)));
-        }
-
-        return builder.build();
+        return Component.text("Aliases: ", TextColor.fromHexString("#e67e22"))
+                .append(Component.join(JoinConfiguration.commas(true), aliases.stream()
+                        .map(alias -> Component.text(alias, Colors.VARIABLE_VALUE))
+                        .toList()));
     }
 
     private Component permission(String permission) {
         return Component.text("Permission: ", TextColor.fromHexString("#e67e22"))
-                .append(Component.text(permission, Colors.TERTIARY));
+                .append(Component.text(permission, Colors.VARIABLE_VALUE));
     }
 
     private Component newLine() {
         return Component.newline().append(prefix());
-    }
-
-    private String[] getAllCommandsFromPlugin(@Nullable CommandSourceStack source, @NotNull Plugin plugin) {
-        source = (source == null) ? MinecraftServer.getServer().createCommandSourceStack() : source;
-
-        HelpMap helpMap = Bukkit.getServer().getHelpMap();
-        HelpTopic topic = helpMap.getHelpTopic(plugin.getName());
-
-        if (topic == null) {
-            return new String[]{"§cNo help for " + plugin.getName()};
-        }
-
-        String fullText = topic.getFullText(source.getBukkitSender()).translateEscapes();
-        String[] splitText = fullText.split("\n");
-
-        List<String> stringArrayList = new ArrayList<>();
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < splitText.length; i++) {
-            stringBuilder.append(splitText[i]).append("\n");
-            if ((i + 1) % 7 == 0) {
-                stringArrayList.add(stringBuilder.toString());
-                stringBuilder = new StringBuilder();
-            }
-        }
-        if (stringBuilder.length() > 0) {
-            stringArrayList.add(stringBuilder.toString());
-        }
-
-        return stringArrayList.toArray(new String[0]);
     }
 }

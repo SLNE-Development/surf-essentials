@@ -1,38 +1,22 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import dev.slne.surf.essentials.commands.minecraft.DamageCommand;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import net.minecraft.commands.CommandSourceStack;
+import lombok.val;
+import org.bukkit.entity.LivingEntity;
 
-public class SuicideCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"suicide"};
-    }
+public class SuicideCommand extends EssentialsCommand {
+    public SuicideCommand() {
+        super("suicide", "suicide", "Lets you commit suicide");
 
-    @Override
-    public String usage() {
-        return "/suicide";
-    }
+        withPermission(Permissions.SUICIDE_PERMISSION);
 
-    @Override
-    public String description() {
-        return "Lets you commit suicide";
-    }
+        executesNative((sender, args) -> {
+            val target = getSpecialEntityOrException(sender, LivingEntity.class);
 
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.SUICIDE_PERMISSION));
-        literal.executes(context -> {
-
-            final var player = context.getSource().getPlayerOrException();
-            final boolean success = player.hurt(EssentialsUtil.getDamageSources().playerAttack(player), Float.MAX_VALUE);
-
-            if (!success) throw DamageCommand.ERROR_INVULNERABLE.create();
-            EssentialsUtil.sendSuccess(context.getSource(), "Du hast Selbstmord begangen!");
-
+            target.damage(Float.MAX_VALUE, target);
+            EssentialsUtil.sendSuccess(target, "Du hast Selbstmord begangen");
             return 1;
         });
     }

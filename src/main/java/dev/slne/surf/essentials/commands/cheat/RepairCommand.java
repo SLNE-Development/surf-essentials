@@ -1,63 +1,41 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.Damageable;
 
-public class RepairCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"repair"};
+public class RepairCommand extends EssentialsCommand {
+    public RepairCommand() {
+        super("repair", "repair [<player>]", "Repairs the players main-hand-item");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.REPAIR_SELF_PERMISSION, Permissions.REPAIR_OTHER_PERMISSION));
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> repair(sender.getCallee(), getPlayerOrException(sender)));
+        then(playerArgument("player")
+                .withPermission(Permissions.REPAIR_OTHER_PERMISSION)
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> repair(sender.getCallee(), args.getUnchecked("player"))));
     }
 
-    @Override
-    public String usage() {
-        return "/repair [<player]";
-    }
+    public int repair(CommandSender source, Player targetUnchecked) throws WrapperCommandSyntaxException {
+        val target = EssentialsUtil.checkPlayerSuggestion(source, targetUnchecked);
+        val item = target.getInventory().getItemInMainHand();
 
-    @Override
-    public String description() {
-        return "Repairs the players main-hand-item";
-    }
+        if (!item.editMeta(Damageable.class, damageable -> damageable.setDamage(0))) throw Exceptions.ERROR_NOT_DAMAGEABLE_ITEMSTACK.create(item);
 
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.REPAIR_SELF_PERMISSION, Permissions.REPAIR_OTHER_PERMISSION));
-
-        literal.executes(context -> repair(context.getSource(), context.getSource().getPlayerOrException()));
-        literal.then(Commands.argument("player", EntityArgument.player())
-                .requires(EssentialsUtil.checkPermissions(Permissions.REPAIR_OTHER_PERMISSION))
-                .executes(context -> repair(context.getSource(), EntityArgument.getPlayer(context, "players"))));
-    }
-
-    public int repair(CommandSourceStack source, ServerPlayer targetUnchecked) throws CommandSyntaxException {
-        final var target = EssentialsUtil.checkPlayerSuggestion(source, targetUnchecked);
-        final var item = target.getMainHandItem();
-
-        if (!item.isDamageableItem()) throw ERROR_NOT_DAMAGEABLE.create(item);
-        item.setDamageValue(0);
-
-        EssentialsUtil.sendSuccess(source, PaperAdventure.asAdventure(item.getDisplayName())
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(item)
                 .append(Component.text(" von ", Colors.SUCCESS))
                 .append(EssentialsUtil.getDisplayName(target))
                 .append(Component.text(" wurde repariert!", Colors.SUCCESS)));
 
         return 1;
     }
-
-    private static final DynamicCommandExceptionType ERROR_NOT_DAMAGEABLE = new DynamicCommandExceptionType(item -> ((ItemStack) item).getDisplayName()
-            .copy().append(net.minecraft.network.chat.Component.literal(" is not damageable!")
-                    .withStyle(ChatFormatting.RED)));
-
 }

@@ -3,212 +3,218 @@ package dev.slne.surf.essentials.commands.general.other.world;
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.LongArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import dev.jorel.commandapi.arguments.ArgumentSuggestions;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.gui.GuiUtils;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.TriState;
-import net.minecraft.ChatFormatting;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.DimensionArgument;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.codehaus.plexus.util.FileUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class WorldCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"world"};
+public class WorldCommand extends EssentialsCommand {
+    private static final List<String> CUSTOM_LOADED_WORLDS = new ArrayList<>();
+
+    public WorldCommand() {
+        super("world", "world <create | join | unload | load | remove | gui>", "Join, create, delete and unload worlds.");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.WORLD_CREATE_PERMISSION, Permissions.WORLD_CHANGE_PERMISSION,
+                Permissions.WORLD_UNLOAD_PERMISSION, Permissions.WORLD_LOAD_PERMISSION, Permissions.WORLD_REMOVE_PERMISSION,
+                Permissions.WORLD_GUI_PERMISSION, Permissions.WORLD_QUERY_PERMISSION));
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> query(sender));
+
+        then(literal("join")
+                .withPermission(Permissions.WORLD_CHANGE_PERMISSION)
+                .then(worldArgument("world")
+                                .includeSuggestions(worldSuggestions())
+                        .replaceSuggestions(worldSuggestions())
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> join(sender.getCallee(), Objects.requireNonNull(args.getUnchecked("world")), getEntityOrException(sender)))
+                        .then(entityArgument("entity")
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> join(sender.getCallee(), Objects.requireNonNull(args.getUnchecked("world")), args.getUnchecked("entity"))))));
+
+        then(literal("unload")
+                .withPermission(Permissions.WORLD_UNLOAD_PERMISSION)
+                .then(worldArgument("world")
+                        .replaceSuggestions(worldSuggestions())
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> unload(sender.getCallee(), Objects.requireNonNull(args.getUnchecked("world"))))));
+
+        then(literal("load")
+                .withPermission(Permissions.WORLD_LOAD_PERMISSION)
+                .then(wordArgument("world")
+                        .replaceSuggestions(offlineWorldSuggestions())
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> load(sender.getCallee(), args.getUnchecked("world")))));
+
+        then(literal("remove")
+                .withPermission(Permissions.WORLD_REMOVE_PERMISSION)
+                .then(wordArgument("world")
+                        .replaceSuggestions(allWorldsSuggestions())
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> remove(sender.getCallee(), args.getUnchecked("world")))));
+
+        then(literal("gui")
+                .withPermission(Permissions.WORLD_GUI_PERMISSION)
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> gui(getSpecialEntityOrException(sender, HumanEntity.class))));
+
+        then(literal("create")
+                .withPermission(Permissions.WORLD_CREATE_PERMISSION)
+                .then(wordArgument("name")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> create(
+                                sender.getCallee(),
+                                args.getUnchecked("name"),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty()
+                        ))
+                        .then(worldEnvironmentArgument("environment")
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> create(
+                                        sender.getCallee(),
+                                        args.getUnchecked("name"),
+                                        Optional.ofNullable(args.getUnchecked("environment")),
+                                        Optional.empty(),
+                                        Optional.empty(),
+                                        Optional.empty(),
+                                        Optional.empty()
+                                ))
+                                .then(worldTypeArgument("type")
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> create(
+                                                sender.getCallee(),
+                                                args.getUnchecked("name"),
+                                                Optional.ofNullable(args.getUnchecked("environment")),
+                                                Optional.ofNullable(args.getUnchecked("type")),
+                                                Optional.empty(),
+                                                Optional.empty(),
+                                                Optional.empty()
+                                        ))
+                                        .then(booleanArgument("generateStructures")
+                                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> create(
+                                                        sender.getCallee(),
+                                                        args.getUnchecked("name"),
+                                                        Optional.ofNullable(args.getUnchecked("environment")),
+                                                        Optional.ofNullable(args.getUnchecked("type")),
+                                                        Optional.ofNullable(args.getUnchecked("generateStructures")),
+                                                        Optional.empty(),
+                                                        Optional.empty()
+                                                ))
+                                                .then(booleanArgument("hardcore")
+                                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> create(
+                                                                sender.getCallee(),
+                                                                args.getUnchecked("name"),
+                                                                Optional.ofNullable(args.getUnchecked("environment")),
+                                                                Optional.ofNullable(args.getUnchecked("type")),
+                                                                Optional.ofNullable(args.getUnchecked("generateStructures")),
+                                                                Optional.ofNullable(args.getUnchecked("hardcore")),
+                                                                Optional.empty()
+                                                        ))
+                                                        .then(longArgument("seed")
+                                                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> create(
+                                                                        sender.getCallee(),
+                                                                        args.getUnchecked("name"),
+                                                                        Optional.ofNullable(args.getUnchecked("environment")),
+                                                                        Optional.ofNullable(args.getUnchecked("type")),
+                                                                        Optional.ofNullable(args.getUnchecked("generateStructures")),
+                                                                        Optional.ofNullable(args.getUnchecked("hardcore")),
+                                                                        Optional.ofNullable(args.getUnchecked("seed"))
+                                                                ))
+                                                        )
+                                                        .then(greedyStringArgument("stringSeed")
+                                                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> create(
+                                                                        sender.getCallee(),
+                                                                        args.getUnchecked("name"),
+                                                                        Optional.ofNullable(args.getUnchecked("environment")),
+                                                                        Optional.ofNullable(args.getUnchecked("type")),
+                                                                        Optional.ofNullable(args.getUnchecked("generateStructures")),
+                                                                        Optional.ofNullable(args.getUnchecked("hardcore")),
+                                                                        Optional.of(EssentialsUtil.convertStringToSeed(args.getUnchecked("stringSeed")))
+                                                                ))
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
     }
 
-    @Override
-    public String usage() {
-        return "/world <create | join | unload | load | remove | gui>";
-    }
 
-    @Override
-    public String description() {
-        return "Join, create, delete and unload worlds";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.WORLD_CREATE_PERMISSION) || sourceStack.hasPermission(2, Permissions.WORLD_CHANGE_PERMISSION) ||
-                sourceStack.hasPermission(2, Permissions.WORLD_UNLOAD_PERMISSION) || sourceStack.hasPermission(2, Permissions.WORLD_REMOVE_PERMISSION) ||
-                sourceStack.hasPermission(2, Permissions.WORLD_GUI_PERMISSION) || sourceStack.hasPermission(2, Permissions.WORLD_LOAD_PERMISSION) || sourceStack.hasPermission(2, Permissions.WORLD_QUERY_PERMISSION));
-
-        literal.executes(context -> query(context.getSource()));
-
-        literal.then(Commands.literal("join")
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.WORLD_CHANGE_PERMISSION))
-                .then(Commands.argument("world", DimensionArgument.dimension())
-                        .suggests(this::worldSuggestions)
-                        .executes(context -> join(context.getSource(), DimensionArgument.getDimension(context, "world"), context.getSource().getPlayerOrException()))
-                        .then(Commands.argument("player", EntityArgument.player())
-                                .executes(context -> join(context.getSource(), DimensionArgument.getDimension(context, "world"), EntityArgument.getPlayer(context, "player"))))));
-
-        literal.then(Commands.literal("unload")
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.WORLD_UNLOAD_PERMISSION))
-                .then(Commands.argument("world", DimensionArgument.dimension())
-                        .suggests(this::worldSuggestions)
-                        .executes(context -> unload(context.getSource(), DimensionArgument.getDimension(context, "world")))));
-
-        literal.then(Commands.literal("remove")
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.WORLD_REMOVE_PERMISSION))
-                .then(Commands.argument("world", StringArgumentType.greedyString())
-                        .suggests(this::allWorldsSuggestions)
-                        .executes(context -> remove(context.getSource(), StringArgumentType.getString(context, "world")))));
-
-        literal.then(Commands.literal("load")
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.WORLD_LOAD_PERMISSION))
-                .then(Commands.argument("world", StringArgumentType.greedyString())
-                        .suggests(this::offlineWorldSuggestions)
-                        .executes(context -> load(context.getSource(), StringArgumentType.getString(context, "world")))));
-
-        literal.then(Commands.literal("gui")
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.WORLD_GUI_PERMISSION))
-                .executes(context -> gui(context.getSource())));
-
-        for (World.Environment environment : World.Environment.values()) {
-            if (environment == World.Environment.CUSTOM) continue;
-            for (WorldType worldType : WorldType.values()) {
-                literal.then(Commands.literal("create")
-                        .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.WORLD_CREATE_PERMISSION))
-
-                        .then(Commands.argument("name", StringArgumentType.string())
-                                .executes(context -> create(context.getSource(), StringArgumentType.getString(context, "name"),
-                                        Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()))
-
-                                .then(Commands.literal(environment.toString().toLowerCase())
-                                        .executes(context -> create(context.getSource(), StringArgumentType.getString(context, "name"),
-                                                Optional.of(environment), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()))
-
-                                        .then(Commands.literal(worldType.toString().toLowerCase())
-                                                .executes(context -> create(context.getSource(), StringArgumentType.getString(context, "name"),
-                                                        Optional.of(environment), Optional.of(worldType), Optional.empty(), Optional.empty(), Optional.empty()))
-
-                                                .then(Commands.argument("generateStructures", BoolArgumentType.bool())
-                                                        .executes(context -> create(context.getSource(), StringArgumentType.getString(context, "name"),
-                                                                Optional.of(environment), Optional.of(worldType), Optional.of(BoolArgumentType.getBool(context, "generateStructures")),
-                                                                Optional.empty(), Optional.empty()))
-
-                                                        .then(Commands.argument("hardcore", BoolArgumentType.bool())
-                                                                .executes(context -> create(context.getSource(), StringArgumentType.getString(context, "name"),
-                                                                        Optional.of(environment), Optional.of(worldType), Optional.of(BoolArgumentType.getBool(context, "generateStructures")),
-                                                                        Optional.of(BoolArgumentType.getBool(context, "hardcore")), Optional.empty()))
-
-                                                                .then(Commands.argument("seed", LongArgumentType.longArg())
-                                                                        .executes(context -> create(context.getSource(), StringArgumentType.getString(context, "name"),
-                                                                                Optional.of(environment), Optional.of(worldType), Optional.of(BoolArgumentType.getBool(context, "generateStructures")),
-                                                                                Optional.of(BoolArgumentType.getBool(context, "hardcore")), Optional.of(LongArgumentType.getLong(context, "seed")))))))))));
-            }
-        }
-    }
-
-
-    private int query(CommandSourceStack source) {
+    private int query(NativeProxyCommandSender source) {
         EssentialsUtil.sendSuccess(source, Component.text("Du befindest dich in der Welt ", Colors.SUCCESS)
-                .append(Component.text(source.getLevel().dimension().location().toString(), Colors.TERTIARY))
+                .append(EssentialsUtil.getDisplayName(source.getWorld()))
                 .append(Component.text(".", Colors.SUCCESS)));
         return 1;
     }
 
-    private int join(CommandSourceStack source, ServerLevel level, ServerPlayer targetUnchecked) throws CommandSyntaxException {
-        ServerPlayer target = EssentialsUtil.checkPlayerSuggestion(source, targetUnchecked);
-        BlockPos spawn = level.getSharedSpawnPos();
+    private int join(CommandSender source, World world, Entity targetUnchecked) throws WrapperCommandSyntaxException {
+        val target = EssentialsUtil.checkEntitySuggestion(source, targetUnchecked);
+        val spawn = world.getSpawnLocation();
 
-        target.teleportTo(level, spawn.getX(), spawn.getY(), spawn.getZ(), level.getSharedSpawnAngle(), 0.0F);
-
+        target.teleportAsync(spawn);
 
         EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(target)
                 .append(Component.text(" hat die Welt ", Colors.SUCCESS)
-                        .append(Component.text(level.dimension().location().toString(), Colors.TERTIARY))
+                        .append(EssentialsUtil.getDisplayName(world))
                         .append(Component.text(" betreten.", Colors.SUCCESS))));
 
         return 1;
     }
 
-    private int unload(CommandSourceStack source, ServerLevel level) throws CommandSyntaxException {
-        ServerLevel overworld = source.getServer().overworld();
-        BlockPos overworldSpawn = overworld.getSharedSpawnPos();
+    private int unload(CommandSender source, World world) throws WrapperCommandSyntaxException {
+        val overworld = Bukkit.getWorlds().get(0);
+        val overworldSpawn = overworld.getSpawnLocation();
 
-        if (level.dimension() == Level.OVERWORLD)
-            throw ERROR_CANNOT_UNLOAD_WORLD.create(level.dimension().location().toString());
+        EssentialsUtil.sendInfo(source, "Teleportiere Spieler in overworld...");
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendInfo(source, "Teleportiere Spieler in overworld...");
+        for (Player player : world.getPlayers()) {
+            player.teleport(overworldSpawn);
         }
 
-        for (ServerPlayer player : level.players()) {
-            player.teleportTo(overworld, overworldSpawn.getX(), overworldSpawn.getY(), overworldSpawn.getZ(), overworld.getSharedSpawnAngle(), 0.0F);
-        }
-
-        if (source.isPlayer()) {
-            EssentialsUtil.sendInfo(source, "Entlade Welt...");
-        }
-
-        Bukkit.unloadWorld(level.getWorld(), true);
+        EssentialsUtil.sendInfo(source, "Entlade Welt...");
+        if (!Bukkit.unloadWorld(world, true)) throw Exceptions.ERROR_WHILE_UNLOADING_WORLD.create(world);
 
         EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", Colors.SUCCESS)
-                .append(Component.text(level.dimension().location().toString(), Colors.TERTIARY))
+                .append(EssentialsUtil.getDisplayName(world))
                 .append(Component.text(" wurde erfolgreich entladen.", Colors.SUCCESS)));
 
         return 1;
-
     }
 
-    private int remove(CommandSourceStack source, String levelName) throws CommandSyntaxException {
-        World world = Bukkit.getWorld(levelName);
-        var serverDimension = EssentialsUtil.toServerLevel(world).dimension();
-        ServerLevel overworld = source.getServer().overworld();
-        File file = new File(Bukkit.getServer().getWorldContainer(), levelName);
+    private int remove(CommandSender source, String levelName) throws WrapperCommandSyntaxException {
+        val world = Bukkit.getWorld(levelName);
+        val file = new File(Bukkit.getServer().getWorldContainer(), levelName);
 
-        if (!worlds().contains(levelName)) throw ERROR_FILE_NOT_EXISTS.create(levelName);
+        if (!worlds().contains(levelName)) throw Exceptions.ERROR_FILE_NOT_EXISTS.create(levelName);
 
         if (world != null) {
-            if (world == overworld.getWorld() || serverDimension == Level.NETHER || serverDimension == Level.END) {
-                throw ERROR_CANNOT_UNLOAD_WORLD.create(serverDimension.location().toString());
-            }
-            if (source.isPlayer()) {
-                EssentialsUtil.sendInfo(source, "Teleportiere Spieler...");
-            }
-            world.getPlayers().forEach(player -> player.teleport(overworld.getWorld().getSpawnLocation()));
-            if (source.isPlayer()) {
-                EssentialsUtil.sendInfo(source, "Entlade Welt...");
-            }
-            Bukkit.unloadWorld(world, false);
+            EssentialsUtil.sendInfo(source, "Teleportiere Spieler...");
+            world.getPlayers().forEach(player -> player.teleport(world.getSpawnLocation()));
+
+            EssentialsUtil.sendInfo(source, "Entlade Welt...");
+            if (!Bukkit.unloadWorld(world, false)) throw Exceptions.ERROR_WHILE_UNLOADING_WORLD.create(world);
         }
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendInfo(source, "Lösche Dateien...");
-        }
-
+        EssentialsUtil.sendInfo(source, "Lösche Dateien...");
         Bukkit.getScheduler().runTaskAsynchronously(SurfEssentials.getInstance(), __ -> {
             try {
                 FileUtils.deleteDirectory(file);
@@ -222,22 +228,15 @@ public class WorldCommand extends BrigadierCommand {
         return 1;
     }
 
-    private int load(CommandSourceStack source, String worldName) throws CommandSyntaxException {
-        File file = new File(Bukkit.getWorldContainer(), worldName);
+    private int load(CommandSender source, String worldName) throws WrapperCommandSyntaxException {
+        val file = new File(Bukkit.getWorldContainer(), worldName);
+        if (!file.exists()) throw Exceptions.ERROR_INVALID_DIMENSION.create(file.getName());
 
-        if (!file.exists()) throw ERROR_INVALID_VALUE.create(file.getName());
+        val world = Bukkit.getWorld(file.getName());
+        if (world != null) throw Exceptions.ERROR_WORLD_ALREADY_LOADED.create(world);
 
-        World world = Bukkit.getWorld(file.getName());
-
-        if (world != null)
-            throw ERROR_WORLD_ALREADY_LOADED.create(EssentialsUtil.toServerLevel(world).dimension().location().toString());
-
-        if (source.isPlayer()) {
-            EssentialsUtil.sendInfo(source, "Lade Welt...");
-        }
-
+        EssentialsUtil.sendInfo(source, "Lade Welt...");
         Bukkit.createWorld(WorldCreator.name(file.getName()));
-
 
         EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", Colors.SUCCESS)
                 .append(Component.text(file.getName(), Colors.TERTIARY))
@@ -245,14 +244,13 @@ public class WorldCommand extends BrigadierCommand {
         return 1;
     }
 
-    private int gui(CommandSourceStack source) throws CommandSyntaxException {
-        Player player = source.getPlayerOrException().getBukkitEntity();
-        ChestGui gui = new ChestGui(6, ComponentHolder.of(Component.text("World GUI", Colors.SECONDARY)));
+    private int gui(HumanEntity source) {
+        val gui = new ChestGui(6, ComponentHolder.of(Component.text("World GUI", Colors.SECONDARY)));
 
         gui.setOnGlobalClick(event -> event.setCancelled(true));
         GuiUtils.setAllBoarders(gui);
 
-        StaticPane worldActionSelect = new StaticPane(1, 1, 7, 4);
+        val worldActionSelect = new StaticPane(1, 1, 7, 4);
 
         worldActionSelect.addItem(WorldItems.WORLD_JOIN(), 3, 1);
         worldActionSelect.addItem(WorldItems.WORLD_LOAD(), 0, 0);
@@ -261,20 +259,20 @@ public class WorldCommand extends BrigadierCommand {
 
         gui.addPane(worldActionSelect);
 
-        gui.show(player);
+        gui.show(source);
 
         return 1;
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private int create(CommandSourceStack source, String worldName, Optional<World.Environment> environment, Optional<WorldType> worldType,
-                       Optional<Boolean> generateStructures, Optional<Boolean> hardcore, Optional<Long> seed) throws CommandSyntaxException {
+    private int create(CommandSender source, String worldName, Optional<World.Environment> environment, Optional<WorldType> worldType,
+                       Optional<Boolean> generateStructures, Optional<Boolean> hardcore, Optional<Long> seed) throws WrapperCommandSyntaxException {
 
         for (String world : worlds()) {
-            if (world.equals(worldName)) throw ERROR_WORLD_ALREADY_CREATED.create(world);
+            if (world.equals(worldName)) throw Exceptions.ERROR_WORLD_ALREADY_CREATED.create(worldName);
         }
 
-        WorldCreator worldCreator = new WorldCreator(worldName);
+        val worldCreator = new WorldCreator(worldName);
 
         environment.ifPresent(worldCreator::environment);
         worldType.ifPresent(worldCreator::type);
@@ -283,45 +281,30 @@ public class WorldCommand extends BrigadierCommand {
         hardcore.ifPresent(worldCreator::hardcore);
         worldCreator.keepSpawnLoaded(TriState.TRUE);
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendInfo(source, "Erstelle Welt...");
-        }
-
-        worldCreator.createWorld();
-
+        EssentialsUtil.sendInfo(source, "Erstelle Welt...");
+        val world = worldCreator.createWorld();
 
         EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", Colors.SUCCESS)
-                .append(Component.text(worldName, Colors.TERTIARY))
+                .append(Component.text(world != null ? world.getKey().asString() : worldName, Colors.TERTIARY))
                 .append(Component.text(" wurde erfolgreich erstellt.", Colors.SUCCESS)));
 
         return 1;
     }
 
-
-    private CompletableFuture<Suggestions> worldSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
-        for (ServerLevel level : context.getSource().getServer().getAllLevels()) {
-            builder.suggest(level.dimension().location().toString());
-        }
-        return builder.buildFuture();
+    private ArgumentSuggestions<CommandSender> worldSuggestions() {
+        return ArgumentSuggestions.stringCollectionAsync(info -> CompletableFuture.supplyAsync(() -> Bukkit.getWorlds().stream().map(world -> world.getKey().asString()).toList()));
     }
 
-    private CompletableFuture<Suggestions> offlineWorldSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
-        for (String world : worlds()) {
-            if (Bukkit.getWorld(world) != null) continue;
-            builder.suggest(world);
-        }
-        return builder.buildFuture();
+    private ArgumentSuggestions<CommandSender> offlineWorldSuggestions() {
+        return ArgumentSuggestions.stringCollectionAsync(info -> CompletableFuture.supplyAsync(() -> worlds().stream().filter(world -> Bukkit.getWorld(world) == null).toList()));
     }
 
-    private CompletableFuture<Suggestions> allWorldsSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
-        for (String world : worlds()) {
-            builder.suggest(world);
-        }
-        return builder.buildFuture();
+    private ArgumentSuggestions<CommandSender> allWorldsSuggestions() {
+        return ArgumentSuggestions.stringCollectionAsync(info -> CompletableFuture.supplyAsync(this::worlds));
     }
 
-    private List<String> worlds() {
-        List<String> world = new ArrayList<>();
+    private @NotNull List<String> worlds() {
+        val world = new ArrayList<String>();
         for (File file : Objects.requireNonNull(SurfEssentials.getInstance().getServer().getWorldContainer().listFiles())) {
             if (!file.isDirectory()) continue;
             if (!Arrays.asList(Objects.requireNonNull(file.list())).contains("level.dat") || !Arrays.asList(Objects.requireNonNull(file.list())).contains("paper-world.yml"))
@@ -330,23 +313,4 @@ public class WorldCommand extends BrigadierCommand {
         }
         return world;
     }
-
-    private static final DynamicCommandExceptionType ERROR_CANNOT_UNLOAD_WORLD = new DynamicCommandExceptionType(worldName ->
-            net.minecraft.network.chat.Component.literal("Cannot unload world '" + worldName + "'")
-                    .withStyle(ChatFormatting.RED));
-
-    private static final DynamicCommandExceptionType ERROR_FILE_NOT_EXISTS = new DynamicCommandExceptionType(fileName ->
-            net.minecraft.network.chat.Component.literal("The file '" + fileName + "' doesn´t exist")
-                    .withStyle(ChatFormatting.RED));
-
-    final DynamicCommandExceptionType ERROR_INVALID_VALUE = new DynamicCommandExceptionType(id ->
-            net.minecraft.network.chat.Component.translatable("argument.dimension.invalid", id));
-
-    final DynamicCommandExceptionType ERROR_WORLD_ALREADY_LOADED = new DynamicCommandExceptionType(worldName ->
-            net.minecraft.network.chat.Component.literal("The world '" + worldName + "' is already loaded")
-                    .withStyle(ChatFormatting.RED));
-
-    final DynamicCommandExceptionType ERROR_WORLD_ALREADY_CREATED = new DynamicCommandExceptionType(worldName ->
-            net.minecraft.network.chat.Component.literal("The world '" + worldName + "' already exists")
-                    .withStyle(ChatFormatting.RED));
 }

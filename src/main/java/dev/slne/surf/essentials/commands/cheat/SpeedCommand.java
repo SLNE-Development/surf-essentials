@@ -1,82 +1,130 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import com.mojang.brigadier.arguments.FloatArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Range;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
-public class SpeedCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"speed", "flyspeed", "walkspeed"};
+public class SpeedCommand extends EssentialsCommand {
+    public SpeedCommand() {
+        super("speed", "speed <speed> <walk | fly> [<players>]", "Change walk / fly speed", "flyspeed", "walkspeed");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.SPEED_PERMISSION_SELF, Permissions.SPEED_PERMISSION_OTHER));
+
+        then(floatArgument("speed", -10, 10)
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> detect(
+                        sender.getCallee(),
+                        List.of(getPlayerOrException(sender)),
+                        args.getUnchecked("speed")
+                ))
+                .then(literal("walk")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeWalkSpeed(
+                                sender.getCallee(),
+                                List.of(getPlayerOrException(sender)),
+                                args.getUnchecked("speed")
+                        ))
+                        .then(playersArgument("players")
+                                .withPermission(Permissions.SPEED_PERMISSION_OTHER)
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeWalkSpeed(
+                                        sender.getCallee(),
+                                        args.getUnchecked("players"),
+                                        args.getUnchecked("speed")
+                                ))))
+
+                .then(literal("fly")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeFlySpeed(
+                                sender.getCallee(),
+                                List.of(getPlayerOrException(sender)),
+                                args.getUnchecked("speed")
+                        ))
+                        .then(playersArgument("players")
+                                .withPermission(Permissions.SPEED_PERMISSION_OTHER)
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeFlySpeed(
+                                        sender.getCallee(),
+                                        args.getUnchecked("players"),
+                                        args.getUnchecked("speed")
+                                ))
+                        )
+                )
+        )
+                .then(literal("reset")
+                        .executesNative((sender, args) -> changeWalkSpeed(
+                                sender.getCallee(),
+                                List.of(getPlayerOrException(sender)),
+                                2.0f
+                        ) + changeFlySpeed(
+                                sender.getCallee(),
+                                List.of(getPlayerOrException(sender)),
+                                1.0f
+                        ))
+                        .then(playersArgument("players")
+                                .withPermission(Permissions.SPEED_PERMISSION_OTHER)
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeWalkSpeed(
+                                        sender.getCallee(),
+                                        args.getUnchecked("players"),
+                                        2.0f
+                                ) + changeFlySpeed(
+                                        sender.getCallee(),
+                                        args.getUnchecked("players"),
+                                        1.0f
+                                ))
+                        )
+                )
+
+                .then(literal("resetwalk")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeWalkSpeed(
+                                sender.getCallee(),
+                                List.of(getPlayerOrException(sender)),
+                                2.0f
+                        ))
+                        .then(playersArgument("players")
+                                .withPermission(Permissions.SPEED_PERMISSION_OTHER)
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeWalkSpeed(
+                                        sender,
+                                        args.getUnchecked("players"),
+                                        2.0f
+                                ))
+                        )
+                )
+
+                .then(literal("resetfly")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeFlySpeed(
+                                sender.getCallee(),
+                                List.of(getPlayerOrException(sender)),
+                                1.0f
+                        ))
+                        .then(playersArgument("players")
+                                .withPermission(Permissions.SPEED_PERMISSION_OTHER)
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeFlySpeed(
+                                        sender.getCallee(),
+                                        args.getUnchecked("players"),
+                                        1.0f
+                                ))
+                        )
+                );
     }
 
-    @Override
-    public String usage() {
-        return "/speed <speed> <walk | fly> [<players>]";
-    }
-
-    @Override
-    public String description() {
-        return "Change walk / fly speed";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.SPEED_PERMISSION_SELF, Permissions.SPEED_PERMISSION_OTHER));
-
-        literal.then(Commands.argument("speed", FloatArgumentType.floatArg(-10, 10))
-                .executes(context -> detect(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()),
-                        FloatArgumentType.getFloat(context, "speed")))
-                .then(Commands.literal("walk")
-                        .executes(context -> changeWalkSpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()),
-                                FloatArgumentType.getFloat(context, "speed")))
-                        .then(Commands.argument("players", EntityArgument.players())
-                                .requires(EssentialsUtil.checkPermissions(Permissions.SPEED_PERMISSION_OTHER))
-                                .executes(context -> changeWalkSpeed(context.getSource(), EntityArgument.getPlayers(context, "players"),
-                                        FloatArgumentType.getFloat(context, "speed")))))
-                .then(Commands.literal("fly")
-                .executes(context -> changeFlySpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()),
-                        FloatArgumentType.getFloat(context, "speed")))
-                .then(Commands.argument("players", EntityArgument.players())
-                        .requires(EssentialsUtil.checkPermissions(Permissions.SPEED_PERMISSION_OTHER))
-                        .executes(context -> changeFlySpeed(context.getSource(), EntityArgument.getPlayers(context, "players"),
-                                FloatArgumentType.getFloat(context, "speed"))))));
-
-        literal.then(Commands.literal("default")
-                .executes(context -> {
-                    changeWalkSpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), 2);
-                    return changeFlySpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), 2);
-                })
-                .then(Commands.literal("walk")
-                        .executes(context -> changeWalkSpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), 2)))
-                .then(Commands.literal("fly")
-                        .executes(context -> changeFlySpeed(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException()), 2))));
-    }
-
-    private int detect(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) float speed) throws CommandSyntaxException {
-        final var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
-        float calculatedSpeed = speed / 10f;
+    private int detect(CommandSender source, Collection<Player> playersUnchecked, @Range(from = -10, to = 10) Float speed) throws WrapperCommandSyntaxException {
+        val players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
+        val calculatedSpeed = speed / 10f;
         int successes = 0;
 
-        for (ServerPlayer player : players) {
-            if (player.getAbilities().flying){
-                player.getBukkitEntity().setFlySpeed(calculatedSpeed);
+        for (Player player : players) {
+            if (player.isFlying()) {
+                player.setFlySpeed(calculatedSpeed);
                 successPlayer(player, "Fluggeschwindigkeit", speed);
-            }else {
-                player.getBukkitEntity().setWalkSpeed(calculatedSpeed);
+            } else {
+                player.setWalkSpeed(calculatedSpeed);
                 successPlayer(player, "Gehgeschwindigkeit", speed);
             }
             successes++;
@@ -85,70 +133,53 @@ public class SpeedCommand extends BrigadierCommand {
         return successes;
     }
 
-    private int changeFlySpeed(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) float speed) throws CommandSyntaxException {
-        final var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
-        return changeSpeed(source, players, speed, false);
+    private int changeFlySpeed(CommandSender source, Collection<Player> playersUnchecked, @Range(from = -10, to = 10) Float speed) throws WrapperCommandSyntaxException {
+        return changeSpeed(source, EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked), speed, false);
     }
 
-    private int changeWalkSpeed(CommandSourceStack source, Collection<ServerPlayer> playersUnchecked, @Range(from = -10, to = 10) float speed) throws CommandSyntaxException {
-        final var players = EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked);
-        return changeSpeed(source, players, speed, true);
+    private int changeWalkSpeed(CommandSender source, Collection<Player> playersUnchecked, @Range(from = -10, to = 10) Float speed) throws WrapperCommandSyntaxException {
+        return changeSpeed(source, EssentialsUtil.checkPlayerSuggestion(source, playersUnchecked), speed, true);
     }
 
-    private int changeSpeed(CommandSourceStack source, Collection<ServerPlayer> players, @Range(from = -10, to = 10) float speed, boolean isWalkSpeed) throws CommandSyntaxException {
-        float calculatedSpeed = speed / 10f;
+    private int changeSpeed(CommandSender source, Collection<Player> players, @Range(from = -10, to = 10) float speed, boolean isWalkSpeed) throws WrapperCommandSyntaxException {
+        val calculatedSpeed = speed / 10f;
         int successes = 0;
 
-        for (ServerPlayer player : players) {
-            if (isWalkSpeed){
-                player.getBukkitEntity().setWalkSpeed(calculatedSpeed);
+        for (Player player : players) {
+            if (isWalkSpeed) {
+                player.setWalkSpeed(calculatedSpeed);
                 successPlayer(player, "Gehgeschwindigkeit", speed);
-            }else {
-                player.getBukkitEntity().setFlySpeed(calculatedSpeed);
+            } else {
+                player.setFlySpeed(calculatedSpeed);
                 successPlayer(player, "Fluggeschwindigkeit", speed);
             }
             successes++;
         }
 
-       successSource(source, isWalkSpeed, successes, speed, players);
+        successSource(source, isWalkSpeed, successes, speed, players);
         return successes;
     }
 
-    private void successPlayer(ServerPlayer player, String mode, @Range(from = -10, to = 10) float speed) {
+    private void successPlayer(Player player, String mode, @Range(from = -10, to = 10) float speed) {
         EssentialsUtil.sendSuccess(player, Component.text("Deine %s wurde auf ".formatted(mode), Colors.SUCCESS)
                 .append(Component.text(speed, Colors.TERTIARY))
                 .append(Component.text(" gesetzt", Colors.SUCCESS)));
     }
 
-    private void successSource(CommandSourceStack source, boolean isWalkSpeed, int successes, @Range(from = -10, to = 10) float speed,  Collection<ServerPlayer> players) throws CommandSyntaxException {
-        if (source.isPlayer()){
-            String mode = (isWalkSpeed) ? "Gehgeschwindigkeit" : "Fluggeschwindigkeit";
-            if (successes == 1 && source.getPlayerOrException().getUUID() != players.iterator().next().getUUID()){
-                EssentialsUtil.sendSuccess(source, Component.text("Die %s von ".formatted(mode), Colors.SUCCESS)
-                        .append(EssentialsUtil.getDisplayName(players.iterator().next()))
-                        .append(Component.text(" wurde auf ", Colors.SUCCESS))
-                        .append(Component.text(speed, Colors.TERTIARY))
-                        .append(Component.text(" gesetzt", Colors.SUCCESS)));
-            }else if (source.getPlayerOrException().getUUID() != players.iterator().next().getUUID()){
-                EssentialsUtil.sendSuccess(source, Component.text("Die %s von ".formatted(mode), Colors.SUCCESS)
-                        .append(Component.text(successes, Colors.TERTIARY))
-                        .append(Component.text("  Spielern wurde auf ", Colors.SUCCESS))
-                        .append(Component.text(speed, Colors.TERTIARY))
-                        .append(Component.text(" gesetzt", Colors.SUCCESS)));
-            }
-        }else {
-            String mode = (isWalkSpeed) ? "walk" : "fly";
-            if (successes == 1){
-                EssentialsUtil.sendSourceSuccess(source, EssentialsUtil.getDisplayName(players.iterator().next())
-                        .append(Component.text("´s %s speed was set to ".formatted(mode), Colors.SUCCESS))
-                        .append(Component.text(speed, Colors.TERTIARY)));
-            }else {
-                EssentialsUtil.sendSourceSuccess(source, Component.text("Set the %s speed to ".formatted(mode), Colors.SUCCESS)
-                        .append(Component.text(speed, Colors.TERTIARY))
-                        .append(Component.text(" for ", Colors.SUCCESS))
-                        .append(Component.text(successes, Colors.TERTIARY))
-                        .append(Component.text(" players", Colors.SUCCESS)));
-            }
+    private void successSource(CommandSender source, boolean isWalkSpeed, int successes, @Range(from = -10, to = 10) float speed, Collection<Player> players) throws WrapperCommandSyntaxException {
+        val mode = (isWalkSpeed) ? "Gehgeschwindigkeit" : "Fluggeschwindigkeit";
+        if (successes == 1 && source instanceof Player player && player.getUniqueId() != players.iterator().next().getUniqueId()) {
+            EssentialsUtil.sendSuccess(source, Component.text("Die %s von ".formatted(mode), Colors.SUCCESS)
+                    .append(EssentialsUtil.getDisplayName(players.iterator().next()))
+                    .append(Component.text(" wurde auf ", Colors.SUCCESS))
+                    .append(Component.text(speed, Colors.TERTIARY))
+                    .append(Component.text(" gesetzt", Colors.SUCCESS)));
+        } else if (source instanceof Player player && player.getUniqueId() != players.iterator().next().getUniqueId()) {
+            EssentialsUtil.sendSuccess(source, Component.text("Die %s von ".formatted(mode), Colors.SUCCESS)
+                    .append(Component.text(successes, Colors.TERTIARY))
+                    .append(Component.text("  Spielern wurde auf ", Colors.SUCCESS))
+                    .append(Component.text(speed, Colors.TERTIARY))
+                    .append(Component.text(" gesetzt", Colors.SUCCESS)));
         }
     }
 }

@@ -1,8 +1,10 @@
 package dev.slne.surf.essentials.listener.listeners;
 
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 /**
@@ -18,10 +20,15 @@ public class JoinListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        final var player = event.getPlayer();
-        EssentialsUtil.sendDebug("Sending commands to " + player.getName() + "...");
-        EssentialsUtil.sendCommands(player);
+        fixGameModeSwitcher(event.getPlayer());
+    }
 
+    @EventHandler
+    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+        fixGameModeSwitcher(event.getPlayer());
+    }
+
+    private void fixGameModeSwitcher(Player player) {
         if (EssentialsUtil.hasGameModePermission().test(player)) {
             EssentialsUtil.sendDebug("Fixing game mode switcher for " + player.getName());
             player.sendOpLevel((byte) 2);

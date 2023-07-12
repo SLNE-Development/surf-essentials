@@ -1,69 +1,48 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.Difficulty;
+import lombok.val;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Difficulty;
 
-public class DifficultyCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"difficulty"};
+public class DifficultyCommand extends EssentialsCommand {
+    public DifficultyCommand() {
+        super("difficulty", "difficulty <difficulty>", "Get or change the server difficulty");
+
+        withPermission(Permissions.DIFFICULTY_PERMISSION);
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> getDifficulty(sender));
+        then(difficultyArgument("difficulty")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> setDifficulty(sender, args.getUnchecked("difficulty"))));
     }
 
-    @Override
-    public String usage() {
-        return "/difficulty [<difficulty>]";
-    }
 
-    @Override
-    public String description() {
-        return "Get or change the server difficulty";
-    }
+    private static int setDifficulty(NativeProxyCommandSender source, Difficulty difficulty) throws WrapperCommandSyntaxException {
+        val world = source.getWorld();
 
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.DIFFICULTY_PERMISSION));
+        if (world.getDifficulty() == difficulty) throw Exceptions.ERROR_ALREADY_THAT_DIFFICULT.create(difficulty);
+        world.setDifficulty(difficulty);
 
-        literal.executes(context -> getDifficulty(context.getSource()));
-        for (Difficulty difficulty : Difficulty.values()) {
-            literal.then(Commands.literal(difficulty.getKey()).executes(context -> setDifficulty(context.getSource(), difficulty)));
-        }
-    }
+        EssentialsUtil.sendSuccess(source.getCallee(), Component.text("Die Schwierigkeit wurde auf ", Colors.SUCCESS)
+                .append(Component.translatable(difficulty.translationKey(), Colors.VARIABLE_VALUE))
+                .append(Component.text(" gesetzt!", Colors.SUCCESS)));
 
-    private static int setDifficulty(CommandSourceStack source, Difficulty difficulty) throws CommandSyntaxException {
-        ServerLevel worldServer = source.getLevel();
-
-        if (worldServer.getDifficulty() == difficulty) throw ERROR_ALREADY_DIFFICULT.create(difficulty.getKey());
-
-        EssentialsUtil.getMinecraftServer().setDifficulty(worldServer, difficulty, true);
-
-        EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Schwierigkeit wurde auf ", Colors.SUCCESS)
-                .append(PaperAdventure.asAdventure(difficulty.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text(" gesetzt!", Colors.SUCCESS)));
-
-        return 1;
-
-    }
-
-    private static int getDifficulty(CommandSourceStack source) {
-        Difficulty difficulty = EssentialsUtil.getMinecraftServer().getWorldData().getDifficulty();
-
-        EssentialsUtil.sendSuccess(source, net.kyori.adventure.text.Component.text("Die Schwierigkeit ist ", Colors.INFO)
-                .append(PaperAdventure.asAdventure(difficulty.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                .append(net.kyori.adventure.text.Component.text("!", Colors.INFO)));
         return 1;
     }
 
-    private static final DynamicCommandExceptionType ERROR_ALREADY_DIFFICULT = new DynamicCommandExceptionType(object ->
-            Component.translatable("commands.difficulty.failure", object));
+    private static int getDifficulty(NativeProxyCommandSender source) {
+        final Difficulty difficulty = source.getWorld().getDifficulty();
+
+        EssentialsUtil.sendSuccess(source.getCallee(), Component.text("Die Schwierigkeit ist ", Colors.INFO)
+                .append(Component.translatable(difficulty.translationKey(), Colors.VARIABLE_VALUE))
+                .append(Component.text("!", Colors.INFO)));
+        return 1;
+    }
 }

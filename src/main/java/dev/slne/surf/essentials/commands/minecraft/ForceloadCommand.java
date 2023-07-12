@@ -1,235 +1,199 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import dev.jorel.commandapi.AbstractArgumentTree;
+import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.LocationType;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.jorel.commandapi.wrappers.Location2D;
+import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
+import dev.slne.surf.essentials.utils.copy.Mth;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
-import it.unimi.dsi.fastutil.longs.LongSet;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentBuilder;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.DimensionArgument;
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
-import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
-import net.minecraft.core.SectionPos;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ColumnPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
+import org.bukkit.Chunk;
+import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 
-public class ForceloadCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"forceload"};
+public class ForceloadCommand extends EssentialsCommand {
+    private static final int MAX_CHUNK_LIMIT = 256;
+
+    public ForceloadCommand() {
+        super("forceload", "forceload <query | remove>", "Manage forceloaded Chunks");
+
+        withPermission(Permissions.FORCELOAD_PERMISSION);
+
+        then(literal("query")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> list(sender))
+                .then(location2DArgument("position", LocationType.BLOCK_POSITION)
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> query(sender.getCallee(), args.getUnchecked("position")))));
+
+        then(literal("remove")
+                .then(buildForceload(false))
+                .then(literal("all")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> removeAll(sender.getCallee(), sender.getWorld()))
+                        .then(worldArgument("dimension")
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> removeAll(sender.getCallee(), args.getUnchecked("dimension"))))));
+
+        then(literal("add")
+                .then(buildForceload(true)));
     }
 
-    @Override
-    public String usage() {
-        return "/forceload <query | remove>";
+    private AbstractArgumentTree<?, Argument<?>, CommandSender> buildForceload(boolean forceload) {
+        return location2DArgument("from", LocationType.BLOCK_POSITION)
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeForceload(
+                        sender.getCallee(),
+                        args.getUnchecked("from"),
+                        args.getUnchecked("from"),
+                        sender.getWorld(),
+                        forceload
+                ))
+                .then(location2DArgument("to", LocationType.BLOCK_POSITION)
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeForceload(
+                                sender.getCallee(),
+                                args.getUnchecked("from"),
+                                args.getUnchecked("to"),
+                                sender.getWorld(),
+                                forceload
+                        ))
+                        .then(worldArgument("dimension")
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeForceload(
+                                        sender.getCallee(),
+                                        args.getUnchecked("from"),
+                                        args.getUnchecked("from"),
+                                        args.getUnchecked("dimension"),
+                                        forceload
+                                ))
+                        )
+                );
     }
 
-    @Override
-    public String description() {
-        return "Manage forceloaded Chunks";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.FORCELOAD_PERMISSION));
-
-        literal.then(Commands.literal("query")
-                .executes(context -> list(context.getSource()))
-                .then(Commands.argument("position", ColumnPosArgument.columnPos())
-                        .executes(context -> query(context.getSource(), ColumnPosArgument.getColumnPos(context, "position")))));
-
-        literal.then(Commands.literal("remove")
-                .then(Commands.argument("from", ColumnPosArgument.columnPos())
-                        .executes(context -> changeForceload(context.getSource(), ColumnPosArgument.getColumnPos(context, "from"),
-                                ColumnPosArgument.getColumnPos(context, "from"), context.getSource().getLevel(), false))
-                        .then(Commands.argument("to", ColumnPosArgument.columnPos())
-                                .executes(context -> changeForceload(context.getSource(), ColumnPosArgument.getColumnPos(context, "from"),
-                                        ColumnPosArgument.getColumnPos(context, "to"), context.getSource().getLevel(), false))
-                                .then(Commands.argument("dimension", DimensionArgument.dimension())
-                                        .executes(context -> changeForceload(context.getSource(), ColumnPosArgument.getColumnPos(context, "from"),
-                                                ColumnPosArgument.getColumnPos(context, "to"), DimensionArgument.getDimension(context, "dimension"), false)))))
-                .then(Commands.literal("all")
-                        .executes(context -> removeAll(context.getSource(), context.getSource().getLevel()))
-                        .then(Commands.argument("dimension", DimensionArgument.dimension())
-                                .executes(context -> removeAll(context.getSource(), DimensionArgument.getDimension(context, "dimension"))))));
-
-        literal.then(Commands.literal("add")
-                .then(Commands.argument("from", ColumnPosArgument.columnPos())
-                        .executes(context -> changeForceload(context.getSource(), ColumnPosArgument.getColumnPos(context, "from"),
-                                ColumnPosArgument.getColumnPos(context, "from"), context.getSource().getLevel(), true))
-                        .then(Commands.argument("to", ColumnPosArgument.columnPos())
-                                .executes(context -> changeForceload(context.getSource(), ColumnPosArgument.getColumnPos(context, "from"),
-                                        ColumnPosArgument.getColumnPos(context, "to"), context.getSource().getLevel(), true))
-                                .then(Commands.argument("dimension", DimensionArgument.dimension())
-                                        .executes(context -> changeForceload(context.getSource(), ColumnPosArgument.getColumnPos(context, "from"),
-                                                ColumnPosArgument.getColumnPos(context, "to"), DimensionArgument.getDimension(context, "dimension"), true))))));
-    }
-
-    private static int list(CommandSourceStack source) {
-        ServerLevel serverLevel = source.getLevel();
-        ResourceKey<Level> resourceKey = serverLevel.dimension();
-        LongSet longSet = serverLevel.getForcedChunks();
-        int forcedChunks = longSet.size();
+    private int list(NativeProxyCommandSender source) {
+        val world = source.getWorld();
+        val forceLoadedChunks = world.getForceLoadedChunks();
+        val forcedChunks = forceLoadedChunks.size();
 
         if (forcedChunks > 0) {
-            ComponentBuilder<TextComponent, TextComponent.Builder> forcedChunkListBuilder = Component.text();
-            forcedChunkListBuilder.append(Component.text("Es ", Colors.INFO)
+            EssentialsUtil.sendSuccess(source, Component.text("Es ", Colors.INFO)
                     .append(Component.text((forcedChunks == 1) ? "wird " : "werden ", Colors.INFO))
                     .append(Component.text(forcedChunks, Colors.TERTIARY))
                     .append(Component.text((forcedChunks == 1) ? " Chunk" : " Chunks", Colors.INFO))
                     .append(Component.text(" in ", Colors.INFO))
-                    .append(Component.text(resourceKey.location().toString(), Colors.TERTIARY))
-                    .append(Component.text(" dauerhaft geladen: ", Colors.INFO)));
-
-            for (Long aLong : longSet) {
-                int x = ChunkPos.getX(aLong);
-                int z = ChunkPos.getZ(aLong);
-                int y = serverLevel.getWorld().getHighestBlockYAt(x, z);
-
-                forcedChunkListBuilder.append(Component.text(new ChunkPos(aLong).toString(), Colors.SECONDARY)
-                        .hoverEvent(HoverEvent.showText(Component.text("Klicke zum teleportieren", Colors.INFO)))
-                        .clickEvent(ClickEvent.suggestCommand("/teleport %d %d %d".formatted(x, y, z)))
-                        .append(Component.text(", ", Colors.INFO)));
-            }
-
-            EssentialsUtil.sendSuccess(source, forcedChunkListBuilder.build());
+                    .append(EssentialsUtil.getDisplayName(world))
+                    .append(Component.text(" dauerhaft geladen: ", Colors.INFO))
+                    .append(Component.join(JoinConfiguration.commas(true), forceLoadedChunks.stream()
+                            .map(chunk -> Component.text("[", Colors.SPACER)
+                                    .append(Component.text(chunk.getX(), Colors.VARIABLE_VALUE))
+                                    .append(Component.text(", ", Colors.INFO))
+                                    .append(Component.text(chunk.getZ(), Colors.VARIABLE_VALUE))
+                                    .append(Component.text("]", Colors.SPACER))
+                                    .hoverEvent(HoverEvent.showText(Component.text("Klicke zum teleportieren", Colors.INFO)))
+                                    .clickEvent(ClickEvent.suggestCommand("/teleport %d %d %d".formatted(chunk.getX() << 4, world.getHighestBlockAt(chunk.getX() << 4, chunk.getZ() << 4).getY(), chunk.getZ() << 4))))
+                            .toList())));
         } else {
             EssentialsUtil.sendSuccess(source, Component.text("Es werden keine Chunks in ", Colors.INFO)
-                    .append(Component.text(resourceKey.location().toString(), Colors.TERTIARY))
+                    .append(EssentialsUtil.getDisplayName(world))
                     .append(Component.text(" dauerhaft geladen!", Colors.INFO)));
         }
         return forcedChunks;
     }
 
-    private static int query(CommandSourceStack source, ColumnPos columnPos) {
-        ChunkPos chunkPosition = columnPos.toChunkPos();
-        ServerLevel serverLevel = source.getLevel();
-        ResourceKey<Level> resourceKey = serverLevel.dimension();
-        boolean isForcedChunk = serverLevel.getForcedChunks().contains(chunkPosition.toLong());
-
+    private int query(CommandSender source, Location2D location2D) {
+        val world = location2D.getWorld();
+        val isForcedChunk = location2D.getWorld().isChunkForceLoaded(location2D.getBlockX(), location2D.getBlockZ());
 
         EssentialsUtil.sendSuccess(source, Component.text("Der Chunk ", Colors.INFO)
-                .append(Component.text(chunkPosition.toString(), Colors.TERTIARY))
+                .append(Component.text("%s %s".formatted(location2D.getBlockX() >> 4, location2D.getBlockZ() >> 4), Colors.VARIABLE_VALUE))
                 .append(Component.text(" in ", Colors.INFO))
-                .append(Component.text(resourceKey.location().toString(), Colors.TERTIARY))
-                .append(Component.text((isForcedChunk) ? " wird " : " wird nicht ", Colors.GOLD))
+                .append(EssentialsUtil.getDisplayName(world))
+                .append(Component.text((isForcedChunk) ? " wird " : " wird nicht ", Colors.INFO))
                 .append(Component.text("dauerhaft geladen!", Colors.INFO)));
 
         return 1;
     }
 
-    private static int removeAll(CommandSourceStack source, ServerLevel serverLevel) throws CommandSyntaxException {
-        ResourceKey<Level> resourceKey = serverLevel.dimension();
-        LongSet longSet = serverLevel.getForcedChunks();
+    private int removeAll(CommandSender source, World world) throws WrapperCommandSyntaxException {
         int successfulRemoved = 0;
 
-        for (Long aLong : longSet) {
-            serverLevel.setChunkForced(ChunkPos.getX(aLong), ChunkPos.getZ(aLong), false);
-            ++successfulRemoved;
+        for (Chunk forceLoadedChunk : world.getForceLoadedChunks()) {
+            forceLoadedChunk.setForceLoaded(false);
+            successfulRemoved++;
         }
 
-        if (successfulRemoved == 0)
-            throw (source.isPlayer() ? ERROR_NO_FORCE_LOADED_CHUNKS_DE : ERROR_NO_FORCE_LOADED_CHUNKS).create(resourceKey.location());
-
+        if (successfulRemoved == 0) throw Exceptions.ERROR_NO_FORCE_LOADED_CHUNKS;
 
         EssentialsUtil.sendSuccess(source, Component.text("Es wird kein Chunk mehr dauerhaft in ", Colors.SUCCESS)
-                .append(Component.text(resourceKey.location().toString(), Colors.TERTIARY))
+                .append(EssentialsUtil.getDisplayName(world))
                 .append(Component.text(" geladen!", Colors.SUCCESS)));
 
         return 1;
     }
 
-    private static int changeForceload(CommandSourceStack source, ColumnPos from, ColumnPos to, ServerLevel serverLevel, boolean forceLoaded) throws CommandSyntaxException {
-        int minX = Math.min(from.x(), to.x());
-        int minZ = Math.min(from.z(), to.z());
-        int maxX = Math.max(from.x(), to.x());
-        int maxZ = Math.max(from.z(), to.z());
+    private int changeForceload(CommandSender source, Location2D from, Location2D to, World world, boolean forceLoaded) throws WrapperCommandSyntaxException {
+        // Get the chunk positions
+        val minX = Math.min(from.x(), to.x());
+        val minZ = Math.min(from.z(), to.z());
+        val maxX = Math.max(from.x(), to.x());
+        val maxZ = Math.max(from.z(), to.z());
 
         // check if position is in world
         if (!(minX >= -30000000 && minZ >= -30000000 && maxX < 30000000 && maxZ < 30000000))
-            throw BlockPosArgument.ERROR_OUT_OF_WORLD.create();
+            throw Exceptions.ERROR_OUT_OF_WORLD;
 
-        int startX = SectionPos.blockToSectionCoord(minX);
-        int startZ = SectionPos.blockToSectionCoord(minZ);
-        int endX = SectionPos.blockToSectionCoord(maxX);
-        int endY = SectionPos.blockToSectionCoord(maxZ);
-        long totalSections = ((long) (endX - startX) + 1L) * ((long) (endY - startZ) + 1L);
-        if (totalSections > MAX_CHUNK_LIMIT) throw ERROR_TOO_MANY_CHUNKS.create(MAX_CHUNK_LIMIT, totalSections);
+        // Get the start and end chunk positions
+        val startX = Mth.floor(minX);
+        val startZ = Mth.floor(minZ);
+        val endX = Mth.floor(maxX);
+        val endZ = Mth.floor(maxZ);
+        val totalSections = ((long) (endX - startX) + 1L) * ((long) (endZ - startZ) + 1L);
 
-        ResourceKey<Level> resourceKey = serverLevel.dimension();
-        ChunkPos chunkPos = null;
-        int numForced = 0;
+        // Check if the amount of chunks is too high
+        if (totalSections > MAX_CHUNK_LIMIT)
+            throw Exceptions.ERROR_TOO_MANY_CHUNKS.create(MAX_CHUNK_LIMIT, totalSections);
 
+        int numForced = 0, currentX = 0, currentZ = 0;
+
+        // Loop through all chunks and force or unforce load them
         for (int x = startX; x <= endX; ++x) {
-            for (int z = startZ; z <= endY; ++z) {
-                boolean stateChanged = serverLevel.setChunkForced(x, z, forceLoaded);
-                if (stateChanged) {
-                    ++numForced;
-                    if (chunkPos == null) {
-                        chunkPos = new ChunkPos(x, z);
-                    }
+            for (int z = startZ; z <= endZ; ++z) {
+                if (world.isChunkForceLoaded(x, z)) {
+                    continue;
                 }
+                world.setChunkForceLoaded(x, z, forceLoaded);
+                numForced++;
+                currentX = x >> 4;
+                currentZ = z >> 4;
             }
         }
 
-        if (numForced == 0) {
-            throw (forceLoaded ? ERROR_ALL_ADDED_DE : ERROR_NONE_REMOVED_DE).create();
+        if (numForced == 1) {
+            EssentialsUtil.sendSuccess(source, Component.text("Der Chunk ", Colors.SUCCESS)
+                    .append(Component.text("[", Colors.GRAY))
+                    .append(Component.text("%s %s".formatted(currentX, currentZ), Colors.VARIABLE_VALUE))
+                    .append(Component.text("]", Colors.GRAY))
+                    .append(Component.text(" in ", Colors.SUCCESS))
+                    .append(EssentialsUtil.getDisplayName(world))
+                    .append(Component.text(" wird nun ", Colors.SUCCESS)
+                            .append(Component.text((forceLoaded) ? "dauerhaft geladen!" : "nicht mehr dauerhaft geladen!", Colors.SUCCESS))));
         } else {
-            if (numForced == 1) {
-                EssentialsUtil.sendSuccess(source, Component.text("Der Chunk ", Colors.SUCCESS)
-                        .append(Component.text(chunkPos.toString(), Colors.TERTIARY))
-                        .append(Component.text(" in ", Colors.SUCCESS))
-                        .append(Component.text(resourceKey.location().toString(), Colors.TERTIARY))
-                        .append(Component.text(" wird nun ", Colors.SUCCESS)
-                                .append(Component.text((forceLoaded) ? "dauerhaft geladen!" : "nicht mehr dauerhaft geladen!", Colors.SUCCESS))));
-            } else {
-                ChunkPos chunkPos2 = new ChunkPos(startX, startZ);
-                ChunkPos chunkPos3 = new ChunkPos(endX, endY);
-                EssentialsUtil.sendSuccess(source, Component.text(numForced, Colors.GREEN)
-                        .append(Component.text(" Chunks werden von ", Colors.SUCCESS))
-                        .append(Component.text(chunkPos2.toString(), Colors.TERTIARY))
-                        .append(Component.text(" bis zu ", Colors.SUCCESS))
-                        .append(Component.text(chunkPos3.toString(), Colors.TERTIARY))
-                        .append(Component.text(" in ", Colors.SUCCESS))
-                        .append(Component.text(resourceKey.location().toString(), Colors.TERTIARY))
-                        .append(Component.text(forceLoaded ? " dauerhaft" : " nicht mehr dauerhaft", Colors.SUCCESS))
-                        .append(Component.text(" geladen!", Colors.SUCCESS)));
-            }
+            EssentialsUtil.sendSuccess(source, Component.text(numForced, Colors.GREEN)
+                    .append(Component.text(" Chunks werden nun von ", Colors.SUCCESS))
+                    .append(Component.text("%s %s".formatted(startX >> 4, startZ >> 4), Colors.TERTIARY))
+                    .append(Component.text(" bis zu ", Colors.SUCCESS))
+                    .append(Component.text("%s %s".formatted(endX >> 4, endZ >> 4), Colors.TERTIARY))
+                    .append(Component.text(" in ", Colors.SUCCESS))
+                    .append(EssentialsUtil.getDisplayName(world))
+                    .append(Component.text(forceLoaded ? " dauerhaft" : " nicht mehr dauerhaft", Colors.SUCCESS))
+                    .append(Component.text(" geladen!", Colors.SUCCESS)));
         }
+
         return numForced;
     }
-
-    private static final int MAX_CHUNK_LIMIT = 256;
-    private static final Dynamic2CommandExceptionType ERROR_TOO_MANY_CHUNKS = new Dynamic2CommandExceptionType((maxCount, count) ->
-            net.minecraft.network.chat.Component.translatable("commands.forceload.toobig", maxCount, count));
-
-    private static final SimpleCommandExceptionType ERROR_ALL_ADDED_DE = new SimpleCommandExceptionType(PaperAdventure.asVanilla(EssentialsUtil.getPrefix()
-            .append(Component.text("Die Chunks werden bereits dauerhaft geladen!", Colors.ERROR))));
-
-    private static final SimpleCommandExceptionType ERROR_NONE_REMOVED_DE = new SimpleCommandExceptionType(PaperAdventure.asVanilla(EssentialsUtil.getPrefix()
-            .append(Component.text("Die Chunks wurden auch vorher nicht dauerhaft geladen!", Colors.ERROR))));
-
-    private static final DynamicCommandExceptionType ERROR_NO_FORCE_LOADED_CHUNKS = new DynamicCommandExceptionType(dimension ->
-            net.minecraft.network.chat.Component.literal("There are no forceloaded chunks in ")
-                    .append(net.minecraft.network.chat.Component.literal(dimension.toString())));
-
-    private static final DynamicCommandExceptionType ERROR_NO_FORCE_LOADED_CHUNKS_DE = new DynamicCommandExceptionType(dimension ->
-            net.minecraft.network.chat.Component.literal("Es gibt keine dauerhaft geladenen Chunks in ")
-                    .append(net.minecraft.network.chat.Component.literal(dimension.toString())));
-
 }

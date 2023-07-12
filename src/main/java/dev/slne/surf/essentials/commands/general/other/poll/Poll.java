@@ -3,6 +3,11 @@ package dev.slne.surf.essentials.commands.general.other.poll;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -12,52 +17,54 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
-@SuppressWarnings("unused")
+@Getter
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class Poll {
-    private static final Map<String, Poll> POLLS = new HashMap<>();
+    private static final Map<String, Poll> polls = new HashMap<>();
     private static final Component line = Component.newline().append(EssentialsUtil.getPrefix());
 
-    private final Set<UUID> VOTED_PLAYERS = new HashSet<>();
+    public static boolean checkPollExists(String name) {
+        return polls.get(name) != null;
+    }
 
-    private final String name;
-    private final String question;
-    private int duration;
-    private boolean startedTimer;
-    private boolean stopSilent;
-    private int taskId;
-    private int yesCount;
-    private int noCount;
+    public static @NotNull Poll getPoll(String name) {
+        if (!checkPollExists(name))
+            throw new IllegalStateException("No poll exists with the name '%s'".formatted(name));
+        return polls.get(name);
+    }
 
+    Set<UUID> votedPlayers = new HashSet<>();
+    String name;
+    String question;
+    @NonFinal
+    int duration;
+    @NonFinal
+    boolean startedTimer;
+    @Setter
+    @NonFinal
+    boolean stopSilent;
+    @NonFinal
+    int taskId;
+    @NonFinal
+    int yesCount;
+    @NonFinal
+    int noCount;
+
+    @Builder
     public Poll(String name, String question, int durationInSeconds) {
         this.name = name;
         this.question = question;
         this.duration = durationInSeconds;
 
-        POLLS.putIfAbsent(name, this);
-    }
-
-    public static boolean checkPollExists(String name) {
-        return POLLS.get(name) != null;
-    }
-    @Contract("_, _, _ -> new")
-    public static @NotNull CompletableFuture<Poll> createPoll(String name, @Nullable String question, int durationInSeconds) {
-        if (checkPollExists(name)) throw new IllegalStateException("A poll with this name '%s' already exists".formatted(name));
-        return CompletableFuture.supplyAsync(() -> new Poll(name, EssentialsUtil.getDefaultIfNull(question, ""), durationInSeconds));
-    }
-
-    public static @NotNull CompletableFuture<Poll> getPoll(String name) {
-        if (!checkPollExists(name)) throw new IllegalStateException("No poll exists with the name '%s'".formatted(name));
-        return CompletableFuture.supplyAsync(() -> POLLS.get(name));
+        polls.putIfAbsent(name, this);
     }
 
     @Contract(pure = true)
     public static @NotNull Collection<Poll> getPolls() {
-        return POLLS.values();
+        return polls.values();
     }
 
     public void startMessage(Collection<? extends Player> players) {
@@ -86,28 +93,28 @@ public class Poll {
                 .append(Component.newline())));
     }
 
-    public void startTimer(){
+    public void startTimer() {
         if (startedTimer) throw new IllegalStateException("Timer already started");
         startedTimer = true;
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(SurfEssentials.getInstance(), bukkitTask -> { // runs every second
             this.taskId = bukkitTask.getTaskId();
-            if (duration <= 0){
+            if (duration <= 0) {
                 stop();
                 return;
             }
             duration--;
 
-            switch (duration){ // remind players to vote if they haven't already
+            switch (duration) { // remind players to vote if they haven't already
                 case 18000, 14400, 10800, 7200, 3600, 1800, 900, 600, 300, 60, 30, 15 -> sendReminder();
             }
         }, 0, 20L);
 
     }
 
-    public void stop(){
+    public void stop() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!stopSilent){
+            if (!stopSilent) {
                 player.sendMessage(line.append(Component.text("----------------------------------------", Colors.DARK_GRAY))
                         .append(line)
                         .append(Component.text("Ergebnisse von: %s".formatted(name), Colors.SECONDARY))
@@ -124,22 +131,18 @@ public class Poll {
                         .append(line)
                         .append(Component.text("----------------------------------------", Colors.DARK_GRAY))
                         .append(Component.newline()));
-                player.playSound(player, Sound.BLOCK_BEACON_DEACTIVATE, 0.5F,0);
+                player.playSound(player, Sound.BLOCK_BEACON_DEACTIVATE, 0.5F, 0);
             }
-            VOTED_PLAYERS.remove(player.getUniqueId());
+            votedPlayers.remove(player.getUniqueId());
         }
-        Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), bukkitTask2 -> POLLS.remove(name), 10);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(SurfEssentials.getInstance(), bukkitTask2 -> polls.remove(name), 10);
         Bukkit.getScheduler().cancelTask(taskId);
     }
 
-    public void setStopSilent(boolean stopSilent){
-        this.stopSilent = stopSilent;
-    }
 
-
-    public void sendReminder(){
+    public void sendReminder() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (VOTED_PLAYERS.contains(player.getUniqueId())) continue;
+            if (votedPlayers.contains(player.getUniqueId())) continue;
 
             player.sendMessage(EssentialsUtil.getPrefix()
                     .append(line)
@@ -166,50 +169,17 @@ public class Poll {
                     .append(Component.text("----------------------------------------", Colors.DARK_GRAY))
                     .append(Component.newline()));
 
-            player.playSound(player, Sound.BLOCK_BEACON_POWER_SELECT, 0.5F,0);
+            player.playSound(player, Sound.BLOCK_BEACON_POWER_SELECT, 0.5F, 0);
         }
     }
 
-    public boolean addVote(Player player, boolean isYes){
-        if (VOTED_PLAYERS.contains(player.getUniqueId())) return false;
+    public boolean addVote(Player player, boolean isYes) {
+        if (votedPlayers.contains(player.getUniqueId())) return false;
 
         if (isYes) yesCount++;
         else noCount++;
 
-        VOTED_PLAYERS.add(player.getUniqueId());
+        votedPlayers.add(player.getUniqueId());
         return true;
-    }
-
-
-    public String getName() {
-        return name;
-    }
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
-
-    public boolean isStartedTimer() {
-        return startedTimer;
-    }
-
-    public boolean isStopSilent() {
-        return stopSilent;
-    }
-
-    public int getTaskId() {
-        return taskId;
-    }
-
-    public int getYesCount() {
-        return yesCount;
-    }
-
-    public int getNoCount() {
-        return noCount;
     }
 }

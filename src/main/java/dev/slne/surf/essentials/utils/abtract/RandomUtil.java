@@ -1,6 +1,7 @@
 package dev.slne.surf.essentials.utils.abtract;
 
-import dev.slne.surf.essentials.utils.Validate;
+import com.google.common.base.Preconditions;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.jetbrains.annotations.Range;
 
 import java.util.Random;
@@ -11,12 +12,20 @@ import java.util.Random;
  * @author twisti
  * @since 1.0.2
  */
-@SuppressWarnings("unused")
 public abstract class RandomUtil extends CommandUtil {
     private static final Random random;
 
     static {
         random = new Random();
+    }
+
+    /**
+     * Returns the {@link Random} instance.
+     *
+     * @return the {@link Random} instance
+     */
+    public static Random random() {
+        return random;
     }
 
     /**
@@ -35,7 +44,7 @@ public abstract class RandomUtil extends CommandUtil {
      * @return the random integer
      */
     public static int getRandomInt(@Range(from = 0, to = Integer.MAX_VALUE) int bound) {
-        return random.nextInt(Validate.isInBound(bound, 0, Integer.MAX_VALUE));
+        return random.nextInt(bound);
     }
 
     /**
@@ -45,8 +54,8 @@ public abstract class RandomUtil extends CommandUtil {
      * @param bound  the upper bound (exclusive) for the random integer to be generated
      * @return the random integer
      */
-    public static int getRandomInt(int origin, int bound) {
-        Validate.isBigger(origin, bound);
+    public static int getRandomInt(int origin, int bound) throws CommandSyntaxException {
+        Preconditions.checkArgument(origin < bound, "The origin must be smaller than the bound");
         return random.nextInt(origin, bound);
     }
 

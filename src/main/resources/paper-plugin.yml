@@ -1,4 +1,3 @@
-#file: noinspection YAMLSchemaValidation
 name: '${name}'
 version: '${project.version}'
 main: ${project.mainClass}
@@ -11,6 +10,10 @@ website: '${project.url}'
 
 dependencies:
   server:
+    CommandAPI:
+      load: BEFORE
+      required: true
+      join-classpath: true
     CoreProtect:
       load: BEFORE
       required: false

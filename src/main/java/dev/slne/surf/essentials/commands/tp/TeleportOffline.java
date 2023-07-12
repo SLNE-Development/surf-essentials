@@ -1,134 +1,85 @@
 package dev.slne.surf.essentials.commands.tp;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.slne.surf.essentials.SurfEssentials;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.commands.arguments.coordinates.Vec3Argument;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.phys.Vec3;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.UUID;
 
-public class TeleportOffline {
-    public static final SimpleCommandExceptionType ERROR_NOT_SINGLE_PLAYER = new SimpleCommandExceptionType(net.minecraft.network.chat.Component.translatable("argument.player.toomany"));
-    public static final SimpleCommandExceptionType NO_PLAYERS_FOUND = new SimpleCommandExceptionType(net.minecraft.network.chat.Component.translatable("argument.entity.notfound.player"));
-
+public class TeleportOffline extends EssentialsCommand {
     public TeleportOffline() {
-        SurfEssentials.registerPluginBrigadierCommand("tpoff", this::literal);
+        super("tpoff", "tpoff <player> [<destination>]", "Teleports the sender to offline players last known location or teleports the offline player to the specified location");
+
+        withPermission(Permissions.OFFLINE_TELEPORT_PERMISSION);
+
+        then(offlinePlayerArgument("player")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> teleportToPlayer(
+                        getEntityOrException(sender),
+                        args.getUnchecked("player")
+                ))
+                .then(locationArgument("destination")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> teleportPlayerToLocation(
+                                sender,
+                                args.getUnchecked("player"),
+                                args.getUnchecked("destination")
+                        ))
+                )
+        );
     }
 
-    private void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.OFFLINE_TELEPORT_PERMISSION));
+    private int teleportToPlayer(Entity source, OfflinePlayer offlinePlayer) throws WrapperCommandSyntaxException {
+        if (!offlinePlayer.hasPlayedBefore()) throw Exceptions.NO_PLAYERS_FOUND;
 
-        literal.then(Commands.argument("player", GameProfileArgument.gameProfile())
-                .executes(context -> teleportToPlayer(context, GameProfileArgument.getGameProfiles(context, "player")))
-                .then(Commands.argument("location", Vec3Argument.vec3())
-                        .executes(context -> teleportPlayerToLocation(context, GameProfileArgument.getGameProfiles(context, "player"),
-                                Vec3Argument.getVec3(context, "location")))));
-    }
+        val onlinePlayer = offlinePlayer.getPlayer();
+        if (onlinePlayer != null) {
+            source.teleportAsync(onlinePlayer.getLocation());
 
-    private int teleportToPlayer(CommandContext<CommandSourceStack> context, Collection<GameProfile> gameProfiles) throws CommandSyntaxException {
-        if (gameProfiles.size() > 1) {
-            throw ERROR_NOT_SINGLE_PLAYER.createWithContext(new StringReader(context.getInput()));
+        } else {
+            EssentialsUtil.sendInfo(source, "Spieler daten laden...");
+            source.teleportAsync(EssentialsUtil.getLocation(offlinePlayer), PlayerTeleportEvent.TeleportCause.COMMAND);
         }
-
-        CommandSourceStack source = context.getSource();
-        ServerPlayer player = source.getPlayerOrException();
-
-        offlinePlayer(context, gameProfiles, offlinePlayer -> {
-            if (offlinePlayer.isOnline()) {
-                player.getBukkitEntity().teleport(Objects.requireNonNull(offlinePlayer.getPlayer()).getLocation());
-
-            } else {
-
-                EssentialsUtil.sendInfo(player, "Spieler daten laden...");
-
-                try {
-                    player.getBukkitEntity().teleportAsync(EssentialsUtil.getLocation(gameProfiles.iterator().next()), PlayerTeleportEvent.TeleportCause.COMMAND);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
 
         EssentialsUtil.sendSuccess(source, Component.text("Du hast dich zu ", Colors.SUCCESS)
-                .append(EssentialsUtil.getDisplayName(gameProfiles.iterator().next()))
+                .append(EssentialsUtil.getOfflineDisplayName(offlinePlayer))
                 .append(Component.text(" teleportiert!", Colors.SUCCESS)));
 
         return 1;
     }
 
-    private int teleportPlayerToLocation(CommandContext<CommandSourceStack> context, Collection<GameProfile> gameProfiles, Vec3 newLocation) throws CommandSyntaxException {
-        final var source = context.getSource();
-        final var player = source.getPlayerOrException();
+    private int teleportPlayerToLocation(CommandSender sender, OfflinePlayer offlinePlayer, Location newLocation) throws WrapperCommandSyntaxException {
+        if (!offlinePlayer.hasPlayedBefore()) throw Exceptions.NO_PLAYERS_FOUND;
 
-        offlinePlayer(context, gameProfiles, offlinePlayer -> {
-            if (offlinePlayer.isOnline()) {
-                Objects.requireNonNull(offlinePlayer.getPlayer()).teleportAsync(new Location(offlinePlayer.getPlayer().getWorld(), newLocation.x(), newLocation.y(), newLocation.z()));
+        val onlinePlayer = offlinePlayer.getPlayer();
+        if (onlinePlayer != null) {
+            onlinePlayer.teleportAsync(newLocation);
 
-            } else {
-                EssentialsUtil.sendInfo(player, "Teleportiere Spieler...");
+        } else {
+            EssentialsUtil.sendInfo(sender, "Teleportiere Spieler...");
 
-                try (final var level = player.level()) {
-                    EssentialsUtil.setLocation(offlinePlayer.getUniqueId(), new Location(level.getWorld(), newLocation.x(), newLocation.y(), newLocation.z()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            try {
+                EssentialsUtil.setLocation(offlinePlayer.getUniqueId(), newLocation);
+            } catch (IOException e) {
+                throw Exceptions.FAILED_TO_WRITE_TO_FILE_IO.create(e);
             }
-        });
+        }
 
-
-        double posX = Double.parseDouble(new DecimalFormat("#.##").format(newLocation.x()));
-        double posY = Double.parseDouble(new DecimalFormat("#.##").format(newLocation.y()));
-        double posZ = Double.parseDouble(new DecimalFormat("#.##").format(newLocation.z()));
-
-        EssentialsUtil.sendSuccess(source, Component.text("Der Spieler ", Colors.SUCCESS)
-                .append(EssentialsUtil.getDisplayName(gameProfiles.iterator().next()))
+        EssentialsUtil.sendSuccess(sender, Component.text("Der Spieler ", Colors.SUCCESS)
+                .append(EssentialsUtil.getOfflineDisplayName(offlinePlayer))
                 .append(Component.text(" wurde zu ", Colors.SUCCESS))
-                .append(Component.text("%s %s %s".formatted(posX, posY, posZ), Colors.TERTIARY))
+                .append(EssentialsUtil.formatLocationWithoutSpacer(newLocation))
                 .append(Component.text(" teleportiert!", Colors.SUCCESS)));
 
         return 1;
-    }
-
-    private void offlinePlayer(CommandContext<CommandSourceStack> context, Collection<GameProfile> gameProfiles, OfflinePlayerConsumer player) throws CommandSyntaxException {
-        if (gameProfiles.size() > 1) {
-            throw ERROR_NOT_SINGLE_PLAYER.createWithContext(new StringReader(context.getInput()));
-        }
-
-        GameProfile profile = gameProfiles.iterator().next();
-        UUID uuid = profile.getId();
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-
-
-        if (!offlinePlayer.hasPlayedBefore()) {
-            throw NO_PLAYERS_FOUND.create();
-        }
-
-        player.accept(offlinePlayer);
-    }
-
-    public interface OfflinePlayerConsumer {
-        void accept(OfflinePlayer offlinePlayer) throws CommandSyntaxException;
     }
 }

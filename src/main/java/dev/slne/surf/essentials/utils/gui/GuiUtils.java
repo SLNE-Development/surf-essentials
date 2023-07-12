@@ -1,22 +1,22 @@
 package dev.slne.surf.essentials.utils.gui;
 
+import com.destroystokyo.paper.profile.ProfileProperty;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.PatternPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
-import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
+import lombok.experimental.UtilityClass;
+import lombok.val;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -25,16 +25,16 @@ import java.util.UUID;
 /**
  * Gui util class
  */
-@SuppressWarnings("unused")
-public final class GuiUtils {
+@UtilityClass
+public class GuiUtils {
 
     /**
      * A boarder {@link GuiItem} using {@link Material#GRAY_STAINED_GLASS_PANE}
      *
      * @return the {@link GuiItem}
      */
-    public static @NotNull GuiItem boarder() {
-        GuiItem guiItem = new GuiItem(new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1));
+    public @NotNull GuiItem boarder() {
+        val guiItem = new GuiItem(new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1));
         GuiUtils.rename(guiItem, "");
         return guiItem;
     }
@@ -42,11 +42,11 @@ public final class GuiUtils {
     /**
      * A page backward {@link GuiItem}
      */
-    public static @NotNull GuiItem BACKWARD_BUTTON() {
-        ItemStack item = getHeadFromValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3Rl" +
+    public @NotNull GuiItem BACKWARD_BUTTON() {
+        val item = getHeadFromValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3Rl" +
                 "eHR1cmUvNzc4ZWY4ZDEzYWU1M2FhNDMxNDNhMWZlNzU5YjVjNjIwNDEwNDZiMTc0NmI1MGZhNDUyZGYwZDUzNGM2YTNkIn19fQ==");
 
-        GuiItem guiItem = new GuiItem(item);
+        val guiItem = new GuiItem(item);
         rename(guiItem, Component.text("Zurück", Colors.INFO));
 
         return guiItem;
@@ -55,8 +55,8 @@ public final class GuiUtils {
     /**
      * A page backward {@link GuiItem} with function
      */
-    public static @NotNull GuiItem BACKWARD_BUTTON(ChestGui gui, PaginatedPane paginatedPane) {
-        GuiItem backwardButton = BACKWARD_BUTTON();
+    public @NotNull GuiItem BACKWARD_BUTTON(ChestGui gui, PaginatedPane paginatedPane) {
+        val backwardButton = BACKWARD_BUTTON();
         backwardButton.setAction(inventoryClickEvent -> {
             if (0 > paginatedPane.getPage() - 1) return;
             paginatedPane.setPage(paginatedPane.getPage() - 1);
@@ -68,11 +68,11 @@ public final class GuiUtils {
     /**
      * A page forward {@link GuiItem}
      */
-    public static @NotNull GuiItem FORWARD_BUTTON() {
-        ItemStack item = getHeadFromValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3Rl" +
+    public @NotNull GuiItem FORWARD_BUTTON() {
+        val item = getHeadFromValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3Rl" +
                 "eHR1cmUvMmI0ZTM0ZDA0ZDNhNTY1ZjYxNjY4YzcwOTMwN2MzNTE5YTRmNzA2YTY5ZjBkZTIwZDJmMDNiZGJjMTdlOTIwNSJ9fX0=");
 
-        GuiItem guiItem = new GuiItem(item);
+        val guiItem = new GuiItem(item);
         rename(guiItem, Component.text("Weiter", Colors.INFO));
 
         return guiItem;
@@ -81,8 +81,8 @@ public final class GuiUtils {
     /**
      * A page forward {@link GuiItem} with function
      */
-    public static @NotNull GuiItem FORWARD_BUTTON(ChestGui gui, PaginatedPane paginatedPane) {
-        GuiItem forwardButton = FORWARD_BUTTON();
+    public @NotNull GuiItem FORWARD_BUTTON(ChestGui gui, PaginatedPane paginatedPane) {
+        val forwardButton = FORWARD_BUTTON();
         forwardButton.setAction(inventoryClickEvent -> {
             if (paginatedPane.getPages() <= paginatedPane.getPage() + 1) return;
             paginatedPane.setPage(paginatedPane.getPage() + 1);
@@ -94,8 +94,8 @@ public final class GuiUtils {
     /**
      * A close {@link GuiItem} using {@link Material#BARRIER}
      */
-    public static @NotNull GuiItem CLOSE_BUTTON() {
-        GuiItem guiItem = new GuiItem(new ItemStack(Material.BARRIER, 1));
+    public @NotNull GuiItem CLOSE_BUTTON() {
+        val guiItem = new GuiItem(new ItemStack(Material.BARRIER, 1));
 
         rename(guiItem, Component.text("Schließen", Colors.RED));
         guiItem.setAction(inventoryClickEvent -> {
@@ -113,14 +113,8 @@ public final class GuiUtils {
      * @param guiItem     the {@link GuiItem} to be renamed
      * @param displayName the new display name {@link Component}
      */
-    public static void rename(@NotNull GuiItem guiItem, Component displayName) {
-        ItemStack itemStack = guiItem.getItem();
-        ItemMeta itemMeta = itemStack.getItemMeta();
-
-        displayName = Component.empty().append(displayName.colorIfAbsent(Colors.TERTIARY)).decoration(TextDecoration.ITALIC, false);
-        itemMeta.displayName(displayName);
-
-        itemStack.setItemMeta(itemMeta);
+    public void rename(@NotNull GuiItem guiItem, Component displayName) {
+        guiItem.getItem().editMeta(itemMeta -> itemMeta.displayName(Component.empty().append(displayName.colorIfAbsent(Colors.TERTIARY)).decoration(TextDecoration.ITALIC, false)));
     }
 
     /**
@@ -129,7 +123,7 @@ public final class GuiUtils {
      * @param guiItem the {@link GuiItem} to be renamed
      * @param name    the new display name
      */
-    public static void rename(GuiItem guiItem, String name) {
+    public void rename(GuiItem guiItem, String name) {
         rename(guiItem, Component.text(name));
     }
 
@@ -139,14 +133,8 @@ public final class GuiUtils {
      * @param guiItem the {@link GuiItem}
      * @param lore    the new lore {@link Component}
      */
-    public static void lore(@NotNull GuiItem guiItem, Component lore) {
-        ItemStack itemStack = guiItem.getItem();
-        ItemMeta itemMeta = itemStack.getItemMeta();
-
-        lore = Component.empty().append(lore).colorIfAbsent(Colors.INFO);
-        itemMeta.lore(Collections.singletonList(lore));
-
-        itemStack.setItemMeta(itemMeta);
+    public void lore(@NotNull GuiItem guiItem, Component lore) {
+        guiItem.getItem().editMeta(itemMeta -> itemMeta.lore(Collections.singletonList(Component.empty().append(lore).colorIfAbsent(Colors.INFO))));
     }
 
     /**
@@ -155,7 +143,7 @@ public final class GuiUtils {
      * @param guiItem the {@link GuiItem}
      * @param lore    the new lore
      */
-    public static void lore(GuiItem guiItem, String lore) {
+    public void lore(GuiItem guiItem, String lore) {
         lore(guiItem, Component.text(lore));
     }
 
@@ -166,18 +154,18 @@ public final class GuiUtils {
      * @return the head {@link ItemStack}
      */
     @SuppressWarnings("DanglingJavadoc")
-    public static @NotNull ItemStack getHeadFromValue(@NotNull String value) {
-        ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
-        var minecraftSkull = EssentialsUtil.toMinecraftItemStack(skull);
-        CompoundTag compoundTag = minecraftSkull.getOrCreateTag();
-        UUID hashAsId = new UUID(value.hashCode(), value.hashCode());
+    public @NotNull ItemStack getHeadFromValue(@NotNull String value) {
+        val skull = new ItemStack(Material.PLAYER_HEAD, 1);
+        val hashAsId = new UUID(value.hashCode(), value.hashCode());
 
-        compoundTag.putUUID("SkullOwner.Id", hashAsId);
-        compoundTag.put("SkullOwner.Properties.Value", new ListTag().set(0, StringTag.valueOf(value)));
+        skull.editMeta(SkullMeta.class, skullMeta -> {
+            val profileExact = Bukkit.createProfile(hashAsId);
+            profileExact.clearProperties();
+            profileExact.setProperty(new ProfileProperty("textures", value));
+            skullMeta.setPlayerProfile(profileExact);
+        });
 
-        minecraftSkull.setTag(compoundTag);
-
-        return minecraftSkull.asBukkitCopy();
+        return skull;
 
         /**
          return Bukkit.getUnsafe().modifyItemStack(skull,
@@ -192,8 +180,8 @@ public final class GuiUtils {
      *
      * @return the boarder
      */
-    public static @NotNull OutlinePane LEFT_BOARDER() {
-        OutlinePane pane = new OutlinePane(0, 0, 1, 6);
+    public @NotNull OutlinePane LEFT_BOARDER() {
+        val pane = new OutlinePane(0, 0, 1, 6);
         pane.addItem(boarder());
         pane.setRepeat(true);
         return pane;
@@ -204,8 +192,8 @@ public final class GuiUtils {
      *
      * @return the boarder
      */
-    public static @NotNull OutlinePane RIGHT_BOARDER() {
-        OutlinePane pane = new OutlinePane(8, 0, 1, 6);
+    public @NotNull OutlinePane RIGHT_BOARDER() {
+        val pane = new OutlinePane(8, 0, 1, 6);
         pane.addItem(boarder());
         pane.setRepeat(true);
         return pane;
@@ -216,9 +204,9 @@ public final class GuiUtils {
      *
      * @return the boarder
      */
-    public static @NotNull PatternPane BOTTOM_BOARDER() {
-        Pattern pattern = new Pattern("0012300");
-        PatternPane pane = new PatternPane(1, 5, 7, 1, pattern);
+    public @NotNull PatternPane BOTTOM_BOARDER() {
+        val pattern = new Pattern("0012300");
+        val pane = new PatternPane(1, 5, 7, 1, pattern);
 
         pane.bindItem('0', boarder());
         pane.bindItem('1', BACKWARD_BUTTON());
@@ -235,14 +223,14 @@ public final class GuiUtils {
      * @param gui           the main {@link ChestGui}
      * @return the boarder
      */
-    public static @NotNull PatternPane BOTTOM_BOARDER(PaginatedPane paginatedPane, ChestGui gui) {
-        Pattern pattern = new Pattern("0012300");
-        PatternPane pane = new PatternPane(1, 5, 7, 1, pattern);
+    public @NotNull PatternPane BOTTOM_BOARDER(PaginatedPane paginatedPane, ChestGui gui) {
+        val pattern = new Pattern("0012300");
+        val pane = new PatternPane(1, 5, 7, 1, pattern);
 
         pane.bindItem('0', boarder());
         pane.bindItem('2', CLOSE_BUTTON());
 
-        GuiItem forwardButton = FORWARD_BUTTON();
+        val forwardButton = FORWARD_BUTTON();
         forwardButton.setAction(inventoryClickEvent -> {
             if (paginatedPane.getPages() <= paginatedPane.getPage() + 1) return;
             paginatedPane.setPage(paginatedPane.getPage() + 1);
@@ -250,7 +238,7 @@ public final class GuiUtils {
         });
         pane.bindItem('3', forwardButton);
 
-        GuiItem backwardButton = BACKWARD_BUTTON();
+        val backwardButton = BACKWARD_BUTTON();
         backwardButton.setAction(inventoryClickEvent -> {
             if (0 > paginatedPane.getPage() - 1) return;
             paginatedPane.setPage(paginatedPane.getPage() - 1);
@@ -266,8 +254,8 @@ public final class GuiUtils {
      *
      * @return the boarder
      */
-    public static @NotNull OutlinePane UPPER_BOARDER() {
-        OutlinePane pane = new OutlinePane(1, 0, 7, 1);
+    public @NotNull OutlinePane UPPER_BOARDER() {
+        val pane = new OutlinePane(1, 0, 7, 1);
         pane.addItem(boarder());
         pane.setRepeat(true);
         return pane;
@@ -278,7 +266,7 @@ public final class GuiUtils {
      *
      * @param gui the {@link ChestGui}
      */
-    public static void setAllBoarders(@NotNull ChestGui gui) {
+    public void setAllBoarders(@NotNull ChestGui gui) {
         gui.addPane(LEFT_BOARDER());
         gui.addPane(RIGHT_BOARDER());
         gui.addPane(UPPER_BOARDER());
@@ -291,7 +279,7 @@ public final class GuiUtils {
      * @param gui           the {@link ChestGui}
      * @param paginatedPane the {@link PaginatedPane}
      */
-    public static void setAllBoarders(@NotNull ChestGui gui, PaginatedPane paginatedPane) {
+    public void setAllBoarders(@NotNull ChestGui gui, PaginatedPane paginatedPane) {
         gui.addPane(LEFT_BOARDER());
         gui.addPane(RIGHT_BOARDER());
         gui.addPane(UPPER_BOARDER());

@@ -1,68 +1,49 @@
 package dev.slne.surf.essentials.commands.general;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
 import dev.slne.surf.essentials.SurfEssentials;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import org.bukkit.Bukkit;
+import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ScreamCommand extends BrigadierCommand {
-    private static final Map<UUID, Integer> COOLDOWN = EssentialsUtil.make(new HashMap<>());
+public class ScreamCommand extends EssentialsCommand {
 
-    @Override
-    public String[] names() {
-        return new String[]{"scream"};
+    private static final Map<UUID, Integer> COOLDOWN = Collections.synchronizedMap(new HashMap<>());
+
+    public ScreamCommand() {
+        super("scream", "scream", "Scream it all out");
+
+        withPermission(Permissions.SCREAM_PERMISSION);
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> scream(getPlayerOrException(sender)));
     }
 
-    @Override
-    public String usage() {
-        return "/scream";
-    }
-
-    @Override
-    public String description() {
-        return "Scream it all out";
-    }
-
-    @Override
-    public void literal(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal) { // TODO: for some reason it is crashing the server
-        literal.requires(EssentialsUtil.checkPermissions(4, Permissions.SCREAM_PERMISSION));
-        // literal.executes(context -> scream(context.getSource()));
-    }
-
-    private int scream(@NotNull CommandSourceStack source) throws CommandSyntaxException {
-        final var player = source.getPlayerOrException();
-        final var playerUUID = player.getUUID();
+    private int scream(@NotNull Player player) {
+        val playerUUID = player.getUniqueId();
 
         if (COOLDOWN.containsKey(playerUUID)) {
             EssentialsUtil.sendError(player, Component.text("Du kannst erst wieder in ", Colors.ERROR)
-                    .append(Component.text("%ss".formatted(COOLDOWN.getOrDefault(player.getUUID(), 0)), Colors.VARIABLE_VALUE))
+                    .append(Component.text("%ss".formatted(COOLDOWN.getOrDefault(playerUUID, 0)), Colors.VARIABLE_VALUE))
                     .append(Component.text(" schreien!", Colors.ERROR)));
             return 0;
         }
 
-        if (!player.getBukkitEntity().hasPermission(Permissions.SCREAM_BYPASS_PERMISSION)) {
+        if (!player.hasPermission(Permissions.SCREAM_BYPASS_PERMISSION)) {
             COOLDOWN.put(playerUUID, 10);
-            Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), bukkitTask ->
+            Bukkit.getScheduler().runTaskTimerAsynchronously(SurfEssentials.getInstance(), bukkitTask ->
                     COOLDOWN.computeIfPresent(playerUUID, (uuid, integer) -> {
                                 --integer;
                                 if (integer <= 0) {
@@ -74,30 +55,29 @@ public class ScreamCommand extends BrigadierCommand {
                     ), 5L, 20L);
         }
 
-        final BlockPos position = player.blockPosition();
-        final Screams scream = Screams.getRandomScream();
-        AtomicInteger distance = new AtomicInteger(0);
+        val position = player.getLocation();
+        val scream = Screams.getRandomScream();
+        val distance = new AtomicInteger(0);
 
-        try (final ServerLevel level = player.serverLevel()) {
-            Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), task -> {
-                if (distance.get() >= 10) task.cancel();
+        Bukkit.getScheduler().runTaskTimer(SurfEssentials.getInstance(), task -> {
+            if (distance.get() >= 10) task.cancel();
 
-                doBoom(player, distance.get());
+            doBoom(player, distance.get());
 
-                distance.incrementAndGet();
-            }, 0L, 1L);
+            distance.incrementAndGet();
+        }, 0L, 1L);
 
-            level.playSound(null, position, scream.getSoundEvent(), SoundSource.MASTER, scream.getVolume(), scream.getPitch());
-        } catch (IOException ignored) {
-        }
+        player.getWorld().playSound(scream.getSound(), position.getX(), position.getY(), position.getZ());
 
         return 1;
     }
 
-    private void doBoom(@NotNull ServerPlayer player, @Range(from = -20, to = 20) int distance) {
-        final double x = player.getX();
-        final double y = player.getY() + 1;
-        final double z = player.getZ();
+    private void doBoom(@NotNull Player player, @Range(from = -20, to = 20) int distance) {
+        val position = player.getLocation();
+        final double
+                x = position.getX(),
+                y = position.getY() + 1,
+                z = position.getZ();
 
         spawnParticles(player, x + distance, y, z);
         spawnParticles(player, x + distance, y, z + distance);
@@ -115,54 +95,35 @@ public class ScreamCommand extends BrigadierCommand {
 
     }
 
-    private void spawnParticles(@NotNull ServerPlayer player, double x, double y, double z) {
-        try (final ServerLevel level = player.serverLevel()) {
-            level.sendParticles(
-                    player, // player
-                    ParticleTypes.SONIC_BOOM, // particle
-                    false,  // force
-                    x, // x
-                    y, // y
-                    z, // z
-                    1, // count
-                    0, // delta X
-                    0, // delta Y
-                    0, // delta Z
-                    10 // speed
-            );
-        } catch (IOException ignored) {
-        }
+    private void spawnParticles(@NotNull Player player, double x, double y, double z) {
+        player.spawnParticle(
+                Particle.SONIC_BOOM,
+                x,
+                y,
+                z,
+                1,
+                0,
+                0,
+                0,
+                10
+        );
     }
 
     public enum Screams {
-        ENDERMAN_SCREAM(SoundEvents.ENDERMAN_SCREAM, 10, 0),
-        SCULK_SHRIEKER_SHRIEK(SoundEvents.SCULK_SHRIEKER_SHRIEK, 10, 0),
-        WARDEN_SONIC_BOOM(SoundEvents.WARDEN_SONIC_BOOM, 10, 0);
+        ENDERMAN_SCREAM(org.bukkit.Sound.ENTITY_ENDERMAN_SCREAM, 10, 0),
+        SCULK_SHRIEKER_SHRIEK(org.bukkit.Sound.BLOCK_SCULK_SHRIEKER_SHRIEK, 10, 0),
+        WARDEN_SONIC_BOOM(org.bukkit.Sound.ENTITY_WARDEN_SONIC_BOOM, 10, 0);
 
-        private final SoundEvent soundEvent;
-        private final @Range(from = 0, to = 100) float volume;
-        private final @Range(from = 0, to = 2) float pitch;
+        private final Sound sound;
 
         @Contract(pure = true)
-        Screams(SoundEvent soundEvent, @Range(from = 0, to = 100) float volume, @Range(from = 0, to = 2) float pitch) {
-            this.soundEvent = soundEvent;
-            this.volume = volume;
-            this.pitch = pitch;
+        Screams(org.bukkit.Sound sound, @Range(from = 0, to = 100) float volume, @Range(from = 0, to = 2) float pitch) {
+            this.sound = Sound.sound(sound, Sound.Source.PLAYER, volume, pitch);
         }
 
         @Contract(pure = true)
-        public SoundEvent getSoundEvent() {
-            return soundEvent;
-        }
-
-        @Contract(pure = true)
-        public @Range(from = 0, to = 100) float getVolume() {
-            return volume;
-        }
-
-        @Contract(pure = true)
-        public @Range(from = 0, to = 2) float getPitch() {
-            return pitch;
+        public Sound getSound() {
+            return sound;
         }
 
 
@@ -171,7 +132,7 @@ public class ScreamCommand extends BrigadierCommand {
         }
 
         public static Screams getRandomScream() {
-            final var screamsList = getScreamsList();
+            val screamsList = getScreamsList();
             return screamsList.get(EssentialsUtil.getRandomInt(screamsList.size()));
         }
     }

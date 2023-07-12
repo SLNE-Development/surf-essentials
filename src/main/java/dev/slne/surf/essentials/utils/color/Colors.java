@@ -1,7 +1,11 @@
 package dev.slne.surf.essentials.utils.color;
 
+import dev.slne.surf.essentials.annontations.UpdateRequired;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.boss.BarColor;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A collection of predefined text colors for use in styling text.
@@ -151,4 +155,24 @@ public interface Colors {
      * The yellow text color.
      */
     TextColor YELLOW = NamedTextColor.YELLOW;
+
+    /**
+     * Gets the {@link NamedTextColor} from the {@link BarColor}.
+     *
+     * @param barColor The {@link BarColor} to convert.
+     * @return The {@link NamedTextColor} from the {@link BarColor}.
+     */
+    @Contract(pure = true)
+    @UpdateRequired(updateReason = "Maybe more colors will be added in the future")
+    static NamedTextColor convertBossBarColor(@NotNull BarColor barColor) {
+        return switch (barColor) {
+            case BLUE -> NamedTextColor.BLUE;
+            case GREEN -> NamedTextColor.GREEN;
+            case PINK -> NamedTextColor.LIGHT_PURPLE;
+            case PURPLE -> NamedTextColor.DARK_PURPLE;
+            case RED -> NamedTextColor.RED;
+            case YELLOW -> NamedTextColor.YELLOW;
+            default -> NamedTextColor.WHITE;
+        };
+    }
 }

@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.commands.general.other.troll.trolls;
 
+/**
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -87,7 +88,7 @@ public class FollowingBlockTroll extends Troll {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerMove(PlayerMoveEvent event) {
+    public void onPlayerMove(PlayerMoveEvent event) throws CommandSyntaxException {
         final var trollEntity = PLAYER_ENTITIES.get(event.getPlayer().getUniqueId());
 
         if (trollEntity == null) return;
@@ -111,3 +112,4 @@ public class FollowingBlockTroll extends Troll {
         EssentialsUtil.sendPackets(event.getPlayer(), new ClientboundSetEntityMotionPacket(entity));
     }
 }
+ */

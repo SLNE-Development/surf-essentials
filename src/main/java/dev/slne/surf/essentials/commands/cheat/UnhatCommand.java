@@ -1,74 +1,46 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.Items;
+import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
-public class UnhatCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"unhat"};
+public class UnhatCommand extends EssentialsCommand {
+    public UnhatCommand() {
+        super("unhat", "unhat", "Puts the item on your head in your inventory");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.UNHAT_SELF_PERMISSION, Permissions.UNHAT_OTHER_PERMISSION));
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> unHat(sender.getCallee(), getPlayerOrException(sender)));
+        then(playerArgument("player")
+                .withPermission(Permissions.UNHAT_OTHER_PERMISSION)
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> unHat(sender.getCallee(), args.getUnchecked("player"))));
     }
 
-    @Override
-    public String usage() {
-        return "/unhat";
-    }
+    private int unHat(CommandSender source, Player playerUnchecked) throws WrapperCommandSyntaxException {
+        val player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
+        val playerInventory = player.getInventory();
+        val itemStackOnHead = playerInventory.getHelmet();
+        val freeSlot = playerInventory.firstEmpty();
 
-    @Override
-    public String description() {
-        return "Puts the item on your head in your inventory";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.UNHAT_SELF_PERMISSION));
-        literal.executes(context -> hat(context.getSource(), context.getSource().getPlayerOrException()));
-
-        literal.then(Commands.argument("player", EntityArgument.player())
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.UNHAT_OTHER_PERMISSION))
-                .executes(context -> hat(context.getSource(), EntityArgument.getPlayer(context, "player"))));
-    }
-
-    private int hat(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException{
-        final var player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
-        final var playerInventory = player.getInventory();
-        final var itemStackOnHead = playerInventory.getArmor(EquipmentSlot.HEAD.getIndex());
-        int freeSlot = playerInventory.getFreeSlot();
-
-        if (freeSlot == -1) throw NO_SPACE_IN_INVENTORY.create(player);
+        if (itemStackOnHead == null || freeSlot == -1) throw Exceptions.NO_SPACE_IN_INVENTORY.create(player);
 
         playerInventory.setItem(freeSlot, itemStackOnHead);
-        playerInventory.setItem(playerInventory.getContainerSize() - 2, Items.AIR.getDefaultInstance());
+        playerInventory.setHelmet(new ItemStack(Material.AIR));
 
-        if (source.isPlayer()) {
-            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(player)
-                    .append(Component.text(" hat das Item ", Colors.SUCCESS)
-                            .append(PaperAdventure.asAdventure(itemStackOnHead.getDisplayName()).colorIfAbsent(Colors.TERTIARY))
-                            .append(Component.text(" abgesetzt.", Colors.SUCCESS))));
-        }else {
-            EssentialsUtil.sendSourceSuccess(source, EssentialsUtil.getDisplayName(player)
-                    .append(Component.text(" has unput the item ", Colors.SUCCESS)
-                            .append(PaperAdventure.asAdventure(itemStackOnHead.getDisplayName()).colorIfAbsent(Colors.TERTIARY))));
-        }
-
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(player)
+                .append(Component.text(" hat das Item ", Colors.SUCCESS)
+                        .append(EssentialsUtil.getDisplayName(itemStackOnHead))
+                        .append(Component.text(" abgesetzt.", Colors.SUCCESS))));
         return 1;
     }
-
-    private static final DynamicCommandExceptionType NO_SPACE_IN_INVENTORY = new DynamicCommandExceptionType(player -> PaperAdventure.asVanilla(EssentialsUtil.getDisplayName(((ServerPlayer) player)))
-            .copy().append(net.minecraft.network.chat.Component.literal(" has no free inventory space!")
-                    .withStyle(ChatFormatting.RED)));
 }

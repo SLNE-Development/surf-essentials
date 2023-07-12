@@ -1,56 +1,34 @@
 package dev.slne.surf.essentials.commands.general.other.poll;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
+import org.bukkit.entity.Player;
 
-public class VoteCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"vote"};
+import java.util.Objects;
+
+public class VoteCommand extends EssentialsCommand {
+    public VoteCommand() {
+        super("vote", "vote <poll> <yes | no>", "Vote on a poll");
+
+        withPermission(Permissions.VOTE_PERMISSION);
+
+        then(pollArgument("poll")
+                .then(literal("yes")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> vote(getPlayerOrException(sender), Objects.requireNonNull(args.getUnchecked("poll")), true)))
+                .then(literal("no")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> vote(getPlayerOrException(sender), Objects.requireNonNull(args.getUnchecked("poll")), false))));
     }
 
-    @Override
-    public String usage() {
-        return "/vote <poll> <yes | no>";
-    }
+    private int vote(Player player, Poll poll, boolean yes) {
 
-    @Override
-    public String description() {
-        return "Vote for polls";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(EssentialsUtil.checkPermissions(0, Permissions.VOTE_PERMISSION));
-
-        literal.then(Commands.argument("poll", StringArgumentType.word())
-                        .suggests(PollCommand.activePollSuggestions())
-                .then(Commands.literal("yes")
-                        .executes(context -> vote(context.getSource(), StringArgumentType.getString(context, "poll"), true)))
-                .then(Commands.literal("no")
-                        .executes(context -> vote(context.getSource(), StringArgumentType.getString(context, "poll"), false))));
-
-    }
-
-    private int vote(CommandSourceStack source, String name, boolean yes) throws CommandSyntaxException {
-        if (!Poll.checkPollExists(name)){
-            EssentialsUtil.sendError(source, "Die Umfrage existiert nicht!");
+        if (!poll.addVote(player, yes)) {
+            EssentialsUtil.sendError(player, "Du kannst nur einmal voten");
             return 0;
         }
-        final var player = source.getPlayerOrException().getBukkitEntity();
+        EssentialsUtil.sendSuccess(player, "Vielen Dank für deine Stimme!");
 
-        Poll.getPoll(name).thenAcceptAsync(poll -> {
-            if (!poll.addVote(player, yes)){
-                EssentialsUtil.sendError(player, "Du kannst nur einmal voten");
-            }
-            EssentialsUtil.sendSuccess(player, "Vielen Dank für deine Stimme!");
-        });
         return 1;
     }
 }

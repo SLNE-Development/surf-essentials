@@ -1,57 +1,46 @@
 package dev.slne.surf.essentials.commands.general;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-public class InfoCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"information", "info"};
+public class InfoCommand extends EssentialsCommand {
+    private static final Component line = Component.newline().append(EssentialsUtil.getPrefix());
+
+    public InfoCommand() {
+        super("info", "info <player>", "Gets information about a player", "information");
+
+        withPermission(Permissions.INFO_PERMISSION);
+
+        then(playerArgument("player")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> info(sender.getCallee(), args.getUnchecked("player"))));
     }
 
-    @Override
-    public String usage() {
-        return "/info <player>";
-    }
+    private static int info(CommandSender source, Player playerUnchecked) throws WrapperCommandSyntaxException {
+        val player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
+        val playerAddress = player.getAddress();
 
-    @Override
-    public String description() {
-        return "Gets information about a player";
-    }
+        if (playerAddress == null) throw Exceptions.ERROR_NO_INTERNET_ADDRESS;
 
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.INFO_PERMISSION));
-
-        literal.then(Commands.argument("player", EntityArgument.player())
-                .executes(context -> info(context.getSource(), EntityArgument.getPlayer(context, "player"))));
-    }
-
-    private static int info(CommandSourceStack source, ServerPlayer playerUnchecked) throws CommandSyntaxException {
-        ServerPlayer player = EssentialsUtil.checkPlayerSuggestion(source, playerUnchecked);
-        Component line = Component.newline().append(EssentialsUtil.getPrefix());
-
-        String uuid = player.getStringUUID();
-        String ip = player.getIpAddress();
-        String client = EssentialsUtil.getDefaultIfNull(player.connection.getClientBrandName(), "vanilla");
-        String nameMc = "https://de.namemc.com/profile/" + uuid;
-        float health = player.getHealth();
-        int food = player.getFoodData().getFoodLevel();
+        val uuid = player.getUniqueId().toString();
+        val ip = playerAddress.getHostName() + ":" + playerAddress.getPort();
+        val client = EssentialsUtil.getDefaultIfNull(player.getClientBrandName(), "__null__");
+        val nameMc = "https://de.namemc.com/profile/" + uuid;
+        double health = player.getHealth();
+        int food = player.getFoodLevel();
 
 
-        EssentialsUtil.sendSuccess(source, (EssentialsUtil.getDisplayName(player)
-                .decorate(TextDecoration.UNDERLINED))
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(player)
                 .append(Component.text(":", Colors.INFO))
                 .append(line)
                 .append(line)

@@ -1,72 +1,56 @@
 package dev.slne.surf.essentials.commands.general;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.item.ItemArgument;
-import net.minecraft.commands.arguments.item.ItemInput;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
 
-public class ClearItemCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"clearitem", "itemclear"};
+public class ClearItemCommand extends EssentialsCommand {
+    public ClearItemCommand() {
+        super("clearitem", "clearitem <item> [<targets>]", "removes a specific item from the targets' inventories");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.CLEAR_ITEM_SELF_PERMISSION, Permissions.CLEAR_ITEM_OTHER_PERMISSION));
+
+        then(itemStackPredicateArgument("item")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> clearItem(sender.getCallee(), args.getUnchecked("item"), List.of(getPlayerOrException(sender))))
+                .then(playersArgument("targets")
+                        .withPermission(Permissions.CLEAR_ITEM_OTHER_PERMISSION)
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> clearItem(sender.getCallee(), args.getUnchecked("item"), args.getUnchecked("targets")))));
     }
 
-    @Override
-    public String usage() {
-        return "/clearitem <item> [<targets]";
-    }
-
-    @Override
-    public String description() {
-        return "removes a specific item from the targets' inventories";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.CLEAR_ITEM_SELF_PERMISSION));
-
-        literal.then(Commands.argument("item", ItemArgument.item(this.commandBuildContext))
-                .executes(context -> clearItem(context.getSource(), ItemArgument.getItem(context, "item"), Collections.singleton(context.getSource().getPlayerOrException())))
-                .then(Commands.argument("players", EntityArgument.players())
-                        .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.CLEAR_ITEM_OTHER_PERMISSION))
-                        .executes(context -> clearItem(context.getSource(), ItemArgument.getItem(context, "item"), EntityArgument.getPlayers(context, "players")))));
-    }
-
-    private int clearItem(CommandSourceStack source, ItemInput itemInput, Collection<ServerPlayer> targets) throws CommandSyntaxException {
-        Collection<ServerPlayer> targetsChecked = EssentialsUtil.checkPlayerSuggestion(source, targets);
-
+    private int clearItem(CommandSender source, Predicate<ItemStack> itemStackPredicate, Collection<Player> targetsUnchecked) throws WrapperCommandSyntaxException {
+        val targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfullyRemoved = 0;
-        for (ServerPlayer target : targetsChecked) {
-            for (ItemStack content : target.getInventory().getContents()) {
-                if (content.is(itemInput.getItem())) content.setCount(0);
+
+        for (HumanEntity target : targets) {
+            val inventory = target.getInventory();
+
+            for (ItemStack stack : inventory) {
+                if (itemStackPredicate.test(stack)) inventory.remove(stack);
             }
+
             successfullyRemoved++;
         }
 
         if (successfullyRemoved == 1) {
-            EssentialsUtil.sendSuccess(source, Component.text("Das Item ", Colors.SUCCESS)
-                    .append(PaperAdventure.asAdventure(itemInput.getItem().getDefaultInstance().getDisplayName()))
+            EssentialsUtil.sendSuccess(source, Component.text("Die Items ", Colors.SUCCESS)
                     .append(Component.text(" wurde erfolgreich aus dem Inventar von ", Colors.SUCCESS))
-                    .append(targetsChecked.iterator().next().adventure$displayName.colorIfAbsent(Colors.TERTIARY))
+                    .append(EssentialsUtil.getDisplayName(targets.iterator().next()))
                     .append(Component.text(" entfernt!", Colors.SUCCESS)));
         } else {
-
-            EssentialsUtil.sendSuccess(source, Component.text("Das Item ", Colors.SUCCESS)
-                    .append(PaperAdventure.asAdventure(itemInput.getItem().getDefaultInstance().getDisplayName()))
+            EssentialsUtil.sendSuccess(source, Component.text("Die Items ", Colors.SUCCESS)
                     .append(Component.text(" wurde erfolgreich aus ", Colors.SUCCESS))
                     .append(Component.text(successfullyRemoved, Colors.TERTIARY))
                     .append(Component.text(" Inventaren entfernt!", Colors.SUCCESS)));

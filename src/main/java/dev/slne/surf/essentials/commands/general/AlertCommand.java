@@ -1,48 +1,32 @@
 package dev.slne.surf.essentials.commands.general;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.sound.Sound;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 
-public class AlertCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"alert", "broadcast", "al"};
+public class AlertCommand extends EssentialsCommand {
+    public AlertCommand() {
+        super("alert", "alert <message>", "Sends an alert message to all online players");
+
+        withPermission(Permissions.ALERT_PERMISSION);
+
+        then(greedyStringArgument("message")
+                .replaceSuggestions(EssentialsUtil.suggestColors())
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> alert(sender.getCallee(), args.getUnchecked("message"))));
     }
 
-    @Override
-    public String usage() {
-        return "/alert <message>";
-    }
-
-    @Override
-    public String description() {
-        return "Sends an alert message to all online players";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal){
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.ALERT_PERMISSION));
-
-        literal.then(Commands.argument("message", StringArgumentType.greedyString())
-                .suggests((context, builder) -> EssentialsUtil.suggestAllColorCodes(builder))
-                .executes(context -> alert(context.getSource(), StringArgumentType.getString(context, "message"))));
-    }
-
-    private static int alert(CommandSourceStack source, String message){
+    private static int alert(CommandSender source, String message){
         Bukkit.broadcast(EssentialsUtil.getPrefix()
-                .append(EssentialsUtil.deserialize(message).colorIfAbsent(Colors.TERTIARY)));
+                .append(EssentialsUtil.deserialize(message).colorIfAbsent(Colors.VARIABLE_VALUE)));
 
-        for (ServerPlayer serverPlayer : source.getServer().getPlayerList().getPlayers()) {
-            serverPlayer.playSound(SoundEvents.NOTE_BLOCK_BELL.value(), 1f, 1f);
+        for (Audience audience : source.getServer().getOnlinePlayers()) {
+            audience.playSound(Sound.sound(org.bukkit.Sound.BLOCK_NOTE_BLOCK_BELL.key(), Sound.Source.MASTER, 1f, 1f));
         }
         return 1;
     }

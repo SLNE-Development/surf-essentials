@@ -1,118 +1,122 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.server.level.ServerLevel;
+import org.bukkit.World;
 
-public class WeatherCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"weather"};
+import java.util.function.BiConsumer;
+
+public class WeatherCommand extends EssentialsCommand {
+    public WeatherCommand() {
+        super("weather", "weather <clear | rain | thunder> [<duration>]", "Change game weather");
+
+        withPermission(Permissions.WEATHER_PERMISSION);
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> queryWeather(sender));
+
+        then(weatherTypeArgument("weather")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> setWeather(
+                        sender,
+                        args.getUnchecked("weather"),
+                        6000
+                ))
+                .then(timeArgument("duration")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> setWeather(
+                                sender,
+                                args.getUnchecked("weather"),
+                                args.getUnchecked("duration")
+                        ))
+                )
+        );
     }
 
-    @Override
-    public String usage() {
-        return "/weather <clear | rain | thunder> [<duration>]";
-    }
+    private int queryWeather(NativeProxyCommandSender source) {
+        val callee = source.getCallee();
+        val world = source.getWorld();
+        val isClear = !world.isThundering() && !world.hasStorm();
 
-    @Override
-    public String description() {
-        return "Change game weather";
-    }
+        val clearDuration = world.getClearWeatherDuration();
+        val rainDuration = world.getWeatherDuration();
+        val thunderDuration = world.getThunderDuration();
 
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.WEATHER_PERMISSION));
-
-        literal.executes(context -> queryWeather(context.getSource()));
-
-        literal.then(Commands.literal("clear")
-                .executes(context -> setClear(context.getSource(), 6000))
-                .then(Commands.argument("duration", IntegerArgumentType.integer(0, 1000000))
-                        .executes(context -> setClear(context.getSource(), IntegerArgumentType.getInteger(context, "duration")))));
-
-        literal.then(Commands.literal("rain")
-                .executes(context -> setRain(context.getSource(), 6000))
-                .then(Commands.argument("duration", IntegerArgumentType.integer(0, 1000000))
-                        .executes(context -> setRain(context.getSource(), IntegerArgumentType.getInteger(context, "duration")))));
-
-        literal.then(Commands.literal("thunder")
-                .executes(context -> setThunder(context.getSource(), 6000))
-                .then(Commands.argument("duration", IntegerArgumentType.integer(0, 1000000))
-                        .executes(context -> setThunder(context.getSource(), IntegerArgumentType.getInteger(context, "duration")))));
-    }
-
-    private static int queryWeather(CommandSourceStack source) {
-        ServerLevel serverLevel = source.getLevel();
-
-        boolean isClear = !serverLevel.isThundering() && !serverLevel.isRaining();
-
-        int clearDuration = serverLevel.serverLevelData.getClearWeatherTime();
-        int rainDuration = serverLevel.serverLevelData.getRainTime();
-        int thunderDuration = serverLevel.serverLevelData.getThunderTime();
 
         if (isClear) {
-            EssentialsUtil.sendSuccess(source, weatherComponent$adventure("Klar", serverLevel, clearDuration));
-        } else if (serverLevel.isRaining()) {
-            EssentialsUtil.sendSuccess(source, weatherComponent$adventure("Regen", serverLevel, rainDuration));
+            EssentialsUtil.sendSuccess(callee, weatherComponent$adventure("Klar", world, clearDuration));
+        } else if (world.isThundering()) {
+            EssentialsUtil.sendSuccess(callee, weatherComponent$adventure("Gewitter", world, thunderDuration));
         } else {
-            EssentialsUtil.sendSuccess(source, weatherComponent$adventure("Gewitter", serverLevel, thunderDuration));
+            EssentialsUtil.sendSuccess(callee, weatherComponent$adventure("Regen", world, rainDuration));
         }
         return 1;
     }
 
-    private static int setClear(CommandSourceStack source, int durationInSeconds) {
-        ServerLevel serverLevel = source.getLevel();
-        serverLevel.setWeatherParameters(durationInSeconds, 0, false, false);
+    private int setWeather(NativeProxyCommandSender source, WeatherType weatherType, int durationInTicks) {
+        val world = source.getWorld();
+        weatherType.setWeather(world, durationInTicks);
 
-        EssentialsUtil.sendSuccess(source, weatherSetComponent$adventure("Klar", serverLevel, durationInSeconds));
-
-        return durationInSeconds;
-    }
-
-    private static int setRain(CommandSourceStack source, int durationInSeconds) {
-        ServerLevel serverLevel = source.getLevel();
-        serverLevel.setWeatherParameters(0, durationInSeconds, true, false);
-
-        EssentialsUtil.sendSuccess(source, weatherSetComponent$adventure("Regen", serverLevel, durationInSeconds));
-
-        return durationInSeconds;
-    }
-
-    private static int setThunder(CommandSourceStack source, int durationInSeconds) {
-        ServerLevel serverLevel = source.getLevel();
-        serverLevel.setWeatherParameters(0, durationInSeconds, true, true);
-
-        EssentialsUtil.sendSuccess(source, weatherSetComponent$adventure("Gewitter", serverLevel, durationInSeconds));
-
-        return durationInSeconds;
-    }
-
-
-    private static Component weatherComponent$adventure(String weather, ServerLevel serverLevel, int durationInTicks) {
-        return Component.text("Das Wetter in der Welt ", Colors.INFO)
-                .append(Component.text(serverLevel.dimension().location().toString(), Colors.TERTIARY))
-                .append(Component.text(" ist ", Colors.INFO))
-                .append(Component.text(weather, Colors.TERTIARY))
-                .append(Component.text(" für ", Colors.INFO))
-                .append(Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.TERTIARY));
-    }
-
-    private static Component weatherSetComponent$adventure(String weather, ServerLevel serverLevel, int durationInTicks) {
-        return Component.text("Das Wetter in der Welt ", Colors.INFO)
-                .append(Component.text(serverLevel.dimension().location().toString(), Colors.TERTIARY))
+        EssentialsUtil.sendSuccess(source.getCallee(), Component.text("Das Wetter in der Welt ", Colors.INFO)
+                .append(EssentialsUtil.getDisplayName(world))
                 .append(Component.text(" wurde auf ", Colors.INFO))
-                .append(Component.text(weather, Colors.TERTIARY))
+                .append(Component.text(weatherType.name, Colors.VARIABLE_VALUE))
                 .append(Component.text(" für ", Colors.INFO))
-                .append(Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.TERTIARY))
-                .append(Component.text(" gesetzt.", Colors.INFO));
+                .append(Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.VARIABLE_VALUE))
+                .append(Component.text(" gesetzt.", Colors.INFO)));
+
+        return durationInTicks;
+    }
+
+    private Component weatherComponent$adventure(String weather, World world, int durationInTicks) {
+        return Component.text("Das Wetter in der Welt ", Colors.INFO)
+                .append(EssentialsUtil.getDisplayName(world))
+                .append(Component.text(" ist ", Colors.INFO))
+                .append(Component.text(weather, Colors.VARIABLE_VALUE))
+                .append(Component.text(" für ", Colors.INFO))
+                .append(Component.text(EssentialsUtil.ticksToString(durationInTicks), Colors.VARIABLE_VALUE));
+    }
+
+    /**
+     * Weather types
+     */
+    @RequiredArgsConstructor
+    @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+    public enum WeatherType {
+        CLEAR("Klar", (world, duration) -> {
+            world.setThundering(false);
+            world.setStorm(false);
+            world.setClearWeatherDuration(duration);
+        }),
+        RAIN("Regen", (world, duration) -> {
+            world.setThundering(false);
+            world.setStorm(true);
+            world.setWeatherDuration(duration);
+        }),
+        THUNDER("Gewitter", (world, duration) -> {
+            world.setThundering(true);
+            world.setThunderDuration(duration);
+        });
+
+        @Getter
+        String name; // Name of the weather type
+        BiConsumer<World, Integer> setWeather; // Function to set the weather
+
+        /**
+         * Set the weather in the given world
+         *
+         * @param world           The world to set the weather in
+         * @param durationInTicks The duration of the weather in ticks
+         */
+        public void setWeather(World world, int durationInTicks) {
+            setWeather.accept(world, durationInTicks);
+        }
     }
 }

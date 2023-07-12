@@ -1,54 +1,55 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.jorel.commandapi.arguments.LocationType;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.AngleArgument;
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
-import net.minecraft.core.BlockPos;
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
-public class SetWorldSpawnCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"setworldspawn", "worldspawn"};
+public class SetWorldSpawnCommand extends EssentialsCommand {
+    public SetWorldSpawnCommand() {
+        super("setworldspawn", "setworldspawn [<location>]", "Sets the world spawn to the given location");
+
+        withPermission(Permissions.SET_WORLD_SPAWN_PERMISSION);
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> setWorldSpawn(
+                sender.getCallee(),
+                sender.getLocation(),
+                0.0F
+        ));
+        then(locationArgument("location", LocationType.BLOCK_POSITION)
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> setWorldSpawn(
+                        sender.getCallee(),
+                        args.getUnchecked("location"),
+                        0.0F
+                ))
+                .then(angleArgument("angle")
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> setWorldSpawn(
+                                sender.getCallee(),
+                                args.getUnchecked("location"),
+                                args.getUnchecked("angle")
+                        ))
+                )
+        );
     }
 
-    @Override
-    public String usage() {
-        return "/setworldspawn [<query> | <pos [<angel>]>]";
-    }
+    private int setWorldSpawn(@NotNull CommandSender source, @NotNull Location location, float angle) {
+        val world = location.getWorld();
 
-    @Override
-    public String description() {
-        return "Query or set the worldspawn";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SET_WORLD_SPAWN_PERMISSION));
-
-        literal.executes(context -> set(context.getSource(), context.getSource().getPlayerOrException().blockPosition(), 0.0F));
-
-        literal.then(Commands.argument("pos", BlockPosArgument.blockPos())
-                .executes(context -> set(context.getSource(), BlockPosArgument.getSpawnablePos(context, "pos"), 0.0F))
-                .then(Commands.argument("angle", AngleArgument.angle())
-                        .executes(context -> set(context.getSource(), BlockPosArgument.getSpawnablePos(context, "pos"), AngleArgument.getAngle(context, "angle")))));
-    }
-
-    private int set(CommandSourceStack source, BlockPos pos, float angle) {
-        source.getLevel().setDefaultSpawnPos(pos, angle);
+        location.setYaw(angle);
+        world.setSpawnLocation(location);
 
         EssentialsUtil.sendSuccess(source, Component.text("Der Welt spawn wurde bei ", Colors.SUCCESS)
-                .append(Component.text("%s %s %s".formatted(pos.getX(), pos.getY(), pos.getZ()), Colors.TERTIARY))
+                .append(EssentialsUtil.formatLocationWithoutSpacer(location))
                 .append(Component.text(" mit einem Winkel von ", Colors.SUCCESS))
-                .append(Component.text(angle, Colors.TERTIARY))
+                .append(Component.text(angle, Colors.VARIABLE_VALUE))
                 .append(Component.text(" gesetzt.", Colors.SUCCESS)));
-
         return 1;
     }
 }

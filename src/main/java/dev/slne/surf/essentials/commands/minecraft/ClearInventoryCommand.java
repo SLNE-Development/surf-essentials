@@ -1,62 +1,48 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.Collections;
 
-public class ClearInventoryCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"clear", "clearinventory"};
+public class ClearInventoryCommand extends EssentialsCommand {
+    public ClearInventoryCommand() {
+        super("clear", "clear [<targets>]", "Clears the inventories from the targets", "clearinventory");
+
+        withRequirement(EssentialsUtil.checkPermissions(Permissions.CLEAR_SELF_PERMISSION, Permissions.CLEAR_OTHER_PERMISSION));
+
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> clear(sender.getCallee(), Collections.singleton(getPlayerOrException(sender))));
+        then(playersArgument("players")
+                .withPermission(Permissions.CLEAR_OTHER_PERMISSION)
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> clear(sender.getCallee(), args.getUnchecked("players"))));
     }
 
-    @Override
-    public String usage() {
-        return "/clear [<targets>]";
-    }
-
-    @Override
-    public String description() {
-        return "Clears the inventories from the targets";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.CLEAR_SELF_PERMISSION));
-        literal.executes(context -> clear(context.getSource(), Collections.singleton(context.getSource().getPlayerOrException())));
-
-        literal.then(Commands.argument("players", EntityArgument.players())
-                .requires(sourceStack -> sourceStack.hasPermission(2, Permissions.CLEAR_OTHER_PERMISSION))
-                .executes(context -> clear(context.getSource(), EntityArgument.getPlayers(context, "players"))));
-    }
-
-    private int clear(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked) throws CommandSyntaxException {
-        Collection<ServerPlayer> targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+    private int clear(CommandSender source, Collection<Player> targetsUnchecked) throws WrapperCommandSyntaxException {
+        val targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulClears = 0;
 
-        for (ServerPlayer target : targets) {
-            target.getInventory().clearContent();
+        for (HumanEntity target : targets) {
+            target.getInventory().clear();
             successfulClears++;
         }
 
 
         if (successfulClears == 1) {
-            EssentialsUtil.sendSourceSuccess(source, Component.text("Das Inventar von ", Colors.SUCCESS)
+            EssentialsUtil.sendSuccess(source, Component.text("Das Inventar von ", Colors.SUCCESS)
                     .append(EssentialsUtil.getDisplayName(targets.iterator().next()))
                     .append(Component.text(" wurde geleert.", Colors.SUCCESS)));
         } else {
-            EssentialsUtil.sendSourceSuccess(source, Component.text("Das Inventar von ", Colors.SUCCESS)
+            EssentialsUtil.sendSuccess(source, Component.text("Das Inventar von ", Colors.SUCCESS)
                     .append(Component.text(successfulClears, Colors.TERTIARY))
                     .append(Component.text(" Spielern wurde geleert.", Colors.SUCCESS)));
         }

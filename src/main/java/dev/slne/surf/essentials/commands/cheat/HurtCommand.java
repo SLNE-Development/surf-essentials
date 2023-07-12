@@ -1,62 +1,41 @@
 package dev.slne.surf.essentials.commands.cheat;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.slne.surf.essentials.commands.minecraft.DamageCommand;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
-public class HurtCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"hurt"};
+public class HurtCommand extends EssentialsCommand {
+    public HurtCommand() {
+        super("hurt", "hurt [<player>]", "Hurt other players");
+
+        withPermission(Permissions.HURT_PERMISSION);
+
+        then(playersArgument("players")
+                .then(integerArgument("amount", 1, 255)
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> executeHurt(sender.getCallee(), args.getUnchecked("players"), args.getUnchecked("amount")))));
     }
 
-    @Override
-    public String usage() {
-        return "/hurt <player>";
-    }
-
-    @Override
-    public String description() {
-        return "Hurt other players";
-    }
-
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.HURT_PERMISSION));
-
-        literal.then(Commands.argument("players", EntityArgument.players())
-                .then(Commands.argument("amount", IntegerArgumentType.integer(1, 255))
-                        .executes(context -> executeHurt(context.getSource(), EntityArgument.getPlayers(context, "players"),
-                                IntegerArgumentType.getInteger(context, "amount")))));
-    }
-
-    private int executeHurt(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, int amount) throws CommandSyntaxException {
-        final var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
-        final var sources = EssentialsUtil.getDamageSources();
+    private int executeHurt(CommandSender source, Collection<Player> targetsUnchecked, Integer amount) throws WrapperCommandSyntaxException {
+        val targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int successfulHurted = 0;
-        if (source.isPlayer()) {
-            for (Player target : targets) {
-                if (target.hurt(sources.playerAttack(source.getPlayerOrException()), amount)) successfulHurted++;
-            }
-        } else {
-            for (Player target : targets) {
-                if (target.hurt(sources.generic().critical(), amount)) successfulHurted++;
-            }
+
+        for (Player target : targets) {
+            if (target.isInvulnerable()) continue;
+            target.damage(amount, ((source instanceof Player player) ? player : null));
+            successfulHurted++;
         }
 
-        if (successfulHurted == 0) throw DamageCommand.ERROR_INVULNERABLE.create();
+        if (successfulHurted == 0) throw Exceptions.ERROR_INVULNERABLE;
 
         if (successfulHurted == 1) {
             EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(targets.iterator().next())

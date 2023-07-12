@@ -1,10 +1,9 @@
 package dev.slne.surf.essentials.commands.general.other.troll;
 
+/**
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.slne.surf.essentials.SurfEssentials;
-import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.permission.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import org.bukkit.Bukkit;
@@ -26,8 +25,8 @@ public abstract class Troll implements Listener {
     protected abstract ArgumentBuilder<CommandSourceStack, ?> troll();
 
     public LiteralArgumentBuilder<CommandSourceStack> build() {
-        final var trollLiteral = Commands.literal(name())
-                .requires(EssentialsUtil.checkPermissions(Permissions.TROLL_ALL_PERMISSION, permission()));
+        final var trollLiteral = Commands.literal(name());
+                //.requires(EssentialsUtil.checkPermissions(Permissions.TROLL_ALL_PERMISSION, permission()));
 
         trollLiteral.then(troll());
         return trollLiteral;
@@ -66,3 +65,4 @@ public abstract class Troll implements Listener {
     }
 
 }
+ */

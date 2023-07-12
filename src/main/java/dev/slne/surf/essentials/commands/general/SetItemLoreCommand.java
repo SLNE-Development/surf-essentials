@@ -1,64 +1,39 @@
 package dev.slne.surf.essentials.commands.general;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.world.InteractionHand;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Objects;
 
-public class SetItemLoreCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"setlore", "lore"};
+public class SetItemLoreCommand extends EssentialsCommand {
+    public SetItemLoreCommand() {
+        super("setitemlore", "lore <lore>", "Set the lore of an item", "lore", "setlore");
+
+        withPermission(Permissions.SET_ITEM_LORE_PERMISSION);
+
+        then(greedyStringArgument("lore")
+                .replaceSuggestions(EssentialsUtil.suggestColors())
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> setLore(getPlayerOrException(sender), Objects.requireNonNull(args.getUnchecked("lore")))));
     }
 
-    @Override
-    public String usage() {
-        return "/setlore <lore>";
-    }
+    private int setLore(Player source, String loreString) {
+        val itemStack = source.getInventory().getItemInMainHand();
 
-    @Override
-    public String description() {
-        return "Change the lore of the item you currently holding";
-    }
-
-    @Override
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(sourceStack -> sourceStack.hasPermission(2, Permissions.SET_ITEM_LORE_PERMISSION));
-
-        literal.then(Commands.argument("lore", StringArgumentType.greedyString())
-                .suggests((context, builder) -> {
-                    builder.suggest("\n", net.minecraft.network.chat.Component.literal("Create a new line"));
-                    return EssentialsUtil.suggestAllColorCodes(builder);
-                })
-                .executes(context -> setLore(context.getSource(), StringArgumentType.getString(context, "lore"))));
-    }
-
-    private int setLore(CommandSourceStack source, String loreString) throws CommandSyntaxException {
-        ItemStack itemStack = source.getPlayerOrException().getItemInHand(InteractionHand.MAIN_HAND).getBukkitStack();
-
-        String[] lores = loreString.translateEscapes().split("\n");
-        List<Component> loresComponents = new ArrayList<>();
-
-        for (String lore : lores) {
-            loresComponents.add(EssentialsUtil.deserialize(lore).colorIfAbsent(Colors.INFO));
-        }
-
-        itemStack.lore(loresComponents);
+        itemStack.lore(
+                Arrays.stream(loreString.translateEscapes().split("\n"))
+                .map(s -> EssentialsUtil.deserialize(s).colorIfAbsent(Colors.INFO))
+                .toList()
+        );
 
         EssentialsUtil.sendSuccess(source, Component.text("Die Beschreibung von ", Colors.SUCCESS)
-                .append(PaperAdventure.asAdventure(net.minecraft.world.item.ItemStack.fromBukkitCopy(itemStack).getDisplayName()))
+                .append(EssentialsUtil.getDisplayName(itemStack))
                 .append(Component.text(" wurde geändert!", Colors.SUCCESS)));
 
         return 1;

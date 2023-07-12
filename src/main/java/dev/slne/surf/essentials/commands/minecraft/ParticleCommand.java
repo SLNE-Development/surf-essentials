@@ -1,167 +1,197 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.brigadier.arguments.FloatArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.util.Vector3d;
+import com.github.retrooper.packetevents.util.Vector3f;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerParticle;
+import dev.jorel.commandapi.arguments.LocationType;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.jorel.commandapi.wrappers.ParticleData;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import dev.slne.surf.essentials.utils.ParticleWrapper;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import lombok.val;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.TextColor;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ParticleArgument;
-import net.minecraft.commands.arguments.coordinates.Vec3Argument;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.phys.Vec3;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 
-@DefaultQualifier(NotNull.class)
-public class ParticleCommand extends BrigadierCommand {
-    @Override
-    public String[] names() {
-        return new String[]{"particle"};
+public class ParticleCommand extends EssentialsCommand {
+    private static final double MAX_FORCE_DISTANCE = 512.0;
+    private static final double MAX_DISTANCE = 32.0;
+
+    public ParticleCommand() {
+        super("bukkitParticle", "bukkitParticle <bukkitParticle> [<pos>] [<delta>] [<speed>] [<count>] [<mode>] [<player>]", "Spawns a bukkitParticle");
+
+        withPermission(Permissions.PARTICLE_PERMISSION);
+
+        then(particleArgument("bukkitParticle")
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> showParticles(
+                        sender.getCallee(),
+                        args.getUnchecked("bukkitParticle"),
+                        sender.getLocation(),
+                        new Location(null, 0, 0, 0),
+                        0.0F,
+                        0,
+                        false,
+                        new ArrayList<>(Bukkit.getOnlinePlayers())
+                ))
+                .then(locationArgument("position", LocationType.PRECISE_POSITION)
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> showParticles(
+                                sender.getCallee(),
+                                args.getUnchecked("bukkitParticle"),
+                                args.getUnchecked("position"),
+                                new Location(null, 0, 0, 0),
+                                0.0F,
+                                0,
+                                false,
+                                new ArrayList<>(Bukkit.getOnlinePlayers())
+                        ))
+                        .then(locationArgument("delta", LocationType.PRECISE_POSITION)
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> showParticles(
+                                        sender.getCallee(),
+                                        args.getUnchecked("bukkitParticle"),
+                                        args.getUnchecked("position"),
+                                        args.getUnchecked("delta"),
+                                        0.0F,
+                                        0,
+                                        false,
+                                        new ArrayList<>(Bukkit.getOnlinePlayers())
+                                ))
+                                .then(floatArgument("speed", 0.0F)
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> showParticles(
+                                                sender.getCallee(),
+                                                args.getUnchecked("bukkitParticle"),
+                                                args.getUnchecked("position"),
+                                                args.getUnchecked("delta"),
+                                                args.getUnchecked("speed"),
+                                                0,
+                                                false,
+                                                new ArrayList<>(Bukkit.getOnlinePlayers())
+                                        ))
+                                        .then(integerArgument("count", 0)
+                                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> showParticles(
+                                                        sender.getCallee(),
+                                                        args.getUnchecked("bukkitParticle"),
+                                                        args.getUnchecked("position"),
+                                                        args.getUnchecked("delta"),
+                                                        args.getUnchecked("speed"),
+                                                        args.getUnchecked("count"),
+                                                        false,
+                                                        new ArrayList<>(Bukkit.getOnlinePlayers())
+                                                ))
+                                                .then(booleanArgument("force")
+                                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> showParticles(
+                                                                sender.getCallee(),
+                                                                args.getUnchecked("bukkitParticle"),
+                                                                args.getUnchecked("position"),
+                                                                args.getUnchecked("delta"),
+                                                                args.getUnchecked("speed"),
+                                                                args.getUnchecked("count"),
+                                                                args.getUnchecked("force"),
+                                                                new ArrayList<>(Bukkit.getOnlinePlayers())
+                                                        ))
+                                                        .then(playersArgument("viewers")
+                                                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> showParticles(
+                                                                        sender.getCallee(),
+                                                                        args.getUnchecked("bukkitParticle"),
+                                                                        args.getUnchecked("position"),
+                                                                        args.getUnchecked("delta"),
+                                                                        args.getUnchecked("speed"),
+                                                                        args.getUnchecked("count"),
+                                                                        args.getUnchecked("force"),
+                                                                        args.getUnchecked("viewers")
+                                                                ))
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
     }
 
-    @Override
-    public String usage() {
-        return "/particle";
-    }
-
-    @Override
-    public String description() {
-        return "Particle command";
-    }
-
-    public void literal(LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.PARTICLE_PERMISSION));
-
-        literal.then(Commands.argument("name", ParticleArgument.particle(this.commandBuildContext))
-                .executes(context -> showParticles(context.getSource(), ParticleArgument.getParticle(context, "name"),
-                        context.getSource().getPosition(), Vec3.ZERO, 0.0F, 0, false, context.getSource().getServer().getPlayerList().getPlayers()))
-
-                .then(Commands.argument("position", Vec3Argument.vec3())
-                        .executes(context -> showParticles(context.getSource(), ParticleArgument.getParticle(context, "name"),
-                                Vec3Argument.getVec3(context, "position"), Vec3.ZERO, 0.0F, 0, false,
-                                context.getSource().getServer().getPlayerList().getPlayers()))
-
-                        .then(Commands.argument("delta", Vec3Argument.vec3(false))
-                                .executes(context -> showParticles(context.getSource(), ParticleArgument.getParticle(context, "name"),
-                                        Vec3Argument.getVec3(context, "position"), Vec3Argument.getVec3(context, "delta"), 0.0F, 0, false,
-                                        context.getSource().getServer().getPlayerList().getPlayers()))
-
-                                .then(Commands.argument("speed", FloatArgumentType.floatArg(0.0F))
-                                        .executes(context -> showParticles(context.getSource(), ParticleArgument.getParticle(context, "name"),
-                                                Vec3Argument.getVec3(context, "position"), Vec3Argument.getVec3(context, "delta"),
-                                                FloatArgumentType.getFloat(context, "speed"), 0, false,
-                                                context.getSource().getServer().getPlayerList().getPlayers()))
-
-                                        .then(Commands.argument("amount", IntegerArgumentType.integer(0))
-                                                .executes(context -> showParticles(context.getSource(), ParticleArgument.getParticle(context, "name"),
-                                                        Vec3Argument.getVec3(context, "position"), Vec3Argument.getVec3(context, "delta"),
-                                                        FloatArgumentType.getFloat(context, "speed"), IntegerArgumentType.getInteger(context, "amount"), false,
-                                                        context.getSource().getServer().getPlayerList().getPlayers()))
-
-                                                .then(Commands.literal("force")
-                                                        .executes(context -> showParticles(context.getSource(), ParticleArgument.getParticle(context, "name"),
-                                                                Vec3Argument.getVec3(context, "position"), Vec3Argument.getVec3(context, "delta"),
-                                                                FloatArgumentType.getFloat(context, "speed"), IntegerArgumentType.getInteger(context, "amount"), true,
-                                                                context.getSource().getServer().getPlayerList().getPlayers()))
-                                                        .then(Commands.argument("viewers", EntityArgument.players())
-                                                                .executes(context -> showParticles(context.getSource(), ParticleArgument.getParticle(context, "name"),
-                                                                        Vec3Argument.getVec3(context, "position"), Vec3Argument.getVec3(context, "delta"),
-                                                                        FloatArgumentType.getFloat(context, "speed"), IntegerArgumentType.getInteger(context, "amount"), true,
-                                                                        EntityArgument.getPlayers(context, "viewers")))))
-
-                                                .then(Commands.literal("normal")
-                                                        .executes(context -> showParticles(context.getSource(), ParticleArgument.getParticle(context, "name"),
-                                                                Vec3Argument.getVec3(context, "position"), Vec3Argument.getVec3(context, "delta"),
-                                                                FloatArgumentType.getFloat(context, "speed"), IntegerArgumentType.getInteger(context, "amount"), false,
-                                                                context.getSource().getServer().getPlayerList().getPlayers()))
-                                                        .then(Commands.argument("viewers", EntityArgument.players())
-                                                                .executes(context -> showParticles(context.getSource(), ParticleArgument.getParticle(context, "name"),
-                                                                        Vec3Argument.getVec3(context, "position"), Vec3Argument.getVec3(context, "delta"),
-                                                                        FloatArgumentType.getFloat(context, "speed"), IntegerArgumentType.getInteger(context, "amount"), false,
-                                                                        EntityArgument.getPlayers(context, "viewers"))))))))));
-    }
-
-    private int showParticles(CommandSourceStack source, ParticleOptions parameters, Vec3 pos, Vec3 delta, float speed, int count, boolean force, Collection<ServerPlayer> viewersUnchecked) throws CommandSyntaxException {
-        Collection<ServerPlayer> viewers = EssentialsUtil.checkPlayerSuggestion(source, viewersUnchecked);
+    private int showParticles(CommandSender source, ParticleData<?> parameters, Location pos, Location delta, float speed, int count, boolean force, Collection<Player> viewersUnchecked) throws WrapperCommandSyntaxException {
+        val viewers = EssentialsUtil.checkPlayerSuggestion(source, new ArrayList<>(viewersUnchecked));
+        val playerManager = PacketEvents.getAPI().getPlayerManager();
+        val particleWrapper = new ParticleWrapper<>(parameters);
+        val particle = particleWrapper.getPacketEventsParticle();
+        val particlePacket = new WrapperPlayServerParticle(
+                particle,
+                force,
+                new Vector3d(pos.x(), pos.y(), pos.z()),
+                new Vector3f((float) delta.x(), (float) delta.y(), (float) delta.z()),
+                speed,
+                count
+        );
         int countParticlesShown = 0;
 
-        for (ServerPlayer serverPlayer : viewers) {
-            if (source.getLevel().sendParticles(serverPlayer, parameters, force, pos.x, pos.y, pos.z, count, delta.x, delta.y, delta.z, speed)) {
-                countParticlesShown++;
-            }
+        for (Player player : viewers) {
+            if (!player.getWorld().equals(pos.getWorld())) continue;
+            if (player.getLocation().distanceSquared(pos) > (force ? MAX_FORCE_DISTANCE : MAX_DISTANCE)) continue;
+
+            playerManager.sendPacket(player, particlePacket);
+            countParticlesShown++;
         }
 
-        if (countParticlesShown == 0) {
-            if (source.isPlayer()) {
-                EssentialsUtil.sendError(source, "Die Partikel wurden niemanden gezeigt!");
-            } else throw ERROR_FAILED.create();
-            return countParticlesShown;
-        }
+        if (countParticlesShown == 0) throw Exceptions.ERROR_NO_PARTICLES_SHOWN;
 
-        String particleName = Objects.requireNonNull(BuiltInRegistries.PARTICLE_TYPE.getKey(parameters.getType())).toLanguageKey();
+        val particleName = particle.getType().getName().toString();
 
-        String positionX = format(pos.x);
-        String positionY = format(pos.y);
-        String positionZ = format(pos.z);
-        String position = positionX + " " + positionY + " " + positionZ;
+        val positionX = format(pos.x());
+        val positionY = format(pos.y());
+        val positionZ = format(pos.z());
+        val position = positionX + " " + positionY + " " + positionZ;
 
-        String deltaX = format(delta.x);
-        String deltaY = format(delta.y);
-        String deltaZ = format(delta.z);
-        String deltaString = deltaX + " " + deltaY + " " + deltaZ;
+        val deltaX = format(delta.x());
+        val deltaY = format(delta.y());
+        val deltaZ = format(delta.z());
+        val deltaString = deltaX + " " + deltaY + " " + deltaZ;
 
-        String forceString = (force) ? "Ja" : "Nein";
+        val forceString = (force) ? "Ja" : "Nein";
 
-        EssentialsUtil.sendSuccess(source, Component.text("Partikel ", Colors.SUCCESS)
-                .append(Component.text(particleName, Colors.TERTIARY)
-                        .hoverEvent(HoverEvent.showText(Component.text("Partikel: ", Colors.TERTIARY)
-                                .append(Component.text(particleName, TextColor.fromCSSHexString("#f2b179")))
+        EssentialsUtil.sendSuccess(source, Component.text("Der Partikel ", Colors.SUCCESS)
+                .append(Component.text("[", Colors.GRAY))
+                .append(Component.text(particleName, Colors.VARIABLE_VALUE)
+                        .hoverEvent(HoverEvent.showText(Component.text("Partikel: ", Colors.VARIABLE_KEY)
+                                .append(Component.text(particleName, Colors.VARIABLE_VALUE))
                                 .append(Component.newline())
-                                .append(Component.text("Position: ", Colors.TERTIARY)
-                                        .append(Component.text(position, TextColor.fromCSSHexString("#6699cc"))))
+                                .append(Component.text("Position: ", Colors.VARIABLE_KEY)
+                                        .append(Component.text(position, Colors.VARIABLE_VALUE)))
                                 .append(Component.newline())
-                                .append(Component.text("Delta: ", Colors.TERTIARY)
-                                        .append(Component.text(deltaString, TextColor.fromCSSHexString("#ff9900"))))
+                                .append(Component.text("Delta: ", Colors.VARIABLE_KEY)
+                                        .append(Component.text(deltaString, Colors.VARIABLE_VALUE)))
                                 .append(Component.newline())
-                                .append(Component.text("Anzahl: ", Colors.TERTIARY)
-                                        .append(Component.text(count, TextColor.fromCSSHexString("#339933"))))
+                                .append(Component.text("Anzahl: ", Colors.VARIABLE_KEY)
+                                        .append(Component.text(count, Colors.VARIABLE_VALUE)))
                                 .append(Component.newline())
-                                .append(Component.text("Geschwindigkeit: ", Colors.TERTIARY)
-                                        .append(Component.text(speed, TextColor.fromCSSHexString("#00cc00"))))
+                                .append(Component.text("Geschwindigkeit: ", Colors.VARIABLE_KEY)
+                                        .append(Component.text(speed, Colors.VARIABLE_VALUE)))
                                 .append(Component.newline())
-                                .append(Component.text("Erzwungen: ", Colors.TERTIARY)
-                                        .append(Component.text(forceString, (force) ? TextColor.fromHexString("#009933") : TextColor.fromCSSHexString("#cc0000"))))
+                                .append(Component.text("Erzwungen: ", Colors.VARIABLE_KEY)
+                                        .append(Component.text(forceString, Colors.VARIABLE_VALUE)))
                                 .append(Component.newline())
-                                .append(Component.text("Betrachter: ", Colors.TERTIARY)
-                                        .append(Component.text(viewers.size(), TextColor.fromCSSHexString("#ffcc00")))))))
+                                .append(Component.text("Betrachter: ", Colors.VARIABLE_KEY)
+                                        .append(Component.text(viewers.size(), Colors.VARIABLE_VALUE))))))
+                .append(Component.text("]", Colors.GRAY))
                 .append(Component.text(" wird ", Colors.SUCCESS))
-                .append(Component.text(viewers.size(), Colors.TERTIARY))
-                .append(Component.text((viewers.size() == 1) ? " Spieler" : " Spielern", Colors.SUCCESS))
+                .append(Component.text(countParticlesShown, Colors.VARIABLE_VALUE))
+                .append(Component.text((countParticlesShown == 1) ? " Spieler" : " Spielern", Colors.SUCCESS))
                 .append(Component.text(" gezeigt!", Colors.SUCCESS)));
 
         return countParticlesShown;
     }
 
-    private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(net.minecraft.network.chat.Component.translatable("commands.particle.failed"));
-
     private String format(double input) {
-        return new DecimalFormat("#.#").format(input);
+        return String.valueOf(EssentialsUtil.makeDoubleReadable(input));
     }
 }
-

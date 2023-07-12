@@ -1,15 +1,17 @@
 package dev.slne.surf.essentials.utils.abtract;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.nms.brigadier.Suggestion;
-import net.minecraft.ChatFormatting;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Contract;
+import dev.slne.surf.essentials.utils.color.Colors;
+import dev.slne.surf.essentials.utils.brigadier.BrigadierMessage;
+import dev.slne.surf.essentials.utils.brigadier.Suggestion;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -32,7 +34,7 @@ public abstract class SuggestionUtil extends OfflineUtil {
      * Creates a builder offset to display the suggestion at the very end
      * <p></p>
      * See here for an example:
-     * <p></p><img src="https://commandapi.jorel.dev/9.0.1/images/emojimsg.gif" alt="Following Suggestions">
+     * <p></p><img src="https://commandapi.jorel.dev/9.0.3/images/emojimsg.gif" alt="Following Suggestions">
      *
      * @param builder the {@link SuggestionsBuilder} to modify
      * @return the modified {@link SuggestionsBuilder}
@@ -49,13 +51,24 @@ public abstract class SuggestionUtil extends OfflineUtil {
      */
     public static CompletableFuture<Suggestions> suggestAllColorCodes(@NotNull SuggestionsBuilder builder) {
         builder = followingSuggestionBuilder(builder);
-        COLOR_CODES.forEach(builder::suggest);
-        return builder.buildFuture();
+        @NotNull SuggestionsBuilder finalBuilder = builder;
+        COLOR_CODES.forEach((s, component) -> finalBuilder.suggest(s, new BrigadierMessage(component)));
+        return finalBuilder.buildFuture();
     }
 
-    @Contract(pure = true)
-    public static @NotNull SuggestionProvider<CommandSourceStack> suggestAllColorCodes() {
-        return (context, builder) -> suggestAllColorCodes(builder);
+    /**
+     * Suggests all possible color codes.
+     *
+     * @return all possible color codes
+     */
+    public static ArgumentSuggestions<CommandSender> suggestColors() {
+        return (info, builder) -> {
+            builder = builder.createOffset(builder.getStart() + info.currentArg().length());
+            for (Map.Entry<String, Component> entry : COLOR_CODES.entrySet()) {
+                builder.suggest(entry.getKey(), new BrigadierMessage(entry.getValue()));
+            }
+            return builder.buildFuture();
+        };
     }
 
     /**
@@ -78,29 +91,29 @@ public abstract class SuggestionUtil extends OfflineUtil {
     static {
         // noinspection StaticInitializerReferencesSubClass
         COLOR_CODES = EssentialsUtil.make(new HashMap<>(), map -> {
-            map.put("&0", Component.literal("Black").withStyle(ChatFormatting.BLACK));
-            map.put("&1", Component.literal("Dark Blue").withStyle(ChatFormatting.DARK_BLUE));
-            map.put("&2", Component.literal("Dark Green").withStyle(ChatFormatting.DARK_GREEN));
-            map.put("&3", Component.literal("Dark Aqua").withStyle(ChatFormatting.DARK_AQUA));
-            map.put("&4", Component.literal("Dark Red").withStyle(ChatFormatting.DARK_RED));
-            map.put("&5", Component.literal("Dark Purple").withStyle(ChatFormatting.DARK_PURPLE));
-            map.put("&6", Component.literal("Gold").withStyle(ChatFormatting.GOLD));
-            map.put("&7", Component.literal("Gray").withStyle(ChatFormatting.GRAY));
-            map.put("&8", Component.literal("Dark Gray").withStyle(ChatFormatting.DARK_GRAY));
-            map.put("&9", Component.literal("Blue").withStyle(ChatFormatting.BLUE));
-            map.put("&a", Component.literal("Green").withStyle(ChatFormatting.GREEN));
-            map.put("&b", Component.literal("Aqua").withStyle(ChatFormatting.AQUA));
-            map.put("&c", Component.literal("Red").withStyle(ChatFormatting.RED));
-            map.put("&d", Component.literal("Light Purple").withStyle(ChatFormatting.LIGHT_PURPLE));
-            map.put("&e", Component.literal("Yellow").withStyle(ChatFormatting.YELLOW));
-            map.put("&f", Component.literal("White").withStyle(ChatFormatting.WHITE));
+            map.put("&0", Component.text("Black", Colors.BLACK));
+            map.put("&1", Component.text("Dark Blue", Colors.DARK_BLUE));
+            map.put("&2", Component.text("Dark Green", Colors.DARK_GREEN));
+            map.put("&3", Component.text("Dark Aqua", Colors.DARK_AQUA));
+            map.put("&4", Component.text("Dark Red", Colors.DARK_RED));
+            map.put("&5", Component.text("Dark Purple", Colors.DARK_PURPLE));
+            map.put("&6", Component.text("Gold", Colors.GOLD));
+            map.put("&7", Component.text("Gray", Colors.GRAY));
+            map.put("&8", Component.text("Dark Gray", Colors.DARK_GRAY));
+            map.put("&9", Component.text("Blue", Colors.BLUE));
+            map.put("&a", Component.text("Green", Colors.GREEN));
+            map.put("&b", Component.text("Aqua", Colors.AQUA));
+            map.put("&c", Component.text("Red", Colors.RED));
+            map.put("&d", Component.text("Light Purple", Colors.LIGHT_PURPLE));
+            map.put("&e", Component.text("Yellow", Colors.YELLOW));
+            map.put("&f", Component.text("White", Colors.WHITE));
 
-            map.put("&k", Component.literal("Obfuscated").withStyle(ChatFormatting.OBFUSCATED));
-            map.put("&l", Component.literal("Bold").withStyle(ChatFormatting.BOLD));
-            map.put("&m", Component.literal("Strikethrough").withStyle(ChatFormatting.STRIKETHROUGH));
-            map.put("&n", Component.literal("Underline").withStyle(ChatFormatting.UNDERLINE));
-            map.put("&o", Component.literal("Italic").withStyle(ChatFormatting.ITALIC));
-            map.put("&r", Component.literal("Reset").withStyle(ChatFormatting.RESET));
+            map.put("&k", Component.text("Obfuscated", Style.style(TextDecoration.OBFUSCATED)));
+            map.put("&l", Component.text("Bold", Style.style(TextDecoration.BOLD)));
+            map.put("&m", Component.text("Strikethrough", Style.style(TextDecoration.STRIKETHROUGH)));
+            map.put("&n", Component.text("Underline", Style.style(TextDecoration.UNDERLINED)));
+            map.put("&o", Component.text("Italic", Style.style(TextDecoration.ITALIC)));
+            map.put("&r", Component.text("Reset"));
         });
     }
 }

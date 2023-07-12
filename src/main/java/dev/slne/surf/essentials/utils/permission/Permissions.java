@@ -2,6 +2,7 @@ package dev.slne.surf.essentials.utils.permission;
 
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
+import lombok.experimental.UtilityClass;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.Contract;
@@ -15,188 +16,196 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * Permissions are registered automatically when the class is loaded.
  */
-public final class Permissions {
+@UtilityClass
+public class Permissions {
 
     /**
      * These are the permissions for the 'cheat' commands
      */
-    public static final String FILL_STACK_PERMISSION;
-    public static final String FLY_SELF_PERMISSION;
-    public static final String FLY_OTHER_PERMISSION;
-    public static final String FEED_SELF_PERMISSION;
-    public static final String FEED_OTHER_PERMISSION;
-    public static final String GOD_MODE_SELF_PERMISSION;
-    public static final String GOD_MODE_OTHER_PERMISSION;
-    public static final String HEAL_SELF_PERMISSION;
-    public static final String HEAL_OTHER_PERMISSION;
-    public static final String REPAIR_SELF_PERMISSION;
-    public static final String REPAIR_OTHER_PERMISSION;
-    public static final String SUICIDE_PERMISSION;
-    public static final String HURT_PERMISSION;
-    public static final String ANVIL_SELF_PERMISSION;
-    public static final String ANVIL_OTHER_PERMISSION;
-    public static final String CARTOGRAPHY_TABLE_SELF_PERMISSION;
-    public static final String CARTOGRAPHY_TABLE_OTHER_PERMISSION;
-    public static final String GRINDSTONE_SELF_PERMISSION;
-    public static final String GRINDSTONE_OTHER_PERMISSION;
-    public static final String LOOM_SELF_PERMISSION;
-    public static final String LOOM_OTHER_PERMISSION;
-    public static final String SMITHING_TABLE_SELF_PERMISSION;
-    public static final String SMITHING_TABLE_OTHER_PERMISSION;
-    public static final String STONECUTTER_SELF_PERMISSION;
-    public static final String STONECUTTER_OTHER_PERMISSION;
-    public static final String WORKBENCH_SELF_PERMISSION;
-    public static final String WORKBENCH_OTHER_PERMISSION;
-    public static final String HAT_SELF_PERMISSION;
-    public static final String HAT_OTHER_PERMISSION;
-    public static final String UNHAT_SELF_PERMISSION;
-    public static final String UNHAT_OTHER_PERMISSION;
-    public static final String LIGHTING_PERMISSION;
-    public static final String TRASH_PERMISSION_SELF;
-    public static final String TRASH_PERMISSION_OTHER;
-    public static final String SPEED_PERMISSION_SELF;
-    public static final String SPEED_PERMISSION_OTHER;
-    public static final String POSE_SELF_PERMISSION;
-    public static final String POSE_OTHER_PERMISSION;
+    public final String FILL_STACK_PERMISSION;
+    public final String FLY_SELF_PERMISSION;
+    public final String FLY_OTHER_PERMISSION;
+    public final String FEED_SELF_PERMISSION;
+    public final String FEED_OTHER_PERMISSION;
+    public final String GOD_MODE_SELF_PERMISSION;
+    public final String GOD_MODE_OTHER_PERMISSION;
+    public final String HEAL_SELF_PERMISSION;
+    public final String HEAL_OTHER_PERMISSION;
+    public final String REPAIR_SELF_PERMISSION;
+    public final String REPAIR_OTHER_PERMISSION;
+    public final String SUICIDE_PERMISSION;
+    public final String HURT_PERMISSION;
+    public final String ANVIL_SELF_PERMISSION;
+    public final String ANVIL_OTHER_PERMISSION;
+    public final String CARTOGRAPHY_TABLE_SELF_PERMISSION;
+    public final String CARTOGRAPHY_TABLE_OTHER_PERMISSION;
+    public final String GRINDSTONE_SELF_PERMISSION;
+    public final String GRINDSTONE_OTHER_PERMISSION;
+    public final String LOOM_SELF_PERMISSION;
+    public final String LOOM_OTHER_PERMISSION;
+    public final String SMITHING_TABLE_SELF_PERMISSION;
+    public final String SMITHING_TABLE_OTHER_PERMISSION;
+    public final String STONECUTTER_SELF_PERMISSION;
+    public final String STONECUTTER_OTHER_PERMISSION;
+    public final String WORKBENCH_SELF_PERMISSION;
+    public final String WORKBENCH_OTHER_PERMISSION;
+    public final String HAT_SELF_PERMISSION;
+    public final String HAT_OTHER_PERMISSION;
+    public final String UNHAT_SELF_PERMISSION;
+    public final String UNHAT_OTHER_PERMISSION;
+    public final String LIGHTING_PERMISSION;
+    public final String TRASH_PERMISSION_SELF;
+    public final String TRASH_PERMISSION_OTHER;
+    public final String SPEED_PERMISSION_SELF;
+    public final String SPEED_PERMISSION_OTHER;
+    public final String POSE_SELF_PERMISSION;
+    public final String POSE_OTHER_PERMISSION;
 
 
     /**
      * Permission for the recreated 'minecraft' commands
      */
-    public static final String ATTRIBUTE_PERMISSION;
-    public static final String BOSSBAR_PERMISSION;
-    public static final String CLONE_PERMISSION;
-    public static final String DATAPACK_PERMISSION;
-    public static final String DEFAULT_GAMEMODE_PERMISSION;
-    public static final String DEOP_PERMISSION;
-    public static final String DIFFICULTY_PERMISSION;
-    public static final String EFFECT_PERMISSION;
-    public static final String ENCHANT_PERMISSION;
-    public static final String EXPERIENCE_PERMISSION;
-    public static final String FORCELOAD_PERMISSION;
+    public final String ATTRIBUTE_PERMISSION;
+    public final String BOSSBAR_PERMISSION;
+    public final String CLONE_PERMISSION;
+    public final String DATAPACK_PERMISSION;
+    public final String DEFAULT_GAMEMODE_PERMISSION;
+    public final String DEOP_PERMISSION;
+    public final String DIFFICULTY_PERMISSION;
+    public final String EFFECT_PERMISSION;
+    public final String ENCHANT_PERMISSION;
+    public final String EXPERIENCE_PERMISSION;
+    public final String FORCELOAD_PERMISSION;
 
-    public static final String GAMEMODE_CREATIVE_SELF_PERMISSION;
-    public static final String GAMEMODE_CREATIVE_OTHER_PERMISSION;
-    public static final String GAMEMODE_CREATIVE_OTHER_OFFLINE_PERMISSION;
-    public static final String GAMEMODE_SURVIVAL_SELF_PERMISSION;
-    public static final String GAMEMODE_SURVIVAL_OTHER_PERMISSION;
-    public static final String GAMEMODE_SURVIVAL_OTHER_OFFLINE_PERMISSION;
-    public static final String GAMEMODE_SPECTATOR_SELF_PERMISSION;
-    public static final String GAMEMODE_SPECTATOR_OTHER_PERMISSION;
-    public static final String GAMEMODE_SPECTATOR_OTHER_OFFLINE_PERMISSION;
-    public static final String GAMEMODE_ADVENTURE_SELF_PERMISSION;
-    public static final String GAMEMODE_ADVENTURE_OTHER_PERMISSION;
-    public static final String GAMEMODE_ADVENTURE_OTHER_OFFLINE_PERMISSION;
+    public final String GAMEMODE_CREATIVE_SELF_PERMISSION;
+    public final String GAMEMODE_CREATIVE_OTHER_PERMISSION;
+    public final String GAMEMODE_CREATIVE_OTHER_OFFLINE_PERMISSION;
+    public final String GAMEMODE_SURVIVAL_SELF_PERMISSION;
+    public final String GAMEMODE_SURVIVAL_OTHER_PERMISSION;
+    public final String GAMEMODE_SURVIVAL_OTHER_OFFLINE_PERMISSION;
+    public final String GAMEMODE_SPECTATOR_SELF_PERMISSION;
+    public final String GAMEMODE_SPECTATOR_OTHER_PERMISSION;
+    public final String GAMEMODE_SPECTATOR_OTHER_OFFLINE_PERMISSION;
+    public final String GAMEMODE_ADVENTURE_SELF_PERMISSION;
+    public final String GAMEMODE_ADVENTURE_OTHER_PERMISSION;
+    public final String GAMEMODE_ADVENTURE_OTHER_OFFLINE_PERMISSION;
 
-    public static final String GAMERULE_PERMISSION;
-    public static final String GIVE_PERMISSION;
-    public static final String KILL_SELF_PERMISSION;
-    public static final String KILL_OTHER_PERMISSION;
-    public static final String LIST_PERMISSION;
-    public static final String OP_PERMISSION;
-    public static final String PARTICLE_PERMISSION;
-    public static final String TIME_PERMISSION;
-    public static final String WEATHER_PERMISSION;
-    public static final String CLEAR_SELF_PERMISSION;
-    public static final String CLEAR_OTHER_PERMISSION;
-    public static final String HELP_PERMISSION;
-    public static final String SEED_PERMISSION;
-    public static final String SET_WORLD_SPAWN_PERMISSION;
-    public static final String SPECTATE_LEAVE_PERMISSION;
-    public static final String SPECTATE_OTHER_PERMISSION;
-    public static final String SUMMON_PERMISSION;
-    public static final String FILL_PERMISSION;
-    public static final String SET_BLOCK_PERMISSION;
-    public static final String RIDE_PERMISSION;
-    public static final String DAMAGE_PERMISSION;
-    public static final String WHITELIST_PERMISSION;
-    public static final String RELOAD_PERMISSION;
-    public static final String FUNCTION_PERMISSION;
-    public static final String FILL_BIOME_PERMISSION;
-    public static final String SPAWN_ARMOR_TRIMS_PERMISSION;
-    public static final String EXECUTE_COMMAND_PERMISSION;
-    public static final String SET_PLAYER_IDLE_TIMEOUT_PERMISSION;
-    public static final String PLAY_SOUND_PERMISSION;
-    public static final String ADVANCEMENT_PERMISSION;
+    public final String GAMERULE_PERMISSION;
+    public final String GIVE_PERMISSION;
+    public final String KILL_SELF_PERMISSION;
+    public final String KILL_OTHER_PERMISSION;
+    public final String LIST_PERMISSION;
+    public final String OP_PERMISSION;
+    public final String PARTICLE_PERMISSION;
+    public final String TIME_PERMISSION;
+    public final String WEATHER_PERMISSION;
+    public final String CLEAR_SELF_PERMISSION;
+    public final String CLEAR_OTHER_PERMISSION;
+    public final String HELP_PERMISSION;
+    public final String SEED_PERMISSION;
+    public final String SET_WORLD_SPAWN_PERMISSION;
+    public final String SPECTATE_LEAVE_PERMISSION;
+    public final String SPECTATE_SELF_PERMISSION;
+    public final String SPECTATE_OTHER_PERMISSION;
+    public final String SUMMON_PERMISSION;
+    public final String FILL_PERMISSION;
+    public final String SET_BLOCK_PERMISSION;
+    public final String RIDE_PERMISSION;
+    public final String DAMAGE_PERMISSION;
+    public final String WHITELIST_PERMISSION;
+    public final String RELOAD_PERMISSION;
+    public final String FUNCTION_PERMISSION;
+    public final String FILL_BIOME_PERMISSION;
+    public final String SPAWN_ARMOR_TRIMS_PERMISSION;
+    public final String EXECUTE_COMMAND_PERMISSION;
+    public final String SET_PLAYER_IDLE_TIMEOUT_PERMISSION;
+    public final String PLAY_SOUND_PERMISSION;
+    public final String ADVANCEMENT_PERMISSION;
 
 
     /**
      * Permissions for the 'general' commands
      */
-    public static final String ACTION_BAR_BROADCAST_PERMISSION;
-    public static final String ALERT_PERMISSION;
-    public static final String BOOK_PERMISSION;
-    public static final String BOOK_PERMISSION_BYPASS;
-    public static final String BROADCAST_WORLD_PERMISSION;
-    public static final String GET_POS_SELF_PERMISSION;
-    public static final String GET_POS_OTHER_PERMISSION;
-    public static final String INFO_PERMISSION;
-    public static final String RULE_SELF_PERMISSION;
-    public static final String RULE_OTHER_PERMISSION;
-    public static final String SPAWNER_PERMISSION;
-    public static final String POLL_PERMISSION;
-    public static final String VOTE_PERMISSION;
-    public static final String TITLE_BROADCAST_PERMISSION;
-    public static final String OFFLINE_TELEPORT_PERMISSION;
-    public static final String SET_ITEM_NAME_PERMISSION;
-    public static final String SET_ITEM_LORE_PERMISSION;
-    public static final String TELEPORT_BACK_PERMISSION;
-    public static final String TELEPORT_RANDOM_PERMISSION;
-    public static final String CLEAR_ITEM_SELF_PERMISSION;
-    public static final String CLEAR_ITEM_OTHER_PERMISSION;
-    public static final String INFINITY_PERMISSION;
-    public static final String TIMER_PERMISSION;
-    public static final String CHAT_CLEAR_SELF_PERMISSION;
-    public static final String CHAT_CLEAR_OTHER_PERMISSION;
-    public static final String CHAT_CLEAR_BYPASS_PERMISSION;
-    public static final String TELEPORT_PERMISSION;
-    public static final String TELEPORT_TOP_SELF_PERMISSION;
-    public static final String TELEPORT_TOP_OTHER_PERMISSION;
-    public static final String WORLD_CREATE_PERMISSION;
-    public static final String WORLD_CHANGE_PERMISSION;
-    public static final String WORLD_LOAD_PERMISSION;
-    public static final String WORLD_UNLOAD_PERMISSION;
-    public static final String WORLD_REMOVE_PERMISSION;
-    public static final String WORLD_GUI_PERMISSION;
-    public static final String WORLD_QUERY_PERMISSION;
-    public static final String TELEPORT_SPAWN_SELF;
-    public static final String TELEPORT_SPAWN_OTHER;
-    public static final String DEATH_LOCATION_PERMISSION_SELF;
-    public static final String DEATH_LOCATION_PERMISSION_OTHER;
-    public static final String PLAYER_HEAD_PERMISSION;
-    public static final String SCREAM_PERMISSION;
-    public static final String SCREAM_BYPASS_PERMISSION;
-    public static final String NEAR_PERMISSION;
+    public final String ACTION_BAR_BROADCAST_PERMISSION;
+    public final String ALERT_PERMISSION;
+    public final String BOOK_PERMISSION;
+    public final String BOOK_PERMISSION_BYPASS;
+    public final String BROADCAST_WORLD_PERMISSION;
+    public final String GET_POS_SELF_PERMISSION;
+    public final String GET_POS_OTHER_PERMISSION;
+    public final String INFO_PERMISSION;
+    public final String RULE_SELF_PERMISSION;
+    public final String RULE_OTHER_PERMISSION;
+    public final String SPAWNER_PERMISSION;
+    public final String POLL_PERMISSION;
+    public final String VOTE_PERMISSION;
+    public final String TITLE_BROADCAST_PERMISSION;
+    public final String OFFLINE_TELEPORT_PERMISSION;
+    public final String SET_ITEM_NAME_PERMISSION;
+    public final String SET_ITEM_LORE_PERMISSION;
+    public final String TELEPORT_BACK_PERMISSION;
+    public final String TELEPORT_RANDOM_PERMISSION;
+    public final String CLEAR_ITEM_SELF_PERMISSION;
+    public final String CLEAR_ITEM_OTHER_PERMISSION;
+    public final String INFINITY_PERMISSION;
+    public final String TIMER_PERMISSION;
+    public final String CHAT_CLEAR_SELF_PERMISSION;
+    public final String CHAT_CLEAR_OTHER_PERMISSION;
+    public final String CHAT_CLEAR_BYPASS_PERMISSION;
+    public final String TELEPORT_PERMISSION;
+    public final String TELEPORT_TOP_SELF_PERMISSION;
+    public final String TELEPORT_TOP_OTHER_PERMISSION;
+    public final String WORLD_CREATE_PERMISSION;
+    public final String WORLD_CHANGE_PERMISSION;
+    public final String WORLD_LOAD_PERMISSION;
+    public final String WORLD_UNLOAD_PERMISSION;
+    public final String WORLD_REMOVE_PERMISSION;
+    public final String WORLD_GUI_PERMISSION;
+    public final String WORLD_QUERY_PERMISSION;
+    public final String TELEPORT_SPAWN_SELF;
+    public final String TELEPORT_SPAWN_OTHER;
+    public final String DEATH_LOCATION_PERMISSION_SELF;
+    public final String DEATH_LOCATION_PERMISSION_OTHER;
+    public final String PLAYER_HEAD_PERMISSION;
+    public final String SCREAM_PERMISSION;
+    public final String SCREAM_BYPASS_PERMISSION;
+    public final String NEAR_PERMISSION;
 
 
     /**
      * Permission for the 'trolls'
      */
-    public static final String TROLL_ALL_PERMISSION;
-    public static final String TROLL_BOOM_PERMISSION;
-    public static final String TROLL_DEMO_PERMISSION;
-    public static final String TROLL_ILLUSIONER_PERMISSION;
-    public static final String TROLL_ANVIL_PERMISSION;
-    public static final String TROLL_VILLAGER_PERMISSION;
-    public static final String TROLL_WATER_PERMISSION;
-    public static final String TROLL_MLG_PERMISSION;
-    public static final String TROLL_BELL_PERMISSION;
-    public static final String TROLL_HEROBRINE_PERMISSION;
-    public static final String TROLL_CAGE_PERMISSION;
-    public static final String TROLL_CRASH_PERMISSION;
-    public static final String TROLL_FAKE_BLOCK_PERMISSION;
-    public static final String TROLL_FOLLOW_BLOCK_PERMISSION;
+    public final String TROLL_ALL_PERMISSION;
+    public final String TROLL_BOOM_PERMISSION;
+    public final String TROLL_DEMO_PERMISSION;
+    public final String TROLL_ILLUSIONER_PERMISSION;
+    public final String TROLL_ANVIL_PERMISSION;
+    public final String TROLL_VILLAGER_PERMISSION;
+    public final String TROLL_WATER_PERMISSION;
+    public final String TROLL_MLG_PERMISSION;
+    public final String TROLL_BELL_PERMISSION;
+    public final String TROLL_HEROBRINE_PERMISSION;
+    public final String TROLL_CAGE_PERMISSION;
+    public final String TROLL_CRASH_PERMISSION;
+    public final String TROLL_FAKE_BLOCK_PERMISSION;
+    public final String TROLL_FOLLOW_BLOCK_PERMISSION;
+
+    /**
+     * Announce permissions
+     */
+    public final String OP_ANNOUCE_PERMISSION;
+    public final String GAMEMODE_ANNOUCE_PERMISSION;
 
 
     /**
      * Parent permissions
      */
-    public static final Permission playerPermission;
-    public static final Permission modPermission;
+    public final Permission playerPermission;
+    public final Permission modPermission;
 
 
-    private static final PluginManager pluginManager;
-    private static final Permission parentPermission;
+    private final PluginManager pluginManager;
+    private final Permission parentPermission;
 
 
     /**
@@ -207,7 +216,7 @@ public final class Permissions {
      * @return The name of the registered permission.
      */
     @Contract("_, _ -> param1")
-    private static String register(final @NotNull String permission, Permission @NotNull ... parents) {
+    private String register(final @NotNull String permission, Permission @NotNull ... parents) {
         EssentialsUtil.sendDebug("Registering permission: " + permission);
         final var bukkitPermission = new Permission(permission);
 
@@ -229,7 +238,7 @@ public final class Permissions {
      * @param description The optional description of the permission.
      * @return The registered parent permission.
      */
-    private static @NotNull Permission registerParent(@NotNull String permission, @Nullable String description) {
+    private @NotNull Permission registerParent(@NotNull String permission, @Nullable String description) {
         final var perm = new Permission(permission, description);
         EssentialsUtil.sendDebug("Adding parent permission: " + perm.getName());
         pluginManager.addPermission(perm);
@@ -243,7 +252,7 @@ public final class Permissions {
      * @return The registered parent permission.
      */
     @SuppressWarnings("unused")
-    private static @NotNull Permission registerParent(@NotNull String permission) {
+    private @NotNull Permission registerParent(@NotNull String permission) {
         return registerParent(permission, null);
     }
 
@@ -320,7 +329,7 @@ public final class Permissions {
         KILL_OTHER_PERMISSION = register("surf.essentials.commands.kill.others");
         LIST_PERMISSION = register("surf.essentials.commands.list", modPermission);
         OP_PERMISSION = register("surf.essentials.commands.op");
-        PARTICLE_PERMISSION = register("surf.essentials.commands.particle");
+        PARTICLE_PERMISSION = register("surf.essentials.commands.bukkitParticle");
         TIME_PERMISSION = register("surf.essentials.commands.time", modPermission);
         WEATHER_PERMISSION = register("surf.essentials.commands.weather", modPermission);
         CLEAR_SELF_PERMISSION = register("surf.essentials.commands.clear.self");
@@ -329,6 +338,7 @@ public final class Permissions {
         SEED_PERMISSION = register("surf.essentials.commands.seed");
         SET_WORLD_SPAWN_PERMISSION = register("surf.essentials.commands.setworldspawn");
         SPECTATE_LEAVE_PERMISSION = register("surf.essentials.commands.spectate.leave", modPermission);
+        SPECTATE_SELF_PERMISSION = register("surf.essentials.commands.spectate.self", modPermission);
         SPECTATE_OTHER_PERMISSION = register("surf.essentials.commands.spectate.others", modPermission);
         SUMMON_PERMISSION = register("surf.essentials.commands.summon");
         FILL_PERMISSION = register("surf.essentials.commands.fill");
@@ -421,5 +431,16 @@ public final class Permissions {
         TROLL_CRASH_PERMISSION = register("surf.essentials.commands.troll.crash");
         TROLL_FAKE_BLOCK_PERMISSION = register("surf.essentials.commands.troll.fakeBlock");
         TROLL_FOLLOW_BLOCK_PERMISSION = register("surf.essentials.commands.troll.followBlock");
+
+
+        // 'announce' permissions
+        OP_ANNOUCE_PERMISSION = register("surf.essentials.announce.op", modPermission);
+        GAMEMODE_ANNOUCE_PERMISSION = register("surf.essentials.announce.gamemode", modPermission);
+
+
+
+        parentPermission.recalculatePermissibles();
+        modPermission.recalculatePermissibles();
+        playerPermission.recalculatePermissibles();
     }
 }

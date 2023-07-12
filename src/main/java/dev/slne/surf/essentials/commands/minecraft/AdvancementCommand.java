@@ -1,257 +1,227 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.google.common.collect.ImmutableList;
+import dev.jorel.commandapi.arguments.ArgumentSuggestions;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.nms.brigadier.BrigadierCommand;
+import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
-import io.papermc.paper.adventure.PaperAdventure;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 import net.kyori.adventure.text.Component;
-import net.minecraft.advancements.Advancement;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
-public class AdvancementCommand extends BrigadierCommand {
-    private static final SuggestionProvider<CommandSourceStack> SUGGEST_ADVANCEMENTS;
+public class AdvancementCommand extends EssentialsCommand {
+    private static final String ADVANCEMENT_ARG = "advancement";
+    private static final String CRITERION_ARG = "criterion";
+    private static final String PLAYERS_ARG = "players";
 
-    @Override
-    public String[] names() {
-        return new String[]{"advancement"};
-    }
+    private static final ArgumentSuggestions<CommandSender> CRITERION_SUGGESTION;
 
-    @Override
-    public String usage() {
-        return "/advancement";
-    }
+    public AdvancementCommand() {
+        super("advancement", "advancement <grant | revoke> ", "Manage advancements");
 
-    @Override
-    public String description() {
-        return "Manage advancements";
-    }
+        withPermission(Permissions.ADVANCEMENT_PERMISSION);
 
-    @Override
-    public void literal(@NotNull LiteralArgumentBuilder<CommandSourceStack> literal) {
-        literal.requires(EssentialsUtil.checkPermissions(Permissions.ADVANCEMENT_PERMISSION));
-
-        literal.then(Commands.literal("grant")
-                        .then(Commands.argument("targets", EntityArgument.players())
-                                .then(Commands.literal("only")
-                                        .then(Commands.argument("advancement", ResourceLocationArgument.id())
-                                                .suggests(SUGGEST_ADVANCEMENTS)
-                                                .executes(context -> perform(
-                                                        context.getSource(),
-                                                        EntityArgument.getPlayers(context, "targets"),
-                                                        Action.GRANT,
-                                                        getAdvancements(ResourceLocationArgument.getAdvancement(context, "advancement"), Mode.ONLY)
-                                                ))
-                                                .then(Commands.argument("criterion", StringArgumentType.greedyString())
-                                                        .suggests((context, builder) -> SharedSuggestionProvider.suggest(
-                                                                ResourceLocationArgument.getAdvancement(context, "advancement").getCriteria().keySet(), builder))
-                                                        .executes(context -> performCriterion(
-                                                                context.getSource(),
-                                                                EntityArgument.getPlayers(context, "targets"),
-                                                                Action.GRANT,
-                                                                ResourceLocationArgument.getAdvancement(context, "advancement"),
-                                                                StringArgumentType.getString(context, "criterion")
-                                                        ))
-                                                )
-                                        )
-                                )
-                                .then(Commands.literal("from")
-                                        .then(Commands.argument("advancement", ResourceLocationArgument.id())
-                                                .suggests(SUGGEST_ADVANCEMENTS)
-                                                .executes(context -> perform(
-                                                        context.getSource(),
-                                                        EntityArgument.getPlayers(context, "targets"),
-                                                        Action.GRANT,
-                                                        getAdvancements(ResourceLocationArgument.getAdvancement(context, "advancement"), Mode.FROM)
-                                                ))
-                                        )
-                                )
-                                .then(Commands.literal("until")
-                                        .then(Commands.argument("advancement", ResourceLocationArgument.id())
-                                                .suggests(SUGGEST_ADVANCEMENTS)
-                                                .executes(context -> perform(
-                                                        context.getSource(),
-                                                        EntityArgument.getPlayers(context, "targets"),
-                                                        Action.GRANT,
-                                                        getAdvancements(ResourceLocationArgument.getAdvancement(context, "advancement"), Mode.UNTIL)
-                                                ))
-                                        )
-                                )
-                                .then(Commands.literal("through")
-                                        .then(Commands.argument("advancement", ResourceLocationArgument.id())
-                                                .suggests(SUGGEST_ADVANCEMENTS)
-                                                .executes(context -> perform(
-                                                        context.getSource(),
-                                                        EntityArgument.getPlayers(context, "targets"),
-                                                        Action.GRANT,
-                                                        getAdvancements(ResourceLocationArgument.getAdvancement(context, "advancement"), Mode.THROUGH)
-                                                ))
-                                        )
-                                )
-                                .then(Commands.literal("everything")
-                                        .executes(context -> perform(
-                                                context.getSource(),
-                                                EntityArgument.getPlayers(context, "targets"),
+        then(literal("grant")
+                .then(playersArgument(PLAYERS_ARG)
+                        .then(literal("only")
+                                .then(advancementArgument(ADVANCEMENT_ARG)
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> perform(
+                                                sender.getCallee(),
+                                                args.getUnchecked(PLAYERS_ARG),
                                                 Action.GRANT,
-                                                context.getSource().getServer().getAdvancements().getAllAdvancements()
+                                                getAdvancements(Objects.requireNonNull(args.getUnchecked(ADVANCEMENT_ARG)), Mode.ONLY)
+                                        ))
+                                        .then(greedyStringArgument(CRITERION_ARG)
+                                                .replaceSuggestions(CRITERION_SUGGESTION)
+                                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> performCriterion(
+                                                        sender.getCallee(),
+                                                        args.getUnchecked(PLAYERS_ARG),
+                                                        Action.GRANT,
+                                                        Objects.requireNonNull(args.getUnchecked(ADVANCEMENT_ARG)),
+                                                        args.getUnchecked(CRITERION_ARG)
+                                                ))
+                                        )
+                                )
+                        )
+                        .then(literal("from")
+                                .then(advancementArgument(ADVANCEMENT_ARG)
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> perform(
+                                                sender.getCallee(),
+                                                args.getUnchecked(PLAYERS_ARG),
+                                                Action.GRANT,
+                                                getAdvancements(args.getUnchecked(ADVANCEMENT_ARG), Mode.FROM)
                                         ))
                                 )
+                        )
+                        .then(literal("until")
+                                .then(advancementArgument(ADVANCEMENT_ARG)
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> perform(
+                                                sender.getCallee(),
+                                                args.getUnchecked(PLAYERS_ARG),
+                                                Action.GRANT,
+                                                getAdvancements(args.getUnchecked(ADVANCEMENT_ARG), Mode.UNTIL)
+                                        ))
+                                )
+                        )
+                        .then(literal("through")
+                                .then(advancementArgument(ADVANCEMENT_ARG)
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> perform(
+                                                sender.getCallee(),
+                                                args.getUnchecked(PLAYERS_ARG),
+                                                Action.GRANT,
+                                                getAdvancements(args.getUnchecked(ADVANCEMENT_ARG), Mode.THROUGH)
+                                        ))
+                                )
+                        )
+                        .then(literal("everything")
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> perform(
+                                        sender.getCallee(),
+                                        args.getUnchecked(PLAYERS_ARG),
+                                        Action.GRANT,
+                                        ImmutableList.copyOf(sender.getCallee().getServer().advancementIterator())
+                                ))
                         )
                 )
-                .then(Commands.literal("revoke")
-                        .then(Commands.argument("targets", EntityArgument.players())
-                                .then(Commands.literal("only")
-                                        .then(Commands.argument("advancement", ResourceLocationArgument.id())
-                                                .suggests(SUGGEST_ADVANCEMENTS)
-                                                .executes(context -> perform(
-                                                        context.getSource(),
-                                                        EntityArgument.getPlayers(context, "targets"),
-                                                        Action.REVOKE,
-                                                        getAdvancements(ResourceLocationArgument.getAdvancement(context, "advancement"), Mode.ONLY)
-                                                ))
-                                                .then(Commands.argument("criterion", StringArgumentType.greedyString())
-                                                        .suggests((context, builder) -> SharedSuggestionProvider.suggest(
-                                                                ResourceLocationArgument.getAdvancement(context, "advancement").getCriteria().keySet(), builder))
-                                                        .executes(context -> performCriterion(
-                                                                context.getSource(),
-                                                                EntityArgument.getPlayers(context, "targets"),
-                                                                Action.REVOKE,
-                                                                ResourceLocationArgument.getAdvancement(context, "advancement"),
-                                                                StringArgumentType.getString(context, "criterion")
-                                                        ))
-                                                )
-                                        )
-                                )
-                                .then(Commands.literal("from")
-                                        .then(Commands.argument("advancement", ResourceLocationArgument.id())
-                                                .suggests(SUGGEST_ADVANCEMENTS)
-                                                .executes(context -> perform(
-                                                        context.getSource(),
-                                                        EntityArgument.getPlayers(context, "targets"),
-                                                        Action.REVOKE,
-                                                        getAdvancements(ResourceLocationArgument.getAdvancement(context, "advancement"), Mode.FROM)
-                                                ))
-                                        )
-                                )
-                                .then(Commands.literal("until")
-                                        .then(Commands.argument("advancement", ResourceLocationArgument.id())
-                                                .suggests(SUGGEST_ADVANCEMENTS)
-                                                .executes(context -> perform(
-                                                        context.getSource(),
-                                                        EntityArgument.getPlayers(context, "targets"),
-                                                        Action.REVOKE,
-                                                        getAdvancements(ResourceLocationArgument.getAdvancement(context, "advancement"), Mode.UNTIL)
-                                                ))
-                                        )
-                                )
-                                .then(Commands.literal("through")
-                                        .then(Commands.argument("advancement", ResourceLocationArgument.id())
-                                                .suggests(SUGGEST_ADVANCEMENTS)
-                                                .executes(context -> perform(
-                                                        context.getSource(),
-                                                        EntityArgument.getPlayers(context, "targets"),
-                                                        Action.REVOKE,
-                                                        getAdvancements(ResourceLocationArgument.getAdvancement(context, "advancement"), Mode.THROUGH)
-                                                ))
-                                        )
-                                )
-                                .then(Commands.literal("everything")
-                                        .executes(context -> perform(
-                                                context.getSource(),
-                                                EntityArgument.getPlayers(context, "targets"),
+        );
+
+        then(literal("revoke")
+                .then(playersArgument(PLAYERS_ARG)
+                        .then(literal("only")
+                                .then(advancementArgument(ADVANCEMENT_ARG)
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> perform(
+                                                sender.getCallee(),
+                                                args.getUnchecked(PLAYERS_ARG),
                                                 Action.REVOKE,
-                                                context.getSource().getServer().getAdvancements().getAllAdvancements()
+                                                getAdvancements(Objects.requireNonNull(args.getUnchecked(ADVANCEMENT_ARG)), Mode.ONLY)
+                                        ))
+                                        .then(greedyStringArgument(CRITERION_ARG)
+                                                .replaceSuggestions(CRITERION_SUGGESTION)
+                                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> performCriterion(
+                                                        sender.getCallee(),
+                                                        args.getUnchecked(PLAYERS_ARG),
+                                                        Action.REVOKE,
+                                                        Objects.requireNonNull(args.getUnchecked(ADVANCEMENT_ARG)),
+                                                        args.getUnchecked(CRITERION_ARG)
+                                                ))
+                                        )
+                                )
+                        )
+                        .then(literal("from")
+                                .then(advancementArgument(ADVANCEMENT_ARG)
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> perform(
+                                                sender.getCallee(),
+                                                args.getUnchecked(PLAYERS_ARG),
+                                                Action.REVOKE,
+                                                getAdvancements(args.getUnchecked(ADVANCEMENT_ARG), Mode.FROM)
                                         ))
                                 )
                         )
-                );
+                        .then(literal("until")
+                                .then(advancementArgument(ADVANCEMENT_ARG)
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> perform(
+                                                sender.getCallee(),
+                                                args.getUnchecked(PLAYERS_ARG),
+                                                Action.REVOKE,
+                                                getAdvancements(args.getUnchecked(ADVANCEMENT_ARG), Mode.UNTIL)
+                                        ))
+                                )
+                        )
+                        .then(literal("through")
+                                .then(advancementArgument(ADVANCEMENT_ARG)
+                                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> perform(
+                                                sender.getCallee(),
+                                                args.getUnchecked(PLAYERS_ARG),
+                                                Action.REVOKE,
+                                                getAdvancements(args.getUnchecked(ADVANCEMENT_ARG), Mode.THROUGH)
+                                        ))
+                                )
+
+                        )
+                        .then(literal("everything")
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> perform(
+                                        sender.getCallee(),
+                                        args.getUnchecked(PLAYERS_ARG),
+                                        Action.REVOKE,
+                                        ImmutableList.copyOf(sender.getCallee().getServer().advancementIterator())
+                                ))
+                        )
+                )
+        );
     }
 
-
-    private int perform(CommandSourceStack source, Collection<ServerPlayer> targetsUnchecked, Action operation, Collection<Advancement> selection) throws CommandSyntaxException {
-        final var targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
+    private int perform(CommandSender source, Collection<Player> targetsUnchecked, Action operation, Collection<Advancement> selection) throws WrapperCommandSyntaxException {
+        val targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
         int success = 0;
 
-        for (ServerPlayer target : targets) {
+        for (Player target : targets) {
             success += operation.perform(target, selection);
         }
 
         if (success == 0) {
             if (selection.size() == 1) {
-                if (targets.size() == 1) throw new SimpleCommandExceptionType(PaperAdventure.asVanilla(
-                        Component.translatable(
-                                operation.getKey() + ".one.to.one.failure",
-                                Colors.ERROR,
-                                getChatComponent(selection.iterator().next()),
-                                EssentialsUtil.getDisplayName(targets.iterator().next())
-                        )
-                )).create();
-                throw new SimpleCommandExceptionType(PaperAdventure.asVanilla(
-                        Component.translatable(
-                                operation.getKey() + ".one.to.many.failure",
-                                Colors.ERROR,
-                                getChatComponent(selection.iterator().next()),
-                                Component.text(targets.size(), Colors.VARIABLE_VALUE)
-                        )
-                )).create();
-            } else if (targets.size() == 1) throw new SimpleCommandExceptionType(PaperAdventure.asVanilla(
-                    Component.translatable(
-                            operation.getKey() + ".many.to.one.failure",
-                            Colors.ERROR,
-                            Component.text(selection.size(), Colors.VARIABLE_VALUE),
-                            EssentialsUtil.getDisplayName(targets.iterator().next())
-                    )
-            )).create();
-            throw new SimpleCommandExceptionType(PaperAdventure.asVanilla(
-                    Component.translatable(
-                            operation.getKey() + ".many.to.many.failure",
-                            Colors.ERROR,
-                            Component.text(selection.size(), Colors.VARIABLE_VALUE),
-                            Component.text(targets.size(), Colors.VARIABLE_VALUE)
-                    )
-            )).create();
+                if (targets.size() == 1) throw Exceptions.ADVANCEMENT_ONE_TO_ONE_FAILURE.create(
+                        operation.getKey(),
+                        EssentialsUtil.getDisplayName(selection.iterator().next()),
+                        EssentialsUtil.getDisplayName(targets.iterator().next())
+                );
+
+                throw Exceptions.ADVANCEMENT_ONE_TO_MANY_FAILURE.create(
+                        operation.getKey(),
+                        EssentialsUtil.getDisplayName(selection.iterator().next()),
+                        targets.size()
+                );
+            } else if (targets.size() == 1) throw Exceptions.ADVANCEMENT_MANY_TO_ONE_FAILURE.create(
+                    operation.getKey(),
+                    selection.size(),
+                    EssentialsUtil.getDisplayName(targets.iterator().next())
+            );
+
+            throw Exceptions.ADVANCEMENT_MANY_TO_MANY_FAILURE.create(
+                    operation.getKey(),
+                    selection.size(),
+                    targets.size()
+            );
         }
 
         if (selection.size() == 1) {
             if (targets.size() == 1) {
-                EssentialsUtil.sendSourceSuccess(
+                EssentialsUtil.sendSuccess(
                         source,
                         Component.translatable(
                                 operation.getKey() + ".one.to.one.success",
                                 Colors.SUCCESS,
-                                getChatComponent(selection.iterator().next()),
+                                EssentialsUtil.getDisplayName(selection.iterator().next()),
                                 EssentialsUtil.getDisplayName(targets.iterator().next())
                         )
                 );
             } else {
-                EssentialsUtil.sendSourceSuccess(
+                EssentialsUtil.sendSuccess(
                         source,
                         Component.translatable(
                                 operation.getKey() + ".one.to.many.success",
                                 Colors.SUCCESS,
-                                getChatComponent(selection.iterator().next()),
+                                EssentialsUtil.getDisplayName(selection.iterator().next()),
                                 Component.text(targets.size(), Colors.VARIABLE_VALUE)
                         )
                 );
             }
         } else if (targets.size() == 1) {
-            EssentialsUtil.sendSourceSuccess(
+            EssentialsUtil.sendSuccess(
                     source,
                     Component.translatable(
                             operation.getKey() + ".many.to.one.success",
@@ -261,7 +231,7 @@ public class AdvancementCommand extends BrigadierCommand {
                     )
             );
         } else {
-            EssentialsUtil.sendSourceSuccess(
+            EssentialsUtil.sendSuccess(
                     source,
                     Component.translatable(
                             operation.getKey() + ".many.to.many.success",
@@ -275,61 +245,50 @@ public class AdvancementCommand extends BrigadierCommand {
         return success;
     }
 
-
-    private int performCriterion(CommandSourceStack source, Collection<ServerPlayer> targets, Action operation, Advancement advancement, String criterion) throws CommandSyntaxException {
+    private int performCriterion(CommandSender source, Collection<Player> targets, Action operation, @NotNull Advancement advancement, String criterion) throws WrapperCommandSyntaxException {
         int success = 0;
-        if (!advancement.getCriteria().containsKey(criterion))
-            throw new SimpleCommandExceptionType(PaperAdventure.asVanilla(
-                    Component.translatable(
-                            "commands.advancement.criterionNotFound",
-                            Colors.ERROR,
-                            getChatComponent(advancement),
-                            Component.text(criterion, Colors.VARIABLE_VALUE)
-                    )
-            )).create();
+        if (!advancement.getCriteria().contains(criterion))
+            throw Exceptions.ADVANCEMENT_CRITERION_NOT_FOUND.create(
+                    EssentialsUtil.getDisplayName(advancement),
+                    criterion
+            );
 
 
-        for (ServerPlayer target : targets) {
+        for (Player target : targets) {
             if (operation.performCriterion(target, advancement, criterion)) success++;
         }
 
         if (success == 0) {
             if (targets.size() == 1) {
-                throw new SimpleCommandExceptionType(PaperAdventure.asVanilla(
-                        Component.translatable(
-                                operation.getKey() + ".criterion.to.one.failure",
-                                Colors.ERROR,
-                                Component.text(criterion, Colors.VARIABLE_VALUE),
-                                getChatComponent(advancement),
-                                EssentialsUtil.getDisplayName(targets.iterator().next())
-                        )
-                )).create();
+                throw Exceptions.ADVANCEMENT_CRITERION_TO_ONE_FAILURE.create(
+                        operation.getKey(),
+                        criterion,
+                        EssentialsUtil.getDisplayName(advancement),
+                        EssentialsUtil.getDisplayName(targets.iterator().next())
+                );
             }
-            throw new SimpleCommandExceptionType(PaperAdventure.asVanilla(
-                    Component.translatable(
-                            operation.getKey() + ".criterion.to.many.failure",
-                            Colors.ERROR,
-                            Component.text(criterion, Colors.VARIABLE_VALUE),
-                            getChatComponent(advancement),
-                            Component.text(targets.size(), Colors.VARIABLE_VALUE)
-                    )
-            )).create();
+            throw Exceptions.ADVANCEMENT_CRITERION_TO_MANY_FAILURE.create(
+                    operation.getKey(),
+                    criterion,
+                    EssentialsUtil.getDisplayName(advancement),
+                    targets.size()
+            );
         }
 
 
         if (targets.size() == 1) {
-            EssentialsUtil.sendSourceSuccess(source, Component.translatable(
+            EssentialsUtil.sendSuccess(source, Component.translatable(
                     operation.getKey() + ".criterion.to.one.success",
                     Component.text(criterion, Colors.VARIABLE_VALUE),
-                    getChatComponent(advancement),
+                    EssentialsUtil.getDisplayName(advancement),
                     EssentialsUtil.getDisplayName(targets.iterator().next())
 
             ));
         } else {
-            EssentialsUtil.sendSourceSuccess(source, Component.translatable(
+            EssentialsUtil.sendSuccess(source, Component.translatable(
                     operation.getKey() + ".criterion.to.many.success",
                     Component.text(criterion, Colors.VARIABLE_VALUE),
-                    getChatComponent(advancement),
+                    EssentialsUtil.getDisplayName(advancement),
                     Component.text(targets.size(), Colors.VARIABLE_VALUE)
             ));
         }
@@ -337,16 +296,10 @@ public class AdvancementCommand extends BrigadierCommand {
         return success;
     }
 
-
-    private @NotNull Component getChatComponent(@NotNull Advancement advancement) {
-        return PaperAdventure.asAdventure(advancement.getChatComponent()).colorIfAbsent(Colors.VARIABLE_VALUE);
-    }
-
-    @Contract("_, _ -> new")
     private List<Advancement> getAdvancements(Advancement advancement, Mode selection) {
         return EssentialsUtil.make(new ArrayList<>(), advancements -> {
             if (selection.isParents()) {
-                var parent = advancement.getParent();
+                Advancement parent = advancement.getParent();
 
                 while (parent != null) {
                     advancements.add(parent);
@@ -371,42 +324,44 @@ public class AdvancementCommand extends BrigadierCommand {
     private enum Action {
         GRANT("grant") {
             @Override
-            protected boolean perform(ServerPlayer player, Advancement advancement) {
-                final var advancementProgress = player.getAdvancements().getOrStartProgress(advancement);
-                if (advancementProgress.isDone()) return false;
+            protected boolean perform(Player player, org.bukkit.advancement.Advancement advancement) {
+                val progress = player.getAdvancementProgress(advancement);
+                if (progress.isDone()) return false;
 
-                for (String string : advancementProgress.getRemainingCriteria()) {
-                    player.getAdvancements().award(advancement, string);
+                for (String criteria : progress.getRemainingCriteria()) {
+                    progress.awardCriteria(criteria);
                 }
 
                 return true;
             }
 
             @Override
-            protected boolean performCriterion(ServerPlayer player, Advancement advancement, String criterion) {
-                return player.getAdvancements().award(advancement, criterion);
+            protected boolean performCriterion(Player player, org.bukkit.advancement.Advancement advancement, String criterion) {
+                return player.getAdvancementProgress(advancement).awardCriteria(criterion);
             }
         },
         REVOKE("revoke") {
             @Override
-            protected boolean perform(ServerPlayer player, Advancement advancement) {
-                final var advancementProgress = player.getAdvancements().getOrStartProgress(advancement);
-                if (!advancementProgress.hasProgress()) return false;
+            protected boolean perform(Player player, org.bukkit.advancement.Advancement advancement) {
+                val progress = player.getAdvancementProgress(advancement);
 
-                for (String string : advancementProgress.getCompletedCriteria()) {
-                    player.getAdvancements().revoke(advancement, string);
+
+                if (progress.getAwardedCriteria().isEmpty()) return false;
+
+                for (String criteria : progress.getAwardedCriteria()) {
+                    progress.revokeCriteria(criteria);
                 }
 
                 return true;
             }
 
             @Override
-            protected boolean performCriterion(ServerPlayer player, Advancement advancement, String criterion) {
-                return player.getAdvancements().revoke(advancement, criterion);
+            protected boolean performCriterion(Player player, org.bukkit.advancement.Advancement advancement, String criterion) {
+                return player.getAdvancementProgress(advancement).revokeCriteria(criterion);
             }
         };
 
-
+        @Getter
         private final String key;
 
         @Contract(pure = true)
@@ -414,25 +369,23 @@ public class AdvancementCommand extends BrigadierCommand {
             this.key = "commands.advancement." + name;
         }
 
-        public int perform(ServerPlayer player, @NotNull Iterable<Advancement> advancements) {
+        public int perform(Player player, @NotNull Iterable<org.bukkit.advancement.Advancement> advancements) {
             int success = 0;
 
-            for (Advancement advancement : advancements) {
+            for (org.bukkit.advancement.Advancement advancement : advancements) {
                 if (this.perform(player, advancement)) ++success;
             }
 
             return success;
         }
 
-        protected abstract boolean perform(ServerPlayer player, Advancement advancement);
+        protected abstract boolean perform(Player player, org.bukkit.advancement.Advancement advancement);
 
-        protected abstract boolean performCriterion(ServerPlayer player, Advancement advancement, String criterion);
-
-        protected String getKey() {
-            return this.key;
-        }
+        protected abstract boolean performCriterion(Player player, org.bukkit.advancement.Advancement advancement, String criterion);
     }
 
+    @Getter
+    @RequiredArgsConstructor
     private enum Mode {
         ONLY(false, false),
         THROUGH(true, true),
@@ -442,34 +395,11 @@ public class AdvancementCommand extends BrigadierCommand {
 
         private final boolean parents;
         private final boolean children;
-
-        @Contract(pure = true)
-        Mode(boolean before, boolean after) {
-            this.parents = before;
-            this.children = after;
-        }
-
-        @Contract(pure = true)
-        public boolean isParents() {
-            return parents;
-        }
-
-        @Contract(pure = true)
-        public boolean isChildren() {
-            return children;
-        }
     }
 
 
     static {
-        SUGGEST_ADVANCEMENTS = (context, builder) -> SharedSuggestionProvider.suggestResource(
-                context.getSource()
-                        .getServer()
-                        .getAdvancements()
-                        .getAllAdvancements()
-                        .stream()
-                        .map(Advancement::getId),
-                builder
-        );
+        CRITERION_SUGGESTION = ArgumentSuggestions.stringCollection(info -> ((Advancement) Objects.requireNonNull(info.previousArgs().get(ADVANCEMENT_ARG))).getCriteria());
     }
 }
+
