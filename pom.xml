@@ -163,6 +163,19 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <distributionManagement>
+        <repository>
+            <id>slne-repository-snapshots</id>
+            <name>SLNE Repository</name>
+            <url>https://repo.slne.dev:2053/snapshots</url>
+        </repository>
+        <snapshotRepository>
+            <id>slne-repository-snapshots</id>
+            <name>SLNE Repository</name>
+            <url>https://repo.slne.dev:2053/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
         <resources>
             <resource>
