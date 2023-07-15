@@ -70,3 +70,14 @@ deploy:
         - "mvn $MAVEN_CLI_OPTS -s $MAVEN_SETTINGS deploy"
     tags:
         - java
+
+job:
+    stage: build
+    artifacts:
+        untracked: false
+        when: on_success
+        expire_in: 90 days
+        name: "$CI_JOB_NAME"
+        expose_as: 'download'
+        paths:
+            - "README.md"
