@@ -72,7 +72,7 @@ cache:
 deploy:
     stage: deploy
     script:
-        - "mvn $MAVEN_CLI_OPTS -s $MAVEN_SETTINGS deploy"
+        - "mvn $MAVEN_CLI_OPTS -s $MAVEN_SETTINGS package deploy"
     tags:
         - java
 
