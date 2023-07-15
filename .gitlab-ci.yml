@@ -71,8 +71,14 @@ deploy:
     tags:
         - java
 
+stages:
+    - build
+    - deploy
+
 job:
     stage: build
+    script: 
+        - "mvn clean install package"
     artifacts:
         untracked: false
         when: on_success
