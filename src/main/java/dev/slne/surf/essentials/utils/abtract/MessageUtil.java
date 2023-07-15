@@ -1,11 +1,10 @@
 package dev.slne.surf.essentials.utils.abtract;
 
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.brigadier.BrigadierMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.jetbrains.annotations.NotNull;
@@ -166,7 +165,7 @@ public abstract class MessageUtil extends PacketUtil {
      * @return the created exception
      */
     public static WrapperCommandSyntaxException createException(Component message) {
-        return new WrapperCommandSyntaxException(new SimpleCommandExceptionType(new BrigadierMessage(message.color(Colors.ERROR))).create());
+        return CommandAPIBukkit.failWithAdventureComponent(message);
     }
 
 
