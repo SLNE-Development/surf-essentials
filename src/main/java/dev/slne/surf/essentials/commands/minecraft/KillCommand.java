@@ -5,7 +5,6 @@ import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
-import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import lombok.val;
 import net.kyori.adventure.text.Component;
@@ -22,7 +21,7 @@ public class KillCommand extends EssentialsCommand {
 
         withRequirement(EssentialsUtil.checkPermissions(Permissions.KILL_SELF_PERMISSION, Permissions.KILL_OTHER_PERMISSION));
 
-        executesNative((NativeResultingCommandExecutor) (sender, args) -> kill(sender.getCallee(), List.of(getSpecialEntityOrException(sender, Damageable.class))));
+        executesNative((NativeResultingCommandExecutor) (sender, args) -> kill(sender.getCallee(), List.of(getEntityOrException(sender))));
         then(entitiesArgument("targets")
                 .withPermission(Permissions.KILL_OTHER_PERMISSION)
                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> kill(sender.getCallee(), args.getUnchecked("targets"))));
@@ -30,23 +29,20 @@ public class KillCommand extends EssentialsCommand {
 
     private int kill(CommandSender sender, Collection<Entity> targetsUnchecked) throws WrapperCommandSyntaxException {
         val targets = EssentialsUtil.checkEntitySuggestion(sender, targetsUnchecked);
-        val livingEntities = targets.stream()
-                .filter(entity -> entity instanceof Damageable)
-                .map(entity -> (Damageable) entity)
-                .toList();
 
-        if (livingEntities.isEmpty() && targets.size() == 1)
-            throw Exceptions.ERROR_NOT_VALID_ENTITY_FOR_COMMAND.create(targets.iterator().next());
-
-        for (Damageable entity : livingEntities) {
-            entity.setHealth(0);
+        for (Entity entity : targets) {
+            if (entity instanceof Damageable damageable) {
+                damageable.setHealth(0);
+            } else {
+                entity.remove();
+            }
         }
 
-        if (livingEntities.size() == 1) {
-            EssentialsUtil.sendSuccess(sender, EssentialsUtil.getDisplayName(livingEntities.iterator().next())
+        if (targets.size() == 1) {
+            EssentialsUtil.sendSuccess(sender, EssentialsUtil.getDisplayName(targets.iterator().next())
                     .append(Component.text(" wurde getötet!", Colors.SUCCESS)));
         } else {
-            EssentialsUtil.sendSuccess(sender, Component.text(livingEntities.size(), Colors.TERTIARY)
+            EssentialsUtil.sendSuccess(sender, Component.text(targets.size(), Colors.TERTIARY)
                     .append(Component.text(" entities wurden getötet!", Colors.SUCCESS)));
         }
 
