@@ -1,15 +1,14 @@
 package dev.slne.surf.essentials;
 
 import com.github.retrooper.packetevents.PacketEvents;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.slne.surf.essentials.commands.BrigadierCommands;
 import dev.slne.surf.essentials.listener.ListenerManager;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.SafeLocationFinder;
-import dev.slne.surf.essentials.utils.Validate;
 import dev.slne.surf.essentials.utils.brigadier.RecodedCommands;
 import dev.slne.surf.essentials.utils.color.Colors;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
+import lombok.Getter;
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 import net.kyori.adventure.text.Component;
@@ -21,10 +20,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 import static net.kyori.adventure.text.Component.text;
 
 public final class SurfEssentials extends JavaPlugin {
 
+    @Getter
     private static SurfEssentials instance;
     private ListenerManager listeners;
     private RecodedCommands recodedCommands;
@@ -48,12 +50,8 @@ public final class SurfEssentials extends JavaPlugin {
     public void onEnable() {
         instance = this;
         PacketEvents.getAPI().init();
-        try {
-            loadMessage();
-        } catch (CommandSyntaxException e) {
-            logger().error(text("Failed to display load message!", Colors.ERROR));
-            e.printStackTrace();
-        }
+
+        loadMessage();
 
         EssentialsUtil.setPrefix();
         System.err.println("Commands");
@@ -88,17 +86,13 @@ public final class SurfEssentials extends JavaPlugin {
         SurfEssentials.instance = this;
     }
 
-    public static SurfEssentials getInstance() {
-        return instance;
-    }
-
     /**
      * A message that prints  a logo of the plugin to the console
      */
     @SuppressWarnings("UnstableApiUsage")
-    public void loadMessage() throws CommandSyntaxException {
+    public void loadMessage() {
         ConsoleCommandSender console = instance.getServer().getConsoleSender();
-        String version = "v" + Validate.notNull(getPluginMeta()).getVersion();
+        String version = "v" + Objects.requireNonNull(getPluginMeta()).getVersion();
         console.sendMessage(Component.newline()
                 .append(text("  _____ _____ ", Colors.AQUA))
                 .append(Component.newline())

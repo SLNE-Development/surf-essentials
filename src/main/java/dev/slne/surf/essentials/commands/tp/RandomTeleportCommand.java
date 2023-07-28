@@ -4,9 +4,9 @@ import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.SafeLocationFinder;
-import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierMessage;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import lombok.val;
 import net.kyori.adventure.text.Component;
@@ -24,7 +24,7 @@ public class RandomTeleportCommand extends EssentialsCommand { // TODO test
                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> teleportRandom(getPlayerOrException(sender), args.getUnchecked("maxRadius"))));
     }
 
-    private int teleportRandom(Player player, int maxRadius) {
+    private int teleportRandom(Player player, Integer maxRadius) {
         EssentialsUtil.sendInfo(player, "Suche Ort...");
 
         val start = System.currentTimeMillis();

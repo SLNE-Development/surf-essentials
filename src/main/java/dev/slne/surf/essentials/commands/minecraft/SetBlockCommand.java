@@ -5,9 +5,9 @@ import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.blocks.BlockStatePos;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import lombok.val;
 import net.kyori.adventure.text.Component;
@@ -19,10 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.BlockInventoryHolder;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class SetBlockCommand extends EssentialsCommand { // TODO test filter
@@ -39,24 +36,24 @@ public class SetBlockCommand extends EssentialsCommand { // TODO test filter
                 .then(blockStateArgument("block")
                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
                                 sender.getCallee(),
-                                args.getUnchecked("location"),
-                                args.getUnchecked("block"),
+                                Objects.requireNonNull(args.getUnchecked("location")),
+                                Objects.requireNonNull(args.getUnchecked("block")),
                                 Mode.REPLACE,
                                 Optional.empty()
                         ))
                         .then(literal("keep")
                                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
                                         sender.getCallee(),
-                                        args.getUnchecked("location"),
-                                        args.getUnchecked("block"),
+                                        Objects.requireNonNull(args.getUnchecked("location")),
+                                        Objects.requireNonNull(args.getUnchecked("block")),
                                         Mode.REPLACE,
                                         Optional.empty()
                                 ))
                                 .then(blockPredicateArgument("filter")
                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
                                                 sender.getCallee(),
-                                                args.getUnchecked("location"),
-                                                args.getUnchecked("block"),
+                                                Objects.requireNonNull(args.getUnchecked("location")),
+                                                Objects.requireNonNull(args.getUnchecked("block")),
                                                 Mode.REPLACE,
                                                 Optional.ofNullable(args.getUnchecked("filter"))
                                         ))
@@ -65,16 +62,16 @@ public class SetBlockCommand extends EssentialsCommand { // TODO test filter
                         .then(literal("destroy")
                                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
                                         sender.getCallee(),
-                                        args.getUnchecked("location"),
-                                        args.getUnchecked("block"),
+                                        Objects.requireNonNull(args.getUnchecked("location")),
+                                        Objects.requireNonNull(args.getUnchecked("block")),
                                         Mode.DESTROY,
                                         Optional.empty()
                                 ))
                                 .then(blockPredicateArgument("filter")
                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
                                                 sender.getCallee(),
-                                                args.getUnchecked("location"),
-                                                args.getUnchecked("block"),
+                                                Objects.requireNonNull(args.getUnchecked("location")),
+                                                Objects.requireNonNull(args.getUnchecked("block")),
                                                 Mode.DESTROY,
                                                 Optional.ofNullable(args.getUnchecked("filter"))
                                         ))
@@ -83,16 +80,16 @@ public class SetBlockCommand extends EssentialsCommand { // TODO test filter
                         .then(literal("replace")
                                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
                                         sender.getCallee(),
-                                        args.getUnchecked("location"),
-                                        args.getUnchecked("block"),
+                                        Objects.requireNonNull(args.getUnchecked("location")),
+                                        Objects.requireNonNull(args.getUnchecked("block")),
                                         Mode.REPLACE,
                                         Optional.empty()
                                 ))
                                 .then(blockPredicateArgument("filter")
                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
                                                 sender.getCallee(),
-                                                args.getUnchecked("location"),
-                                                args.getUnchecked("block"),
+                                                Objects.requireNonNull(args.getUnchecked("location")),
+                                                Objects.requireNonNull(args.getUnchecked("block")),
                                                 Mode.REPLACE,
                                                 Optional.ofNullable(args.getUnchecked("filter"))
                                         ))
@@ -102,8 +99,8 @@ public class SetBlockCommand extends EssentialsCommand { // TODO test filter
                                 .then(blockPredicateArgument("filter")
                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> setBlock(
                                                 sender.getCallee(),
-                                                args.getUnchecked("location"),
-                                                args.getUnchecked("block"),
+                                                Objects.requireNonNull(args.getUnchecked("location")),
+                                                Objects.requireNonNull(args.getUnchecked("block")),
                                                 Mode.REPLACE,
                                                 Optional.ofNullable(args.getUnchecked("filter"))
                                         ))
@@ -116,6 +113,7 @@ public class SetBlockCommand extends EssentialsCommand { // TODO test filter
                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> undo(getPlayerOrException(sender))));
     }
 
+    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "UnstableApiUsage"})
     private int setBlock(@NotNull CommandSender source, @NotNull Location blockPos, @NotNull BlockData blockInput, @NotNull Mode mode, Optional<Predicate<Block>> condition) throws WrapperCommandSyntaxException {
         val world = blockPos.getWorld();
         val newBlockState = blockInput.createBlockState();
@@ -165,6 +163,7 @@ public class SetBlockCommand extends EssentialsCommand { // TODO test filter
         return 1;
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     private int undo(@NotNull Player player) throws WrapperCommandSyntaxException {
         val uuid = player.getUniqueId();
         val blockStatePos = BLOCK.get(uuid);

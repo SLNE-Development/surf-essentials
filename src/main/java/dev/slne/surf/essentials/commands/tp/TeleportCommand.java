@@ -7,8 +7,8 @@ import dev.jorel.commandapi.wrappers.Rotation;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.entity.LookAnchor;
 import io.papermc.paper.entity.TeleportFlag;
@@ -21,10 +21,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -50,7 +47,7 @@ public class TeleportCommand extends EssentialsCommand { // TODO test
                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> teleportToEntity(
                         sender.getCallee(),
                         Collections.singleton(getEntityOrException(sender)),
-                        args.getUnchecked(ARG_ENTITY_DESTINATION)
+                        Objects.requireNonNull(args.getUnchecked(ARG_ENTITY_DESTINATION))
                 )));
 
         then(entitiesArgument(ARG_TARGETS)
@@ -114,7 +111,7 @@ public class TeleportCommand extends EssentialsCommand { // TODO test
                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> teleportToEntity(
                                 sender.getCallee(),
                                 args.getUnchecked(ARG_TARGETS),
-                                args.getUnchecked(ARG_ENTITY_DESTINATION)
+                                Objects.requireNonNull(args.getUnchecked(ARG_ENTITY_DESTINATION))
                         ))
                 )
         );
@@ -150,6 +147,7 @@ public class TeleportCommand extends EssentialsCommand { // TODO test
         return 1;
     }
 
+    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "UnstableApiUsage"})
     private int teleportToLoc(CommandSender sender, Collection<Entity> targets, Location destination, Optional<Rotation> rotation, Optional<Location> facingLocation, Optional<LookAnchor> lookAnchor) throws WrapperCommandSyntaxException {
         if (!EssentialsUtil.isInSpawnableBounds(destination)) throw Exceptions.ERROR_OUT_OF_WORLD;
 
@@ -186,6 +184,7 @@ public class TeleportCommand extends EssentialsCommand { // TODO test
         return success.get();
     }
 
+    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "UnstableApiUsage"})
     private <E extends Entity> CompletableFuture<Collection<E>> performTeleport(Collection<E> targets, Location location, Optional<Location> facingLocation, Optional<LookAnchor> lookAnchor, TeleportFlag.Relative... movementFlags) throws WrapperCommandSyntaxException {
         AtomicReference<Collection<E>> otherFuture = new AtomicReference<>(new ArrayList<>());
         CompletableFuture<Void> combinedFuture = CompletableFuture.completedFuture(null);
@@ -205,6 +204,7 @@ public class TeleportCommand extends EssentialsCommand { // TODO test
         return combinedFuture.thenApply(ignored -> otherFuture.get());
     }
 
+    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "UnstableApiUsage"})
     private <E extends Entity> CompletableFuture<E> performTeleport(E target, Location location, Optional<Location> facingLocation, Optional<LookAnchor> lookAnchor, TeleportFlag.Relative... movementFlags) {
         CompletableFuture<E> future = new CompletableFuture<>();
 
@@ -227,6 +227,7 @@ public class TeleportCommand extends EssentialsCommand { // TODO test
         return future;
     }
 
+    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "UnstableApiUsage"})
     private void lookAt(Entity target, Optional<Location> location, Optional<LookAnchor> lookAnchor) {
         if (location.isPresent()) {
             if (target instanceof Player player) {
@@ -238,8 +239,9 @@ public class TeleportCommand extends EssentialsCommand { // TODO test
         }
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean isLoaded(Location location) {
-        return location.getWorld().isChunkLoaded(location.blockX() >> 4, location.getBlockZ() >> 4);
+        return location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4);
     }
 }
 

@@ -89,7 +89,7 @@ public class TimeCommand extends EssentialsCommand {
         return (int) time;
     }
 
-    private int setTime(NativeProxyCommandSender source, int time) {
+    private int setTime(NativeProxyCommandSender source, Integer time) {
         val senderWorld = source.getWorld();
         val worlds = EssentialsUtil.timeCommandAffectsAllWorlds() ?
                 source.getServer().getWorlds() : Collections.singletonList(senderWorld);
@@ -111,7 +111,7 @@ public class TimeCommand extends EssentialsCommand {
         return getDayTime(senderWorld);
     }
 
-    private int addTime(NativeProxyCommandSender source, int time) {
+    private int addTime(NativeProxyCommandSender source, Integer time) {
         val senderWorld = source.getWorld();
         val worlds = EssentialsUtil.timeCommandAffectsAllWorlds() ?
                 source.getServer().getWorlds() : Collections.singletonList(senderWorld);

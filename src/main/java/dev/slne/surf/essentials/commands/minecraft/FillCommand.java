@@ -6,9 +6,9 @@ import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
 import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.blocks.BlockStatePos;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.math.BlockPosition;
 import lombok.AccessLevel;
@@ -48,18 +48,18 @@ public class FillCommand extends EssentialsCommand { // TODO: Fill with fast asy
                         .then(blockStateArgument("material")
                                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> fill(
                                         sender,
-                                        args.getUnchecked("from"),
-                                        args.getUnchecked("to"),
-                                        args.getUnchecked("material"),
+                                        Objects.requireNonNull(args.getUnchecked("from")),
+                                        Objects.requireNonNull(args.getUnchecked("to")),
+                                        Objects.requireNonNull(args.getUnchecked("material")),
                                         Mode.REPLACE,
                                         Optional.empty()
                                 ))
                                 .then(literal("replace")
                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> fill(
                                                 sender,
-                                                args.getUnchecked("from"),
-                                                args.getUnchecked("to"),
-                                                args.getUnchecked("material"),
+                                                Objects.requireNonNull(args.getUnchecked("from")),
+                                                Objects.requireNonNull(args.getUnchecked("to")),
+                                                Objects.requireNonNull(args.getUnchecked("material")),
                                                 Mode.REPLACE,
                                                 Optional.empty()
                                         ))
@@ -68,9 +68,9 @@ public class FillCommand extends EssentialsCommand { // TODO: Fill with fast asy
                                         .then(blockPredicateArgument("filter")
                                                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> fill(
                                                         sender,
-                                                        args.getUnchecked("from"),
-                                                        args.getUnchecked("to"),
-                                                        args.getUnchecked("material"),
+                                                        Objects.requireNonNull(args.getUnchecked("from")),
+                                                        Objects.requireNonNull(args.getUnchecked("to")),
+                                                        Objects.requireNonNull(args.getUnchecked("material")),
                                                         Mode.REPLACE,
                                                         Optional.ofNullable(args.getUnchecked("filter"))
                                                 ))
@@ -79,9 +79,9 @@ public class FillCommand extends EssentialsCommand { // TODO: Fill with fast asy
                                 .then(literal("outline")
                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> fill(
                                                 sender,
-                                                args.getUnchecked("from"),
-                                                args.getUnchecked("to"),
-                                                args.getUnchecked("material"),
+                                                Objects.requireNonNull(args.getUnchecked("from")),
+                                                Objects.requireNonNull(args.getUnchecked("to")),
+                                                Objects.requireNonNull(args.getUnchecked("material")),
                                                 Mode.OUTLINE,
                                                 Optional.empty()
                                         ))
@@ -89,9 +89,9 @@ public class FillCommand extends EssentialsCommand { // TODO: Fill with fast asy
                                                 .then(blockPredicateArgument("filter")
                                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> fill(
                                                                 sender,
-                                                                args.getUnchecked("from"),
-                                                                args.getUnchecked("to"),
-                                                                args.getUnchecked("material"),
+                                                                Objects.requireNonNull(args.getUnchecked("from")),
+                                                                Objects.requireNonNull(args.getUnchecked("to")),
+                                                                Objects.requireNonNull(args.getUnchecked("material")),
                                                                 Mode.OUTLINE,
                                                                 Optional.ofNullable(args.getUnchecked("filter"))
                                                         ))
@@ -101,9 +101,9 @@ public class FillCommand extends EssentialsCommand { // TODO: Fill with fast asy
                                 .then(literal("hollow")
                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> fill(
                                                 sender,
-                                                args.getUnchecked("from"),
-                                                args.getUnchecked("to"),
-                                                args.getUnchecked("material"),
+                                                Objects.requireNonNull(args.getUnchecked("from")),
+                                                Objects.requireNonNull(args.getUnchecked("to")),
+                                                Objects.requireNonNull(args.getUnchecked("material")),
                                                 Mode.HOLLOW,
                                                 Optional.empty()
                                         ))
@@ -112,9 +112,9 @@ public class FillCommand extends EssentialsCommand { // TODO: Fill with fast asy
 
                                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> fill(
                                                                 sender,
-                                                                args.getUnchecked("from"),
-                                                                args.getUnchecked("to"),
-                                                                args.getUnchecked("material"),
+                                                                Objects.requireNonNull(args.getUnchecked("from")),
+                                                                Objects.requireNonNull(args.getUnchecked("to")),
+                                                                Objects.requireNonNull(args.getUnchecked("material")),
                                                                 Mode.HOLLOW,
                                                                 Optional.ofNullable(args.getUnchecked("filter"))
                                                         ))
@@ -124,9 +124,9 @@ public class FillCommand extends EssentialsCommand { // TODO: Fill with fast asy
                                 .then(literal("destroy")
                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> fill(
                                                 sender,
-                                                args.getUnchecked("from"),
-                                                args.getUnchecked("to"),
-                                                args.getUnchecked("material"),
+                                                Objects.requireNonNull(args.getUnchecked("from")),
+                                                Objects.requireNonNull(args.getUnchecked("to")),
+                                                Objects.requireNonNull(args.getUnchecked("material")),
                                                 Mode.DESTROY,
                                                 Optional.empty()
                                         ))
@@ -134,9 +134,9 @@ public class FillCommand extends EssentialsCommand { // TODO: Fill with fast asy
                                                 .then(blockPredicateArgument("filter")
                                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> fill(
                                                                 sender,
-                                                                args.getUnchecked("from"),
-                                                                args.getUnchecked("to"),
-                                                                args.getUnchecked("material"),
+                                                                Objects.requireNonNull(args.getUnchecked("from")),
+                                                                Objects.requireNonNull(args.getUnchecked("to")),
+                                                                Objects.requireNonNull(args.getUnchecked("material")),
                                                                 Mode.DESTROY,
                                                                 Optional.ofNullable(args.getUnchecked("filter"))
                                                         ))
@@ -146,9 +146,9 @@ public class FillCommand extends EssentialsCommand { // TODO: Fill with fast asy
                                 .then(literal("keep")
                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> fill(
                                                 sender,
-                                                args.getUnchecked("from"),
-                                                args.getUnchecked("to"),
-                                                args.getUnchecked("material"),
+                                                Objects.requireNonNull(args.getUnchecked("from")),
+                                                Objects.requireNonNull(args.getUnchecked("to")),
+                                                Objects.requireNonNull(args.getUnchecked("material")),
                                                 Mode.REPLACE,
                                                 Optional.empty()
                                         ))
@@ -156,9 +156,9 @@ public class FillCommand extends EssentialsCommand { // TODO: Fill with fast asy
                                                 .then(blockPredicateArgument("filter")
                                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> fill(
                                                                 sender,
-                                                                args.getUnchecked("from"),
-                                                                args.getUnchecked("to"),
-                                                                args.getUnchecked("material"),
+                                                                Objects.requireNonNull(args.getUnchecked("from")),
+                                                                Objects.requireNonNull(args.getUnchecked("to")),
+                                                                Objects.requireNonNull(args.getUnchecked("material")),
                                                                 Mode.REPLACE,
                                                                 Optional.ofNullable(args.getUnchecked("filter"))
                                                         ))
@@ -169,9 +169,9 @@ public class FillCommand extends EssentialsCommand { // TODO: Fill with fast asy
                                         .then(blockPredicateArgument("filter")
                                                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> fill(
                                                         sender,
-                                                        args.getUnchecked("from"),
-                                                        args.getUnchecked("to"),
-                                                        args.getUnchecked("material"),
+                                                        Objects.requireNonNull(args.getUnchecked("from")),
+                                                        Objects.requireNonNull(args.getUnchecked("to")),
+                                                        Objects.requireNonNull(args.getUnchecked("material")),
                                                         Mode.REPLACE,
                                                         Optional.ofNullable(args.getUnchecked("filter"))
                                                 ))
@@ -183,7 +183,7 @@ public class FillCommand extends EssentialsCommand { // TODO: Fill with fast asy
     }
 
 
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "UnstableApiUsage"})
     private int fill(@NotNull NativeProxyCommandSender source, @NotNull Location from, @NotNull Location to, @NotNull BlockData block, @NotNull Mode fillMode, @NotNull Optional<Predicate<org.bukkit.block.Block>> filter) throws WrapperCommandSyntaxException {
         val boundingBox = BoundingBox.of(from, to);
         val totalBlocks = (int) boundingBox.getVolume();
@@ -239,6 +239,7 @@ public class FillCommand extends EssentialsCommand { // TODO: Fill with fast asy
         return filledBlocks;
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     private int undo(Player source) throws WrapperCommandSyntaxException {
         val uuid = source.getUniqueId();
         val oldBlockStatePos = BLOCKS.get(uuid);

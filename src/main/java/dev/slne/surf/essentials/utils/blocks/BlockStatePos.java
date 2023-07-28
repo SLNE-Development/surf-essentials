@@ -11,6 +11,7 @@ import org.bukkit.block.BlockState;
  * @param blockPos    The BlockPosition
  * @param world The World
  */
+@SuppressWarnings("UnstableApiUsage")
 public record BlockStatePos(BlockState blockState, BlockPosition blockPos, World world) {
 
 }

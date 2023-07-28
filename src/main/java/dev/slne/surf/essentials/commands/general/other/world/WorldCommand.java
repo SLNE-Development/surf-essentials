@@ -147,7 +147,7 @@ public class WorldCommand extends EssentialsCommand {
                                                                         Optional.ofNullable(args.getUnchecked("type")),
                                                                         Optional.ofNullable(args.getUnchecked("generateStructures")),
                                                                         Optional.ofNullable(args.getUnchecked("hardcore")),
-                                                                        Optional.of(EssentialsUtil.convertStringToSeed(args.getUnchecked("stringSeed")))
+                                                                        Optional.of(EssentialsUtil.convertStringToSeed(Objects.requireNonNull(args.getUnchecked("stringSeed"))))
                                                                 ))
                                                         )
                                                 )

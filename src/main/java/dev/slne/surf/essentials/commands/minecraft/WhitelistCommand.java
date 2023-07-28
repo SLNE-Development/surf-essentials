@@ -5,8 +5,8 @@ import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import lombok.val;
 import net.kyori.adventure.text.Component;
@@ -20,6 +20,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerKickEvent;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class WhitelistCommand extends EssentialsCommand {
@@ -53,14 +54,14 @@ public class WhitelistCommand extends EssentialsCommand {
                                             .map(Player::getName)
                                             .toList();
                                 })))
-                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> add(sender.getCallee(), args.getUnchecked("player")))))
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> add(sender.getCallee(), Objects.requireNonNull(args.getUnchecked("player"))))))
                 .then(literal("remove")
                         .then(offlinePlayerArgument("player")
                                 .replaceSuggestions(ArgumentSuggestions.stringCollectionAsync(info -> CompletableFuture.supplyAsync(() ->
                                         info.sender().getServer().getWhitelistedPlayers().stream()
                                                 .map(OfflinePlayer::getName)
                                                 .toList())))
-                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> remove(sender.getCallee(), args.getUnchecked("player"))))));
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> remove(sender.getCallee(), Objects.requireNonNull(args.getUnchecked("player")))))));
     }
 
     private int query(CommandSender source) {

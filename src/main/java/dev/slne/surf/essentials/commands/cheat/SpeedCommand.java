@@ -65,18 +65,18 @@ public class SpeedCommand extends EssentialsCommand {
                         ) + changeFlySpeed(
                                 sender.getCallee(),
                                 List.of(getPlayerOrException(sender)),
-                                1.0f
+                                2.0f
                         ))
                         .then(playersArgument("players")
                                 .withPermission(Permissions.SPEED_PERMISSION_OTHER)
-                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeWalkSpeed(
+                                .executesNative((sender, args) -> changeWalkSpeed(
                                         sender.getCallee(),
                                         args.getUnchecked("players"),
                                         2.0f
                                 ) + changeFlySpeed(
                                         sender.getCallee(),
                                         args.getUnchecked("players"),
-                                        1.0f
+                                        2.0f
                                 ))
                         )
                 )
@@ -101,14 +101,14 @@ public class SpeedCommand extends EssentialsCommand {
                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeFlySpeed(
                                 sender.getCallee(),
                                 List.of(getPlayerOrException(sender)),
-                                1.0f
+                                2.0f
                         ))
                         .then(playersArgument("players")
                                 .withPermission(Permissions.SPEED_PERMISSION_OTHER)
                                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeFlySpeed(
                                         sender.getCallee(),
                                         args.getUnchecked("players"),
-                                        1.0f
+                                        2.0f
                                 ))
                         )
                 );

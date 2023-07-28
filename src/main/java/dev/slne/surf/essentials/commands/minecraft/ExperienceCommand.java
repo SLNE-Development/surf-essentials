@@ -122,7 +122,7 @@ public class ExperienceCommand extends EssentialsCommand {
         return 1;
     }
 
-    private int give(CommandSender source, Collection<Player> targetsUnchecked, int amount, Type whatToGive) throws WrapperCommandSyntaxException {
+    private int give(CommandSender source, Collection<Player> targetsUnchecked, Integer amount, Type whatToGive) throws WrapperCommandSyntaxException {
         val targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
 
         for (Player player : targets) {
@@ -151,7 +151,7 @@ public class ExperienceCommand extends EssentialsCommand {
         return 1;
     }
 
-    private int set(CommandSender source, Collection<Player> targetsUnchecked, int amount, Type whatToSet) throws WrapperCommandSyntaxException {
+    private int set(CommandSender source, Collection<Player> targetsUnchecked, Integer amount, Type whatToSet) throws WrapperCommandSyntaxException {
         val targets = EssentialsUtil.checkPlayerSuggestion(source, targetsUnchecked);
 
         for (Player player : targets) {

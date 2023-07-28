@@ -11,6 +11,8 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class FunctionCommand extends EssentialsCommand {
 
     public FunctionCommand() {
@@ -19,7 +21,7 @@ public class FunctionCommand extends EssentialsCommand {
         withPermission(Permissions.FUNCTION_PERMISSION);
 
         then(functionArgument("function")
-                .executesNative((NativeResultingCommandExecutor) (sender, args) -> executeFunction(sender.getCallee(), args.getUnchecked("function"))));
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> executeFunction(sender.getCallee(), Objects.requireNonNull(args.getUnchecked("function")))));
     }
 
     private int executeFunction(@NotNull CommandSender source, FunctionWrapper @NotNull [] commandFunctions) {

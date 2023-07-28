@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -19,10 +20,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 /**
  * An argument for a {@link LookAnchor}.
  */
+@SuppressWarnings("UnstableApiUsage")
 public class LookAnchorArgument extends CustomArgument<LookAnchor, String> {
 
     /**
@@ -53,7 +56,7 @@ public class LookAnchorArgument extends CustomArgument<LookAnchor, String> {
         /**
          * A map of all anchors by their id.
          */
-        private static final Map<String, Anchor> BY_NAME = EssentialsUtil.make(new HashMap<>(), (map) -> {
+        private static final Map<String, Anchor> BY_NAME = make(new HashMap<>(), (map) -> {
             for (Anchor anchor : values()) {
                 map.put(anchor.id, anchor);
             }
@@ -111,6 +114,12 @@ public class LookAnchorArgument extends CustomArgument<LookAnchor, String> {
         @NotNull
         public static Optional<Anchor> getByName(String id) {
             return Optional.ofNullable(BY_NAME.get(id));
+        }
+
+        @Contract("_, _ -> param1")
+        public static  <T> T make(T object, @NotNull Consumer<T> initializer) {
+            initializer.accept(object);
+            return object;
         }
     }
 }

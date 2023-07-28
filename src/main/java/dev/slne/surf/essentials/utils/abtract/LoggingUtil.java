@@ -26,7 +26,7 @@ public abstract class LoggingUtil extends PluginUtil {
      * @param <State>  the type of the state
      * @return true if the block change was logged successfully, false otherwise
      */
-    @SuppressWarnings("UnusedReturnValue")
+    @SuppressWarnings({"UnusedReturnValue", "UnstableApiUsage"})
     public static <Sender extends CommandSender, Level extends World, Pos extends Position, State extends org.bukkit.block.BlockState>
     boolean logBlockChange(Sender sender, Level level, Pos pos, State state) {
         if (!isCoreProtectEnabled()) return false;

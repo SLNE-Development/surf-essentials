@@ -14,6 +14,7 @@ import lombok.val;
 import net.kyori.adventure.text.Component;
 import org.bukkit.World;
 
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public class WeatherCommand extends EssentialsCommand {
@@ -27,13 +28,13 @@ public class WeatherCommand extends EssentialsCommand {
         then(weatherTypeArgument("weather")
                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> setWeather(
                         sender,
-                        args.getUnchecked("weather"),
+                        Objects.requireNonNull(args.getUnchecked("weather")),
                         6000
                 ))
                 .then(timeArgument("duration")
                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> setWeather(
                                 sender,
-                                args.getUnchecked("weather"),
+                                Objects.requireNonNull(args.getUnchecked("weather")),
                                 args.getUnchecked("duration")
                         ))
                 )
@@ -60,7 +61,7 @@ public class WeatherCommand extends EssentialsCommand {
         return 1;
     }
 
-    private int setWeather(NativeProxyCommandSender source, WeatherType weatherType, int durationInTicks) {
+    private int setWeather(NativeProxyCommandSender source, WeatherType weatherType, Integer durationInTicks) {
         val world = source.getWorld();
         weatherType.setWeather(world, durationInTicks);
 
@@ -87,6 +88,7 @@ public class WeatherCommand extends EssentialsCommand {
     /**
      * Weather types
      */
+    @Getter
     @RequiredArgsConstructor
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     public enum WeatherType {
@@ -105,7 +107,6 @@ public class WeatherCommand extends EssentialsCommand {
             world.setThunderDuration(duration);
         });
 
-        @Getter
         String name; // Name of the weather type
         BiConsumer<World, Integer> setWeather; // Function to set the weather
 

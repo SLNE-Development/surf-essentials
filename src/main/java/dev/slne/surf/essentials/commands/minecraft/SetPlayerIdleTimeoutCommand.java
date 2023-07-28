@@ -32,7 +32,7 @@ public class SetPlayerIdleTimeoutCommand extends EssentialsCommand {
     }
 
     @Contract("_, _ -> param2")
-    private int setIdleTimeout(@NotNull CommandSender source, int minutes) {
+    private int setIdleTimeout(@NotNull CommandSender source, Integer minutes) {
         source.getServer().setIdleTimeout(minutes);
 
         EssentialsUtil.sendSuccess(source, Component.text("Das Untätigkeitslimit wurde auf ", Colors.SUCCESS)

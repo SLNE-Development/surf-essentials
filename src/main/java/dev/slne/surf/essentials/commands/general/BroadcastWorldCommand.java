@@ -12,6 +12,8 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
+import java.util.Objects;
+
 public class BroadcastWorldCommand extends EssentialsCommand {
     public BroadcastWorldCommand() {
         super("broadcastworld", "worldbroadcast <world> <message>", "Broadcast a message to a world", "worldalert", "broadcastworld");
@@ -21,7 +23,7 @@ public class BroadcastWorldCommand extends EssentialsCommand {
         then(worldArgument("world")
                 .then(greedyStringArgument("message")
                         .replaceSuggestions(EssentialsUtil.suggestColors())
-                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> broadcastWorld(sender.getCallee(), args.getUnchecked("world"), args.getUnchecked("message")))));
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> broadcastWorld(sender.getCallee(), Objects.requireNonNull(args.getUnchecked("world")), args.getUnchecked("message")))));
 
     }
 

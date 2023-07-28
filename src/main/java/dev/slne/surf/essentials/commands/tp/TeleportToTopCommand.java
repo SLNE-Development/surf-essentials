@@ -4,8 +4,8 @@ import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import lombok.val;
 import net.kyori.adventure.text.Component;
@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class TeleportToTopCommand extends EssentialsCommand {
     public TeleportToTopCommand() {
@@ -26,7 +27,7 @@ public class TeleportToTopCommand extends EssentialsCommand {
         executesNative((NativeResultingCommandExecutor) (sender, args) -> tptop(sender.getCallee(), getPlayerOrException(sender)));
         then(offlinePlayerArgument("player") // TODO test
                 .withPermission(Permissions.TELEPORT_TOP_OTHER_PERMISSION)
-                .executesNative((NativeResultingCommandExecutor) (sender, args) -> tptop(sender.getCallee(), args.getUnchecked("player"))));
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> tptop(sender.getCallee(), Objects.requireNonNull(args.getUnchecked("player")))));
     }
 
     private int tptop(CommandSender source, OfflinePlayer offlinePlayer) throws WrapperCommandSyntaxException {

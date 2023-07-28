@@ -4,8 +4,8 @@ import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import lombok.val;
 import net.kyori.adventure.text.Component;
@@ -16,6 +16,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class TeleportOffline extends EssentialsCommand {
     public TeleportOffline() {
@@ -26,12 +27,12 @@ public class TeleportOffline extends EssentialsCommand {
         then(offlinePlayerArgument("player")
                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> teleportToPlayer(
                         getEntityOrException(sender),
-                        args.getUnchecked("player")
+                        Objects.requireNonNull(args.getUnchecked("player"))
                 ))
                 .then(locationArgument("destination")
                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> teleportPlayerToLocation(
                                 sender,
-                                args.getUnchecked("player"),
+                                Objects.requireNonNull(args.getUnchecked("player")),
                                 args.getUnchecked("destination")
                         ))
                 )

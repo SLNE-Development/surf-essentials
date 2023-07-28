@@ -9,8 +9,8 @@ import dev.jorel.commandapi.wrappers.Location2D;
 import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.copy.Mth;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import lombok.val;
@@ -21,6 +21,8 @@ import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+
+import java.util.Objects;
 
 public class ForceloadCommand extends EssentialsCommand {
     private static final int MAX_CHUNK_LIMIT = 256;
@@ -33,14 +35,14 @@ public class ForceloadCommand extends EssentialsCommand {
         then(literal("query")
                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> list(sender))
                 .then(location2DArgument("position", LocationType.BLOCK_POSITION)
-                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> query(sender.getCallee(), args.getUnchecked("position")))));
+                        .executesNative((NativeResultingCommandExecutor) (sender, args) -> query(sender.getCallee(), Objects.requireNonNull(args.getUnchecked("position"))))));
 
         then(literal("remove")
                 .then(buildForceload(false))
                 .then(literal("all")
                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> removeAll(sender.getCallee(), sender.getWorld()))
                         .then(worldArgument("dimension")
-                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> removeAll(sender.getCallee(), args.getUnchecked("dimension"))))));
+                                .executesNative((NativeResultingCommandExecutor) (sender, args) -> removeAll(sender.getCallee(), Objects.requireNonNull(args.getUnchecked("dimension")))))));
 
         then(literal("add")
                 .then(buildForceload(true)));
@@ -50,24 +52,24 @@ public class ForceloadCommand extends EssentialsCommand {
         return location2DArgument("from", LocationType.BLOCK_POSITION)
                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeForceload(
                         sender.getCallee(),
-                        args.getUnchecked("from"),
-                        args.getUnchecked("from"),
+                        Objects.requireNonNull(args.getUnchecked("from")),
+                        Objects.requireNonNull(args.getUnchecked("from")),
                         sender.getWorld(),
                         forceload
                 ))
                 .then(location2DArgument("to", LocationType.BLOCK_POSITION)
                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeForceload(
                                 sender.getCallee(),
-                                args.getUnchecked("from"),
-                                args.getUnchecked("to"),
+                                Objects.requireNonNull(args.getUnchecked("from")),
+                                Objects.requireNonNull(args.getUnchecked("to")),
                                 sender.getWorld(),
                                 forceload
                         ))
                         .then(worldArgument("dimension")
                                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> changeForceload(
                                         sender.getCallee(),
-                                        args.getUnchecked("from"),
-                                        args.getUnchecked("from"),
+                                        Objects.requireNonNull(args.getUnchecked("from")),
+                                        Objects.requireNonNull(args.getUnchecked("from")),
                                         args.getUnchecked("dimension"),
                                         forceload
                                 ))

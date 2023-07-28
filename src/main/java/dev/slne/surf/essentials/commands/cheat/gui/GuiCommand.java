@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class GuiCommand extends EssentialsCommand {
 
@@ -23,7 +24,7 @@ public abstract class GuiCommand extends EssentialsCommand {
         executesNative((NativeResultingCommandExecutor) (sender, args) -> openGUI(sender.getCallee(), List.of(getPlayerOrException(sender))));
         then(playersArgument("players")
                 .withPermission(otherPermission)
-                .executesNative((NativeResultingCommandExecutor) (sender, args) -> openGUI(sender.getCallee(), EssentialsUtil.checkPlayerSuggestion(sender.getCallee(), args.<Collection<Player>>getUnchecked("players")))));
+                .executesNative((NativeResultingCommandExecutor) (sender, args) -> openGUI(sender.getCallee(), Objects.requireNonNull(EssentialsUtil.checkPlayerSuggestion(sender.getCallee(), args.<Collection<Player>>getUnchecked("players"))))));
     }
 
     private int openGUI(CommandSender sender, Collection<Player> targets) {

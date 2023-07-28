@@ -5,8 +5,8 @@ import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import lombok.val;
 import net.kyori.adventure.text.Component;
@@ -17,6 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
+import java.util.Objects;
 
 public class GiveCommand extends EssentialsCommand {
     public GiveCommand() {
@@ -29,14 +30,14 @@ public class GiveCommand extends EssentialsCommand {
                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> give(
                                 sender.getCallee(),
                                 args.getUnchecked("targets"),
-                                args.getUnchecked("item"),
+                                Objects.requireNonNull(args.getUnchecked("item")),
                                 1
                         ))
                         .then(integerArgument("amount", 1)
                                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> give(
                                         sender.getCallee(),
                                         args.getUnchecked("targets"),
-                                        args.getUnchecked("item"),
+                                        Objects.requireNonNull(args.getUnchecked("item")),
                                         args.getUnchecked("amount")
                                 ))
                         )
@@ -44,7 +45,7 @@ public class GiveCommand extends EssentialsCommand {
         );
     }
 
-    private int give(CommandSender sender, Collection<Player> targetsUnchecked, org.bukkit.inventory.ItemStack item, int amount) throws WrapperCommandSyntaxException {
+    private int give(CommandSender sender, Collection<Player> targetsUnchecked, org.bukkit.inventory.ItemStack item, Integer amount) throws WrapperCommandSyntaxException {
         val targets = EssentialsUtil.checkPlayerSuggestion(sender, targetsUnchecked);
         int maxStackSize = item.getMaxStackSize();
         int maxAllowedAmount = maxStackSize * 100;

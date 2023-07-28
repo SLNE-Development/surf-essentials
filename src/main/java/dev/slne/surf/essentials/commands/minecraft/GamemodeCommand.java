@@ -5,8 +5,8 @@ import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import lombok.val;
 import net.kyori.adventure.text.Component;
@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 
 public class GamemodeCommand extends EssentialsCommand {
@@ -139,7 +140,7 @@ public class GamemodeCommand extends EssentialsCommand {
                                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> setOfflineMode(
                                         sender.getCallee(),
                                         gameType,
-                                        args.getUnchecked("offlinePlayer")
+                                        Objects.requireNonNull(args.getUnchecked("offlinePlayer"))
                                 ))
                         )
                 )

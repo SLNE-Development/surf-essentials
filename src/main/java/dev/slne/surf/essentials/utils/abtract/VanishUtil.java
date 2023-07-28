@@ -55,6 +55,7 @@ public abstract class VanishUtil extends SuggestionUtil {
      * @param entity the entity to check
      * @return `true` if `source` can see `entity`, `false` otherwise
      */
+    @SuppressWarnings("UnstableApiUsage")
     public static boolean canSourceSeeEntity(@NotNull CommandSender source, @NotNull org.bukkit.entity.Entity entity) {
         if (source instanceof Player player) {
             if (entity instanceof Player other) {

@@ -6,9 +6,9 @@ import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
 import dev.jorel.commandapi.executors.ResultingCommandExecutor;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.brigadier.BrigadierMessage;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import lombok.val;
 import net.kyori.adventure.text.Component;
@@ -49,7 +49,7 @@ public class EnchantCommand extends EssentialsCommand {
         );
     }
 
-    private static int enchant(CommandSender source, Collection<Entity> targetsUnchecked, NamespacedKey enchantmentKey, int level) throws WrapperCommandSyntaxException {
+    private static int enchant(CommandSender source, Collection<Entity> targetsUnchecked, NamespacedKey enchantmentKey, Integer level) throws WrapperCommandSyntaxException {
         val targets = EssentialsUtil.checkEntitySuggestion(source, targetsUnchecked);
         val enchantment = Enchantment.getByKey(enchantmentKey);
         int successfullEnchantment = 0;

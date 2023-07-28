@@ -704,6 +704,7 @@ public abstract class EssentialsCommand extends CommandTree {
      * @param nodeName the name of the argument
      * @return a new look-anchor argument
      */
+    @SuppressWarnings("UnstableApiUsage")
     protected LookAnchorArgument lookAnchorArgument(String nodeName) {
         return new LookAnchorArgument(nodeName);
     }

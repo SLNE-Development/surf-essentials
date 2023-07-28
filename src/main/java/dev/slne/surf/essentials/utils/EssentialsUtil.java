@@ -748,6 +748,7 @@ public class EssentialsUtil extends PropertiesUtil {
      * @param boundingBox The bounding box to get the blocks from.
      * @return A list of Blocks between the specified points.
      */
+    @SuppressWarnings("UnstableApiUsage")
     public List<org.bukkit.block.Block> getBlocksFromBoundingBox(World world, org.bukkit.util.BoundingBox boundingBox) {
         return getBlockPositionFromBoundingBox(boundingBox)
                 .stream()
@@ -863,6 +864,7 @@ public class EssentialsUtil extends PropertiesUtil {
      * @param flags       Flags to use when teleporting
      * @return A future that will be completed with the result of the teleport
      */
+    @SuppressWarnings("UnstableApiUsage")
     @ApiStatus.Experimental
     public static CompletableFuture<Boolean> teleportLazy(org.bukkit.entity.Entity entity, Location destination, TeleportFlag... flags) {
         return teleportLazy(entity, destination, PlayerTeleportEvent.TeleportCause.PLUGIN, flags);
@@ -880,6 +882,7 @@ public class EssentialsUtil extends PropertiesUtil {
      * @param flags       Flags to use when teleporting
      * @return A future that will be completed with the result of the teleport
      */
+    @SuppressWarnings("UnstableApiUsage")
     @ApiStatus.Experimental
     public static CompletableFuture<Boolean> teleportLazy(org.bukkit.entity.Entity entity, Location destination, PlayerTeleportEvent.TeleportCause cause, TeleportFlag... flags) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
@@ -918,6 +921,7 @@ public class EssentialsUtil extends PropertiesUtil {
      * @param <E>         Entity type to teleport
      * @return A future that will be completed with the teleported entity or null if the teleport failed
      */
+    @SuppressWarnings("UnstableApiUsage")
     @ApiStatus.Experimental
     public static <E extends org.bukkit.entity.Entity> CompletableFuture<E> teleportAsync(E entity, Location destination, TeleportFlag... flags) {
         return teleportAsync(entity, destination, PlayerTeleportEvent.TeleportCause.PLUGIN, flags);
@@ -936,6 +940,7 @@ public class EssentialsUtil extends PropertiesUtil {
      * @param <E>         Entity type to teleport
      * @return A future that will be completed with the teleported entity or null if the teleport failed
      */
+    @SuppressWarnings("UnstableApiUsage")
     @ApiStatus.Experimental
     public static <E extends org.bukkit.entity.Entity> CompletableFuture<E> teleportAsync(E entity, Location destination, PlayerTeleportEvent.TeleportCause cause, TeleportFlag... flags) {
         CompletableFuture<E> future = new CompletableFuture<>();

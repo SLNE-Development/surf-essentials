@@ -14,6 +14,8 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 
+import java.util.Objects;
+
 /**
  * A listener that handles the Infinity feature related events.
  *
@@ -47,7 +49,7 @@ public class InfinityListener implements Listener {
 
             val inventory = event.getPlayer().getInventory();
 
-            if (event.getAction() == Action.RIGHT_CLICK_AIR && event.getItem().getItemMeta() instanceof SpawnEggMeta) { // TODO
+            if (event.getAction() == Action.RIGHT_CLICK_AIR && Objects.requireNonNull(event.getItem()).getItemMeta() instanceof SpawnEggMeta) { // TODO
                 regainItems(event.getPlayer(), event.getItem(), event.getHand());
             }
         }

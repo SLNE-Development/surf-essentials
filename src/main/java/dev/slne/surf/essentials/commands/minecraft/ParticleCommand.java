@@ -11,8 +11,8 @@ import dev.jorel.commandapi.wrappers.ParticleData;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.ParticleWrapper;
-import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import lombok.val;
 import net.kyori.adventure.text.Component;
@@ -24,6 +24,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 public class ParticleCommand extends EssentialsCommand {
     private static final double MAX_FORCE_DISTANCE = 512.0;
@@ -49,7 +50,7 @@ public class ParticleCommand extends EssentialsCommand {
                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> showParticles(
                                 sender.getCallee(),
                                 args.getUnchecked("bukkitParticle"),
-                                args.getUnchecked("position"),
+                                Objects.requireNonNull(args.getUnchecked("position")),
                                 new Location(null, 0, 0, 0),
                                 0.0F,
                                 0,
@@ -60,8 +61,8 @@ public class ParticleCommand extends EssentialsCommand {
                                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> showParticles(
                                         sender.getCallee(),
                                         args.getUnchecked("bukkitParticle"),
-                                        args.getUnchecked("position"),
-                                        args.getUnchecked("delta"),
+                                        Objects.requireNonNull(args.getUnchecked("position")),
+                                        Objects.requireNonNull(args.getUnchecked("delta")),
                                         0.0F,
                                         0,
                                         false,
@@ -71,8 +72,8 @@ public class ParticleCommand extends EssentialsCommand {
                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> showParticles(
                                                 sender.getCallee(),
                                                 args.getUnchecked("bukkitParticle"),
-                                                args.getUnchecked("position"),
-                                                args.getUnchecked("delta"),
+                                                Objects.requireNonNull(args.getUnchecked("position")),
+                                                Objects.requireNonNull(args.getUnchecked("delta")),
                                                 args.getUnchecked("speed"),
                                                 0,
                                                 false,
@@ -82,8 +83,8 @@ public class ParticleCommand extends EssentialsCommand {
                                                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> showParticles(
                                                         sender.getCallee(),
                                                         args.getUnchecked("bukkitParticle"),
-                                                        args.getUnchecked("position"),
-                                                        args.getUnchecked("delta"),
+                                                        Objects.requireNonNull(args.getUnchecked("position")),
+                                                        Objects.requireNonNull(args.getUnchecked("delta")),
                                                         args.getUnchecked("speed"),
                                                         args.getUnchecked("count"),
                                                         false,
@@ -93,22 +94,22 @@ public class ParticleCommand extends EssentialsCommand {
                                                         .executesNative((NativeResultingCommandExecutor) (sender, args) -> showParticles(
                                                                 sender.getCallee(),
                                                                 args.getUnchecked("bukkitParticle"),
-                                                                args.getUnchecked("position"),
-                                                                args.getUnchecked("delta"),
+                                                                Objects.requireNonNull(args.getUnchecked("position")),
+                                                                Objects.requireNonNull(args.getUnchecked("delta")),
                                                                 args.getUnchecked("speed"),
                                                                 args.getUnchecked("count"),
-                                                                args.getUnchecked("force"),
+                                                                Boolean.TRUE.equals(args.getUnchecked("force")),
                                                                 new ArrayList<>(Bukkit.getOnlinePlayers())
                                                         ))
                                                         .then(playersArgument("viewers")
                                                                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> showParticles(
                                                                         sender.getCallee(),
                                                                         args.getUnchecked("bukkitParticle"),
-                                                                        args.getUnchecked("position"),
-                                                                        args.getUnchecked("delta"),
+                                                                        Objects.requireNonNull(args.getUnchecked("position")),
+                                                                        Objects.requireNonNull(args.getUnchecked("delta")),
                                                                         args.getUnchecked("speed"),
                                                                         args.getUnchecked("count"),
-                                                                        args.getUnchecked("force"),
+                                                                        Boolean.TRUE.equals(args.getUnchecked("force")),
                                                                         args.getUnchecked("viewers")
                                                                 ))
                                                         )
@@ -120,7 +121,7 @@ public class ParticleCommand extends EssentialsCommand {
         );
     }
 
-    private int showParticles(CommandSender source, ParticleData<?> parameters, Location pos, Location delta, float speed, int count, boolean force, Collection<Player> viewersUnchecked) throws WrapperCommandSyntaxException {
+    private int showParticles(CommandSender source, ParticleData<?> parameters, Location pos, Location delta, Float speed, Integer count, boolean force, Collection<Player> viewersUnchecked) throws WrapperCommandSyntaxException {
         val viewers = EssentialsUtil.checkPlayerSuggestion(source, new ArrayList<>(viewersUnchecked));
         val playerManager = PacketEvents.getAPI().getPlayerManager();
         val particleWrapper = new ParticleWrapper<>(parameters);

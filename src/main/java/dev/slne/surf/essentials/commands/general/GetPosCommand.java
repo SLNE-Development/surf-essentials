@@ -20,7 +20,7 @@ public class GetPosCommand extends EssentialsCommand {
         withRequirement(EssentialsUtil.checkPermissions(Permissions.GET_POS_SELF_PERMISSION, Permissions.GET_POS_OTHER_PERMISSION));
 
         executesNative((NativeResultingCommandExecutor) (sender, args) -> getPos(sender.getCallee(), getPlayerOrException(sender)));
-        then(playersArgument("player")
+        then(playerArgument("player")
                 .withPermission(Permissions.GET_POS_OTHER_PERMISSION)
                 .executesNative((NativeResultingCommandExecutor) (sender, args) -> getPos(sender.getCallee(), args.getUnchecked("player"))));
     }

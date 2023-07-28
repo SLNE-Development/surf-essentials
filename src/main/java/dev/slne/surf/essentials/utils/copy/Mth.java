@@ -482,6 +482,7 @@ public class Mth {
         }
     }
 
+    @SuppressWarnings("SuspiciousNameCombination")
     public double atan2(double y, double x) {
         double d = x * x + y * y;
         if (Double.isNaN(d)) {
