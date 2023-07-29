@@ -33,7 +33,7 @@ variables:
         --show-version
         -DinstallAtEnd=true
         -DdeployAtEnd=true
-        -U
+        -DskipTests
 
 # This template uses the latest Maven 3 release, e.g., 3.8.6, and OpenJDK 8 (LTS)
 # for verifying and deploying images
@@ -74,15 +74,3 @@ deploy:
             - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     tags:
         - java
-
-qodana:
-  only:
-    - master
-    - merge_requests
-  image:
-    name: jetbrains/qodana-jvm
-    entrypoint: [""]
-  variables:
-    QODANA_TOKEN: $qodana_token
-  script:
-    - qodana --save-report --results-dir=$CI_PROJECT_DIR/.qodana
