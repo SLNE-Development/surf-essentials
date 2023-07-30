@@ -103,6 +103,7 @@ public class WeatherCommand extends EssentialsCommand {
             world.setWeatherDuration(duration);
         }),
         THUNDER("Gewitter", (world, duration) -> {
+            world.setStorm(true);
             world.setThundering(true);
             world.setThunderDuration(duration);
         });
