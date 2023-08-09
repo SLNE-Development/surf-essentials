@@ -96,7 +96,6 @@ public class BrigadierCommands {
         new TeleportBackCommand();
         new TeleportToTopCommand();
         new TeleportCommand();
-
     }
 
     /**

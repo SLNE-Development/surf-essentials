@@ -43,7 +43,6 @@ public class RecodedCommands {
         strings.add("reload");
         strings.add("function");
         strings.add("setidletimeout");
-        strings.add("playsound");
         strings.add("advancement");
     }).stream().map(o -> o.toString().toLowerCase()).toList();
 
