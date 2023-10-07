@@ -29,7 +29,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.20.1-R0.1-SNAPSHOT</version>
+            <version>1.20.2-R0.1-SNAPSHOT</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
@@ -55,15 +55,15 @@
         <!-- https://github.com/Alvinn8/paper-nms-maven-plugin -->
         <!--suppress VulnerableLibrariesLocal -->
 
-                <dependency>
-                    <groupId>ca.bkaw</groupId>
-                    <artifactId>paper-nms</artifactId>
-                    <version>1.20.1-SNAPSHOT</version>
-                    <scope>provided</scope>
-                </dependency>
+        <!--                <dependency>-->
+        <!--                    <groupId>ca.bkaw</groupId>-->
+        <!--                    <artifactId>paper-nms</artifactId>-->
+        <!--                    <version>1.20.2-SNAPSHOT</version>-->
+        <!--                    <scope>provided</scope>-->
+        <!--                </dependency>-->
 
 
-                <!-- https://github.com/stefvanschie/IF -->
+        <!-- https://github.com/stefvanschie/IF -->
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>IF</artifactId>
@@ -88,12 +88,12 @@
         <dependency>
             <groupId>dev.jorel</groupId>
             <artifactId>commandapi-bukkit-core</artifactId>
-            <version>9.0.3</version>
+            <version>9.2.0</version>
         </dependency>
         <dependency>
             <groupId>dev.jorel</groupId>
             <artifactId>commandapi-bukkit-plugin</artifactId>
-            <version>9.0.3</version>
+            <version>9.2.0</version>
         </dependency>
 
         <dependency>
@@ -117,7 +117,6 @@
         </dependency>
 
 
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -129,15 +128,8 @@
             <groupId>com.github.seeseemelk</groupId>
             <artifactId>MockBukkit-v1.20</artifactId>
             <version>3.9.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.seeseemelk</groupId>
-            <artifactId>MockBukkit-v1.20</artifactId>
-            <version>3.9.0</version>
             <scope>test</scope>
         </dependency>
-
 
 
     </dependencies>
@@ -230,7 +222,9 @@
                     </annotationProcessorPaths>
                     <compilerArgs>
                         <arg>-sourcepath</arg>
-                        <arg>${project.basedir}/src/main/java${path.separator}${project.basedir}/target/generated-sources/annotations${path.separator}/</arg>
+                        <arg>
+                            ${project.basedir}/src/main/java${path.separator}${project.basedir}/target/generated-sources/annotations${path.separator}/
+                        </arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
@@ -272,19 +266,19 @@
                 </configuration>
             </plugin>
 
-                        <plugin>
-                            <groupId>ca.bkaw</groupId>
-                            <artifactId>paper-nms-maven-plugin</artifactId>
-                            <version>1.3.2</version>
-                            <executions>
-                                <execution>
-                                    <phase>process-classes</phase>
-                                    <goals>
-                                        <goal>remap</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
+            <!--            <plugin>-->
+            <!--                <groupId>ca.bkaw</groupId>-->
+            <!--                <artifactId>paper-nms-maven-plugin</artifactId>-->
+            <!--                <version>1.3.2</version>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <phase>process-classes</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>remap</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

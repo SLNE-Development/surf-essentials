@@ -170,6 +170,7 @@ public class Permissions {
     public final String SCREAM_PERMISSION;
     public final String SCREAM_BYPASS_PERMISSION;
     public final String NEAR_PERMISSION;
+    public final String CHANGE_SLOTS_PERMISSION;
 
 
     /**
@@ -414,6 +415,7 @@ public class Permissions {
         SCREAM_PERMISSION = register("surf.essentials.commands.scream", playerPermission, modPermission);
         SCREAM_BYPASS_PERMISSION = register("surf.essentials.commands.scream.bypass", modPermission);
         NEAR_PERMISSION = register("surf.essentials.commands.near", playerPermission, modPermission);
+        CHANGE_SLOTS_PERMISSION = register("surf.essentials.commands.changeslots");
 
 
         // 'troll' permissions

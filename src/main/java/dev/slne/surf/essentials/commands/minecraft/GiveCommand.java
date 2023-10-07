@@ -51,7 +51,6 @@ public class GiveCommand extends EssentialsCommand {
         int maxAllowedAmount = maxStackSize * 100;
 
         if (amount > maxAllowedAmount) throw Exceptions.ERROR_GIVE_TOO_MANY_ITEMS.create(maxAllowedAmount, item);
-        System.out.println("Max amount" + amount);
 
         for (Player target : targets) {
             val world = target.getWorld();
@@ -63,10 +62,7 @@ public class GiveCommand extends EssentialsCommand {
                 remainingAmount -= stackSize;
                 stack.setAmount(stackSize);
 
-                target.getInventory().addItem(stack).forEach((integer, remaining) -> {
-                    world.dropItem(target.getLocation(), stack, item1 -> item1.setPickupDelay(0));
-                });
-
+                target.getInventory().addItem(stack).forEach((integer, remaining) -> world.dropItem(target.getLocation(), remaining, item1 -> item1.setPickupDelay(0)));
                 stack.setAmount(1);
 
                 world.dropItem(target.getLocation(), stack, item1 -> {

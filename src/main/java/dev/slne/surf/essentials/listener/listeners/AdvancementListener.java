@@ -4,6 +4,7 @@ import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import lombok.val;
 import net.kyori.adventure.text.Component;
+import org.bukkit.GameRule;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -16,7 +17,12 @@ public class AdvancementListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerAdvancementDone(PlayerAdvancementDoneEvent event) {
         val display = event.getAdvancement().getDisplay();
+        val player = event.getPlayer();
         if (event.message() == null || display == null) return;
+
+        if (Boolean.FALSE.equals(player.getWorld().getGameRuleValue(GameRule.ANNOUNCE_ADVANCEMENTS))) {
+            return;
+        }
 
         final String translationKey;
 
@@ -27,7 +33,7 @@ public class AdvancementListener implements Listener {
         }
 
         event.message(EssentialsUtil.getPrefix()
-                .append(Component.translatable(translationKey, EssentialsUtil.getDisplayName(event.getPlayer()),
+                .append(Component.translatable(translationKey, EssentialsUtil.getDisplayName(player),
                                 event.getAdvancement().displayName().colorIfAbsent(Colors.TERTIARY))
                         .color(Colors.GRAY)));
     }
