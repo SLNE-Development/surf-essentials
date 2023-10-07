@@ -164,9 +164,13 @@
 
     <distributionManagement>
         <repository>
-            <id>space-surf</id>
-            <url>https://packages.slne.dev/maven/p/surf/maven</url>
+            <id>space-maven</id>
+            <url>${repositoryUrl}</url>
         </repository>
+        <snapshotRepository>
+            <id>space-maven</id>
+            <url>${repositoryUrl}</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <build>

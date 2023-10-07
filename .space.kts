@@ -1,16 +1,15 @@
-job(name = "Build, run tests, publish", init = {
-    container(displayName = "Run publish script", image = "mvn:latest") {
-        env["REPOSITORY_URL"] = "https://packages.slne.dev/maven/p/surf/maven"
+
+job("Build, Test and Publish") {
+    container(displayName = "Build an publish", image = "maven:latest") {
+        env["REPOSITORY_URL"] = "{{ project:REPOSITORY_URL }}"
 
         shellScript {
             content = """
-                echo Build and publish artifacts...
-                set -e -x -u
-                mvn clean deploy -s settings.xml \
+                mvn -s settings.xml clean deploy \
                     -DrepositoryUrl=${'$'}REPOSITORY_URL \
                     -DspaceUsername=${'$'}JB_SPACE_CLIENT_ID \
                     -DspacePassword=${'$'}JB_SPACE_CLIENT_SECRET \
             """
         }
     }
-})
+}
