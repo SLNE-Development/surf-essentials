@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.utils;
 
+import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.annontations.UpdateRequired;
 import dev.slne.surf.essentials.utils.abtract.PropertiesUtil;
@@ -695,7 +696,15 @@ public class EssentialsUtil extends PropertiesUtil {
      * @return the location the sender is in
      */
     public <Sender extends Audience> Location getSenderLocation(Sender sender) {
-        return (sender instanceof org.bukkit.entity.Entity entity) ? entity.getLocation() : new Location(Bukkit.getWorlds().get(0), 0, 0, 0);
+        return (sender instanceof NativeProxyCommandSender proxyCommandSender) ? proxyCommandSender.getLocation() :
+                (sender instanceof org.bukkit.entity.Entity entity) ? entity.getLocation() :
+                        new Location(Bukkit.getWorlds().get(0), 0, 0, 0);
+    }
+
+    public World getSenderWorld(CommandSender sender) {
+        return (sender instanceof NativeProxyCommandSender proxyCommandSender) ? proxyCommandSender.getWorld() :
+                (sender instanceof org.bukkit.entity.Entity entity) ? entity.getWorld() :
+                        Bukkit.getWorlds().get(0);
     }
 
 

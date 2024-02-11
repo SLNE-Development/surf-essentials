@@ -162,6 +162,7 @@ public class Permissions {
     public final String WORLD_REMOVE_PERMISSION;
     public final String WORLD_GUI_PERMISSION;
     public final String WORLD_QUERY_PERMISSION;
+    public final String WORLD_TP_PERMISSION;
     public final String TELEPORT_SPAWN_SELF;
     public final String TELEPORT_SPAWN_OTHER;
     public final String DEATH_LOCATION_PERMISSION_SELF;
@@ -407,6 +408,7 @@ public class Permissions {
         WORLD_REMOVE_PERMISSION = register("surf.essentials.commands.world.remove");
         WORLD_GUI_PERMISSION = register("surf.essentials.commands.world.gui");
         WORLD_QUERY_PERMISSION = register("surf.essentials.commands.world.query", modPermission);
+        WORLD_TP_PERMISSION = register("surf.essentials.commands.world.tp", modPermission);
         TELEPORT_SPAWN_SELF = register("surf.essentials.commands.spawntp.self", modPermission);
         TELEPORT_SPAWN_OTHER = register("surf.essentials.commands.spawntp.other", modPermission);
         DEATH_LOCATION_PERMISSION_SELF = register("surf.essentials.commands.deathlocation.self", modPermission);

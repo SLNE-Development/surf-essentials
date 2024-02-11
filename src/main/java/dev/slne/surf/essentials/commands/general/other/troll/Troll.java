@@ -1,11 +1,7 @@
 package dev.slne.surf.essentials.commands.general.other.troll;
 
-/**
-import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+
 import dev.slne.surf.essentials.SurfEssentials;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -22,15 +18,15 @@ public abstract class Troll implements Listener {
 
     public abstract String name();
     public abstract String permission();
-    protected abstract ArgumentBuilder<CommandSourceStack, ?> troll();
-
-    public LiteralArgumentBuilder<CommandSourceStack> build() {
-        final var trollLiteral = Commands.literal(name());
-                //.requires(EssentialsUtil.checkPermissions(Permissions.TROLL_ALL_PERMISSION, permission()));
-
-        trollLiteral.then(troll());
-        return trollLiteral;
-    }
+//    protected abstract ArgumentBuilder<CommandSourceStack, ?> troll();
+//
+//    public LiteralArgumentBuilder<CommandSourceStack> build() {
+//        final var trollLiteral = Commands.literal(name());
+//                //.requires(EssentialsUtil.checkPermissions(Permissions.TROLL_ALL_PERMISSION, permission()));
+//
+//        trollLiteral.then(troll());
+//        return trollLiteral;
+//    }
 
     public boolean isInTroll(Player player) {
         return PLAYER_IN_TROLL.contains(player.getUniqueId());
@@ -65,4 +61,3 @@ public abstract class Troll implements Listener {
     }
 
 }
- */
