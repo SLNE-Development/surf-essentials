@@ -87,25 +87,28 @@
 
         <dependency>
             <groupId>dev.jorel</groupId>
-            <artifactId>commandapi-bukkit-core</artifactId>
+            <artifactId>commandapi-bukkit-shade</artifactId>
+            <scope>compile</scope>
             <version>9.4.1</version>
         </dependency>
         <dependency>
-            <groupId>dev.jorel</groupId>
-            <artifactId>commandapi-bukkit-plugin</artifactId>
-            <version>9.4.1</version>
+            <groupId>com.saicone.rtag</groupId>
+            <artifactId>rtag</artifactId>
+            <version>1.5.3</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>de.tr7zw</groupId>
-            <artifactId>item-nbt-api-plugin</artifactId>
-            <version>2.12.4</version>
+            <groupId>com.saicone.rtag</groupId>
+            <artifactId>rtag-entity</artifactId>
+            <version>1.5.3</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.github.retrooper.packetevents</groupId>
             <artifactId>spigot</artifactId>
             <version>2.3.0</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -343,10 +346,13 @@
                 <configuration>
 
                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <minimizeJar>true</minimizeJar>
 
                     <artifactSet>
                         <includes>
                             <include>com.github.stefvanschie.inventoryframework</include>
+                            <include>dev.jorel</include>
+                            <include>com.github.retrooper.packetevents</include>
                         </includes>
                     </artifactSet>
 
@@ -354,6 +360,18 @@
                         <relocation>
                             <pattern>com.github.stefvanschie.inventoryframework</pattern>
                             <shadedPattern>dev.slne.surf.essentials.libs.inventoryframework</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>dev.jorel.commandapi</pattern>
+                            <shadedPattern>dev.slne.surf.essentials.libs.commandapi</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.github.retrooper.packetevents</pattern>
+                            <shadedPattern>dev.slne.surf.essentials.libs.packetevents.api</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>io.github.retrooper.packetevents</pattern>
+                            <shadedPattern>dev.slne.surf.essentials.libs.packetevents.impl</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

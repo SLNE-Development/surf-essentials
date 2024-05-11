@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.commands;
 
-import de.tr7zw.nbtapi.NBTContainer;
 import dev.jorel.commandapi.CommandTree;
 import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
@@ -662,12 +661,12 @@ public abstract class EssentialsCommand extends CommandTree {
     /**
      * Creates a new nbt compound argument.
      * <br>
-     * When the argument is parsed, it returns a {@link NBTContainer} object.
+     * When the argument is parsed, it returns an object.
      *
      * @param nodeName the name of the argument
      * @return a new nbt compound argument
      */
-    protected NBTCompoundArgument<NBTContainer> nbtCompoundArgument(String nodeName) {
+    protected NBTCompoundArgument<Object> nbtCompoundArgument(String nodeName) {
         return new NBTCompoundArgument<>(nodeName);
     }
 

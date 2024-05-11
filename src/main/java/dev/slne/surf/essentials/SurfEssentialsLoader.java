@@ -20,7 +20,9 @@ public class SurfEssentialsLoader implements PluginLoader, Listener {
     @Override
     public void classloader(@NotNull PluginClasspathBuilder classpathBuilder) {
         addDependency("net.kyori", "adventure-nbt", "4.14.0");
-        addDependency("com.github.retrooper.packetevents", "spigot", "2.3.0");
+//        addDependency("com.github.retrooper.packetevents", "spigot", "2.3.0");
+        addDependency("com.saicone.rtag", "rtag", "1.5.3");
+        addDependency("com.saicone.rtag", "rtag-entity", "1.5.3");
 
         addRepository("papermc", "https://repo.papermc.io/repository/maven-public/");
         addRepository("jitpack.io", "https://jitpack.io");

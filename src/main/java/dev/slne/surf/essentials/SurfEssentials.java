@@ -1,6 +1,8 @@
 package dev.slne.surf.essentials;
 
 import com.github.retrooper.packetevents.PacketEvents;
+import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import dev.slne.surf.essentials.commands.BrigadierCommands;
 import dev.slne.surf.essentials.listener.ListenerManager;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -38,6 +41,10 @@ public final class SurfEssentials extends JavaPlugin {
         PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
         PacketEvents.getAPI().load();
 
+        CommandAPI.onLoad(new CommandAPIBukkitConfig(this)
+                .initializeNBTAPI(Object.class, Function.identity())
+                .shouldHookPaperReload(true));
+
         recodedCommands = new RecodedCommands();
         recodedCommands.unregisterVanillaCommands();
         brigadierCommands = new BrigadierCommands();
@@ -49,9 +56,10 @@ public final class SurfEssentials extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        PacketEvents.getAPI().init();
-
         loadMessage();
+
+        PacketEvents.getAPI().init();
+        CommandAPI.onEnable();
 
         EssentialsUtil.setPrefix();
         System.err.println("Commands");
@@ -74,6 +82,7 @@ public final class SurfEssentials extends JavaPlugin {
     public void onDisable() {
         brigadierCommands.unregister();
         listeners.unregisterListeners();
+        CommandAPI.onDisable();
         logger().info(text("The plugin has stopped!", Colors.INFO));
         instance = null;
     }

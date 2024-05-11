@@ -5,20 +5,36 @@ description: '${project.description}'
 api-version: '${project.apiVersion}'
 bootstrapper: ${project.bootstrapper}
 loader: ${project.loader}
-authors: [${project.authors}]
+authors: [ ${project.authors} ]
 website: '${project.url}'
 
 dependencies:
-  server:
-    CommandAPI:
-      load: BEFORE
-      required: true
-      join-classpath: true
-    CoreProtect:
-      load: BEFORE
-      required: false
-      join-classpath: true
-    NBTAPI:
-      load: BEFORE
-      required: true
-      join-classpath: true
+    server:
+        CoreProtect:
+            load: BEFORE
+            required: false
+            join-classpath: true
+        ProtocolLib:
+            load: BEFORE
+            required: false
+            join-classpath: true
+        ProtocolSupport:
+            load: BEFORE
+            required: false
+            join-classpath: true
+        ViaVersion:
+            load: BEFORE
+            required: false
+            join-classpath: true
+        ViaBackwards:
+            load: BEFORE
+            required: false
+            join-classpath: true
+        ViaRewind:
+            load: BEFORE
+            required: false
+            join-classpath: true
+        Geyser-Spigot:
+            load: BEFORE
+            required: false
+            join-classpath: true

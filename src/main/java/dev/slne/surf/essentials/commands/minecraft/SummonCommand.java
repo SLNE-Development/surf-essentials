@@ -1,7 +1,7 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
-import de.tr7zw.nbtapi.NBTContainer;
-import de.tr7zw.nbtapi.NBTEntity;
+import com.saicone.rtag.Rtag;
+import com.saicone.rtag.RtagEntity;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SummonCommand extends EssentialsCommand {
 
@@ -29,7 +30,7 @@ public class SummonCommand extends EssentialsCommand {
                         sender.getCallee(),
                         args.getUnchecked("entity"),
                         sender.getLocation(),
-                        new NBTContainer(),
+                        null,
                         true
                 ))
                 .then(locationArgument("pos")
@@ -37,7 +38,7 @@ public class SummonCommand extends EssentialsCommand {
                                 sender.getCallee(),
                                 args.getUnchecked("entity"),
                                 args.getUnchecked("pos"),
-                                new NBTContainer(),
+                                null,
                                 true
                         ))
                         .then(nbtCompoundArgument("nbt")
@@ -53,24 +54,27 @@ public class SummonCommand extends EssentialsCommand {
         );
     }
 
-    private int summon(CommandSender source, EntityType entityType, Location pos, NBTContainer nbt, boolean initialize) throws WrapperCommandSyntaxException {
+    private int summon(CommandSender source, EntityType entityType, Location pos, @Nullable Object nbt, boolean initialize) throws WrapperCommandSyntaxException {
         val entity = createEntity(entityType, pos, nbt, initialize);
         EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(entity)
                 .append(Component.text(" wurde gespawnt.", Colors.SUCCESS)));
         return 1;
     }
 
-    public static @NotNull Entity createEntity(EntityType entityType, Location pos, @NotNull NBTContainer nbt, boolean initialize) throws WrapperCommandSyntaxException {
+    public static @NotNull Entity createEntity(EntityType entityType, Location pos, @Nullable Object nbt, boolean initialize) throws WrapperCommandSyntaxException {
         val level = pos.getWorld();
-        val modifiedTag = new NBTContainer(nbt.getCompound());
 
         if (!EssentialsUtil.isInSpawnableBounds(pos)) throw Exceptions.ERROR_OUT_OF_WORLD;
 
         val spawnedEntity = level.spawnEntity(pos, entityType, initialize);
-        val nbtEntity = new NBTEntity(spawnedEntity);
 
-        modifiedTag.setString("id", entityType.key().asString());
-        nbtEntity.mergeCompound(modifiedTag);
+        if (nbt != null) {
+            val entityTag = Rtag.INSTANCE.newTag(nbt);
+            RtagEntity.edit(spawnedEntity, rtagEntity -> {
+                Rtag.INSTANCE.set(entityTag, entityType.key().asString(), "id");
+                rtagEntity.merge(entityTag, true);
+            });
+        }
 
         return spawnedEntity;
     }
