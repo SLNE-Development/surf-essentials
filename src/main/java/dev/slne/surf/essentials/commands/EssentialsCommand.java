@@ -1,9 +1,9 @@
 package dev.slne.surf.essentials.commands;
 
+import de.tr7zw.nbtapi.NBTContainer;
 import dev.jorel.commandapi.CommandTree;
 import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
-import dev.jorel.commandapi.nbtapi.NBTContainer;
 import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import dev.slne.surf.essentials.commands.minecraft.WeatherCommand;
 import dev.slne.surf.essentials.listener.listeners.CommandRegisterListener;
@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -84,11 +83,11 @@ public abstract class EssentialsCommand extends CommandTree {
     }
 
     protected MultiLiteralArgument multiLiteral(String name, Collection<String> literals) {
-        return new MultiLiteralArgument(name, List.copyOf(literals));
+        return new MultiLiteralArgument(name, literals.toArray(String[]::new));
     }
 
     protected MultiLiteralArgument multiLiteral(String name, Stream<String> literals) {
-        return new MultiLiteralArgument(name, literals.toList());
+        return new MultiLiteralArgument(name, literals.toArray(String[]::new));
     }
 
     /**

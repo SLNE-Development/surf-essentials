@@ -1,13 +1,13 @@
 package dev.slne.surf.essentials.commands.minecraft;
 
+import de.tr7zw.nbtapi.NBTContainer;
+import de.tr7zw.nbtapi.NBTEntity;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
-import dev.jorel.commandapi.nbtapi.NBTContainer;
-import dev.jorel.commandapi.nbtapi.NBTEntity;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
-import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
+import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import lombok.val;
 import net.kyori.adventure.text.Component;
