@@ -1,0 +1,3 @@
+main: dev.slne.surf.essentials.SurfEssentials
+name: SurfEssentials
+version: '1.20'

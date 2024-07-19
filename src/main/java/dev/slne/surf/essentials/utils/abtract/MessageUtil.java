@@ -6,6 +6,8 @@ import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import io.papermc.paper.brigadier.PaperBrigadier;
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.MessageComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.jetbrains.annotations.NotNull;
@@ -167,7 +169,7 @@ public abstract class MessageUtil extends PacketUtil {
      */
     public static WrapperCommandSyntaxException createException(Component message) {
 //        return CommandAPIBukkit.failWithAdventureComponent(message);
-        return CommandAPI.failWithMessage(PaperBrigadier.message(message));
+        return CommandAPI.failWithMessage(MessageComponentSerializer.message().serialize(message));
     }
 
 

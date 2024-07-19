@@ -37,19 +37,12 @@ public class BookCommand extends EssentialsCommand {
 
     private static int reopenBook(Player player) throws WrapperCommandSyntaxException {
         final PlayerInventory inv = player.getInventory();
-        ItemStack originalBook = inv.getItemInMainHand();
+        final ItemStack originalBook = inv.getItemInMainHand();
 
         if (originalBook.getType() != Material.WRITTEN_BOOK) throw Exceptions.ERROR_NOT_HOLDING_WRITTEN_BOOK_IN_HAND;
-
-
-        BookMeta originalBookMeta = (BookMeta) originalBook.getItemMeta();
-        ItemStack book = new ItemStack(Material.WRITABLE_BOOK);
-        BookMeta mbook = (BookMeta) book.getItemMeta();
-
         checkPerm(player, originalBook);
 
-        setBookMeta(originalBookMeta, mbook);
-        book.setItemMeta(mbook);
+        ItemStack book = originalBook.withType(Material.WRITABLE_BOOK);
         inv.setItem(player.getActiveItem().getType().getEquipmentSlot(), book);
 
         EssentialsUtil.sendSuccess(player, "Du kannst das Buch nun bearbeiten!");
@@ -86,24 +79,6 @@ public class BookCommand extends EssentialsCommand {
         mainHandItem.editMeta(BookMeta.class, bookMetaConsumer);
 
         return mainHandItem;
-    }
-
-    private static void setBookMeta(@NotNull BookMeta originalBookMeta, @NotNull BookMeta mbook) {
-        if (originalBookMeta.hasAuthor()) mbook.setAuthor(originalBookMeta.getAuthor());
-        if (originalBookMeta.hasGeneration()) mbook.setGeneration(originalBookMeta.getGeneration());
-        if (originalBookMeta.hasTitle()) mbook.setTitle(originalBookMeta.getTitle());
-        if (originalBookMeta.hasAttributeModifiers())
-            mbook.setAttributeModifiers(originalBookMeta.getAttributeModifiers());
-        if (originalBookMeta.hasCustomModelData()) mbook.setCustomModelData(originalBookMeta.getCustomModelData());
-        if (originalBookMeta.hasDestroyableKeys()) mbook.setDestroyableKeys(originalBookMeta.getDestroyableKeys());
-        if (originalBookMeta.hasPlaceableKeys()) mbook.setPlaceableKeys(originalBookMeta.getPlaceableKeys());
-        if (originalBookMeta.hasLore()) mbook.lore(originalBookMeta.lore());
-        mbook.setUnbreakable(originalBookMeta.isUnbreakable());
-        if (originalBookMeta.hasEnchants())
-            originalBookMeta.getEnchants().forEach((enchantment, integer) -> mbook.addEnchant(enchantment, integer, true));
-        for (Component page : originalBookMeta.pages()) {
-            mbook.addPages(page);
-        }
     }
 
     private static void checkPerm(@NotNull CommandSender source, @NotNull ItemStack mainHandItem) throws WrapperCommandSyntaxException {

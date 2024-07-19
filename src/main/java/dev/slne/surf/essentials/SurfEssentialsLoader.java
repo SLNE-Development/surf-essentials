@@ -1,41 +1,62 @@
 package dev.slne.surf.essentials;
 
+import com.google.gson.Gson;
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
 import io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.event.Listener;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings({"UnstableApiUsage", "unused"})
+@SuppressWarnings({"UnstableApiUsage"})
 public class SurfEssentialsLoader implements PluginLoader, Listener {
-    private final MavenLibraryResolver resolver;
 
-    public SurfEssentialsLoader() {
-        resolver = new MavenLibraryResolver();
+  private ComponentLogger logger;
+
+  @Override
+  public void classloader(@NotNull PluginClasspathBuilder classpathBuilder) {
+    this.logger = classpathBuilder.getContext().getLogger();
+
+    final MavenLibraryResolver resolver = new MavenLibraryResolver();
+    final PluginLibraries pluginLibraries = load();
+
+    pluginLibraries.asDependencies().forEach(resolver::addDependency);
+    pluginLibraries.asRepositories().forEach(resolver::addRepository);
+
+    classpathBuilder.addLibrary(resolver);
+  }
+
+  private PluginLibraries load() {
+    try (var in = getClass().getResourceAsStream("/paper-libraries.json")) {
+      if (in != null) {
+        return new Gson().fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), PluginLibraries.class);
+      } else {
+        logger.error("Failed to load paper-libraries.json");
+        return new PluginLibraries(Map.of(), List.of());
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private record PluginLibraries(Map<String, String> repositories, List<String> dependencies) {
+    public Stream<Dependency> asDependencies() {
+      return dependencies.stream()
+          .map(d -> new Dependency(new DefaultArtifact(d), null));
     }
 
-    @Override
-    public void classloader(@NotNull PluginClasspathBuilder classpathBuilder) {
-        addDependency("net.kyori", "adventure-nbt", "4.14.0");
-//        addDependency("com.github.retrooper.packetevents", "spigot", "2.3.0");
-        addDependency("com.saicone.rtag", "rtag", "1.5.3");
-        addDependency("com.saicone.rtag", "rtag-entity", "1.5.3");
-
-        addRepository("papermc", "https://repo.papermc.io/repository/maven-public/");
-        addRepository("jitpack.io", "https://jitpack.io");
-        addRepository("codemc-releases", "https://repo.codemc.io/repository/maven-releases/");
-
-        classpathBuilder.addLibrary(resolver);
+    public Stream<RemoteRepository> asRepositories() {
+      return repositories.entrySet().stream()
+          .map(e -> new RemoteRepository.Builder(e.getKey(), "default", e.getValue()).build());
     }
-
-    private void addDependency(String groupId, String artifactId, String version) {
-        resolver.addDependency(new Dependency(new DefaultArtifact("%s:%s:%s".formatted(groupId, artifactId, version)), null));
-    }
-
-    private void addRepository(String id, String url) {
-        resolver.addRepository(new RemoteRepository.Builder(id, "default", url).build());
-    }
+  }
 }
