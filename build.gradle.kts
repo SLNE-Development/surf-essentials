@@ -43,8 +43,8 @@ dependencies {
     compileOnly("net.coreprotect:coreprotect:22.4")
 
     implementation("com.github.stefvanschie.inventoryframework:IF:0.10.15")
-    implementation("dev.jorel:commandapi-bukkit-shade:9.5.1")
-    implementation("com.github.retrooper:packetevents-spigot:2.4.0")
+    implementation("dev.jorel:commandapi-bukkit-shade-mojang-mapped:9.5.1")
+    implementation("com.github.retrooper:packetevents-spigot:2.4.1-SNAPSHOT")
 
     paperLibrary("org.apache.commons:commons-lang3:3.14.0")
     paperLibrary("net.kyori:adventure-nbt:4.17.0")
