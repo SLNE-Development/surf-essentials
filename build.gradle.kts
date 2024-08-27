@@ -38,12 +38,12 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     compileOnly("com.mojang:brigadier:1.0.18")
     compileOnly("net.coreprotect:coreprotect:22.4")
 
-    implementation("com.github.stefvanschie.inventoryframework:IF:0.10.15")
-    implementation("dev.jorel:commandapi-bukkit-shade-mojang-mapped:9.5.1")
+    implementation("com.github.stefvanschie.inventoryframework:IF:0.10.17")
+    implementation("dev.jorel:commandapi-bukkit-shade-mojang-mapped:9.5.3")
     implementation("com.github.retrooper:packetevents-spigot:2.4.1-SNAPSHOT")
 
     paperLibrary("org.apache.commons:commons-lang3:3.14.0")
@@ -54,7 +54,7 @@ dependencies {
 }
 
 group = "dev.slne.surf.essentials"
-version = "1.21-3.0.0-SNAPSHOT"
+version = "1.21.1-3.0.0-SNAPSHOT"
 description = "SurfEssentials"
 
 paper {
