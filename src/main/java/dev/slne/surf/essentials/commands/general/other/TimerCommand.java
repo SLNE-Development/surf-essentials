@@ -214,7 +214,7 @@ public class TimerCommand extends EssentialsCommand {
         switch (timeInSeconds) {
             case 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 -> {
                 for (Audience target : targets) {
-                    target.playSound(Sound.sound(org.bukkit.Sound.BLOCK_NOTE_BLOCK_PLING.key(), Sound.Source.MASTER, 1f, 2f));
+                    target.playSound(Sound.sound(org.bukkit.Sound.BLOCK_NOTE_BLOCK_PLING, Sound.Source.MASTER, 1f, 2f));
                 }
             }
         }
@@ -222,7 +222,7 @@ public class TimerCommand extends EssentialsCommand {
 
     private void playStartSound(Collection<? extends Audience> targets) {
         for (Audience target : targets) {
-            target.playSound(Sound.sound(org.bukkit.Sound.ENTITY_PLAYER_LEVELUP.key(), Sound.Source.MASTER, 1f, 0.9f));
+            target.playSound(Sound.sound(org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, Sound.Source.MASTER, 1f, 0.9f));
         }
     }
 

@@ -11,6 +11,7 @@ import lombok.val;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
+import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -34,7 +35,7 @@ public class PlayerHeadCommand extends EssentialsCommand {
         skullStack.editMeta(SkullMeta.class, skullMeta -> {
             skullMeta.setOwningPlayer(playerTarget);
             skullMeta.setPlayerProfile(playerTarget.getPlayerProfile());
-            skullMeta.setNoteBlockSound(Sound.ENTITY_PLAYER_HURT.getKey());
+            skullMeta.setNoteBlockSound(Registry.SOUNDS.getKey(Sound.ENTITY_PLAYER_HURT));
             EssentialsUtil.changeName(skullMeta, EssentialsUtil.getDisplayName(playerTarget)
                     .append(Component.text("´s Kopf", Colors.INFO))
                     .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE));

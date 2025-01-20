@@ -125,6 +125,8 @@ public class ParticleCommand extends EssentialsCommand {
         val viewers = EssentialsUtil.checkPlayerSuggestion(source, new ArrayList<>(viewersUnchecked));
         val playerManager = PacketEvents.getAPI().getPlayerManager();
         val particleWrapper = new ParticleWrapper<>(parameters);
+
+
         val particle = particleWrapper.getPacketEventsParticle();
         val particlePacket = new WrapperPlayServerParticle(
                 particle,

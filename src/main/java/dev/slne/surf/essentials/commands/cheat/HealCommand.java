@@ -39,7 +39,7 @@ public class HealCommand extends EssentialsCommand {
         for (Entity target : targets) {
             if (!(target instanceof LivingEntity livingEntity)) continue;
 
-            EssentialsUtil.heal(livingEntity, Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue(), EntityRegainHealthEvent.RegainReason.REGEN, true);
+            EssentialsUtil.heal(livingEntity, Objects.requireNonNull(livingEntity.getAttribute(Attribute.MAX_HEALTH)).getValue(), EntityRegainHealthEvent.RegainReason.REGEN, true);
             successfulChanges++;
             EssentialsUtil.sendSuccess(target, Component.text("Du wurdest geheilt! ", Colors.GREEN));
         }

@@ -26,7 +26,7 @@ public class AlertCommand extends EssentialsCommand {
                 .append(EssentialsUtil.deserialize(message).colorIfAbsent(Colors.VARIABLE_VALUE)));
 
         for (Audience audience : source.getServer().getOnlinePlayers()) {
-            audience.playSound(Sound.sound(org.bukkit.Sound.BLOCK_NOTE_BLOCK_BELL.key(), Sound.Source.MASTER, 1f, 1f));
+            audience.playSound(Sound.sound(org.bukkit.Sound.BLOCK_NOTE_BLOCK_BELL, Sound.Source.MASTER, 1f, 1f));
         }
         return 1;
     }

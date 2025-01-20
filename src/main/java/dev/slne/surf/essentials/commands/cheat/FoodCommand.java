@@ -38,7 +38,7 @@ public class FoodCommand extends EssentialsCommand {
             successfulFeeds++;
 
             target.playSound(Sound.sound(builder -> {
-                builder.type(org.bukkit.Sound.ENTITY_STRIDER_EAT.key());
+                builder.type(org.bukkit.Sound.ENTITY_STRIDER_EAT);
                 builder.volume(1f);
                 builder.pitch(0f);
             }));

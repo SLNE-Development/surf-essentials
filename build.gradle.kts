@@ -38,23 +38,23 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("com.mojang:brigadier:1.0.18")
     compileOnly("net.coreprotect:coreprotect:22.4")
 
-    implementation("com.github.stefvanschie.inventoryframework:IF:0.10.17")
-    implementation("dev.jorel:commandapi-bukkit-shade-mojang-mapped:9.5.3")
-    implementation("com.github.retrooper:packetevents-spigot:2.4.1-SNAPSHOT")
+    implementation("com.github.stefvanschie.inventoryframework:IF:0.10.19")
+    implementation("dev.jorel:commandapi-bukkit-shade-mojang-mapped:9.7.0")
+    implementation("com.github.retrooper:packetevents-spigot:2.7.0")
 
-    paperLibrary("org.apache.commons:commons-lang3:3.14.0")
-    paperLibrary("net.kyori:adventure-nbt:4.17.0")
-    paperLibrary("net.kyori:adventure-text-minimessage:4.17.0")
-    paperLibrary("com.saicone.rtag:rtag:1.5.5")
-    paperLibrary("com.saicone.rtag:rtag-entity:1.5.5")
+    paperLibrary("org.apache.commons:commons-lang3:3.17.0")
+    paperLibrary("net.kyori:adventure-nbt:4.18.0")
+    paperLibrary("net.kyori:adventure-text-minimessage:4.18.0")
+    paperLibrary("com.saicone.rtag:rtag:1.5.9")
+    paperLibrary("com.saicone.rtag:rtag-entity:1.5.9")
 }
 
 group = "dev.slne.surf.essentials"
-version = "1.21.1-3.0.0-SNAPSHOT"
+version = "1.21.4-3.0.0-SNAPSHOT"
 description = "SurfEssentials"
 
 paper {

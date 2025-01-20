@@ -47,6 +47,7 @@ public final class ParticleWrapper<BukkitData> {
      */
     @UpdateRequired(minVersion = "1.21", updateReason = "Add support for new particles data")
     private Optional<ParticleData> convertData(BukkitData data) {
+
         if (data instanceof org.bukkit.Particle.DustOptions dustOptions) {
             val size = dustOptions.getSize();
             val color = dustOptions.getColor();
@@ -71,7 +72,7 @@ public final class ParticleWrapper<BukkitData> {
         } else if (data instanceof Integer delay) {
             return Optional.of(new ParticleShriekData(delay));
 
-        } else if (data instanceof @SuppressWarnings("deprecation")MaterialData materialData) {
+        } else if (data instanceof MaterialData materialData) {
             val itemType = materialData.getItemType();
             @SuppressWarnings("deprecation") val materialDataData = materialData.getData();
 

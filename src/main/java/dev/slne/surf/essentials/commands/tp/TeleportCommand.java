@@ -12,6 +12,7 @@ import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import io.papermc.paper.entity.LookAnchor;
 import io.papermc.paper.entity.TeleportFlag;
+import io.papermc.paper.entity.TeleportFlag.Relative;
 import lombok.val;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -166,11 +167,10 @@ public class TeleportCommand extends EssentialsCommand { // TODO test
                 destination,
                 facingLocation,
                 lookAnchor,
-                TeleportFlag.Relative.X,
-                TeleportFlag.Relative.Y,
-                TeleportFlag.Relative.Z,
-                TeleportFlag.Relative.PITCH,
-                TeleportFlag.Relative.YAW
+                Relative.VELOCITY_X,
+                Relative.VELOCITY_Y,
+                Relative.VELOCITY_Z,
+                Relative.VELOCITY_ROTATION
 
         ).thenAccept(entities -> {
             boolean single = entities.size() == 1;
