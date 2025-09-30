@@ -59,6 +59,7 @@ fun advancementCommand() = commandTree("advancement") {
                             }
 
                             executor.sendText {
+                                appendPrefix()
                                 success("Es wurden erfolgreich")
                                 appendSpace()
                                 variableValue(successfulPlayers.size)
@@ -110,6 +111,7 @@ fun advancementCommand() = commandTree("advancement") {
                             }
 
                             executor.sendText {
+                                appendPrefix()
                                 success("Es wurden erfolgreich")
                                 appendSpace()
                                 variableValue(successfulPlayers.size)
@@ -178,6 +180,7 @@ fun advancementCommand() = commandTree("advancement") {
                         }
 
                         executor.sendText {
+                            appendPrefix()
                             success("Es wurden erfolgreich")
                             appendSpace()
                             variableValue(successfulPlayers.size)
@@ -245,6 +248,7 @@ fun advancementCommand() = commandTree("advancement") {
                         }
 
                         executor.sendText {
+                            appendPrefix()
                             success("Es wurden erfolgreich")
                             appendSpace()
                             variableValue(successfulPlayers.size)
@@ -312,6 +316,7 @@ fun advancementCommand() = commandTree("advancement") {
                         }
 
                         executor.sendText {
+                            appendPrefix()
                             success("Es wurden erfolgreich")
                             appendSpace()
                             variableValue(successfulPlayers.size)
@@ -379,6 +384,7 @@ fun advancementCommand() = commandTree("advancement") {
                         }
 
                         executor.sendText {
+                            appendPrefix()
                             success("Es wurden erfolgreich")
                             appendSpace()
                             variableValue(successfulPlayers.size)
@@ -438,6 +444,7 @@ fun advancementCommand() = commandTree("advancement") {
                             }
 
                             executor.sendText {
+                                appendPrefix()
                                 success("Es wurden erfolgreich")
                                 appendSpace()
                                 variableValue(successfulPlayers.size)
@@ -489,6 +496,7 @@ fun advancementCommand() = commandTree("advancement") {
                             }
 
                             executor.sendText {
+                                appendPrefix()
                                 success("Es wurden erfolgreich")
                                 appendSpace()
                                 variableValue(successfulPlayers.size)
@@ -557,6 +565,7 @@ fun advancementCommand() = commandTree("advancement") {
                         }
 
                         executor.sendText {
+                            appendPrefix()
                             success("Es wurden erfolgreich")
                             appendSpace()
                             variableValue(successfulPlayers.size)
@@ -624,6 +633,7 @@ fun advancementCommand() = commandTree("advancement") {
                         }
 
                         executor.sendText {
+                            appendPrefix()
                             success("Es wurden erfolgreich")
                             appendSpace()
                             variableValue(successfulPlayers.size)
@@ -691,6 +701,7 @@ fun advancementCommand() = commandTree("advancement") {
                         }
 
                         executor.sendText {
+                            appendPrefix()
                             success("Es wurden erfolgreich")
                             appendSpace()
                             variableValue(successfulPlayers.size)
@@ -758,6 +769,7 @@ fun advancementCommand() = commandTree("advancement") {
                         }
 
                         executor.sendText {
+                            appendPrefix()
                             success("Es wurden erfolgreich")
                             appendSpace()
                             variableValue(successfulPlayers.size)
