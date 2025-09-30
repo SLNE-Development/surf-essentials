@@ -22,12 +22,17 @@ fun deopCommand() = commandTree("deop") {
                 return@anyExecutor
             }
 
-            player.isOp = true
+            player.isOp = false
 
             executor.sendText {
                 appendPrefix()
                 variableValue(player.name)
-                success(" ist nun ein Operator.")
+                success(" ist nun kein Operator mehr.")
+            }
+
+            player.sendText {
+                appendPrefix()
+                info("Du bist nun kein Operator mehr.")
             }
         }
     }

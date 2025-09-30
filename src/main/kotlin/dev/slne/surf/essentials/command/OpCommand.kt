@@ -29,6 +29,11 @@ fun opCommand() = commandTree("op") {
                 variableValue(player.name)
                 success(" ist nun ein Operator.")
             }
+
+            player.sendText {
+                appendPrefix()
+                info("Du bist nun ein Operator.")
+            }
         }
     }
 }
