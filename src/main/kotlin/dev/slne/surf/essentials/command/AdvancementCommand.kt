@@ -11,6 +11,9 @@ import org.bukkit.advancement.Advancement
 import org.bukkit.entity.Player
 import java.util.*
 
+
+//TODO: Fix amount display in messages
+
 fun advancementCommand() = commandTree("advancement") {
     withPermission(EssentialsPermissionRegistry.ADVANCEMENT_COMMAND)
     literalArgument("grant") {
