@@ -769,6 +769,63 @@ fun advancementCommand() = commandTree("advancement") {
             }
         }
     }
+    literalArgument("query") {
+        playerArgument("player") {
+            advancementArgument("advancement") {
+                anyExecutor { executor, args ->
+                    val player: Player by args
+                    val advancement: Advancement by args
+                    val progress = player.getAdvancementProgress(advancement)
+
+                    if (progress.isDone) {
+                        executor.sendText {
+                            appendPrefix()
+                            info("Der Spieler ")
+                            variableValue(player.name)
+                            info(" hat den Erfolg ")
+                            variableValue(advancement.key.toString())
+                            info(" vollständig abgeschlossen.")
+                        }
+                        return@anyExecutor
+                    }
+
+                    if (progress.awardedCriteria.isEmpty()) {
+                        executor.sendText {
+                            appendPrefix()
+                            info("Der Spieler ")
+                            variableValue(player.name)
+                            info(" hat den Erfolg ")
+                            variableValue(advancement.key.toString())
+                            info(" noch nicht begonnen.")
+                        }
+                        return@anyExecutor
+                    }
+
+                    executor.sendText {
+                        appendPrefix()
+                        info("Der Spieler ")
+                        variableValue(player.name)
+                        info(" hat den Erfolg ")
+                        variableValue(advancement.key.toString())
+                        info(" teilweise abgeschlossen.")
+                        hoverEvent(buildText {
+                            info("Fortschritt:")
+                            appendSpace()
+                            variableValue("${progress.awardedCriteria.size}/${progress.awardedCriteria.size + progress.remainingCriteria.size} Kriterien abgeschlossen")
+                            appendNewline()
+                            info("Abgeschlossene Kriterien:")
+                            appendSpace()
+                            variableValue(progress.awardedCriteria.joinToString(", "))
+                            appendNewline()
+                            info("Offene Kriterien:")
+                            appendSpace()
+                            variableValue(progress.remainingCriteria.joinToString(", "))
+                        })
+                    }
+                }
+            }
+        }
+    }
 }
 
 private fun getAdvancements(advancement: Advancement, parents: Boolean, children: Boolean) =
