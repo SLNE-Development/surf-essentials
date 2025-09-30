@@ -6,6 +6,7 @@ import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
+import org.bukkit.Bukkit
 import org.bukkit.advancement.Advancement
 import org.bukkit.entity.Player
 import java.util.*
@@ -327,70 +328,62 @@ fun advancementCommand() = commandTree("advancement") {
                 }
             }
             literalArgument("everything") {
-                advancementArgument("advancement") {
-                    anyExecutor { executor, args ->
-                        val players: Collection<Player> by args
-                        val advancement: Advancement by args
+                anyExecutor { executor, args ->
+                    val players: Collection<Player> by args
+                    val successfulPlayers = mutableObjectSetOf<Player>()
+                    val advancements = Bukkit.getServer().advancementIterator()
 
-                        val successfulPlayers = mutableObjectSetOf<Player>()
-                        val advancements = getAdvancements(
-                            advancement,
-                            parents = true,
-                            children = true
-                        )
+                    for (player in players) {
+                        var hadSomethingToGrant = false
+                        for (adv in advancements) {
+                            val progress = player.getAdvancementProgress(adv)
 
-                        for (player in players) {
-                            var hadSomethingToGrant = false
-                            for (adv in advancements) {
-                                val progress = player.getAdvancementProgress(adv)
-
-                                if (progress.isDone) {
-                                    continue
-                                }
-
-                                progress.remainingCriteria.forEach {
-                                    progress.awardCriteria(it)
-                                    hadSomethingToGrant = true
-                                }
+                            if (progress.isDone) {
+                                continue
                             }
 
-                            if (hadSomethingToGrant) {
-                                successfulPlayers.add(player)
+                            progress.remainingCriteria.forEach {
+                                progress.awardCriteria(it)
+                                hadSomethingToGrant = true
                             }
                         }
 
-                        if (successfulPlayers.size < players.size) {
-                            executor.sendText {
-                                appendPrefix()
-                                error("Der Erfolg konnte nicht an alle Spieler vergeben werden.")
-                                hoverEvent(buildText {
-                                    info("Erfolgreich vergeben an")
-                                    appendSpace()
-                                    variableValue(successfulPlayers.size)
-                                    info(":")
-                                    appendSpace()
-                                    variableValue(successfulPlayers.joinToString(", ") { it.name })
-                                })
-                            }
-                            return@anyExecutor
+                        if (hadSomethingToGrant) {
+                            successfulPlayers.add(player)
                         }
+                    }
 
-                        if (successfulPlayers.isEmpty()) {
-                            executor.sendText {
-                                appendPrefix()
-                                error("Es konnte kein Erfolg vergeben werden.")
-                            }
-                            return@anyExecutor
-                        }
-
+                    if (successfulPlayers.size < players.size) {
                         executor.sendText {
                             appendPrefix()
-                            success("Es wurden erfolgreich")
-                            appendSpace()
-                            variableValue(successfulPlayers.size)
-                            appendSpace()
-                            success("Erfolge vergeben.")
+                            error("Der Erfolg konnte nicht an alle Spieler vergeben werden.")
+                            hoverEvent(buildText {
+                                info("Erfolgreich vergeben an")
+                                appendSpace()
+                                variableValue(successfulPlayers.size)
+                                info(":")
+                                appendSpace()
+                                variableValue(successfulPlayers.joinToString(", ") { it.name })
+                            })
                         }
+                        return@anyExecutor
+                    }
+
+                    if (successfulPlayers.isEmpty()) {
+                        executor.sendText {
+                            appendPrefix()
+                            error("Es konnte kein Erfolg vergeben werden.")
+                        }
+                        return@anyExecutor
+                    }
+
+                    executor.sendText {
+                        appendPrefix()
+                        success("Es wurden erfolgreich")
+                        appendSpace()
+                        variableValue(successfulPlayers.size)
+                        appendSpace()
+                        success("Erfolge vergeben.")
                     }
                 }
             }
@@ -712,70 +705,63 @@ fun advancementCommand() = commandTree("advancement") {
                 }
             }
             literalArgument("everything") {
-                advancementArgument("advancement") {
-                    anyExecutor { executor, args ->
-                        val players: Collection<Player> by args
-                        val advancement: Advancement by args
+                anyExecutor { executor, args ->
+                    val players: Collection<Player> by args
 
-                        val successfulPlayers = mutableObjectSetOf<Player>()
-                        val advancements = getAdvancements(
-                            advancement,
-                            parents = true,
-                            children = true
-                        )
+                    val successfulPlayers = mutableObjectSetOf<Player>()
+                    val advancements = Bukkit.getServer().advancementIterator()
 
-                        for (player in players) {
-                            var hadSomethingToRevoke = false
-                            for (adv in advancements) {
-                                val progress = player.getAdvancementProgress(adv)
+                    for (player in players) {
+                        var hadSomethingToRevoke = false
+                        for (adv in advancements) {
+                            val progress = player.getAdvancementProgress(adv)
 
-                                if (progress.awardedCriteria.isEmpty()) {
-                                    continue
-                                }
-
-                                progress.awardedCriteria.forEach {
-                                    progress.revokeCriteria(it)
-                                    hadSomethingToRevoke = true
-                                }
+                            if (progress.awardedCriteria.isEmpty()) {
+                                continue
                             }
 
-                            if (hadSomethingToRevoke) {
-                                successfulPlayers.add(player)
+                            progress.awardedCriteria.forEach {
+                                progress.revokeCriteria(it)
+                                hadSomethingToRevoke = true
                             }
                         }
 
-                        if (successfulPlayers.size < players.size) {
-                            executor.sendText {
-                                appendPrefix()
-                                error("Der Erfolg konnte nicht von allen angegebenen Spielern entfernt werden.")
-                                hoverEvent(buildText {
-                                    info("Erfolgreich entfernt von")
-                                    appendSpace()
-                                    variableValue(successfulPlayers.size)
-                                    info(":")
-                                    appendSpace()
-                                    variableValue(successfulPlayers.joinToString(", ") { it.name })
-                                })
-                            }
-                            return@anyExecutor
+                        if (hadSomethingToRevoke) {
+                            successfulPlayers.add(player)
                         }
+                    }
 
-                        if (successfulPlayers.isEmpty()) {
-                            executor.sendText {
-                                appendPrefix()
-                                error("Es konnte kein Erfolg entfernt werden.")
-                            }
-                            return@anyExecutor
-                        }
-
+                    if (successfulPlayers.size < players.size) {
                         executor.sendText {
                             appendPrefix()
-                            success("Es wurden erfolgreich")
-                            appendSpace()
-                            variableValue(successfulPlayers.size)
-                            appendSpace()
-                            success("Erfolge entfernt.")
+                            error("Der Erfolg konnte nicht von allen angegebenen Spielern entfernt werden.")
+                            hoverEvent(buildText {
+                                info("Erfolgreich entfernt von")
+                                appendSpace()
+                                variableValue(successfulPlayers.size)
+                                info(":")
+                                appendSpace()
+                                variableValue(successfulPlayers.joinToString(", ") { it.name })
+                            })
                         }
+                        return@anyExecutor
+                    }
+
+                    if (successfulPlayers.isEmpty()) {
+                        executor.sendText {
+                            appendPrefix()
+                            error("Es konnte kein Erfolg entfernt werden.")
+                        }
+                        return@anyExecutor
+                    }
+
+                    executor.sendText {
+                        appendPrefix()
+                        success("Es wurden erfolgreich")
+                        appendSpace()
+                        variableValue(successfulPlayers.size)
+                        appendSpace()
+                        success("Erfolge entfernt.")
                     }
                 }
             }
