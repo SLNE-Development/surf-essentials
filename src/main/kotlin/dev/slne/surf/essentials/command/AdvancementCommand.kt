@@ -782,7 +782,7 @@ fun advancementCommand() = commandTree("advancement") {
         }
     }
     literalArgument("query") {
-        playerArgument("player") {
+        entitySelectorArgumentOnePlayer("player") {
             advancementArgument("advancement") {
                 anyExecutor { executor, args ->
                     val player: Player by args
