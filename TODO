@@ -8,7 +8,7 @@ DefautlGamemode
 Difficulty
 Effect
 Enchant
-Executre
+Execute
 Experience
 Fillbiome
 Fill
@@ -19,7 +19,6 @@ Gamemode
 Gamerule
 Give
 Kill
-List
 Particle
 Playsound
 Reload
@@ -28,7 +27,7 @@ Seed
 Setblock
 SetplayerIdleTimeout
 Setworldspawn
-spectare
+spectate
 summon
 time
 weather
@@ -49,8 +48,6 @@ workbench
 fillstack
 food
 godmode
-hat
-heal
 hurt
 infinity
 latestdeath
@@ -58,13 +55,10 @@ lightning
 repair
 speed
 sucicide
-trash
-unhat
 alert
 book
 broadcastworld
 changeslot
-chartclear
 clearitem
 getpos
 info
