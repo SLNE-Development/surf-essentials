@@ -15,4 +15,6 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val HAT_COMMAND = create("$PREFIX.hat.command")
     val LIST_COMMAND = create("$PREFIX.list.command")
     val TRASH_COMMAND = create("$PREFIX.trash.command")
+    val SPAWN_COMMAND = create("$PREFIX.spawn.command")
+    val BACK_COMMAND = create("$PREFIX.back.command")
 }

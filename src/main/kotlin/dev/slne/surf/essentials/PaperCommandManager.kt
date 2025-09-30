@@ -18,5 +18,7 @@ object PaperCommandManager {
         hatCommand()
         listCommand()
         trashCommand()
+        backCommand()
+        spawnCommand()
     }
 }
