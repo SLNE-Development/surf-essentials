@@ -2,12 +2,13 @@ plugins {
     id("dev.slne.surf.surfapi.gradle.paper-plugin")
 }
 
+group = "dev.slne.surf.essentials"
+version = findProperty("version") as String
+
 surfPaperPluginApi {
     mainClass("dev.slne.surf.essentials.PaperMain")
-    bootstrapper("dev.slne.surf.cloud.bukkit.BukkitBootstrap")
-    authors.addAll("twisti", "red")
+    generateLibraryLoader(false)
+    foliaSupported(true)
 
-    runServer {
-        jvmArgs("-Dsurf.cloud.serverName=test-server01")
-    }
+    authors.addAll("twisti", "red")
 }
