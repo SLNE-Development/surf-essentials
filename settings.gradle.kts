@@ -1,6 +1,9 @@
-pluginManagement {
-    // Include 'plugins build' to define convention plugins.
-//    includeBuild("build-logic")
+buildscript {
+    repositories {
+        gradlePluginPortal()
+        maven("https://repo.slne.dev/repository/maven-public/") { name = "maven-public" }
+    }
+    dependencies {
+        classpath("dev.slne.surf:surf-api-gradle-plugin:1.21.8+")
+    }
 }
-
-rootProject.name = "surf-essentials"
