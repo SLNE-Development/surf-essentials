@@ -4,6 +4,7 @@ import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.meta.ItemMeta
 
 fun itemEditCommand() = commandTree("itemedit") {
@@ -55,6 +56,30 @@ fun itemEditCommand() = commandTree("itemedit") {
                         append(displayLoreContent)
                         success(" geändert.")
                     }
+                }
+            }
+        }
+    }
+
+    literalArgument("enchant") {
+        integerArgument("level") {
+            withPermission(EssentialsPermissionRegistry.ITEM_EDIT_COMMAND_ENCHANT)
+            playerExecutor { player, args ->
+                val enchant: Enchantment by args
+                val level: Int by args
+                val itemInHand = player.inventory.itemInMainHand
+
+                itemInHand.editMeta(ItemMeta::class.java) {
+                    it.addEnchant(enchant, level, true)
+                }
+
+                player.sendText {
+                    appendPrefix()
+                    success("Der Verzauberung ")
+                    variableValue(enchant.key.key)
+                    success(" mit der Stufe ")
+                    variableValue(level.toString())
+                    success(" wurde zum Item hinzugefügt.")
                 }
             }
         }
