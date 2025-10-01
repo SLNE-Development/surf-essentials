@@ -17,6 +17,14 @@ fun itemEditCommand() = commandTree("itemedit") {
                 val displayName = MiniMessage.miniMessage().deserialize(name)
                 val itemInHand = player.inventory.itemInMainHand
 
+                if (itemInHand.isEmpty) {
+                    player.sendText {
+                        appendPrefix()
+                        error("Du musst ein Item in der Hand halten.")
+                    }
+                    return@playerExecutor
+                }
+
                 itemInHand.editMeta(ItemMeta::class.java) {
                     it.displayName(displayName)
                 }
@@ -40,6 +48,14 @@ fun itemEditCommand() = commandTree("itemedit") {
                     val loreContent: String by args
                     val displayLoreContent = MiniMessage.miniMessage().deserialize(loreContent)
                     val itemInHand = player.inventory.itemInMainHand
+
+                    if (itemInHand.isEmpty) {
+                        player.sendText {
+                            appendPrefix()
+                            error("Du musst ein Item in der Hand halten.")
+                        }
+                        return@playerExecutor
+                    }
 
                     itemInHand.editMeta(ItemMeta::class.java) {
                         val lore = it.lore() ?: mutableListOf()
@@ -68,6 +84,14 @@ fun itemEditCommand() = commandTree("itemedit") {
                 val enchant: Enchantment by args
                 val level: Int by args
                 val itemInHand = player.inventory.itemInMainHand
+
+                if (itemInHand.isEmpty) {
+                    player.sendText {
+                        appendPrefix()
+                        error("Du musst ein Item in der Hand halten.")
+                    }
+                    return@playerExecutor
+                }
 
                 itemInHand.editMeta(ItemMeta::class.java) {
                     it.addEnchant(enchant, level, true)
