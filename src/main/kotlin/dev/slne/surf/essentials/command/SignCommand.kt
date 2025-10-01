@@ -6,6 +6,7 @@ import dev.jorel.commandapi.kotlindsl.greedyStringArgument
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.Component
@@ -33,13 +34,13 @@ fun signCommand() = commandTree("sign") {
                 val lore = it.lore() ?: mutableListOf<Component>()
 
                 lore.addLast(buildText {
-                    text("Signiert von ".toSmallCaps()).decorate(TextDecoration.BOLD)
+                    text("Signiert von ".toSmallCaps(), Colors.WHITE)
                     variableValue(player.name.toSmallCaps(), TextDecoration.BOLD)
                 }.decoration(TextDecoration.ITALIC, false))
 
                 component?.let { comp ->
                     lore.addLast(buildText {
-                        append(comp)
+                        append(comp).colorIfAbsent(Colors.WHITE)
                     }.decoration(TextDecoration.ITALIC, false))
                 }
 

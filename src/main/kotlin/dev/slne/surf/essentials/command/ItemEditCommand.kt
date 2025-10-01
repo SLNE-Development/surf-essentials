@@ -78,32 +78,34 @@ fun itemEditCommand() = commandTree("itemedit") {
     }
 
     literalArgument("enchant") {
-        integerArgument("level") {
-            withPermission(EssentialsPermissionRegistry.ITEM_EDIT_COMMAND_ENCHANT)
-            playerExecutor { player, args ->
-                val enchant: Enchantment by args
-                val level: Int by args
-                val itemInHand = player.inventory.itemInMainHand
+        enchantmentArgument("enchant") {
+            integerArgument("level") {
+                withPermission(EssentialsPermissionRegistry.ITEM_EDIT_COMMAND_ENCHANT)
+                playerExecutor { player, args ->
+                    val enchant: Enchantment by args
+                    val level: Int by args
+                    val itemInHand = player.inventory.itemInMainHand
 
-                if (itemInHand.isEmpty) {
+                    if (itemInHand.isEmpty) {
+                        player.sendText {
+                            appendPrefix()
+                            error("Du musst ein Item in der Hand halten.")
+                        }
+                        return@playerExecutor
+                    }
+
+                    itemInHand.editMeta(ItemMeta::class.java) {
+                        it.addEnchant(enchant, level, true)
+                    }
+
                     player.sendText {
                         appendPrefix()
-                        error("Du musst ein Item in der Hand halten.")
+                        success("Der Verzauberung ")
+                        variableValue(enchant.key.key)
+                        success(" mit der Stufe ")
+                        variableValue(level.toString())
+                        success(" wurde zum Item hinzugefügt.")
                     }
-                    return@playerExecutor
-                }
-
-                itemInHand.editMeta(ItemMeta::class.java) {
-                    it.addEnchant(enchant, level, true)
-                }
-
-                player.sendText {
-                    appendPrefix()
-                    success("Der Verzauberung ")
-                    variableValue(enchant.key.key)
-                    success(" mit der Stufe ")
-                    variableValue(level.toString())
-                    success(" wurde zum Item hinzugefügt.")
                 }
             }
         }
