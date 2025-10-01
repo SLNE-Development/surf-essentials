@@ -46,7 +46,7 @@ fun infoCommand() = commandTree("pinfo") {
                 appendPrefixedKeyArrowLine("Ping", ping)
                 appendPrefixedKeyArrowLine("Standort", location)
 
-                appendNewline {
+                appendNewPrefixedLine {
                     appendLinkButton("Laby.net Profil", labyProfile)
                     appendSpace()
                     appendLinkButton("NameMC Profil", nameMcProfile)
