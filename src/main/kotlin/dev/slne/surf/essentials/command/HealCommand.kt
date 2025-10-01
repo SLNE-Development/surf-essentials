@@ -11,6 +11,7 @@ fun healCommand() = commandTree("heal") {
     playerExecutor { player, _ ->
         player.health = player.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
         player.fireTicks = 0
+        player.foodLevel = 20
         player.sendText {
             appendPrefix()
             success("Du hast dich geheilt.")
