@@ -29,5 +29,6 @@ object PaperCommandManager {
         changeSlotCommand()
         strikeCommand()
         giveCommand()
+        infoCommand()
     }
 }

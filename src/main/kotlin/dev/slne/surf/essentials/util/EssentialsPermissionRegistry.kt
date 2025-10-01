@@ -31,4 +31,5 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val GIVE_COMMAND = create("$PREFIX.give.command")
     val CHANGESLOT_COMMAND = create("$PREFIX.changeslot.command")
     val STRIKE_COMMAND = create("$PREFIX.strike.command")
+    val INFO_COMMAND = create("$PREFIX.info.command")
 }
