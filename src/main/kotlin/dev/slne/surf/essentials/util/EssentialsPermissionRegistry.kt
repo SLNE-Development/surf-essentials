@@ -7,6 +7,7 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
 
     val FLY_COMMAND = create("$PREFIX.fly.command")
     val FLY_COMMAND_OTHERS = create("$PREFIX.fly.command.others")
+    val GAME_MODE_SWITCHER = create("$PREFIX.gameMode.gameModeSwitcher")
     val GAME_MODE_COMMAND = create("$PREFIX.gameMode.command")
     val GAME_MODE_COMMAND_OTHERS = create("$PREFIX.gameMode.command.others")
     val ADVANCEMENT_COMMAND = create("$PREFIX.advancement.command")

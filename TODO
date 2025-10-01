@@ -1,7 +1,6 @@
 COmmands:
 Attribute
 Bossbar
-ClearInv
 Damage
 Datapack
 DefautlGamemode
@@ -15,7 +14,6 @@ Fill
 Feed
 Forceload
 Function
-Gamemode
 Gamerule
 Give
 Kill
@@ -49,8 +47,7 @@ godmode
 hurt
 infinity
 latestdeath
-lightning
-repair
+lightning - /stike
 speed
 sucicide
 alert
