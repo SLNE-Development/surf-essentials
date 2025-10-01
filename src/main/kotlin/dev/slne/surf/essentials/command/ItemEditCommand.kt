@@ -87,7 +87,7 @@ fun itemEditCommand() = commandTree("itemedit") {
                     val enchant: Enchantment by args
                     val level: Int by args
                     val itemInHand = player.inventory.itemInMainHand
-
+                    
                     if (itemInHand.isEmpty) {
                         player.sendText {
                             appendPrefix()
