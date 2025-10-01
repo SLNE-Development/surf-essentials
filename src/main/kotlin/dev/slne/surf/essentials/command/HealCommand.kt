@@ -10,6 +10,7 @@ fun healCommand() = commandTree("heal") {
     withPermission(EssentialsPermissionRegistry.HEAL_COMMAND)
     playerExecutor { player, _ ->
         player.health = player.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
+        player.fireTicks = 0
         player.sendText {
             appendPrefix()
             success("Du hast dich geheilt.")
