@@ -20,7 +20,7 @@ fun randomTeleportCommand() = commandTree("randomteleport") {
             return@playerExecutor
         }
 
-        player.teleport(selected)
+        player.teleportAsync(selected.location)
         player.sendText {
             appendPrefix()
             success("Du wurdest zu ")
