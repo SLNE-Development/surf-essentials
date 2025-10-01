@@ -32,5 +32,6 @@ object PaperCommandManager {
         infoCommand()
         randomTeleportCommand()
         itemEditCommand()
+        signCommand()
     }
 }

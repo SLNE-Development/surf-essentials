@@ -37,4 +37,6 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val ITEM_EDIT_COMMAND = create("$PREFIX.itemedit.command")
     val ITEM_EDIT_COMMAND_LORE = create("$PREFIX.itemedit.command.lore")
     val ITEM_EDIT_COMMAND_NAME = create("$PREFIX.itemedit.command.name")
+    val ITEM_EDIT_COMMAND_ENCHANT = create("$PREFIX.itemedit.command.enchant")
+    val SIGN_COMMAND = create("$PREFIX.sign.command")
 }
