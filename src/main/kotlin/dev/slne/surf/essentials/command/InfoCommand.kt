@@ -5,6 +5,7 @@ import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.entitySelectorArgumentOnePlayer
 import dev.jorel.commandapi.kotlindsl.getValue
 import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.appendCommandButton
 import dev.slne.surf.essentials.util.appendLinkButton
 import dev.slne.surf.essentials.util.appendPrefixedKeyArrowLine
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
@@ -20,7 +21,9 @@ fun infoCommand() = commandTree("pinfo") {
 
             val name = player.name
             val uuid = player.uniqueId.toString()
-            val ip = "${player.address.hostName}:${player.address.port}"
+            val ip = "${player.address.address.hostAddress}:${player.address.port}"
+            val host =
+                "${player.virtualHost?.hostName ?: "Unbekannt"}: ${player.virtualHost?.port ?: "Unbekannt"}"
             val client = player.clientBrandName
             val labyProfile = "https://laby.net/${player.name}"
             val nameMcProfile = "https://de.namemc.com/profile/${player.name}"
@@ -33,6 +36,7 @@ fun infoCommand() = commandTree("pinfo") {
             val ping = "${player.ping}ms"
 
             executor.sendText {
+                appendNewline()
                 appendPrefix()
                 info("Spielerinformationen für ")
                 variableValue(player.name.toSmallCaps())
@@ -50,6 +54,8 @@ fun infoCommand() = commandTree("pinfo") {
                     appendLinkButton("Laby.net Profil", labyProfile)
                     appendSpace()
                     appendLinkButton("NameMC Profil", nameMcProfile)
+                    appendSpace()
+                    appendCommandButton("Teleportieren", "/tp $name")
                 }
             }
         }
