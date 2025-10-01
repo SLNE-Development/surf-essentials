@@ -59,7 +59,7 @@ fun itemEditCommand() = commandTree("itemedit") {
 
                     itemInHand.editMeta(ItemMeta::class.java) {
                         val lore = it.lore() ?: mutableListOf()
-                        lore[line] = displayLoreContent
+                        lore.add(line, displayLoreContent)
 
                         it.lore(lore)
                     }
