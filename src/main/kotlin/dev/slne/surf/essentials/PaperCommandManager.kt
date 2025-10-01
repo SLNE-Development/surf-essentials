@@ -11,6 +11,7 @@ object PaperCommandManager {
         CommandAPI.unregister("list")
         CommandAPI.unregister("clear")
         CommandAPI.unregister("gamemode", true)
+        CommandAPI.unregister("give")
 
         advancementCommand()
         opCommand()

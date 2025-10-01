@@ -8,23 +8,8 @@ import org.bukkit.inventory.ItemStack
 
 fun giveCommand() = commandTree("give") {
     withPermission(EssentialsPermissionRegistry.GIVE_COMMAND)
-    itemStackArgument("item") {
-        playerExecutor { player, args ->
-            val itemStack: ItemStack by args
-
-            player.inventory.addItem(itemStack)
-
-            player.sendText {
-                appendPrefix()
-                success("Du hast ")
-                variableValue(itemStack.amount.toString())
-                success("x ")
-                variableValue(itemStack.type.name)
-                success(" erhalten.")
-            }
-        }
-        entitySelectorArgumentManyPlayers("players") {
-            withPermission(EssentialsPermissionRegistry.GIVE_COMMAND_OTHERS)
+    entitySelectorArgumentManyPlayers("players") {
+        itemStackArgument("itemStack") {
             anyExecutor { executor, args ->
                 val itemStack: ItemStack by args
                 val players: Collection<Player> by args
