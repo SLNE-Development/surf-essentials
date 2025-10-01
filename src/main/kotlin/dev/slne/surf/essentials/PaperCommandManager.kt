@@ -30,5 +30,6 @@ object PaperCommandManager {
         strikeCommand()
         giveCommand()
         infoCommand()
+        randomTeleportCommand()
     }
 }

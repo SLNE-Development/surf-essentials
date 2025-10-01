@@ -32,4 +32,6 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val CHANGESLOT_COMMAND = create("$PREFIX.changeslot.command")
     val STRIKE_COMMAND = create("$PREFIX.strike.command")
     val INFO_COMMAND = create("$PREFIX.info.command")
+    val TELEPORT_RANDOM_COMMAND = create("$PREFIX.teleport.random.command")
+    val TELEPORT_RANDOM_BYPASS = create("$PREFIX.teleport.random.bypass")
 }
