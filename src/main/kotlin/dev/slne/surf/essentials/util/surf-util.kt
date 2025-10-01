@@ -32,7 +32,7 @@ fun SurfComponentBuilder.appendKeyValue(key: String, value: String) = append {
 fun SurfComponentBuilder.appendLinkButton(
     text: String,
     link: String,
-    color: TextColor = Colors.INFO
+    color: TextColor = Colors.SUCCESS
 ) = append {
     spacer("[")
     text(text, color)
