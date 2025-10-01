@@ -28,6 +28,7 @@ fun trashCommand() = commandTree("trash") {
             type(org.bukkit.Sound.BLOCK_BARREL_OPEN)
         }, Sound.Emitter.self())
     }
+    withPermission(EssentialsPermissionRegistry.TRASH_COMMAND_OTHERS)
     entitySelectorArgumentOnePlayer("player") {
         anyExecutor { executor, args ->
             val player: Player by args

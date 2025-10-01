@@ -9,6 +9,8 @@ object PaperCommandManager {
         CommandAPI.unregister("deop")
         CommandAPI.unregister("advancement")
         CommandAPI.unregister("list")
+        CommandAPI.unregister("clear")
+        CommandAPI.unregister("gamemode", true)
 
         advancementCommand()
         opCommand()
@@ -20,5 +22,8 @@ object PaperCommandManager {
         trashCommand()
         backCommand()
         spawnCommand()
+        clearCommand()
+        gameModeCommand()
+        repairCommand()
     }
 }

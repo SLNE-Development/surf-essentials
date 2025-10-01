@@ -33,6 +33,7 @@ fun listCommand() = commandTree("list") {
         }
     }
     worldArgument("world") {
+        withPermission(EssentialsPermissionRegistry.LIST_COMMAND_WORLD)
         anyExecutor { executor, args ->
             val world: World by args
             val playersInWorld = world.players

@@ -15,8 +15,9 @@ fun healCommand() = commandTree("heal") {
             success("Du hast dich geheilt.")
         }
     }
-    
+
     entitySelectorArgumentOnePlayer("player") {
+        withPermission(EssentialsPermissionRegistry.HEAL_COMMAND_OTHERS)
         anyExecutor { executor, args ->
             val player: Player by args
 

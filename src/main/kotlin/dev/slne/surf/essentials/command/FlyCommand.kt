@@ -28,6 +28,7 @@ fun flyCommand() = commandTree("fly") {
         }
     }
     entitySelectorArgumentOnePlayer("player") {
+        withPermission(EssentialsPermissionRegistry.FLY_COMMAND_OTHERS)
         anyExecutor { executor, args ->
             val player: Player by args
 

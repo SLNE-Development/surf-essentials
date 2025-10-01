@@ -27,6 +27,7 @@ fun spawnCommand() = commandTree("spawn") {
     }
 
     worldArgument("world") {
+        withPermission(EssentialsPermissionRegistry.SPAWN_COMMAND_WORLD)
         playerExecutor { player, args ->
             val world: World by args
 

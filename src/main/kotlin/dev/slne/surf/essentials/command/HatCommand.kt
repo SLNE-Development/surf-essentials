@@ -27,6 +27,7 @@ fun hatCommand() = commandTree("hat") {
         }
     }
     entitySelectorArgumentOnePlayer("player") {
+        withPermission(EssentialsPermissionRegistry.HAT_COMMAND_OTHERS)
         playerExecutor { executor, args ->
             val player: Player by args
             val itemInHand = executor.inventory.itemInMainHand
