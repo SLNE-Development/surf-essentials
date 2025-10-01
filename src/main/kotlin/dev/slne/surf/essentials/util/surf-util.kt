@@ -48,7 +48,7 @@ fun SurfComponentBuilder.appendLinkButton(
 fun SurfComponentBuilder.appendCommandButton(
     text: String,
     command: String,
-    color: TextColor = Colors.INFO
+    color: TextColor = Colors.SUCCESS
 ) = append {
     spacer("[")
     text(text, color)
