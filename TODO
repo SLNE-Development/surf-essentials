@@ -15,7 +15,6 @@ Feed
 Forceload
 Function
 Gamerule
-Give
 Kill
 Particle
 Playsound
@@ -47,13 +46,11 @@ godmode
 hurt
 infinity
 latestdeath
-lightning - /stike
 speed
 sucicide
 alert
 book
 broadcastworld
-changeslot
 clearitem
 getpos
 info

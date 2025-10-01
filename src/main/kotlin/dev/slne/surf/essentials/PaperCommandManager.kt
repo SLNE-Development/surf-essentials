@@ -25,5 +25,8 @@ object PaperCommandManager {
         clearCommand()
         gameModeCommand()
         repairCommand()
+        changeSlotCommand()
+        strikeCommand()
+        giveCommand()
     }
 }

@@ -28,4 +28,8 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val CLEAR_COMMAND_OTHERS = create("$PREFIX.clear.command.others")
     val REPAIR_COMMAND = create("$PREFIX.repair.command")
     val REPAIR_COMMAND_OTHERS = create("$PREFIX.repair.command.others")
+    val GIVE_COMMAND = create("$PREFIX.give.command")
+    val GIVE_COMMAND_OTHERS = create("$PREFIX.give.command.others")
+    val CHANGESLOT_COMMAND = create("$PREFIX.changeslot.command")
+    val STRIKE_COMMAND = create("$PREFIX.strike.command")
 }
