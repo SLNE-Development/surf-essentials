@@ -15,10 +15,10 @@ import org.bukkit.inventory.meta.ItemMeta
 
 fun signCommand() = commandTree("sign") {
     withPermission(EssentialsPermissionRegistry.SIGN_COMMAND)
-    greedyStringArgument("text") {
+    greedyStringArgument("text", optional = true) {
         playerExecutor { player, args ->
-            val text: String by args
-            val component = MiniMessage.miniMessage().deserialize(text)
+            val text: String? by args
+            val component = text?.let { MiniMessage.miniMessage().deserialize(it) }
             val item = player.inventory.itemInMainHand
 
             if (item.isEmpty) {
@@ -35,10 +35,13 @@ fun signCommand() = commandTree("sign") {
                 lore.addLast(buildText {
                     text("Signiert von ".toSmallCaps()).decorate(TextDecoration.BOLD)
                     variableValue(player.name.toSmallCaps(), TextDecoration.BOLD)
-                })
-                lore.addLast(buildText {
-                    append(component)
-                })
+                }.decoration(TextDecoration.ITALIC, false))
+
+                component?.let { comp ->
+                    lore.addLast(buildText {
+                        append(comp)
+                    }.decoration(TextDecoration.ITALIC, false))
+                }
 
                 it.lore(lore)
             }
