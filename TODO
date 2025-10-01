@@ -52,6 +52,4 @@ book
 broadcastworld
 near
 playerhead
-setitemlore -> /itemedit lore <lore>
-setitemname -> /itemedit name <name>
 spawnerchange
