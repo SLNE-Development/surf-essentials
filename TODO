@@ -50,11 +50,8 @@ sucicide
 alert
 book
 broadcastworld
-clearitem
-getpos
-info
 near
 playerhead
-setitemlore
-setitemname
+setitemlore -> /itemedit lore <lore>
+setitemname -> /itemedit name <name>
 spawnerchange
