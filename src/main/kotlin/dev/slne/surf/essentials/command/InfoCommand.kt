@@ -44,6 +44,7 @@ fun infoCommand() = commandTree("pinfo") {
                 appendPrefixedKeyArrowLine("Name", name)
                 appendPrefixedKeyArrowLine("UUID", uuid)
                 appendPrefixedKeyArrowLine("IP", ip)
+                appendPrefixedKeyArrowLine("Host", host)
                 appendPrefixedKeyArrowLine("Client", client ?: "Unbekannt")
                 appendPrefixedKeyArrowLine("Leben", health)
                 appendPrefixedKeyArrowLine("Hunger", food)
