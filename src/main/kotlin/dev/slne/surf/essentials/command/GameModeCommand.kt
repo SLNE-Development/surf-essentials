@@ -43,7 +43,7 @@ fun gameModeCommand() = commandTree("gamemode") {
                     success("Der Spielmodus von ")
                     variableValue(changedPlayers.keys.size)
                     success(" Spielern wurde zu ")
-                    variableValue(gameMode.name)
+                    translatable(gameMode.translationKey()).color(Colors.VARIABLE_VALUE)
                     success(" geändert.")
                 }
 
