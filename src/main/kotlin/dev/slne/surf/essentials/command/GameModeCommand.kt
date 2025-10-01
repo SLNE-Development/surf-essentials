@@ -21,7 +21,7 @@ fun gameModeCommand() = commandTree("gamemode") {
             player.sendText {
                 appendPrefix()
                 success("Dein Spielmodus wurde zu ")
-                variableValue(gameMode.name)
+                translatable(gameMode.translationKey()).color(Colors.VARIABLE_VALUE)
                 success(" geändert.")
             }
         }
