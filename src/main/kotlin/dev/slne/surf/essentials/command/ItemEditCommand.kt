@@ -58,8 +58,10 @@ fun itemEditCommand() = commandTree("itemedit") {
                     }
 
                     itemInHand.editMeta(ItemMeta::class.java) {
-                        val lore = it.lore() ?: mutableListOf()
-                        lore.add(line, displayLoreContent)
+                        val lore = it.lore()?.toMutableList() ?: mutableListOf()
+
+                        val safeIndex = line.coerceIn(0, lore.size)
+                        lore.add(safeIndex, displayLoreContent)
 
                         it.lore(lore)
                     }
