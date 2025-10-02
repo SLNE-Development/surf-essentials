@@ -42,5 +42,6 @@ object PaperCommandManager {
         teleportToTopCommand()
         enchantmentCommand()
         whitelistCommand()
+        hurtCommand()
     }
 }
