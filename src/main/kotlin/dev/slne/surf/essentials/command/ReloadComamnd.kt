@@ -6,7 +6,6 @@ import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.isFolia
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 
 fun reloadCommand() = commandTree("reload") {
@@ -23,8 +22,7 @@ fun reloadCommand() = commandTree("reload") {
             executor.sendText {
                 appendPrefix()
                 error(
-                    "Der Server konnte nicht komplett neu geladen werden, da Folia verwendet wird.".toSmallCaps(),
-                    TextDecoration.BOLD
+                    "Der Server konnte nicht komplett neu geladen werden, da Folia verwendet wird.".toSmallCaps()
                 )
             }
         }
@@ -37,10 +35,9 @@ fun reloadCommand() = commandTree("reload") {
         executor.sendText {
             appendPrefix()
             success("Der Server wurde neu geladen.")
-            error(
-                "Bitte beachte, das dies kein Plugin-Reload ist, da dieser nicht mehr unterstützt wird. Bei Plugin Änderungen, bitte starte den Server neu.".toSmallCaps(),
-                TextDecoration.BOLD
-            )
+            appendNewPrefixedLine {
+                error("Bitte beachte, das dies kein Plugin-Reload ist, da dieser nicht mehr unterstützt wird. Bei Plugin Änderungen, bitte starte den Server neu.".toSmallCaps())
+            }
         }
     }
 }
