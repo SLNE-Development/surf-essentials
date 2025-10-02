@@ -14,6 +14,7 @@ object PaperCommandManager {
         CommandAPI.unregister("give")
         CommandAPI.unregister("teleport")
         CommandAPI.unregister("enchant")
+        CommandAPI.unregister("whitelist")
 
         advancementCommand()
         opCommand()
