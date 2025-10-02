@@ -8,6 +8,7 @@ import dev.slne.surf.essentials.util.getLatestLocation
 import dev.slne.surf.essentials.util.setOfflineLocation
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.entity.Player
 
 fun teleportOfflineCommand() = commandTree("teleportoffline") {
@@ -26,7 +27,7 @@ fun teleportOfflineCommand() = commandTree("teleportoffline") {
             }
 
             plugin.launch {
-                val offlinePlayer = Bukkit.getOfflinePlayer(name)
+                val offlinePlayer = Bukkit.getOfflinePlayer(target)
                 val offlineLocation = offlinePlayer.getLatestLocation() ?: run {
                     player.sendText {
                         appendPrefix()
@@ -76,6 +77,39 @@ fun teleportOfflineCommand() = commandTree("teleportoffline") {
                         spacer(" (offline)")
                         success(" zu ")
                         variableValue(onlineTarget.name)
+                        success(" teleportiert.")
+                    }
+                }
+            }
+        }
+
+        locationArgument("location") {
+            withPermission(EssentialsPermissionRegistry.TELEPORT_COMMAND_OFFLINE_OTHERS)
+            anyExecutor { executor, args ->
+                val target: String by args
+                val location: Location by args
+
+                executor.sendText {
+                    appendPrefix()
+                    info("Teleportiere ")
+                    variableValue(target)
+                    spacer(" (offline)")
+                    info(" zu ")
+                    variableValue("${location.blockX} ${location.blockY} ${location.blockZ}")
+                    info("...")
+                }
+
+                plugin.launch {
+                    val offlinePlayer = Bukkit.getOfflinePlayer(target)
+                    offlinePlayer.setOfflineLocation(location)
+
+                    executor.sendText {
+                        appendPrefix()
+                        success("Du hast ")
+                        variableValue(target)
+                        spacer(" (offline)")
+                        success(" zu ")
+                        variableValue("X: ${location.blockX} Y: ${location.blockY} Z: ${location.blockZ}")
                         success(" teleportiert.")
                     }
                 }
