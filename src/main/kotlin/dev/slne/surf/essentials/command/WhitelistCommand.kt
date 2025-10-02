@@ -95,7 +95,7 @@ fun whitelistCommand() = commandTree("whitelist") {
 
     literalArgument("player") {
         literalArgument("add") {
-            stringArgument("player") {
+            stringArgument("playerName") {
                 anyExecutor { executor, args ->
                     val playerName: String by args
 
@@ -122,7 +122,7 @@ fun whitelistCommand() = commandTree("whitelist") {
         }
 
         literalArgument("remove") {
-            stringArgument("player") {
+            stringArgument("playerName") {
                 anyExecutor { executor, args ->
                     val playerName: String by args
 
