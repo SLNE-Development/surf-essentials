@@ -119,7 +119,7 @@ fun whitelistCommand() = commandTree("whitelist") {
         }
 
         literalArgument("remove") {
-            stringArgument("offlinePlayer") {
+            offlinePlayerArgument("offlinePlayer") {
                 anyExecutor { executor, args ->
                     val offlinePlayer: OfflinePlayer by args
 
@@ -165,7 +165,10 @@ fun whitelistCommand() = commandTree("whitelist") {
 
 
                         val pagination = Pagination<OfflinePlayer> {
-                            title { primary("Whitelist".toSmallCaps(), TextDecoration.BOLD) }
+                            title {
+                                primary("Whitelist".toSmallCaps(), TextDecoration.BOLD)
+                                spacer(" (${whitelistedPlayers.size})")
+                            }
                             rowRenderer { row, _ ->
                                 listOf(
                                     buildText {
