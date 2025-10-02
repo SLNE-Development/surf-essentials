@@ -22,7 +22,6 @@ Setblock
 SetplayerIdleTimeout
 Setworldspawn
 spectate
-summon
 time
 weather
 anvil
