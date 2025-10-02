@@ -102,24 +102,31 @@ fun whitelistCommand() = commandTree("whitelist") {
                     val playerName: String by args
 
                     plugin.launch {
-                        val player = Bukkit.getOfflinePlayer(playerName)
+                        runCatching {
+                            val player = Bukkit.getOfflinePlayer(playerName)
 
-                        if (player.isWhitelisted) {
+                            if (player.isWhitelisted) {
+                                executor.sendText {
+                                    appendPrefix()
+                                    error("Der Spieler ist bereits auf der Whitelist.")
+                                }
+                                return@launch
+                            }
+
+                            withContext(plugin.globalRegionDispatcher) {
+                                player.isWhitelisted = true
+                            }
+
                             executor.sendText {
                                 appendPrefix()
-                                error("Der Spieler ist bereits auf der Whitelist.")
+                                variableValue(player.name ?: playerName)
+                                success(" wurde zur Whitelist hinzugefügt.")
                             }
-                            return@launch
-                        }
-
-                        withContext(plugin.globalRegionDispatcher) {
-                            player.isWhitelisted = true
-                        }
-
-                        executor.sendText {
-                            appendPrefix()
-                            variableValue(player.name ?: playerName)
-                            success(" wurde zur Whitelist hinzugefügt.")
+                        }.onFailure {
+                            executor.sendText {
+                                appendPrefix()
+                                error("Der Spieler wurde nicht gefunden.")
+                            }
                         }
                     }
                 }
@@ -132,24 +139,31 @@ fun whitelistCommand() = commandTree("whitelist") {
                     val playerName: String by args
 
                     plugin.launch {
-                        val player = Bukkit.getOfflinePlayer(playerName)
+                        runCatching {
+                            val player = Bukkit.getOfflinePlayer(playerName)
 
-                        if (!player.isWhitelisted) {
+                            if (!player.isWhitelisted) {
+                                executor.sendText {
+                                    appendPrefix()
+                                    error("Der Spieler ist nicht auf der Whitelist.")
+                                }
+                                return@launch
+                            }
+
+                            withContext(plugin.globalRegionDispatcher) {
+                                player.isWhitelisted = false
+                            }
+
                             executor.sendText {
                                 appendPrefix()
-                                error("Der Spieler ist nicht auf der Whitelist.")
+                                variableValue(player.name ?: playerName)
+                                success(" wurde von der Whitelist entfernt.")
                             }
-                            return@launch
-                        }
-
-                        withContext(plugin.globalRegionDispatcher) {
-                            player.isWhitelisted = false
-                        }
-
-                        executor.sendText {
-                            appendPrefix()
-                            variableValue(player.name ?: playerName)
-                            success(" wurde von der Whitelist entfernt.")
+                        }.onFailure {
+                            executor.sendText {
+                                appendPrefix()
+                                error("Der Spieler wurde nicht gefunden.")
+                            }
                         }
                     }
                 }
