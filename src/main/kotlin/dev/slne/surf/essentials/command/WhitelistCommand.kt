@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.command
 
-import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.plugin
@@ -10,7 +9,6 @@ import dev.slne.surf.surfapi.core.api.messages.CommonComponents
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import dev.slne.surf.surfapi.core.api.messages.pagination.Pagination
-import kotlinx.coroutines.withContext
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
@@ -97,74 +95,48 @@ fun whitelistCommand() = commandTree("whitelist") {
 
     literalArgument("player") {
         literalArgument("add") {
-            stringArgument("playerName") {
+            offlinePlayerArgument("offlinePlayer") {
                 anyExecutor { executor, args ->
-                    val playerName: String by args
+                    val offlinePlayer: OfflinePlayer by args
 
-                    plugin.launch {
-                        runCatching {
-                            val player = Bukkit.getOfflinePlayer(playerName)
-
-                            if (player.isWhitelisted) {
-                                executor.sendText {
-                                    appendPrefix()
-                                    error("Der Spieler ist bereits auf der Whitelist.")
-                                }
-                                return@launch
-                            }
-
-                            withContext(plugin.globalRegionDispatcher) {
-                                player.isWhitelisted = true
-                            }
-
-                            executor.sendText {
-                                appendPrefix()
-                                variableValue(player.name ?: playerName)
-                                success(" wurde zur Whitelist hinzugefügt.")
-                            }
-                        }.onFailure {
-                            executor.sendText {
-                                appendPrefix()
-                                error("Der Spieler wurde nicht gefunden.")
-                            }
+                    if (offlinePlayer.isWhitelisted) {
+                        executor.sendText {
+                            appendPrefix()
+                            error("Der Spieler ist bereits auf der Whitelist.")
                         }
+                        return@anyExecutor
+                    }
+
+                    offlinePlayer.isWhitelisted = true
+
+                    executor.sendText {
+                        appendPrefix()
+                        variableValue(offlinePlayer.name ?: offlinePlayer.uniqueId.toString())
+                        success(" wurde zur Whitelist hinzugefügt.")
                     }
                 }
             }
         }
 
         literalArgument("remove") {
-            stringArgument("playerName") {
+            stringArgument("offlinePlayer") {
                 anyExecutor { executor, args ->
-                    val playerName: String by args
+                    val offlinePlayer: OfflinePlayer by args
 
-                    plugin.launch {
-                        runCatching {
-                            val player = Bukkit.getOfflinePlayer(playerName)
-
-                            if (!player.isWhitelisted) {
-                                executor.sendText {
-                                    appendPrefix()
-                                    error("Der Spieler ist nicht auf der Whitelist.")
-                                }
-                                return@launch
-                            }
-
-                            withContext(plugin.globalRegionDispatcher) {
-                                player.isWhitelisted = false
-                            }
-
-                            executor.sendText {
-                                appendPrefix()
-                                variableValue(player.name ?: playerName)
-                                success(" wurde von der Whitelist entfernt.")
-                            }
-                        }.onFailure {
-                            executor.sendText {
-                                appendPrefix()
-                                error("Der Spieler wurde nicht gefunden.")
-                            }
+                    if (!offlinePlayer.isWhitelisted) {
+                        executor.sendText {
+                            appendPrefix()
+                            error("Der Spieler ist nicht auf der Whitelist.")
                         }
+                        return@anyExecutor
+                    }
+
+                    offlinePlayer.isWhitelisted = false
+
+                    executor.sendText {
+                        appendPrefix()
+                        variableValue(offlinePlayer.name ?: offlinePlayer.uniqueId.toString())
+                        success(" wurde von der Whitelist entfernt.")
                     }
                 }
             }
