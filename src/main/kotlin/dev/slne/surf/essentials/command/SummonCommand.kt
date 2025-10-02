@@ -2,6 +2,8 @@ package dev.slne.surf.essentials.command
 
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.translatable
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
@@ -16,7 +18,7 @@ fun summonCommand() = commandTree("summon") {
             player.sendText {
                 appendPrefix()
                 success("Du hast einen ")
-                variableValue(entityType.name)
+                translatable(entityType.translationKey()).color(Colors.VARIABLE_VALUE)
                 success(" beschworen.")
             }
         }
@@ -35,7 +37,7 @@ fun summonCommand() = commandTree("summon") {
                     success("Du hast ")
                     variableValue(amount)
                     success(" ")
-                    variableValue(entityType.name)
+                    translatable(entityType.translationKey()).color(Colors.VARIABLE_VALUE)
                     success(" beschworen.")
                 }
             }
@@ -55,7 +57,7 @@ fun summonCommand() = commandTree("summon") {
                         success("Du hast ")
                         variableValue(amount)
                         success(" ")
-                        variableValue(entityType.name)
+                        translatable(entityType.translationKey()).color(Colors.VARIABLE_VALUE)
                         success(" beschworen.")
                     }
                 }
