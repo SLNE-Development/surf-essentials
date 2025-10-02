@@ -49,5 +49,6 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val ENCHANTMENT_COMMAND = create("$PREFIX.enchantment.command")
     val WHITELIST_COMMAND = create("$PREFIX.whitelist.command")
     val HURT_COMMAND = create("$PREFIX.hurt.command")
+    val SUMMON_COMMAND = create("$PREFIX.summon.command")
 
 }
