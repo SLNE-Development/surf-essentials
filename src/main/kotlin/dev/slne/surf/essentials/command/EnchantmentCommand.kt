@@ -12,7 +12,7 @@ fun enchantmentCommand() = commandTree("enchantment") {
     withPermission(EssentialsPermissionRegistry.ENCHANTMENT_COMMAND)
     entitySelectorArgumentManyPlayers("players") {
         enchantmentArgument("enchantment") {
-            integerArgument("level", optional = true) {
+            integerArgument("level", optional = true, min = 1, max = 255) {
                 anyExecutor { executor, args ->
                     val players: Collection<Player> by args
                     val enchantment: Enchantment by args
