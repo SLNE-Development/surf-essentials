@@ -1,4 +1,3 @@
-COmmands:
 Attribute
 Bossbar
 Datapack
@@ -26,8 +25,6 @@ loom
 smithingtable
 stonecutter
 workbench
-godmode
-infinity
 latestdeath
 speed
 alert

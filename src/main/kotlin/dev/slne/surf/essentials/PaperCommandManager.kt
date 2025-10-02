@@ -58,5 +58,6 @@ object PaperCommandManager {
         seedCommand()
         rideCommand()
         reloadCommand()
+        godCommand()
     }
 }

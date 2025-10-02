@@ -58,4 +58,6 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val SEED_COMMAND = create("$PREFIX.seed.command")
     val RIDE_COMMAND = create("$PREFIX.ride.command")
     val RELOAD_COMMAND = create("$PREFIX.reload.command")
+    val GOD_COMMAND = create("$PREFIX.god.command")
+    val GOD_COMMAND_OTHER = create("$PREFIX.god.command.other")
 }
