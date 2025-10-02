@@ -1,7 +1,6 @@
 COmmands:
 Attribute
 Bossbar
-Damage
 Datapack
 DefautlGamemode
 Difficulty
@@ -34,7 +33,6 @@ smithingtable
 stonecutter
 workbench
 fillstack
-food
 godmode
 hurt
 infinity
