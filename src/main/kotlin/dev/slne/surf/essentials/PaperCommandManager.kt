@@ -40,5 +40,6 @@ object PaperCommandManager {
         teleportRandomCommand()
         teleportToTopCommand()
         enchantmentCommand()
+        whitelistCommand()
     }
 }
