@@ -15,6 +15,7 @@ object PaperCommandManager {
         CommandAPI.unregister("teleport")
         CommandAPI.unregister("enchant")
         CommandAPI.unregister("whitelist")
+        CommandAPI.unregister("teleport")
         CommandAPI.unregister("summon")
         CommandAPI.unregister("seed")
         CommandAPI.unregister("setworldspawn")

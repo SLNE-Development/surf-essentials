@@ -26,6 +26,14 @@ fun rideCommand() = commandTree("ride") {
                     val target: Entity by args
                     val vehicle: Entity by args
 
+                    if (target.uniqueId == vehicle.uniqueId) {
+                        executor.sendText {
+                            appendPrefix()
+                            error("Du kannst ein Entity nicht auf sich selbst setzen.")
+                        }
+                        return@anyExecutor
+                    }
+
                     val result = vehicle.addPassenger(target)
 
                     if (result) {
@@ -51,12 +59,12 @@ fun rideCommand() = commandTree("ride") {
             anyExecutor { executor, args ->
                 val target: Entity by args
 
-                target.teleportAsync(target.location).thenRun {
-                    executor.sendText {
-                        appendPrefix()
-                        variableValue(target.name)
-                        success(" wurde abgesetzt.")
-                    }
+                target.vehicle?.removePassenger(target)
+
+                executor.sendText {
+                    appendPrefix()
+                    variableValue(target.name)
+                    success(" wurde abgesetzt.")
                 }
             }
         }
