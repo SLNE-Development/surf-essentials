@@ -51,5 +51,10 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val HURT_COMMAND = create("$PREFIX.hurt.command")
     val SUMMON_COMMAND = create("$PREFIX.summon.command")
     val FILLSTACK_COMMAND = create("$PREFIX.fillstack.command")
-
+    val SUICIDE_COMMAND = create("$PREFIX.suicide.command")
+    val SUICIDE_COMMAND_OTHER = create("$PREFIX.suicide.command.other")
+    val SET_WORLD_SPAWN_COMMAND = create("$PREFIX.setworldspawn.command")
+    val PLAYER_IDLE_TIMEOUT_COMMAND = create("$PREFIX.idletimeout.command")
+    val SEED_COMMAND = create("$PREFIX.seed.command")
+    val RIDE_COMMAND = create("$PREFIX.ride.command")
 }

@@ -16,11 +16,7 @@ Kill
 Particle
 Playsound
 Reload
-Ride
-Seed
 Setblock
-SetplayerIdleTimeout
-Setworldspawn
 spectate
 time
 weather
@@ -32,11 +28,9 @@ smithingtable
 stonecutter
 workbench
 godmode
-hurt
 infinity
 latestdeath
 speed
-sucicide
 alert
 book
 broadcastworld
