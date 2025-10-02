@@ -6,8 +6,8 @@ import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.Bukkit
 
-fun randomTeleportCommand() = commandTree("randomteleport") {
-    withAliases("rtp")
+fun teleportRandomCommand() = commandTree("teleportrandom") {
+    withAliases("tpr")
     withPermission(EssentialsPermissionRegistry.TELEPORT_RANDOM_COMMAND)
     playerExecutor { player, _ ->
         val selected = Bukkit.getOnlinePlayers()

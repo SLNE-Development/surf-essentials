@@ -12,6 +12,7 @@ object PaperCommandManager {
         CommandAPI.unregister("clear")
         CommandAPI.unregister("gamemode", true)
         CommandAPI.unregister("give")
+        CommandAPI.unregister("teleport")
 
         advancementCommand()
         opCommand()
@@ -25,13 +26,16 @@ object PaperCommandManager {
         spawnCommand()
         clearCommand()
         gameModeCommand()
+        gameModeOfflineCommand()
         repairCommand()
         changeSlotCommand()
         strikeCommand()
         giveCommand()
         infoCommand()
-        randomTeleportCommand()
         itemEditCommand()
         signCommand()
+        teleportCommand()
+        teleportOfflineCommand()
+        teleportRandomCommand()
     }
 }

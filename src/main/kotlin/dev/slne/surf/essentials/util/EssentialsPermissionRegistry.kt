@@ -10,6 +10,7 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val GAME_MODE_SWITCHER = create("$PREFIX.gameMode.gameModeSwitcher")
     val GAME_MODE_COMMAND = create("$PREFIX.gameMode.command")
     val GAME_MODE_COMMAND_OTHERS = create("$PREFIX.gameMode.command.others")
+    val GAME_MODE_COMMAND_OFFLINE = create("$PREFIX.gameMode.command.offline")
     val ADVANCEMENT_COMMAND = create("$PREFIX.advancement.command")
     val OP_COMMAND = create("$PREFIX.op.command")
     val DEOP_COMMAND = create("$PREFIX.deop.command")
@@ -34,9 +35,14 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val INFO_COMMAND = create("$PREFIX.info.command")
     val TELEPORT_RANDOM_COMMAND = create("$PREFIX.teleport.random.command")
     val TELEPORT_RANDOM_BYPASS = create("$PREFIX.teleport.random.bypass")
+    val TELEPORT_COMMAND = create("$PREFIX.teleport.command")
+    val TELEPORT_COMMAND_OTHERS = create("$PREFIX.teleport.command.others")
+    val TELEPORT_COMMAND_OFFLINE = create("$PREFIX.teleport.command.offline")
+    val TELEPORT_COMMAND_OFFLINE_OTHERS = create("$PREFIX.teleport.command.offline.others")
     val ITEM_EDIT_COMMAND = create("$PREFIX.itemedit.command")
     val ITEM_EDIT_COMMAND_LORE = create("$PREFIX.itemedit.command.lore")
     val ITEM_EDIT_COMMAND_NAME = create("$PREFIX.itemedit.command.name")
     val ITEM_EDIT_COMMAND_ENCHANT = create("$PREFIX.itemedit.command.enchant")
     val SIGN_COMMAND = create("$PREFIX.sign.command")
+
 }
