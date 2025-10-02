@@ -57,4 +57,5 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val PLAYER_IDLE_TIMEOUT_COMMAND = create("$PREFIX.idletimeout.command")
     val SEED_COMMAND = create("$PREFIX.seed.command")
     val RIDE_COMMAND = create("$PREFIX.ride.command")
+    val RELOAD_COMMAND = create("$PREFIX.reload.command")
 }

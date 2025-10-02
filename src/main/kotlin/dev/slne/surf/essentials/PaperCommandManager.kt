@@ -16,11 +16,13 @@ object PaperCommandManager {
         CommandAPI.unregister("enchant")
         CommandAPI.unregister("whitelist")
         CommandAPI.unregister("teleport")
+        CommandAPI.unregister("tp")
         CommandAPI.unregister("summon")
         CommandAPI.unregister("seed")
         CommandAPI.unregister("setworldspawn")
         CommandAPI.unregister("setidletimeout")
         CommandAPI.unregister("ride")
+        CommandAPI.unregister("reload")
 
         advancementCommand()
         opCommand()
@@ -55,5 +57,6 @@ object PaperCommandManager {
         setPlayerIdleTimeoutCommand()
         seedCommand()
         rideCommand()
+        reloadCommand()
     }
 }
