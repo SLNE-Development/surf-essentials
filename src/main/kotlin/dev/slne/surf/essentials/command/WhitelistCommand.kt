@@ -1,7 +1,7 @@
 package dev.slne.surf.essentials.command
 
+import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
 import com.github.shynixn.mccoroutine.folia.launch
-import com.github.shynixn.mccoroutine.folia.mainDispatcher
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
@@ -112,7 +112,7 @@ fun whitelistCommand() = commandTree("whitelist") {
                             return@launch
                         }
 
-                        withContext(plugin.mainDispatcher) {
+                        withContext(plugin.globalRegionDispatcher) {
                             player.isWhitelisted = true
                         }
 
@@ -142,7 +142,7 @@ fun whitelistCommand() = commandTree("whitelist") {
                             return@launch
                         }
 
-                        withContext(plugin.mainDispatcher) {
+                        withContext(plugin.globalRegionDispatcher) {
                             player.isWhitelisted = false
                         }
 
@@ -189,9 +189,9 @@ fun whitelistCommand() = commandTree("whitelist") {
                                         appendSpace()
                                         spacer("(")
                                         if (row.isOnline) {
-                                            success("Online", TextDecoration.ITALIC)
+                                            success("Online")
                                         } else {
-                                            error("Offline", TextDecoration.ITALIC)
+                                            error("Offline")
                                         }
                                         spacer(")")
                                     }
