@@ -160,6 +160,16 @@ fun whitelistCommand() = commandTree("whitelist") {
                     plugin.launch {
                         val whitelistedPlayers =
                             Bukkit.getWhitelistedPlayers().sortedByDescending { it.isOnline }
+
+                        if (whitelistedPlayers.isEmpty()) {
+                            executor.sendText {
+                                appendPrefix()
+                                error("Es sind keine Spieler auf der Whitelist.")
+                            }
+                            return@launch
+                        }
+
+
                         val pagination = Pagination<OfflinePlayer> {
                             title { primary("Whitelist".toSmallCaps(), TextDecoration.BOLD) }
                             rowRenderer { row, _ ->
