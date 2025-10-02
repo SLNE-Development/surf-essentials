@@ -1,6 +1,7 @@
 package dev.slne.surf.essentials.command
 
 import com.github.shynixn.mccoroutine.folia.launch
+import com.github.shynixn.mccoroutine.folia.mainDispatcher
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
@@ -9,6 +10,7 @@ import dev.slne.surf.surfapi.core.api.messages.CommonComponents
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import dev.slne.surf.surfapi.core.api.messages.pagination.Pagination
+import kotlinx.coroutines.withContext
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
@@ -110,7 +112,10 @@ fun whitelistCommand() = commandTree("whitelist") {
                             return@launch
                         }
 
-                        player.isWhitelisted = true
+                        withContext(plugin.mainDispatcher) {
+                            player.isWhitelisted = true
+                        }
+
                         executor.sendText {
                             appendPrefix()
                             variableValue(player.name ?: playerName)
@@ -137,7 +142,10 @@ fun whitelistCommand() = commandTree("whitelist") {
                             return@launch
                         }
 
-                        player.isWhitelisted = false
+                        withContext(plugin.mainDispatcher) {
+                            player.isWhitelisted = false
+                        }
+
                         executor.sendText {
                             appendPrefix()
                             variableValue(player.name ?: playerName)
