@@ -45,5 +45,6 @@ object PaperCommandManager {
         whitelistCommand()
         hurtCommand()
         summonCommand()
+        fillStackCommand()
     }
 }

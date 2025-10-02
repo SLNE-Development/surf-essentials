@@ -5,6 +5,6 @@ import dev.jorel.commandapi.kotlindsl.entitySelectorArgumentManyPlayers
 
 fun attributeCommand() = commandTree("attribute") {
     entitySelectorArgumentManyPlayers("players") {
-
+        //TODO: Implement attribute command
     }
 }
