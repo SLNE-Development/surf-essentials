@@ -38,6 +38,7 @@ object PaperCommandManager {
         teleportCommand()
         teleportOfflineCommand()
         teleportRandomCommand()
+        teleportToTopCommand()
         enchantmentCommand()
     }
 }

@@ -39,6 +39,8 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val TELEPORT_COMMAND_OTHERS = create("$PREFIX.teleport.command.others")
     val TELEPORT_COMMAND_OFFLINE = create("$PREFIX.teleport.command.offline")
     val TELEPORT_COMMAND_OFFLINE_OTHERS = create("$PREFIX.teleport.command.offline.others")
+    val TELEPORT_TOP_COMMAND = create("$PREFIX.teleport.top.command")
+    val TELEPORT_TOP_COMMAND_OTHERS = create("$PREFIX.teleport.top.command.others")
     val ITEM_EDIT_COMMAND = create("$PREFIX.itemedit.command")
     val ITEM_EDIT_COMMAND_LORE = create("$PREFIX.itemedit.command.lore")
     val ITEM_EDIT_COMMAND_NAME = create("$PREFIX.itemedit.command.name")
