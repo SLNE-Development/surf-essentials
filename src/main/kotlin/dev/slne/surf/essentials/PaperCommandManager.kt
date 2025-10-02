@@ -13,6 +13,7 @@ object PaperCommandManager {
         CommandAPI.unregister("gamemode", true)
         CommandAPI.unregister("give")
         CommandAPI.unregister("teleport")
+        CommandAPI.unregister("enchant")
 
         advancementCommand()
         opCommand()
@@ -37,5 +38,6 @@ object PaperCommandManager {
         teleportCommand()
         teleportOfflineCommand()
         teleportRandomCommand()
+        enchantmentCommand()
     }
 }
