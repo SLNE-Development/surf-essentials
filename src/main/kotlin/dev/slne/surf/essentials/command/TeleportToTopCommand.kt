@@ -9,7 +9,9 @@ fun teleportToTopCommand() = commandTree("teleporttop") {
     withAliases("tptop")
     withPermission(EssentialsPermissionRegistry.TELEPORT_TOP_COMMAND)
     playerExecutor { player, _ ->
-        player.teleportAsync(player.world.getHighestBlockAt(player.location).location)
+        player.teleportAsync(
+            player.world.getHighestBlockAt(player.location).location.clone().add(0.0, 1.25, 0.0)
+        )
         player.sendText {
             appendPrefix()
             success("Du wurdest zum höchsten Block teleportiert.")
