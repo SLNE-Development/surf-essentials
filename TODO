@@ -1,7 +1,6 @@
 Attribute
 Bossbar
 Datapack
-Effect
 Execute
 Experience
 Fillbiome
@@ -17,15 +16,10 @@ weather
 latestdeath
 alert
 book
-broadcastworld
 near
-help
 
 poll
 vote
 
 world
-
-actionbarbroadcast
 timer
-titlebroadcast

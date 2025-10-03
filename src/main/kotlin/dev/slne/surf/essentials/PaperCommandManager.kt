@@ -29,6 +29,7 @@ object PaperCommandManager {
         CommandAPI.unregister("function")
         CommandAPI.unregister("difficulty")
         CommandAPI.unregister("defaultgamemode")
+        CommandAPI.unregister("effect")
 
         advancementCommand()
         opCommand()
@@ -79,5 +80,7 @@ object PaperCommandManager {
         difficultyCommand()
         defaultGameModeCommand()
         spawnerCommand()
+        broadcastCommand()
+        effectCommand()
     }
 }
