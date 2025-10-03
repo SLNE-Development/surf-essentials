@@ -12,6 +12,34 @@ import org.bukkit.potion.PotionEffectType
 
 fun effectCommand() = commandAPICommand("effect") {
     withPermission(EssentialsPermissionRegistry.EFFECT_COMMAND)
+
+    playerExecutor { player, _ ->
+        if (player.activePotionEffects.isEmpty()) {
+            player.sendText {
+                appendPrefix()
+                error("Du hast keine aktiven Effekte.")
+            }
+            return@playerExecutor
+        }
+
+        player.sendText {
+            appendPrefix()
+            info("Du hast aktuell ")
+            variableValue(player.activePotionEffects.size)
+            info(" aktive Effekte: ")
+
+            player.activePotionEffects.forEachIndexed { index, effect ->
+                translatable(effect.type.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
+
+                if (index < player.activePotionEffects.size - 1) {
+                    append {
+                        spacer(", ")
+                    }
+                }
+            }
+        }
+    }
+
     literalArgument("give") {
         entitySelectorArgumentManyPlayers("players") {
             potionEffectArgument("effect") {
