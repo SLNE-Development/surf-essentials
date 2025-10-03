@@ -33,7 +33,7 @@ object AdvancementListener : Listener {
             appendPrefix()
             translatable(
                 translationKey,
-                player.displayName(),
+                player.displayName().colorIfAbsent(Colors.VARIABLE_VALUE),
                 event.advancement.displayName().colorIfAbsent(Colors.YELLOW)
             )
         })
