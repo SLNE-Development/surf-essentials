@@ -9,6 +9,7 @@ fun suicideCommand() = commandTree("suicide") {
     withPermission(EssentialsPermissionRegistry.SUICIDE_COMMAND)
     playerExecutor { player, _ ->
         player.inventory.clear()
+        player.exp = 0.0f
         player.health = 0.0
         player.sendHealthUpdate()
 
