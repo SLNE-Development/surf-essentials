@@ -64,7 +64,7 @@ private fun parseDuration(input: String): Duration? {
     val match = regex.matchEntire(input.trim()) ?: return null
 
     if (match.value == "infinite") {
-        return Duration.ofMillis(Long.MAX_VALUE)
+        return Duration.ofMillis(Long.MAX_VALUE).negated()
     }
 
     val (valueStr, unit) = match.destructured

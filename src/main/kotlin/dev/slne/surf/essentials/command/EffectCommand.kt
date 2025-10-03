@@ -5,6 +5,7 @@ import dev.slne.surf.essentials.command.argument.durationArgument
 import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.ticks
 import dev.slne.surf.essentials.util.translatable
+import dev.slne.surf.essentials.util.userContent
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.entity.Player
@@ -61,7 +62,8 @@ fun effectCommand() = commandTree("effect") {
                                     it.addPotionEffect(
                                         PotionEffect(
                                             effect,
-                                            duration.toMillis().ticks(),
+                                            if (duration.isNegative) PotionEffect.INFINITE_DURATION else duration.toMillis()
+                                                .ticks(),
                                             amplifier ?: 1,
                                             false,
                                             hideParticles ?: true
@@ -74,8 +76,8 @@ fun effectCommand() = commandTree("effect") {
                                     success("Du hast ")
                                     translatable(effect.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
                                     success(" für ")
-                                    variableValue(duration.seconds)
-                                    success(" Sekunden an ")
+                                    variableValue(duration.userContent())
+                                    success(" an ")
                                     variableValue("${players.size} Spielern")
                                     success(" vergeben.")
                                 }
