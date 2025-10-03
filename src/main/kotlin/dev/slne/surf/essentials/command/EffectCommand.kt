@@ -74,7 +74,7 @@ fun effectCommand() = commandTree("effect") {
                                     success("Du hast ")
                                     translatable(effect.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
                                     success(" für ")
-                                    variableValue(duration.toString())
+                                    variableValue(duration.seconds)
                                     success(" Sekunden an ")
                                     variableValue("${players.size} Spielern")
                                     success(" vergeben.")
