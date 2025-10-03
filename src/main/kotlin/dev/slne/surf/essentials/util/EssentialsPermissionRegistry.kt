@@ -68,4 +68,11 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val SPEED_COMMAND_FLY = create("$PREFIX.speed.command.fly")
     val SPEED_COMMAND_FLY_OTHERS = create("$PREFIX.speed.command.fly.others")
     val FUNCTION_COMMAND = create("$PREFIX.function.command")
+    val ANVIL_COMMAND = create("$PREFIX.anvil.command")
+    val CARTOGRAPY_TABLE_COMMAND = create("$PREFIX.cartographytable.command")
+    val GRINDSTONE_COMMAND = create("$PREFIX.grindstone.command")
+    val LOOM_COMMAND = create("$PREFIX.loom.command")
+    val SMITHING_TABLE_COMMAND = create("$PREFIX.smithingtable.command")
+    val STONE_CUTTER_COMMAND = create("$PREFIX.stonecutter.command")
+    val WORKBENCH_COMMAND = create("$PREFIX.workbench.command")
 }
