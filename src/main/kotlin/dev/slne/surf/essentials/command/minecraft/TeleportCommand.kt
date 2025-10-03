@@ -46,12 +46,22 @@ fun teleportCommand() = commandTree("teleport") {
 
                 players.forEach { it.teleportAsync(target.location) }
 
-                executor.sendText {
-                    appendPrefix()
-                    variableValue(players.size.toString())
-                    success(" Spieler wurden zu ")
-                    variableValue(target.name)
-                    success(" teleportiert.")
+                if (players.size == 1) {
+                    executor.sendText {
+                        appendPrefix()
+                        variableValue(players.firstOrNull()?.name ?: "Unbekannt")
+                        success(" wurde zu ")
+                        variableValue(target.name)
+                        success(" teleportiert.")
+                    }
+                } else {
+                    executor.sendText {
+                        appendPrefix()
+                        variableValue(players.size.toString())
+                        success(" Spieler wurden zu ")
+                        variableValue(target.name)
+                        success(" teleportiert.")
+                    }
                 }
 
                 players.forEach {
@@ -71,12 +81,22 @@ fun teleportCommand() = commandTree("teleport") {
 
                 players.forEach { it.teleportAsync(location) }
 
-                executor.sendText {
-                    appendPrefix()
-                    variableValue(players.size.toString())
-                    success(" Spieler wurden zu ")
-                    variableValue("${location.blockX}, ${location.blockY}, ${location.blockZ}")
-                    success(" teleportiert.")
+                if (players.size == 1) {
+                    executor.sendText {
+                        appendPrefix()
+                        variableValue(players.firstOrNull()?.name ?: "Unbekannt")
+                        success(" wurde zu ")
+                        variableValue("${location.blockX}, ${location.blockY}, ${location.blockZ}")
+                        success(" teleportiert.")
+                    }
+                } else {
+                    executor.sendText {
+                        appendPrefix()
+                        variableValue(players.size.toString())
+                        success(" Spieler wurden zu ")
+                        variableValue("${location.blockX}, ${location.blockY}, ${location.blockZ}")
+                        success(" teleportiert.")
+                    }
                 }
 
                 players.forEach {
