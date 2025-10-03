@@ -35,7 +35,7 @@ object AdvancementListener : Listener {
                 translationKey,
                 player.displayName().colorIfAbsent(Colors.VARIABLE_VALUE),
                 event.advancement.displayName().colorIfAbsent(Colors.YELLOW)
-            )
+            ).colorIfAbsent(Colors.SPACER)
         })
     }
 }
