@@ -58,13 +58,29 @@ fun SurfComponentBuilder.appendCommandButton(
 }
 
 fun Long.ticks() = (this / 50).toInt()
-fun Duration.userContent() = when (toMillis()) {
-    in Long.MIN_VALUE..-1 -> "Unbegrenzt"
-    in 0..999 -> "${toMillis()} Millisekunden"
-    in 1000..59999 -> String.format("%.1f Sekunden", toMillis() / 1000.0)
-    in 60000..3599999 -> String.format("%.1f Minuten", toSeconds().toDouble() / 60.0)
-    in 3600000..86399999 -> String.format("%.1f Stunden", toMinutes().toDouble() / 60.0)
-    in 86400000..604799999 -> String.format("%.1f Tage", toHours().toDouble() / 24.0)
+fun Duration.userContent(): String {
+    if (this.isNegative) return "Unbegrenzt"
 
-    else -> String.format("%.1f Wochen", toDays().toDouble() / 7.0)
+    var millis = this.toMillis()
+
+    val days = millis / 86_400_000
+    millis %= 86_400_000
+
+    val hours = millis / 3_600_000
+    millis %= 3_600_000
+
+    val minutes = millis / 60_000
+    millis %= 60_000
+
+    val seconds = millis / 1000
+    millis %= 1000
+
+    val parts = mutableListOf<String>()
+    if (days > 0) parts.add("$days ${if (days == 1L) "Tag" else "Tage"}")
+    if (hours > 0) parts.add("$hours ${if (hours == 1L) "Stunde" else "Stunden"}")
+    if (minutes > 0) parts.add("$minutes ${if (minutes == 1L) "Minute" else "Minuten"}")
+    if (seconds > 0) parts.add("$seconds ${if (seconds == 1L) "Sekunde" else "Sekunden"}")
+    if (parts.isEmpty() && millis > 0) parts.add("$millis Millisekunden")
+
+    return parts.joinToString(", ")
 }
