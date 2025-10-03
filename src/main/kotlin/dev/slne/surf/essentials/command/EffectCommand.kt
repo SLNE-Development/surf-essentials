@@ -3,37 +3,41 @@ package dev.slne.surf.essentials.command
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.command.argument.durationArgument
 import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.ticks
 import dev.slne.surf.essentials.util.translatable
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import java.time.Duration
 
-fun effectCommand() = commandAPICommand("effect") {
+fun effectCommand() = commandTree("effect") {
     withPermission(EssentialsPermissionRegistry.EFFECT_COMMAND)
 
-    playerExecutor { player, _ ->
-        if (player.activePotionEffects.isEmpty()) {
+    literalArgument("list") {
+        playerExecutor { player, _ ->
+            if (player.activePotionEffects.isEmpty()) {
+                player.sendText {
+                    appendPrefix()
+                    error("Du hast keine aktiven Effekte.")
+                }
+                return@playerExecutor
+            }
+
             player.sendText {
                 appendPrefix()
-                error("Du hast keine aktiven Effekte.")
-            }
-            return@playerExecutor
-        }
+                info("Du hast aktuell ")
+                variableValue(player.activePotionEffects.size)
+                info(" aktive Effekte: ")
 
-        player.sendText {
-            appendPrefix()
-            info("Du hast aktuell ")
-            variableValue(player.activePotionEffects.size)
-            info(" aktive Effekte: ")
+                player.activePotionEffects.forEachIndexed { index, effect ->
+                    translatable(effect.type.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
 
-            player.activePotionEffects.forEachIndexed { index, effect ->
-                translatable(effect.type.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
-
-                if (index < player.activePotionEffects.size - 1) {
-                    append {
-                        spacer(", ")
+                    if (index < player.activePotionEffects.size - 1) {
+                        append {
+                            spacer(", ")
+                        }
                     }
                 }
             }
@@ -49,7 +53,7 @@ fun effectCommand() = commandAPICommand("effect") {
                             anyExecutor { executor, args ->
                                 val players: Collection<Player> by args
                                 val effect: PotionEffectType by args
-                                val duration: Int by args
+                                val duration: Duration by args
                                 val amplifier: Int? by args
                                 val hideParticles: Boolean? by args
 
@@ -57,7 +61,7 @@ fun effectCommand() = commandAPICommand("effect") {
                                     it.addPotionEffect(
                                         PotionEffect(
                                             effect,
-                                            duration,
+                                            duration.toMillis().ticks(),
                                             amplifier ?: 1,
                                             false,
                                             hideParticles ?: true
@@ -84,12 +88,29 @@ fun effectCommand() = commandAPICommand("effect") {
     }
 
     literalArgument("clear") {
+        playerExecutor { player, _ ->
+            if (player.activePotionEffects.isEmpty()) {
+                player.sendText {
+                    appendPrefix()
+                    error("Du hast keine aktiven Effekte.")
+                }
+                return@playerExecutor
+            }
+
+            player.clearActivePotionEffects()
+
+            player.sendText {
+                appendPrefix()
+                success("Du hast alle deine Effekte entfernt.")
+            }
+        }
+
         entitySelectorArgumentManyPlayers("players") {
             anyExecutor { executor, args ->
                 val players: Collection<Player> by args
 
                 players.forEach {
-                    it.activePotionEffects.forEach { effect -> it.removePotionEffect(effect.type) }
+                    it.clearActivePotionEffects()
                 }
 
                 executor.sendText {

@@ -55,3 +55,5 @@ fun SurfComponentBuilder.appendCommandButton(
     spacer("]")
     clickRunsCommand(command)
 }
+
+fun Long.ticks() = (this / 50).toInt()

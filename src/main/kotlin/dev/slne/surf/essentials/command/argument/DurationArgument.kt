@@ -7,9 +7,11 @@ import dev.jorel.commandapi.arguments.CustomArgument
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import org.bukkit.command.CommandSender
+import java.time.Duration
+import java.time.temporal.ChronoUnit
 
 class DurationArgument(nodeName: String) :
-    CustomArgument<Long, String>(StringArgument(nodeName), { info ->
+    CustomArgument<Duration, String>(StringArgument(nodeName), { info ->
         parseDuration(info.input) ?: throw CustomArgumentException.fromAdventureComponent {
             buildText {
                 appendPrefix()
@@ -58,24 +60,26 @@ inline fun CommandTree.durationArgument(
     DurationArgument(nodeName).setOptional(optional).apply(block)
 )
 
-private val regex = Regex("^(\\d+)([smhdw])$")
-
-private fun parseDuration(input: String): Long? {
+private val regex = Regex("^(?:\\d+[smhdw]|infinite)$")
+private fun parseDuration(input: String): Duration? {
     val match = regex.matchEntire(input.trim()) ?: return null
 
     if (match.value == "infinite") {
-        return Long.MAX_VALUE
+        return Duration.of(Long.MAX_VALUE, ChronoUnit.FOREVER)
     }
 
     val (valueStr, unit) = match.destructured
     val value = valueStr.toLongOrNull() ?: return null
 
     return when (unit.lowercase()) {
+        "ms" -> value
         "s" -> value * 1000
         "m" -> value * 60 * 1000
         "h" -> value * 60 * 60 * 1000
         "d" -> value * 24 * 60 * 60 * 1000
         "w" -> value * 7 * 24 * 60 * 60 * 1000
         else -> null
+    }?.let {
+        Duration.ofMillis(it)
     }
 }
