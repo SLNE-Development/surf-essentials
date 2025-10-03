@@ -10,7 +10,7 @@ object PaperCommandManager {
         CommandAPI.unregister("advancement")
         CommandAPI.unregister("list")
         CommandAPI.unregister("clear")
-        CommandAPI.unregister("gamemode", true)
+        CommandAPI.unregister("gamemode")
         CommandAPI.unregister("give")
         CommandAPI.unregister("teleport")
         CommandAPI.unregister("enchant")
@@ -24,6 +24,7 @@ object PaperCommandManager {
         CommandAPI.unregister("ride")
         CommandAPI.unregister("reload")
         CommandAPI.unregister("kill")
+        CommandAPI.unregister("function")
 
         advancementCommand()
         opCommand()
@@ -63,5 +64,6 @@ object PaperCommandManager {
         killCommand()
         speedCommand()
         suicideCommand()
+        functionCommand()
     }
 }

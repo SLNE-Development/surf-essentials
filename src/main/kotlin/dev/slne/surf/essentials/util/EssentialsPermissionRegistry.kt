@@ -67,4 +67,5 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val SPEED_COMMAND_WALK_OTHERS = create("$PREFIX.speed.command.walk.others")
     val SPEED_COMMAND_FLY = create("$PREFIX.speed.command.fly")
     val SPEED_COMMAND_FLY_OTHERS = create("$PREFIX.speed.command.fly.others")
+    val FUNCTION_COMMAND = create("$PREFIX.function.command")
 }
