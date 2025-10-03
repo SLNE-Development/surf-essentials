@@ -20,6 +20,30 @@ fun speedCommand() = commandTree("speed") {
         }
     }
 
+    doubleArgument("speed") {
+        playerExecutor { player, arguments ->
+            val speed: Double by arguments
+            
+            if (speed !in 0.0..10.0) {
+                player.sendText {
+                    appendPrefix()
+                    error("Die Geschwindigkeit muss zwischen 0 und 10 liegen.")
+                }
+                return@playerExecutor
+            }
+
+            player.walkSpeed = (speed.toFloat() / 10).coerceIn(0.0f, 1.0f)
+            player.flySpeed = (speed.toFloat() / 10).coerceIn(0.0f, 1.0f)
+
+            player.sendText {
+                appendPrefix()
+                success("Deine Geh- und Fluggeschwindigkeit wurde auf ")
+                variableValue(speed.toString())
+                success(" gesetzt.")
+            }
+        }
+    }
+
     literalArgument("walk") {
         withPermission(EssentialsPermissionRegistry.SPEED_COMMAND_WALK)
         playerExecutor { player, _ ->

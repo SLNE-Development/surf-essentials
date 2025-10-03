@@ -62,5 +62,6 @@ object PaperCommandManager {
         godCommand()
         killCommand()
         speedCommand()
+        suicideCommand()
     }
 }
