@@ -6,6 +6,7 @@ import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.entity.Player
 
 fun teleportToTopCommand() = commandTree("teleporttop") {
+    withAliases("tptop")
     withPermission(EssentialsPermissionRegistry.TELEPORT_TOP_COMMAND)
     playerExecutor { player, _ ->
         player.teleportAsync(player.world.getHighestBlockAt(player.location).location)
@@ -18,7 +19,9 @@ fun teleportToTopCommand() = commandTree("teleporttop") {
         withPermission(EssentialsPermissionRegistry.TELEPORT_TOP_COMMAND_OTHERS)
         anyExecutor { executor, args ->
             val player: Player by args
-            player.teleportAsync(player.world.getHighestBlockAt(player.location).location)
+            player.teleportAsync(
+                player.world.getHighestBlockAt(player.location).location.clone().add(0.0, 1.25, 0.0)
+            )
 
             executor.sendText {
                 appendPrefix()
