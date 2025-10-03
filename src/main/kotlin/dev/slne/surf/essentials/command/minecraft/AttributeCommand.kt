@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.command
+package dev.slne.surf.essentials.command.minecraft
 
 import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.entitySelectorArgumentManyPlayers

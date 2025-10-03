@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.command
+package dev.slne.surf.essentials.command.minecraft
 
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.command.argument.advancementCriterionArgument

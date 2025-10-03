@@ -2,6 +2,8 @@ package dev.slne.surf.essentials
 
 import dev.jorel.commandapi.CommandAPI
 import dev.slne.surf.essentials.command.*
+import dev.slne.surf.essentials.command.minecraft.*
+import dev.slne.surf.essentials.command.table.*
 
 object PaperCommandManager {
     fun registerAll() {
@@ -65,5 +67,12 @@ object PaperCommandManager {
         speedCommand()
         suicideCommand()
         functionCommand()
+        anvilCommand()
+        cartographyTableCommand()
+        grindstoneCommand()
+        loomCommand()
+        smithingTableCommand()
+        stoneCutterCommand()
+        workbenchCommand()
     }
 }

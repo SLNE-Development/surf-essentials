@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.command
+package dev.slne.surf.essentials.command.minecraft
 
 import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.jorel.commandapi.kotlindsl.commandTree
@@ -8,31 +8,31 @@ import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.entity.Player
 
-fun deopCommand() = commandTree("deop") {
-    withPermission(EssentialsPermissionRegistry.DEOP_COMMAND)
+fun opCommand() = commandTree("op") {
+    withPermission(EssentialsPermissionRegistry.OP_COMMAND)
     entitySelectorArgumentOnePlayer("player") {
         anyExecutor { executor, args ->
             val player: Player by args
 
-            if (!player.isOp) {
+            if (player.isOp) {
                 executor.sendText {
                     appendPrefix()
-                    error("Der Spieler ist kein Operator.")
+                    error("Der Spieler ist bereits ein Operator.")
                 }
                 return@anyExecutor
             }
 
-            player.isOp = false
+            player.isOp = true
 
             executor.sendText {
                 appendPrefix()
                 variableValue(player.name)
-                success(" ist nun kein Operator mehr.")
+                success(" ist nun ein Operator.")
             }
 
             player.sendText {
                 appendPrefix()
-                info("Du bist nun kein Operator mehr.")
+                info("Du bist nun ein Operator.")
             }
         }
     }

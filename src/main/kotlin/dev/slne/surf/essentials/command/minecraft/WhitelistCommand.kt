@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.command
+package dev.slne.surf.essentials.command.minecraft
 
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.*
