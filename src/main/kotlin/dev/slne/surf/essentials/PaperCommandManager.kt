@@ -28,6 +28,7 @@ object PaperCommandManager {
         CommandAPI.unregister("kill")
         CommandAPI.unregister("function")
         CommandAPI.unregister("difficulty")
+        CommandAPI.unregister("defaultgamemode")
 
         advancementCommand()
         opCommand()
@@ -76,5 +77,7 @@ object PaperCommandManager {
         stoneCutterCommand()
         workbenchCommand()
         difficultyCommand()
+        defaultGameModeCommand()
+        spawnerCommand()
     }
 }

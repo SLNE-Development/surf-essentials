@@ -1,7 +1,6 @@
 Attribute
 Bossbar
 Datapack
-DefaultGamemode
 Effect
 Execute
 Experience
@@ -20,8 +19,6 @@ alert
 book
 broadcastworld
 near
-playerhead
-spawnerchange
 help
 
 poll

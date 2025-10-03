@@ -11,6 +11,7 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val GAME_MODE_COMMAND = create("$PREFIX.gameMode.command")
     val GAME_MODE_COMMAND_OTHERS = create("$PREFIX.gameMode.command.others")
     val GAME_MODE_COMMAND_OFFLINE = create("$PREFIX.gameMode.command.offline")
+    val GAME_MODE_COMMAND_DEFAULT = create("$PREFIX.gamemode.command.default")
     val ADVANCEMENT_COMMAND = create("$PREFIX.advancement.command")
     val OP_COMMAND = create("$PREFIX.op.command")
     val DEOP_COMMAND = create("$PREFIX.deop.command")
@@ -76,4 +77,5 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val STONE_CUTTER_COMMAND = create("$PREFIX.stonecutter.command")
     val WORKBENCH_COMMAND = create("$PREFIX.workbench.command")
     val DIFFICULTY_COMMAND = create("$PREFIX.difficulty.command")
+    val SPAWNER_COMMAND = create("$PREFIX.spawner.command")
 }
