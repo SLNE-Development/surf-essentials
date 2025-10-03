@@ -23,6 +23,7 @@ object PaperCommandManager {
         CommandAPI.unregister("setidletimeout")
         CommandAPI.unregister("ride")
         CommandAPI.unregister("reload")
+        CommandAPI.unregister("kill")
 
         advancementCommand()
         opCommand()
@@ -59,5 +60,7 @@ object PaperCommandManager {
         rideCommand()
         reloadCommand()
         godCommand()
+        killCommand()
+        speedCommand()
     }
 }

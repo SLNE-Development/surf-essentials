@@ -19,7 +19,7 @@ fun suicideCommand() = commandTree("suicide") {
     }
 
     entitySelectorArgumentOnePlayer("player") {
-        withPermission(EssentialsPermissionRegistry.SUICIDE_COMMAND_OTHER)
+        withPermission(EssentialsPermissionRegistry.SUICIDE_COMMAND_OTHERS)
         anyExecutor { executor, args ->
             val player: Player by args
 
