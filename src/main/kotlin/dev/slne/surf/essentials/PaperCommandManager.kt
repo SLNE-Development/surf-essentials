@@ -27,6 +27,7 @@ object PaperCommandManager {
         CommandAPI.unregister("reload")
         CommandAPI.unregister("kill")
         CommandAPI.unregister("function")
+        CommandAPI.unregister("difficulty")
 
         advancementCommand()
         opCommand()
@@ -74,5 +75,6 @@ object PaperCommandManager {
         smithingTableCommand()
         stoneCutterCommand()
         workbenchCommand()
+        difficultyCommand()
     }
 }

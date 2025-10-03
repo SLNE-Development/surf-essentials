@@ -75,4 +75,5 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val SMITHING_TABLE_COMMAND = create("$PREFIX.smithingtable.command")
     val STONE_CUTTER_COMMAND = create("$PREFIX.stonecutter.command")
     val WORKBENCH_COMMAND = create("$PREFIX.workbench.command")
+    val DIFFICULTY_COMMAND = create("$PREFIX.difficulty.command")
 }
