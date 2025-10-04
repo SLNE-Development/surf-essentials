@@ -10,5 +10,6 @@ object PaperListenerManager {
         GameModeSwitcherCorrectionListener.register()
         TeleportationListener.register()
         UnknownCommandListener.register()
+        WorldListener.register()
     }
 }

@@ -88,4 +88,12 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val STOP_NOTIFY = create("$PREFIX.stop.notify")
     val RESTART_COMMAND = create("$PREFIX.restart.command")
     val RESTART_NOTIFY = create("$PREFIX.restart.notify")
+    val WORLD_COMMAND = create("$PREFIX.world.command")
+    val WORLD_COMMAND_LOCK = create("$PREFIX.world.command.lock")
+    val WORLD_COMMAND_UNLOCK = create("$PREFIX.world.command.unlock")
+    val WORLD_COMMAND_CREATE = create("$PREFIX.world.command.create")
+    val WORLD_COMMAND_DELETE = create("$PREFIX.world.command.delete")
+    val WORLD_COMMAND_LIST = create("$PREFIX.world.command.list")
+    val WORLD_COMMAND_JOIN = create("$PREFIX.world.command.join")
+    val WORLD_BYPASS = create("$PREFIX.world.bypass")
 }

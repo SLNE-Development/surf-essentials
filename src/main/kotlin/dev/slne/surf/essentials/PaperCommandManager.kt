@@ -36,6 +36,16 @@ object PaperCommandManager {
         CommandAPI.unregister("stop")
         CommandAPI.unregister("restart")
 
+        /**
+         * These commands are replaced by surf-punish and should not be used anymore.
+         * If you want to use them anyway, you can use them with namespace.
+         */
+        CommandAPI.unregister("ban")
+        CommandAPI.unregister("pardon")
+        CommandAPI.unregister("ban-ip")
+        CommandAPI.unregister("pardon-ip")
+        CommandAPI.unregister("kick")
+
         advancementCommand()
         opCommand()
         deopCommand()
@@ -92,5 +102,6 @@ object PaperCommandManager {
         soundCommand()
         stopCommand()
         restartCommand()
+        worldCommand()
     }
 }
