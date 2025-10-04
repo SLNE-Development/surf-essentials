@@ -84,4 +84,8 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val SPECTATE_COMMAND_OTHERS = create("$PREFIX.spectate.command.others")
     val WEATHER_COMMAND = create("$PREFIX.weather.command")
     val SOUND_COMMAND = create("$PREFIX.sound.command")
+    val STOP_COMMAND = create("$PREFIX.stop.command")
+    val STOP_NOTIFY = create("$PREFIX.stop.notify")
+    val RESTART_COMMAND = create("$PREFIX.restart.command")
+    val RESTART_NOTIFY = create("$PREFIX.restart.notify")
 }
