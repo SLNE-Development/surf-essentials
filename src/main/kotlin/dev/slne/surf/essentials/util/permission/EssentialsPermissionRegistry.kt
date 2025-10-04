@@ -93,6 +93,8 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val WORLD_COMMAND_UNLOCK = create("$PREFIX.world.command.unlock")
     val WORLD_COMMAND_CREATE = create("$PREFIX.world.command.create")
     val WORLD_COMMAND_DELETE = create("$PREFIX.world.command.delete")
+    val WORLD_COMMAND_LOAD = create("$PREFIX.world.command.load")
+    val WORLD_COMMAND_UNLOAD = create("$PREFIX.world.command.unload")
     val WORLD_COMMAND_LIST = create("$PREFIX.world.command.list")
     val WORLD_COMMAND_JOIN = create("$PREFIX.world.command.join")
     val WORLD_BYPASS = create("$PREFIX.world.bypass")

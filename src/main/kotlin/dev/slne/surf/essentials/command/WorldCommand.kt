@@ -75,4 +75,44 @@ fun worldCommand() = commandTree("world") {
             }
         }
     }
+
+    literalArgument("create") {
+        stringArgument("name") {
+            withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_CREATE)
+            anyExecutor { executor, args ->
+                val name: String by args
+                worldService.create(executor, name, null, null, null, null, null)
+            }
+        }
+    }
+
+    literalArgument("delete") {
+        worldArgument("world") {
+            withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_DELETE)
+            anyExecutor { executor, args ->
+                val world: World by args
+                worldService.delete(executor, world)
+            }
+        }
+    }
+
+    literalArgument("load") {
+        stringArgument("name") {
+            withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_LOAD)
+            anyExecutor { executor, args ->
+                val name: String by args
+                worldService.load(executor, name)
+            }
+        }
+    }
+
+    literalArgument("unload") {
+        worldArgument("world") {
+            withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_UNLOAD)
+            anyExecutor { executor, args ->
+                val world: World by args
+                worldService.unload(executor, world)
+            }
+        }
+    }
 }
