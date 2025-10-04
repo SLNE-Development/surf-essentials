@@ -80,4 +80,6 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val SPAWNER_COMMAND = create("$PREFIX.spawner.command")
     val BROADCAST_COMAMND = create("$PREFIX.broadcast.command")
     val EFFECT_COMMAND = create("$PREFIX.effect.command")
+    val SPECTATE_COMMAND = create("$PREFIX.spectate.command")
+    val SPECTATE_COMMAND_OTHERS = create("$PREFIX.spectate.command.others")
 }

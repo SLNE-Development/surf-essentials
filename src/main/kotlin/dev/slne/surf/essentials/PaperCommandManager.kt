@@ -82,5 +82,6 @@ object PaperCommandManager {
         spawnerCommand()
         broadcastCommand()
         effectCommand()
+        spectateCommand()
     }
 }
