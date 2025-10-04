@@ -31,6 +31,8 @@ object PaperCommandManager {
         CommandAPI.unregister("defaultgamemode")
         CommandAPI.unregister("effect")
         CommandAPI.unregister("weather")
+        CommandAPI.unregister("playsound")
+        CommandAPI.unregister("stopsound")
 
         advancementCommand()
         opCommand()
@@ -85,5 +87,6 @@ object PaperCommandManager {
         effectCommand()
         spectateCommand()
         weatherCommand()
+        soundCommand()
     }
 }
