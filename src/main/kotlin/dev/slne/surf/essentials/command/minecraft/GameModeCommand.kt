@@ -45,10 +45,10 @@ fun gameModeCommand() = commandTree("gamemode") {
                     if (changedPlayers.keys.size == 1) {
                         variableValue(changedPlayers.keys.firstOrNull()?.name ?: "Unbekannt")
                     } else {
-                        variableValue(changedPlayers.keys.size)
+                        variableValue("${changedPlayers.keys.size} Spielern")
                     }
 
-                    success(" Spielern wurde zu ")
+                    success(" wurde zu ")
                     translatable(gameMode.translationKey()).color(Colors.VARIABLE_VALUE)
                     success(" geändert.")
                 }
