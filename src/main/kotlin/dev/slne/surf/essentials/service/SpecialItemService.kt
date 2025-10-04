@@ -14,9 +14,9 @@ class SpecialItemService {
         PersistentDataType.BOOLEAN, true
     )
 
-    fun isSpecial(item: ItemStack) = item.itemMeta.persistentDataContainer.has(
+    fun isSpecial(item: ItemStack): Boolean = item.itemMeta.persistentDataContainer.getOrDefault(
         specialKey,
-        PersistentDataType.BOOLEAN
+        PersistentDataType.BOOLEAN, false
     )
 
     fun markAsAnnounced(item: ItemStack) = item.itemMeta.persistentDataContainer.set(

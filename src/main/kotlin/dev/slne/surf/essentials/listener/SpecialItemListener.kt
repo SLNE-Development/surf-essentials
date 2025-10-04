@@ -16,13 +16,19 @@ object SpecialItemListener : Listener {
         val player = event.entity as? Player ?: return
         val itemStack = event.item.itemStack
 
+        println("Item picked up: ${itemStack.type}, amount: ${itemStack.amount}")
+
         if (!specialItemService.isSpecial(itemStack)) {
+            println("Item is not special.")
             return
         }
 
         if (specialItemService.isAnnounced(itemStack)) {
+            println("Item has already been announced.")
             return
         }
+
+        println("Item is special and has not been announced yet.")
 
         specialItemService.markAsAnnounced(itemStack)
 
