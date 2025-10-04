@@ -1,64 +1,28 @@
 package dev.slne.surf.essentials.listener
 
-import dev.slne.surf.essentials.service.worldService
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import org.bukkit.World
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerPortalEvent
-import org.bukkit.event.player.PlayerTeleportEvent
+import org.bukkit.event.entity.EntityPortalEnterEvent
 
 object WorldListener : Listener {
     @EventHandler
-    fun onWorldChanged(event: PlayerTeleportEvent) {
-        val player = event.player
+    fun onEntityPortalEnter(event: EntityPortalEnterEvent) {
+        val entity = event.entity
+        val portal = event.portalType
 
-        if (event.player.hasPermission(EssentialsPermissionRegistry.WORLD_BYPASS)) {
-            return
-        }
-
-        if (event.from.world == event.to.world) {
-            return
-        }
-
-        if (worldService.isLocked(event.to.world)) {
-            event.isCancelled = true
-
-            val reason = when (event.to.world.environment) {
-                World.Environment.NORMAL -> "Die Oberwelt ist aktuell gesperrt."
-                World.Environment.NETHER -> "Der Nether ist aktuell gesperrt."
-                World.Environment.THE_END -> "Das Ende ist aktuell gesperrt."
-                else -> "Diese Welt ist aktuell gesperrt."
-            }
-
-            player.sendText {
-                appendPrefix()
-                error(reason)
+        (entity as? Player)?.let {
+            if (it.hasPermission(EssentialsPermissionRegistry.WORLD_BYPASS)) {
+                it.sendText {
+                    appendPrefix()
+                    success("")
+                }
+                return
             }
         }
-    }
 
-    @EventHandler
-    fun onPortalUse(event: PlayerPortalEvent) {
-        if (event.player.hasPermission(EssentialsPermissionRegistry.WORLD_BYPASS)) {
-            return
-        }
-
-        if (worldService.isLocked(event.to.world)) {
-            event.isCancelled = true
-
-            val reason = when (event.to.world.environment) {
-                World.Environment.NORMAL -> "Die Oberwelt ist aktuell gesperrt."
-                World.Environment.NETHER -> "Der Nether ist aktuell gesperrt."
-                World.Environment.THE_END -> "Das Ende ist aktuell gesperrt."
-                else -> "Diese Welt ist aktuell gesperrt."
-            }
-
-            event.player.sendText {
-                appendPrefix()
-                error(reason)
-            }
-        }
+        portal
     }
 }
