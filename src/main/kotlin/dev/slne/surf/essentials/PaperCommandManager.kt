@@ -83,5 +83,6 @@ object PaperCommandManager {
         broadcastCommand()
         effectCommand()
         spectateCommand()
+        weatherCommand()
     }
 }
