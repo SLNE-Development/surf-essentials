@@ -21,7 +21,7 @@ fun knightCommand() = commandTree("knight") {
                 meta {
                     addEnchant(Enchantment.AQUA_AFFINITY, 10, true)
                     addEnchant(Enchantment.RESPIRATION, 10, true)
-                    addEnchant(Enchantment.PROTECTION, 30, true)
+                    addEnchant(Enchantment.PROTECTION, 10, true)
                     isUnbreakable = true
                 }
 
@@ -32,7 +32,7 @@ fun knightCommand() = commandTree("knight") {
 
             player.inventory.chestplate = buildItem(Material.GOLDEN_CHESTPLATE) {
                 meta {
-                    addEnchant(Enchantment.PROTECTION, 30, true)
+                    addEnchant(Enchantment.PROTECTION, 10, true)
                     isUnbreakable = true
                 }
 
@@ -44,7 +44,7 @@ fun knightCommand() = commandTree("knight") {
             player.inventory.leggings = buildItem(Material.GOLDEN_LEGGINGS) {
                 meta {
                     addEnchant(Enchantment.SWIFT_SNEAK, 10, true)
-                    addEnchant(Enchantment.PROTECTION, 30, true)
+                    addEnchant(Enchantment.PROTECTION, 10, true)
                     isUnbreakable = true
                 }
 
@@ -56,7 +56,7 @@ fun knightCommand() = commandTree("knight") {
             player.inventory.boots = buildItem(Material.GOLDEN_BOOTS) {
                 meta {
                     addEnchant(Enchantment.DEPTH_STRIDER, 10, true)
-                    addEnchant(Enchantment.PROTECTION, 30, true)
+                    addEnchant(Enchantment.PROTECTION, 10, true)
                     isUnbreakable = true
                 }
 
@@ -68,7 +68,7 @@ fun knightCommand() = commandTree("knight") {
             player.inventory.setItem(0, buildItem(Material.GOLDEN_SWORD) {
                 meta {
                     addEnchant(Enchantment.FIRE_ASPECT, 10, true)
-                    addEnchant(Enchantment.SHARPNESS, 30, true)
+                    addEnchant(Enchantment.SHARPNESS, 10, true)
                     addEnchant(Enchantment.LOOTING, 10, true)
                     isUnbreakable = true
                 }
