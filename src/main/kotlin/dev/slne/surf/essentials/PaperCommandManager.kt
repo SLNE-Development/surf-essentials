@@ -30,6 +30,7 @@ object PaperCommandManager {
         CommandAPI.unregister("difficulty")
         CommandAPI.unregister("defaultgamemode")
         CommandAPI.unregister("effect")
+        CommandAPI.unregister("weather")
 
         advancementCommand()
         opCommand()

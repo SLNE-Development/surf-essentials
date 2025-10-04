@@ -1,5 +1,8 @@
 package dev.slne.surf.essentials.util.weather
 
+import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
+import com.github.shynixn.mccoroutine.folia.launch
+import dev.slne.surf.essentials.plugin
 import org.bukkit.World
 
 enum class WeatherType(
@@ -23,6 +26,16 @@ enum class WeatherType(
     });
 
     fun setWeather(world: World, durationInTicks: Int) {
-        setWeather(world, durationInTicks)
+        plugin.launch(plugin.globalRegionDispatcher) {
+            setWeather.invoke(world, durationInTicks)
+        }
     }
 }
+
+
+fun World.getWeatherType(): WeatherType =
+    when {
+        isThundering -> WeatherType.THUNDER
+        hasStorm() -> WeatherType.RAIN
+        else -> WeatherType.CLEAR
+    }
