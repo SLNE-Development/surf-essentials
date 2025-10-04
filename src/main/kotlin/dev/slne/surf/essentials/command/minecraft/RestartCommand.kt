@@ -9,6 +9,7 @@ import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.util.userContent
 import dev.slne.surf.surfapi.bukkit.api.util.forEachPlayer
+import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sound
@@ -22,12 +23,13 @@ fun restartCommand() = commandTree("restart") {
     anyExecutor { executor, _ ->
         executor.sendText {
             appendPrefix()
-            success("Der Server wird neu gestartet...")
+            success("Du startest den Server neu...")
         }
 
         Bukkit.broadcast(buildText {
             appendPrefix()
-            success("Der Server wird neu gestartet...")
+            variableValue(executor.name)
+            success("startet den Server neu...")
         }, EssentialsPermissionRegistry.RESTART_NOTIFY)
 
         Bukkit.shutdown()
@@ -46,12 +48,11 @@ fun restartCommand() = commandTree("restart") {
                 return@anyExecutor
             }
 
-            executor.sendText {
+            Bukkit.broadcast(buildText {
                 appendPrefix()
-                success("Der Server wird in ")
-                variableValue(delay.userContent())
-                success(" neu gestartet...")
-            }
+                variableValue(executor.name)
+                success("startet den Server neu...")
+            }, EssentialsPermissionRegistry.RESTART_NOTIFY)
 
             var remaining = Duration.ofSeconds(seconds)
 
@@ -108,18 +109,13 @@ fun restartCommand() = commandTree("restart") {
                     return@anyExecutor
                 }
 
-                executor.sendText {
+                Bukkit.broadcast(buildText {
                     appendPrefix()
-                    success("Der Server wird in ")
-                    variableValue(delay.userContent())
-                    success(" neu gestartet...")
-                    appendNewline {
-                        success(reason)
-                    }
-                }
+                    variableValue(executor.name)
+                    success("startet den Server neu...")
+                }, EssentialsPermissionRegistry.RESTART_NOTIFY)
 
                 var remaining = Duration.ofSeconds(seconds)
-
                 Bukkit.getAsyncScheduler().runAtFixedRate(plugin, {
                     if (remaining.seconds <= 0) {
                         Bukkit.broadcast(buildText {
@@ -146,8 +142,9 @@ fun restartCommand() = commandTree("restart") {
                                 success("Der Server wird in ")
                                 variableValue(remaining.userContent())
                                 success(" neu gestartet...")
-                                appendNewline {
-                                    success(reason)
+                                appendNewPrefixedLine {
+                                    spacer("Grund: ")
+                                    info(reason.toSmallCaps())
                                 }
                             }
 
