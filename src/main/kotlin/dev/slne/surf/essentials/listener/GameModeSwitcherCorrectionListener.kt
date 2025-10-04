@@ -1,7 +1,7 @@
 package dev.slne.surf.essentials.listener
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
-import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener

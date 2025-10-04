@@ -1,7 +1,7 @@
 package dev.slne.surf.essentials.command.minecraft
 
 import dev.jorel.commandapi.kotlindsl.*
-import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
 import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf

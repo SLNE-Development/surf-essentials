@@ -1,6 +1,6 @@
 package dev.slne.surf.essentials.listener
 
-import dev.slne.surf.essentials.util.translatable
+import dev.slne.surf.essentials.util.util.translatable
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.clickSuggestsCommand

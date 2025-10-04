@@ -7,7 +7,7 @@ import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.entitySelectorArgumentManyPlayers
 import dev.jorel.commandapi.kotlindsl.getValue
 import dev.slne.surf.essentials.plugin
-import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player

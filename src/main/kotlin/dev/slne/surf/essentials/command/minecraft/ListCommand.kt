@@ -4,7 +4,7 @@ import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.getValue
 import dev.jorel.commandapi.kotlindsl.worldArgument
-import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.Bukkit
 import org.bukkit.World

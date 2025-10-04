@@ -4,10 +4,10 @@ import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.entitySelectorArgumentOnePlayer
 import dev.jorel.commandapi.kotlindsl.getValue
-import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
-import dev.slne.surf.essentials.util.appendCommandButton
-import dev.slne.surf.essentials.util.appendLinkButton
-import dev.slne.surf.essentials.util.appendPrefixedKeyArrowLine
+import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.util.appendCommandButton
+import dev.slne.surf.essentials.util.util.appendLinkButton
+import dev.slne.surf.essentials.util.util.appendPrefixedKeyArrowLine
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.attribute.Attribute

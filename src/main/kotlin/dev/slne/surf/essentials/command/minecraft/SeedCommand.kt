@@ -1,7 +1,7 @@
 package dev.slne.surf.essentials.command.minecraft
 
 import dev.jorel.commandapi.kotlindsl.*
-import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.clickCopiesToClipboard

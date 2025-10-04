@@ -2,10 +2,10 @@ package dev.slne.surf.essentials.command
 
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.command.argument.durationArgument
-import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
-import dev.slne.surf.essentials.util.ticks
-import dev.slne.surf.essentials.util.translatable
-import dev.slne.surf.essentials.util.userContent
+import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.util.ticks
+import dev.slne.surf.essentials.util.util.translatable
+import dev.slne.surf.essentials.util.util.userContent
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.entity.Player

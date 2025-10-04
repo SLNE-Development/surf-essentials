@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.util
+package dev.slne.surf.essentials.util.util
 
 import org.bukkit.Server
 

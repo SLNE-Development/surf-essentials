@@ -1,7 +1,7 @@
 package dev.slne.surf.essentials.command
 
 import dev.jorel.commandapi.kotlindsl.*
-import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.enchantments.Enchantment
@@ -87,7 +87,7 @@ fun itemEditCommand() = commandTree("itemedit") {
                     val enchant: Enchantment by args
                     val level: Int by args
                     val itemInHand = player.inventory.itemInMainHand
-                    
+
                     if (itemInHand.isEmpty) {
                         player.sendText {
                             appendPrefix()

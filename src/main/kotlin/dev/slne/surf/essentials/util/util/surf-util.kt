@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.util
+package dev.slne.surf.essentials.util.util
 
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText

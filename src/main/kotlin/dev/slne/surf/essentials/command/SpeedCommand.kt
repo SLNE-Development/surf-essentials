@@ -1,7 +1,7 @@
 package dev.slne.surf.essentials.command
 
 import dev.jorel.commandapi.kotlindsl.*
-import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.entity.Player
 
@@ -23,7 +23,7 @@ fun speedCommand() = commandTree("speed") {
     doubleArgument("speed") {
         playerExecutor { player, arguments ->
             val speed: Double by arguments
-            
+
             if (speed !in 0.0..10.0) {
                 player.sendText {
                     appendPrefix()

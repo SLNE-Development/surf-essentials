@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.util
+package dev.slne.surf.essentials.util.permission
 
 import dev.slne.surf.surfapi.bukkit.api.permission.PermissionRegistry
 
@@ -82,4 +82,5 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val EFFECT_COMMAND = create("$PREFIX.effect.command")
     val SPECTATE_COMMAND = create("$PREFIX.spectate.command")
     val SPECTATE_COMMAND_OTHERS = create("$PREFIX.spectate.command.others")
+    val WEATHER_COMMAND = create("$PREFIX.weather.command")
 }

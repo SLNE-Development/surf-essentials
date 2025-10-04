@@ -7,9 +7,9 @@ import dev.jorel.commandapi.kotlindsl.getValue
 import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.surf.essentials.command.argument.gameModeArgument
 import dev.slne.surf.essentials.plugin
-import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
-import dev.slne.surf.essentials.util.setOfflineGameMode
-import dev.slne.surf.essentials.util.translatable
+import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.util.setOfflineGameMode
+import dev.slne.surf.essentials.util.util.translatable
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import kotlinx.coroutines.Dispatchers

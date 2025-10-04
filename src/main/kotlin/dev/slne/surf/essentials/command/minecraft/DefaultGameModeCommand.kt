@@ -4,8 +4,8 @@ import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.getValue
 import dev.slne.surf.essentials.command.argument.gameModeArgument
-import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
-import dev.slne.surf.essentials.util.translatable
+import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.util.translatable
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.Bukkit

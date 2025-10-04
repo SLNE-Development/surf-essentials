@@ -3,7 +3,7 @@ package dev.slne.surf.essentials.command.minecraft
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.plugin
-import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.CommonComponents
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText

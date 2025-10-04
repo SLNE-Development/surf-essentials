@@ -1,7 +1,7 @@
 package dev.slne.surf.essentials.command
 
 import dev.jorel.commandapi.kotlindsl.*
-import dev.slne.surf.essentials.util.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.Damageable
