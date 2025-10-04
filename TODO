@@ -20,3 +20,6 @@ vote
 
 world
 timer
+
+
+disable: ban, kick
