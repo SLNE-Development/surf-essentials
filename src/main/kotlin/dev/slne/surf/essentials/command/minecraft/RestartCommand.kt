@@ -3,6 +3,7 @@ package dev.slne.surf.essentials.command.minecraft
 import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.getValue
+import dev.jorel.commandapi.kotlindsl.literalArgument
 import dev.slne.surf.essentials.command.argument.durationArgument
 import dev.slne.surf.essentials.command.argument.greedyRestartReasonArgument
 import dev.slne.surf.essentials.plugin
@@ -13,13 +14,41 @@ import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sound
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import org.bukkit.Bukkit
 import org.bukkit.Sound
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 
+private var restartTask: ScheduledTask? = null
+
 fun restartCommand() = commandTree("restart") {
     withPermission(EssentialsPermissionRegistry.RESTART_COMMAND)
+
+    literalArgument("stop") {
+        anyExecutor { executor, _ ->
+            if (restartTask == null) {
+                executor.sendText {
+                    appendPrefix()
+                    error("Es läuft kein geplanter Neustart.")
+                }
+            }
+
+            restartTask?.cancel()
+            restartTask = null
+
+            executor.sendText {
+                appendPrefix()
+                success("Der geplante Neustart wurde abgebrochen.")
+            }
+
+            Bukkit.broadcast(buildText {
+                appendPrefix()
+                error("Der geplante Neustart wurde abgebrochen.")
+            }, EssentialsPermissionRegistry.RESTART_NOTIFY)
+        }
+    }
+
     anyExecutor { executor, _ ->
         executor.sendText {
             appendPrefix()
@@ -29,7 +58,7 @@ fun restartCommand() = commandTree("restart") {
         Bukkit.broadcast(buildText {
             appendPrefix()
             variableValue(executor.name)
-            success("startet den Server neu...")
+            success(" startet den Server neu...")
         }, EssentialsPermissionRegistry.RESTART_NOTIFY)
 
         Bukkit.shutdown()
@@ -47,16 +76,10 @@ fun restartCommand() = commandTree("restart") {
                 }
                 return@anyExecutor
             }
-
-            Bukkit.broadcast(buildText {
-                appendPrefix()
-                variableValue(executor.name)
-                success("startet den Server neu...")
-            }, EssentialsPermissionRegistry.RESTART_NOTIFY)
-
             var remaining = Duration.ofSeconds(seconds)
 
-            Bukkit.getAsyncScheduler().runAtFixedRate(plugin, {
+            restartTask?.cancel()
+            restartTask = Bukkit.getAsyncScheduler().runAtFixedRate(plugin, {
                 if (remaining.seconds <= 0) {
                     Bukkit.broadcast(buildText {
                         appendPrefix()
@@ -69,14 +92,7 @@ fun restartCommand() = commandTree("restart") {
                     return@runAtFixedRate
                 }
 
-                val shouldNotify = when {
-                    remaining.seconds > 30 -> remaining.seconds.toInt() % 30 == 0
-                    remaining.seconds > 10 -> remaining.seconds.toInt() % 10 == 0
-                    remaining.seconds > 5 -> remaining.seconds.toInt() % 5 == 0
-                    else -> true
-                }
-
-                if (shouldNotify) {
+                if (shouldNotify(remaining, delay)) {
                     forEachPlayer {
                         it.sendText {
                             appendPrefix()
@@ -89,6 +105,13 @@ fun restartCommand() = commandTree("restart") {
                             type(Sound.BLOCK_NOTE_BLOCK_PLING)
                         }, net.kyori.adventure.sound.Sound.Emitter.self())
                     }
+                }
+
+                forEachPlayer {
+                    it.sendActionBar(buildText {
+                        success("Neustart in ")
+                        variableValue(remaining.userContent())
+                    })
                 }
 
                 remaining = remaining.minusSeconds(1)
@@ -109,14 +132,9 @@ fun restartCommand() = commandTree("restart") {
                     return@anyExecutor
                 }
 
-                Bukkit.broadcast(buildText {
-                    appendPrefix()
-                    variableValue(executor.name)
-                    success("startet den Server neu...")
-                }, EssentialsPermissionRegistry.RESTART_NOTIFY)
-
                 var remaining = Duration.ofSeconds(seconds)
-                Bukkit.getAsyncScheduler().runAtFixedRate(plugin, {
+                restartTask?.cancel()
+                restartTask = Bukkit.getAsyncScheduler().runAtFixedRate(plugin, {
                     if (remaining.seconds <= 0) {
                         Bukkit.broadcast(buildText {
                             appendPrefix()
@@ -128,14 +146,7 @@ fun restartCommand() = commandTree("restart") {
                         return@runAtFixedRate
                     }
 
-                    val shouldNotify = when {
-                        remaining.seconds > 30 -> remaining.seconds.toInt() % 30 == 0
-                        remaining.seconds > 10 -> remaining.seconds.toInt() % 10 == 0
-                        remaining.seconds > 5 -> remaining.seconds.toInt() % 5 == 0
-                        else -> true
-                    }
-
-                    if (shouldNotify) {
+                    if (shouldNotify(remaining, delay)) {
                         forEachPlayer {
                             it.sendText {
                                 appendPrefix()
@@ -154,9 +165,42 @@ fun restartCommand() = commandTree("restart") {
                         }
                     }
 
+                    forEachPlayer {
+                        it.sendActionBar(buildText {
+                            success("Neustart in ")
+                            variableValue(remaining.userContent())
+                        })
+                    }
+
                     remaining = remaining.minusSeconds(1)
                 }, 0L, 1L, TimeUnit.SECONDS)
             }
         }
     }
+}
+
+private fun shouldNotify(remaining: Duration, total: Duration): Boolean {
+    if (remaining.isZero || remaining.isNegative) {
+        return false
+    }
+
+    if (remaining.seconds == total.seconds) {
+        return true
+    }
+
+    val remainingSeconds = remaining.seconds
+    val totalSeconds = total.seconds
+
+    val thresholds = mutableSetOf<Long>()
+
+    var current = totalSeconds
+    while (current > 600) {
+        current /= 2
+        thresholds.add(current)
+    }
+
+    val finerSteps = listOf(300L, 180L, 120L, 60L, 30L, 15L, 10L, 5L, 3L, 2L, 1L)
+    thresholds.addAll(finerSteps.filter { it < totalSeconds })
+
+    return remainingSeconds in thresholds
 }
