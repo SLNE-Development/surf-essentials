@@ -78,7 +78,13 @@ fun effectCommand() = commandTree("effect") {
                                     success(" für ")
                                     variableValue(duration.userContent())
                                     success(" an ")
-                                    variableValue("${players.size} Spielern")
+
+                                    if (players.size == 1) {
+                                        variableValue(players.firstOrNull()?.name ?: "Unbekannt")
+                                    } else {
+                                        variableValue("${players.size} Spielern")
+                                    }
+
                                     success(" vergeben.")
                                 }
                             }
@@ -118,7 +124,13 @@ fun effectCommand() = commandTree("effect") {
                 executor.sendText {
                     appendPrefix()
                     success("Du hast alle Effekte von ")
-                    variableValue("${players.size} Spielern")
+
+                    if (players.size == 1) {
+                        variableValue(players.firstOrNull()?.name ?: "Unbekannt")
+                    } else {
+                        variableValue("${players.size} Spielern")
+                    }
+
                     success(" entfernt.")
                 }
             }
@@ -137,7 +149,13 @@ fun effectCommand() = commandTree("effect") {
                         success("Du hast den Effekt ")
                         translatable(effect.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
                         success(" von ")
-                        variableValue("${players.size} Spielern")
+
+                        if (players.size == 1) {
+                            variableValue(players.firstOrNull()?.name ?: "Unbekannt")
+                        } else {
+                            variableValue("${players.size} Spielern")
+                        }
+
                         success(" entfernt.")
                     }
                 }
