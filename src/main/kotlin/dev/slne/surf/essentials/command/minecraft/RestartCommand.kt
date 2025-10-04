@@ -30,7 +30,7 @@ fun restartCommand() = commandTree("restart") {
             success("Der Server wird neu gestartet...")
         }, EssentialsPermissionRegistry.RESTART_NOTIFY)
 
-        Bukkit.restart()
+        Bukkit.shutdown()
     }
 
     durationArgument("delay") {
@@ -63,6 +63,8 @@ fun restartCommand() = commandTree("restart") {
                         variableValue("jetzt")
                         success(" neu gestartet...")
                     })
+
+                    Bukkit.shutdown()
                     return@runAtFixedRate
                 }
 
@@ -126,6 +128,7 @@ fun restartCommand() = commandTree("restart") {
                             variableValue("jetzt")
                             success(" neu gestartet...")
                         })
+                        Bukkit.shutdown()
                         return@runAtFixedRate
                     }
 
