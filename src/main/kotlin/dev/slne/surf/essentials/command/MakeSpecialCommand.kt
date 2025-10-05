@@ -20,6 +20,7 @@ fun makeSpecialCommand() = commandTree("makespecial") {
         }
 
         specialItemService.makeSpecial(itemInHand)
+        specialItemService.unMarkAsAnnounced(itemInHand)
 
         player.sendText {
             appendPrefix()

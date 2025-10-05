@@ -5,6 +5,8 @@ import dev.slne.surf.essentials.util.util.translatable
 import dev.slne.surf.surfapi.bukkit.api.util.forEachPlayer
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import dev.slne.surf.surfapi.core.api.messages.adventure.sound
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -16,19 +18,13 @@ object SpecialItemListener : Listener {
         val player = event.entity as? Player ?: return
         val itemStack = event.item.itemStack
 
-        println("Item picked up: ${itemStack.type}, amount: ${itemStack.amount}")
-
         if (!specialItemService.isSpecial(itemStack)) {
-            println("Item is not special.")
             return
         }
 
         if (specialItemService.isAnnounced(itemStack)) {
-            println("Item has already been announced.")
             return
         }
-
-        println("Item is special and has not been announced yet.")
 
         specialItemService.markAsAnnounced(itemStack)
 
@@ -37,9 +33,17 @@ object SpecialItemListener : Listener {
                 appendPrefix()
                 variableValue(player.name)
                 success(" hat ")
-                translatable(itemStack.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
+
+                append {
+                    translatable(itemStack.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
+                    hoverEvent(itemStack.asHoverEvent())
+                }
                 success(" erhalten!")
             }
+
+            it.playSound(sound {
+                type(Sound.ENTITY_ENDER_DRAGON_GROWL)
+            }, net.kyori.adventure.sound.Sound.Emitter.self())
         }
     }
 }

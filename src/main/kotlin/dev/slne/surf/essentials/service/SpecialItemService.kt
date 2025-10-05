@@ -9,20 +9,23 @@ class SpecialItemService {
     private val specialKey = NamespacedKey(plugin, "special")
     private val specialAnnounced = NamespacedKey(plugin, "special_announced")
 
-    fun makeSpecial(item: ItemStack) = item.itemMeta.persistentDataContainer.set(
-        specialKey,
-        PersistentDataType.BOOLEAN, true
-    )
+    fun makeSpecial(item: ItemStack) = item.editPersistentDataContainer {
+        it.set(specialKey, PersistentDataType.BOOLEAN, true)
+    }
+
 
     fun isSpecial(item: ItemStack): Boolean = item.itemMeta.persistentDataContainer.getOrDefault(
         specialKey,
         PersistentDataType.BOOLEAN, false
     )
 
-    fun markAsAnnounced(item: ItemStack) = item.itemMeta.persistentDataContainer.set(
-        specialAnnounced,
-        PersistentDataType.BOOLEAN, true
-    )
+    fun markAsAnnounced(item: ItemStack) = item.editPersistentDataContainer {
+        it.set(specialAnnounced, PersistentDataType.BOOLEAN, true)
+    }
+
+    fun unMarkAsAnnounced(item: ItemStack) = item.editPersistentDataContainer {
+        it.remove(specialAnnounced)
+    }
 
     fun isAnnounced(item: ItemStack) = item.itemMeta.persistentDataContainer.has(
         specialAnnounced,
