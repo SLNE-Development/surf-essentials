@@ -3,6 +3,7 @@ package dev.slne.surf.essentials.command
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.meta.ItemMeta
@@ -26,7 +27,12 @@ fun itemEditCommand() = commandTree("itemedit") {
                 }
 
                 itemInHand.editMeta(ItemMeta::class.java) {
-                    it.displayName(displayName)
+                    it.displayName(
+                        displayName.decorationIfAbsent(
+                            TextDecoration.ITALIC,
+                            TextDecoration.State.FALSE
+                        )
+                    )
                 }
 
                 player.sendText {
