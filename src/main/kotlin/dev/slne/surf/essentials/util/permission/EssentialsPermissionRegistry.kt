@@ -89,4 +89,5 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val RESTART_COMMAND = create("$PREFIX.restart.command")
     val RESTART_NOTIFY = create("$PREFIX.restart.notify")
     val MAKE_SPECIAL_COMMAND = create("$PREFIX.makespecial.command")
+    val KNIGHT_COMMAND = create("$PREFIX.knight.command")
 }

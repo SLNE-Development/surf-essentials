@@ -93,5 +93,6 @@ object PaperCommandManager {
         stopCommand()
         restartCommand()
         makeSpecialCommand()
+        knightCommand()
     }
 }
