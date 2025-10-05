@@ -92,6 +92,7 @@ object PaperCommandManager {
         soundCommand()
         stopCommand()
         restartCommand()
+        makeSpecialCommand()
         knightCommand()
     }
 }
