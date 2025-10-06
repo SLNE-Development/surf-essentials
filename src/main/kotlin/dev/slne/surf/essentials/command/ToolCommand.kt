@@ -173,9 +173,6 @@ private fun downgradeItem(item: ItemStack) = when (item.type) {
     Material.NETHERITE_INGOT -> item.withType(Material.DIAMOND)
     Material.DIAMOND -> item.withType(Material.GOLD_INGOT)
     Material.GOLD_INGOT -> item.withType(Material.IRON_INGOT)
-    Material.IRON_INGOT -> item.withType(Material.STONE)
-    Material.STONE -> item.withType(Material.COBBLESTONE)
-
     Material.NETHERITE_SWORD -> item.withType(Material.DIAMOND_SWORD)
     Material.DIAMOND_SWORD -> item.withType(Material.GOLDEN_SWORD)
     Material.GOLDEN_SWORD -> item.withType(Material.IRON_SWORD)
