@@ -9,6 +9,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextDecoration
 import java.time.Duration
 
 fun SurfComponentBuilder.translatable(key: String, vararg args: ComponentLike) =
@@ -55,6 +56,11 @@ fun SurfComponentBuilder.appendCommandButton(
     text(text, color)
     spacer("]")
     clickRunsCommand(command)
+}
+
+fun SurfComponentBuilder.appendNewLineArrow() = append {
+    info("→", TextDecoration.BOLD)
+    appendSpace()
 }
 
 fun Long.ticks() = (this / 50).toInt()

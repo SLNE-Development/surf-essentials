@@ -8,11 +8,15 @@ import org.bukkit.persistence.PersistentDataType
 class SpecialItemService {
     private val specialKey = NamespacedKey(plugin, "special")
     private val specialAnnounced = NamespacedKey(plugin, "special_announced")
+    private val specializedDate = NamespacedKey(plugin, "special_date")
 
     fun makeSpecial(item: ItemStack) = item.editPersistentDataContainer {
         it.set(specialKey, PersistentDataType.BOOLEAN, true)
     }
 
+    fun setSpecializedDate(item: ItemStack, unix: Long) = item.editPersistentDataContainer {
+        it.set(specializedDate, PersistentDataType.LONG, unix)
+    }
 
     fun isSpecial(item: ItemStack): Boolean = item.itemMeta.persistentDataContainer.getOrDefault(
         specialKey,
