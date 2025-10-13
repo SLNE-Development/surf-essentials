@@ -3,7 +3,6 @@ Bossbar
 Datapack
 Forceload
 Particle
-Setblock
 time
 latestdeath
 alert
@@ -15,5 +14,3 @@ vote
 
 world
 timer
-
-disable: ban, kick
