@@ -19,7 +19,7 @@ object CommandExecutionListener : Listener {
                     spacer("[")
                     success("Trotzdem ausführen")
                     spacer("]")
-                    clickRunsCommand("/minecraft:${command.removePrefix("/commandName")}")
+                    clickRunsCommand("/minecraft:${command.removePrefix("/")}")
                 }
 
                 event.isCancelled = true
