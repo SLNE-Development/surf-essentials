@@ -93,4 +93,9 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val TOOL_COMMAND = create("$PREFIX.tool.command")
     val TOOL_COMMAND_UPGRADE = create("$PREFIX.tool.command.upgrade")
     val TOOL_COMMAND_DOWNGRADE = create("$PREFIX.tool.command.downgrade")
+    val GAMERULE_COMMAND = create("$PREFIX.gamerule.command")
+    val FILL_COMMAND = create("$PREFIX.fill.command")
+    val FILL_BIOME_COMMAND = create("$PREFIX.fillbiome.command")
+    val EXPERIENCE_COMMAND = create("$PREFIX.experience.command")
+    val EXECUTE_COMMAND_ADDITIONS = create("$PREFIX.execute.command.additions")
 }

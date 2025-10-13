@@ -94,5 +94,10 @@ object PaperCommandManager {
         makeSpecialCommand()
         knightCommand()
         toolCommand()
+        experienceCommand()
+        fillCommand()
+        fillBiomeCommand()
+        gameRuleCommand()
+        executeCommandAdditions()
     }
 }
