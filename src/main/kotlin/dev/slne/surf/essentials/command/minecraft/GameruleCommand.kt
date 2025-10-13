@@ -35,7 +35,7 @@ fun gameRuleCommand() = commandTree("gamerule") {
 
                 val parsedValue = when (gamerule.type) {
                     Integer::class.java -> value.toIntOrNull()
-                    Boolean::class.java -> value.toBooleanStrictOrNull()
+                    java.lang.Boolean::class.java -> value.toBooleanStrictOrNull()
                     else -> null
                 } ?: run {
                     executor.sendText {
@@ -49,11 +49,11 @@ fun gameRuleCommand() = commandTree("gamerule") {
 
                 executor.sendText {
                     appendPrefix()
-                    info("Die Spielregel ")
+                    success("Die Spielregel ")
                     translatable(gamerule.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
-                    info(" wurde auf ")
+                    success(" wurde auf ")
                     variableValue(parsedValue.toString())
-                    info(" für alle Welten gesetzt.")
+                    success(" für alle Welten gesetzt.")
                 }
             }
 
@@ -65,7 +65,7 @@ fun gameRuleCommand() = commandTree("gamerule") {
 
                     val parsedValue = when (gamerule.type) {
                         Integer::class.java -> value.toIntOrNull()
-                        Boolean::class.java -> value.toBooleanStrictOrNull()
+                        java.lang.Boolean::class.java -> value.toBooleanStrictOrNull()
                         else -> null
                     } ?: run {
                         executor.sendText {
@@ -75,17 +75,18 @@ fun gameRuleCommand() = commandTree("gamerule") {
                         return@anyExecutor
                     }
 
+
                     world.setGameRule(gamerule, parsedValue)
 
                     executor.sendText {
                         appendPrefix()
-                        info("Die Spielregel ")
+                        success("Die Spielregel ")
                         translatable(gamerule.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
-                        info(" wurde auf ")
+                        success(" wurde auf ")
                         variableValue(parsedValue.toString())
-                        info(" für die Welt ")
+                        success(" für die Welt ")
                         variableValue(world.name)
-                        info(" gesetzt.")
+                        success(" gesetzt.")
                     }
                 }
             }
