@@ -128,7 +128,7 @@ fun timeCommand() = commandTree("time") {
                     appendPrefix()
                     success("Die Zeit wurde auf")
                     appendSpace()
-                    variableValue(namedTime.name)
+                    variableValue(namedTime.timeName)
                     appendSpace()
                     success("gesetzt.")
                 }
