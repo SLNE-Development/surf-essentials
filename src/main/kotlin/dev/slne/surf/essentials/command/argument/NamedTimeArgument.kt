@@ -23,7 +23,7 @@ class NamedTimeArgument(nodeName: String) :
         this.replaceSuggestions(
             ArgumentSuggestions.stringCollection<CommandSender> {
                 NamedTime.entries.map {
-                    it.name.lowercase().replaceFirstChar { it.uppercase() }
+                    it.name.lowercase()
                 }
             }
         )
