@@ -28,7 +28,7 @@ fun timeCommand() = commandTree("time") {
                 appendSpace()
                 info("beträgt")
                 appendSpace()
-                variableValue("$time Ticks!")
+                variableValue("$time Tage!")
             }
         }
 
@@ -48,7 +48,7 @@ fun timeCommand() = commandTree("time") {
                     appendSpace()
                     info("beträgt")
                     appendSpace()
-                    variableValue("$time Ticks!")
+                    variableValue("$time Tage!")
                 }
             }
         }
