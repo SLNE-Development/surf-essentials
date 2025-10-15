@@ -18,7 +18,7 @@ fun stopCommand() = commandTree("stop") {
         Bukkit.broadcast(buildText {
             appendPrefix()
             variableValue(executor.name)
-            success(" startet den Server neu...")
+            success(" fährt den Server herunter...")
         }, EssentialsPermissionRegistry.STOP_NOTIFY)
 
         Bukkit.shutdown()
