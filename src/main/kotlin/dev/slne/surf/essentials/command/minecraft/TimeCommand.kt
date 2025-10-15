@@ -120,9 +120,19 @@ fun timeCommand() = commandTree("time") {
             nativeExecutor { executor, args ->
                 val namedTime: NamedTime by args
 
-                Bukkit.getWorlds().forEach {
-                    it.fullTime = namedTime.ticks
+                Bukkit.getWorlds().forEach { world ->
+                    val current = world.fullTime % 24000
+                    val target = namedTime.ticks % 24000
+
+                    val diff = if (target >= current) {
+                        target - current
+                    } else {
+                        (24000 - current) + target
+                    }
+
+                    world.fullTime += diff
                 }
+
 
                 executor.sendText {
                     appendPrefix()
