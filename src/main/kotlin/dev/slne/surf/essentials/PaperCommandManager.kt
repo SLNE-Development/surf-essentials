@@ -6,35 +6,6 @@ import dev.slne.surf.essentials.command.table.*
 
 object PaperCommandManager {
     fun registerAll() {
-//        CommandAPI.unregister("op")
-//        CommandAPI.unregister("deop")
-//        CommandAPI.unregister("advancement")
-//        CommandAPI.unregister("list")
-//        CommandAPI.unregister("clear")
-//        CommandAPI.unregister("gamemode")
-//        CommandAPI.unregister("give")
-//        CommandAPI.unregister("teleport")
-//        CommandAPI.unregister("enchant")
-//        CommandAPI.unregister("whitelist")
-//        CommandAPI.unregister("teleport")
-//        CommandAPI.unregister("tp")
-//        CommandAPI.unregister("summon")
-//        CommandAPI.unregister("seed")
-//        CommandAPI.unregister("setworldspawn")
-//        CommandAPI.unregister("setidletimeout")
-//        CommandAPI.unregister("ride")
-//        CommandAPI.unregister("reload")
-//        CommandAPI.unregister("kill")
-//        CommandAPI.unregister("function")
-//        CommandAPI.unregister("difficulty")
-//        CommandAPI.unregister("defaultgamemode")
-//        CommandAPI.unregister("effect")
-//        CommandAPI.unregister("weather")
-//        CommandAPI.unregister("playsound")
-//        CommandAPI.unregister("stopsound")
-//        CommandAPI.unregister("stop")
-//        CommandAPI.unregister("restart")
-
         advancementCommand()
         opCommand()
         deopCommand()
@@ -97,5 +68,6 @@ object PaperCommandManager {
         experienceCommand()
         gameRuleCommand()
         executeCommandAdditions()
+        timeCommand()
     }
 }
