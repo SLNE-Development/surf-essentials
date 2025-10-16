@@ -11,5 +11,7 @@ object PaperListenerManager {
         TeleportationListener.register()
         UnknownCommandListener.register()
         WorldListener.register()
+        SpecialItemListener.register()
+        CommandExecutionListener.register()
     }
 }

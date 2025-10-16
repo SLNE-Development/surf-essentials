@@ -7,45 +7,6 @@ import dev.slne.surf.essentials.command.table.*
 
 object PaperCommandManager {
     fun registerAll() {
-        CommandAPI.unregister("op")
-        CommandAPI.unregister("deop")
-        CommandAPI.unregister("advancement")
-        CommandAPI.unregister("list")
-        CommandAPI.unregister("clear")
-        CommandAPI.unregister("gamemode")
-        CommandAPI.unregister("give")
-        CommandAPI.unregister("teleport")
-        CommandAPI.unregister("enchant")
-        CommandAPI.unregister("whitelist")
-        CommandAPI.unregister("teleport")
-        CommandAPI.unregister("tp")
-        CommandAPI.unregister("summon")
-        CommandAPI.unregister("seed")
-        CommandAPI.unregister("setworldspawn")
-        CommandAPI.unregister("setidletimeout")
-        CommandAPI.unregister("ride")
-        CommandAPI.unregister("reload")
-        CommandAPI.unregister("kill")
-        CommandAPI.unregister("function")
-        CommandAPI.unregister("difficulty")
-        CommandAPI.unregister("defaultgamemode")
-        CommandAPI.unregister("effect")
-        CommandAPI.unregister("weather")
-        CommandAPI.unregister("playsound")
-        CommandAPI.unregister("stopsound")
-        CommandAPI.unregister("stop")
-        CommandAPI.unregister("restart")
-
-        /**
-         * These commands are replaced by surf-punish and should not be used anymore.
-         * If you want to use them anyway, you can use them with namespace.
-         */
-        CommandAPI.unregister("ban")
-        CommandAPI.unregister("pardon")
-        CommandAPI.unregister("ban-ip")
-        CommandAPI.unregister("pardon-ip")
-        CommandAPI.unregister("kick")
-
         advancementCommand()
         opCommand()
         deopCommand()
@@ -102,6 +63,13 @@ object PaperCommandManager {
         soundCommand()
         stopCommand()
         restartCommand()
+        makeSpecialCommand()
+        knightCommand()
+        toolCommand()
+        experienceCommand()
+        gameRuleCommand()
+        executeCommandAdditions()
+        timeCommand()
         worldCommand()
     }
 }

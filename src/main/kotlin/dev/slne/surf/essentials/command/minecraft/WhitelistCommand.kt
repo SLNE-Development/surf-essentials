@@ -1,6 +1,7 @@
 package dev.slne.surf.essentials.command.minecraft
 
 import com.github.shynixn.mccoroutine.folia.launch
+import dev.jorel.commandapi.arguments.PlayerProfileArgument
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
@@ -95,7 +96,7 @@ fun whitelistCommand() = commandTree("whitelist") {
 
     literalArgument("player") {
         literalArgument("add") {
-            offlinePlayerArgument("offlinePlayer") {
+            argument(PlayerProfileArgument("offlinePlayer")) {
                 anyExecutor { executor, args ->
                     val offlinePlayer: OfflinePlayer by args
 
@@ -119,7 +120,7 @@ fun whitelistCommand() = commandTree("whitelist") {
         }
 
         literalArgument("remove") {
-            offlinePlayerArgument("offlinePlayer") {
+            argument(PlayerProfileArgument("offlinePlayer")) {
                 anyExecutor { executor, args ->
                     val offlinePlayer: OfflinePlayer by args
 
