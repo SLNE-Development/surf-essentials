@@ -3,7 +3,9 @@ package dev.slne.surf.essentials.command
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.service.worldService
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.util.isFolia
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import org.bukkit.Bukkit
 import org.bukkit.World
 
 fun worldCommand() = commandTree("world") {
@@ -14,6 +16,14 @@ fun worldCommand() = commandTree("world") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_LOCK)
             anyExecutor { executor, args ->
                 val world: World by args
+
+                if (Bukkit.getServer().isFolia()) {
+                    executor.sendText {
+                        appendPrefix()
+                        error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
+                    }
+                    return@anyExecutor
+                }
 
                 if (worldService.isLocked(world)) {
                     executor.sendText {
@@ -40,6 +50,14 @@ fun worldCommand() = commandTree("world") {
             anyExecutor { executor, args ->
                 val world: World by args
 
+                if (Bukkit.getServer().isFolia()) {
+                    executor.sendText {
+                        appendPrefix()
+                        error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
+                    }
+                    return@anyExecutor
+                }
+
                 if (!worldService.isLocked(world)) {
                     executor.sendText {
                         appendPrefix()
@@ -65,12 +83,20 @@ fun worldCommand() = commandTree("world") {
             playerExecutor { player, args ->
                 val world: World by args
 
-                player.teleport(world.spawnLocation)
                 player.sendText {
                     appendPrefix()
-                    success("Du wurdest in die Welt ")
+                    info("Du wirst in die Welt ")
                     variableValue(world.name)
-                    success(" teleportiert.")
+                    info(" teleportiert...")
+                }
+
+                player.teleportAsync(world.spawnLocation).thenRun {
+                    player.sendText {
+                        appendPrefix()
+                        success("Du wurdest in die Welt ")
+                        variableValue(world.name)
+                        success(" teleportiert.")
+                    }
                 }
             }
         }
@@ -81,6 +107,15 @@ fun worldCommand() = commandTree("world") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_CREATE)
             anyExecutor { executor, args ->
                 val name: String by args
+
+                if (Bukkit.getServer().isFolia()) {
+                    executor.sendText {
+                        appendPrefix()
+                        error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
+                    }
+                    return@anyExecutor
+                }
+
                 worldService.create(executor, name, null, null, null, null, null)
             }
         }
@@ -91,6 +126,15 @@ fun worldCommand() = commandTree("world") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_DELETE)
             anyExecutor { executor, args ->
                 val world: World by args
+
+                if (Bukkit.getServer().isFolia()) {
+                    executor.sendText {
+                        appendPrefix()
+                        error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
+                    }
+                    return@anyExecutor
+                }
+
                 worldService.delete(executor, world)
             }
         }
@@ -101,6 +145,16 @@ fun worldCommand() = commandTree("world") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_LOAD)
             anyExecutor { executor, args ->
                 val name: String by args
+
+                if (Bukkit.getServer().isFolia()) {
+                    executor.sendText {
+                        appendPrefix()
+                        error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
+                    }
+                    return@anyExecutor
+                }
+
+
                 worldService.load(executor, name)
             }
         }
@@ -111,6 +165,15 @@ fun worldCommand() = commandTree("world") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_UNLOAD)
             anyExecutor { executor, args ->
                 val world: World by args
+
+                if (Bukkit.getServer().isFolia()) {
+                    executor.sendText {
+                        appendPrefix()
+                        error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
+                    }
+                    return@anyExecutor
+                }
+
                 worldService.unload(executor, world)
             }
         }

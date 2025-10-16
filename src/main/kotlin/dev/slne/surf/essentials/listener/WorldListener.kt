@@ -1,28 +1,38 @@
 package dev.slne.surf.essentials.listener
 
+import dev.slne.surf.essentials.service.worldService
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
+import dev.slne.surf.surfapi.bukkit.api.event.cancel
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import org.bukkit.entity.Player
+import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.entity.EntityPortalEnterEvent
+import org.bukkit.event.player.PlayerPortalEvent
 
 object WorldListener : Listener {
     @EventHandler
-    fun onEntityPortalEnter(event: EntityPortalEnterEvent) {
-        val entity = event.entity
-        val portal = event.portalType
+    fun onPortal(event: PlayerPortalEvent) {
+        val player = event.player
+        val world = event.to.world
 
-        (entity as? Player)?.let {
-            if (it.hasPermission(EssentialsPermissionRegistry.WORLD_BYPASS)) {
-                it.sendText {
+        if (worldService.isLocked(world)) {
+            if (!player.hasPermission(EssentialsPermissionRegistry.WORLD_BYPASS)) {
+                event.cancel()
+                player.sendText {
                     appendPrefix()
-                    success("")
+
+                    when (world.environment) {
+                        World.Environment.NETHER -> error("Der Nether ist zurzeit deaktiviert.")
+                        World.Environment.THE_END -> error("Das End ist zurzeit deaktiviert.")
+                        else -> error("Du kannst dieses Portal nicht benutzen!")
+                    }
                 }
-                return
+            } else {
+                player.sendText {
+                    appendPrefix()
+                    success("Du hast die Portal-Sperre umgangen.")
+                }
             }
         }
-
-        portal
     }
 }
