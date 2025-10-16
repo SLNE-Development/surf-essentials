@@ -5,7 +5,7 @@ import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.command.argument.namedTimeArgument
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
-import dev.slne.surf.essentials.util.permission.NamedTime
+import dev.slne.surf.essentials.util.time.NamedTime
 import dev.slne.surf.surfapi.bukkit.api.surfBukkitApi
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.Bukkit

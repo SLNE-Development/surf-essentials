@@ -1,4 +1,4 @@
-package dev.slne.surf.essentials.util.permission
+package dev.slne.surf.essentials.util.time
 
 enum class NamedTime(
     val timeName: String,
