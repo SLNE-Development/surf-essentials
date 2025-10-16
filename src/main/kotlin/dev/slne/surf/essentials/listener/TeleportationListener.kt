@@ -10,7 +10,6 @@ object TeleportationListener : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerTeleport(event: PlayerTeleportEvent) {
         val player = event.getPlayer()
-
         if (event.isCancelled) {
             return
         }
