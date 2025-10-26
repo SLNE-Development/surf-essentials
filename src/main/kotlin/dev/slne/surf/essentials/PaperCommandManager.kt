@@ -69,5 +69,6 @@ object PaperCommandManager {
         gameRuleCommand()
         executeCommandAdditions()
         timeCommand()
+        skinChangeCommand()
     }
 }

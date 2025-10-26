@@ -96,4 +96,6 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val GAMERULE_COMMAND = create("$PREFIX.gamerule.command")
     val EXPERIENCE_COMMAND = create("$PREFIX.experience.command")
     val TIME_COMMAND = create("$PREFIX.time.command")
+    val SKIN_CHANGE_COMMAND = create("$PREFIX.skinchange.command")
+    val SKIN_CHANGE_COMMAND_OTHERS = create("$PREFIX.skinchange.command.others")
 }
