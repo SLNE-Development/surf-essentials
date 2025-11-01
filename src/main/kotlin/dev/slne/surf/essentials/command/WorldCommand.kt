@@ -108,12 +108,6 @@ fun worldCommand() = commandTree("world") {
             anyExecutor { executor, args ->
                 val name: String by args
 
-                executor.sendText {
-                    appendPrefix()
-                    info("Dieser Befehl ist zurzeit deaktiviert.")
-                }
-                return@anyExecutor
-
                 if (Bukkit.getServer().isFolia()) {
                     executor.sendText {
                         appendPrefix()
@@ -132,12 +126,6 @@ fun worldCommand() = commandTree("world") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_DELETE)
             anyExecutor { executor, args ->
                 val world: World by args
-
-                executor.sendText {
-                    appendPrefix()
-                    info("Dieser Befehl ist zurzeit deaktiviert.")
-                }
-                return@anyExecutor
 
                 if (Bukkit.getServer().isFolia()) {
                     executor.sendText {
@@ -158,12 +146,6 @@ fun worldCommand() = commandTree("world") {
             anyExecutor { executor, args ->
                 val name: String by args
 
-                executor.sendText {
-                    appendPrefix()
-                    info("Dieser Befehl ist zurzeit deaktiviert.")
-                }
-                return@anyExecutor
-
                 if (Bukkit.getServer().isFolia()) {
                     executor.sendText {
                         appendPrefix()
@@ -183,12 +165,6 @@ fun worldCommand() = commandTree("world") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_UNLOAD)
             anyExecutor { executor, args ->
                 val world: World by args
-
-                executor.sendText {
-                    appendPrefix()
-                    info("Dieser Befehl ist zurzeit deaktiviert.")
-                }
-                return@anyExecutor
 
                 if (Bukkit.getServer().isFolia()) {
                     executor.sendText {
