@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials
 
-import dev.jorel.commandapi.CommandAPI
 import dev.slne.surf.essentials.command.*
 import dev.slne.surf.essentials.command.minecraft.*
 import dev.slne.surf.essentials.command.table.*
@@ -70,6 +69,7 @@ object PaperCommandManager {
         gameRuleCommand()
         executeCommandAdditions()
         timeCommand()
+        skinChangeCommand()
         worldCommand()
     }
 }
