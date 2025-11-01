@@ -3,7 +3,6 @@ package dev.slne.surf.essentials.service
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.util.isFolia
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import net.kyori.adventure.util.TriState
 import org.bukkit.*
 import org.bukkit.command.CommandSender
 import org.bukkit.persistence.PersistentDataType
@@ -52,8 +51,6 @@ class WorldService {
         generateStructures?.let { creator.generateStructures(it) }
         hardcore?.let { creator.hardcore(it) }
         seed?.let { creator.seed(it) }
-
-        creator.keepSpawnLoaded(TriState.TRUE)
 
         sender.sendText {
             appendPrefix()
