@@ -10,9 +10,11 @@ import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import dev.slne.surf.surfapi.core.api.messages.pagination.Pagination
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.World
+import org.bukkit.entity.Player
 
 fun worldCommand() = commandTree("world") {
     withPermission(EssentialsPermissionRegistry.WORLD_COMMAND)
@@ -220,6 +222,44 @@ fun worldCommand() = commandTree("world") {
                                 success("Entsperrt".toSmallCaps())
                             }
                             spacer(")")
+                            hoverEvent(buildText {
+                                info("Klicke, um dich zu teleportieren.")
+                            })
+                            clickEvent(ClickEvent.callback {
+                                val world = Bukkit.getWorld(row.worldName)
+
+                                if (world == null) {
+                                    executor.sendText {
+                                        appendPrefix()
+                                        error("Die Welt ${row.worldName} ist nicht mehr geladen.")
+                                    }
+                                    return@callback
+                                }
+
+                                val player = it as? Player ?: run {
+                                    executor.sendText {
+                                        appendPrefix()
+                                        error("Du musst ein Spieler sein, um teleportiert zu werden.")
+                                    }
+                                    return@callback
+                                }
+
+                                player.sendText {
+                                    appendPrefix()
+                                    info("Du wirst in die Welt ")
+                                    variableValue(world.name)
+                                    info(" teleportiert...")
+                                }
+
+                                player.teleportAsync(world.spawnLocation).thenRun {
+                                    player.sendText {
+                                        appendPrefix()
+                                        success("Du wurdest in die Welt ")
+                                        variableValue(world.name)
+                                        success(" teleportiert.")
+                                    }
+                                }
+                            })
                         }
                     )
                 }
@@ -230,6 +270,7 @@ fun worldCommand() = commandTree("world") {
                 info("Es sind insgesamt ")
                 variableValue(worlds.size.toString())
                 info(" Welt(en) geladen:")
+                appendNewline()
                 append(pagination.renderComponent(worldData))
             }
         }
