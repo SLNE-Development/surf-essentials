@@ -13,7 +13,7 @@ class SettingsService {
                 identifier = SPECIAL_ITEM_SOUNDS
                 displayName = "Special Item Geräusche"
                 description =
-                    "Aktiviert oder deaktiviert Geräusche, wenn ein Spieler ein besonderen Gegenstand erhält."
+                    "Aktiviert oder deaktiviert Geräusche, wenn ein Spieler einen besonderen Gegenstand erhält."
                 category = CATEGORY_ID
                 defaultValue = "true"
             }
