@@ -158,12 +158,6 @@ fun worldCommand() = commandTree("world") {
             anyExecutor { executor, args ->
                 val name: String by args
 
-                executor.sendText {
-                    appendPrefix()
-                    info("Dieser Befehl ist zurzeit deaktiviert.")
-                }
-                return@anyExecutor
-
                 if (Bukkit.getServer().isFolia()) {
                     executor.sendText {
                         appendPrefix()
