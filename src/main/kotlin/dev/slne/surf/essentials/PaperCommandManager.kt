@@ -70,5 +70,6 @@ object PaperCommandManager {
         executeCommandAdditions()
         timeCommand()
         skinChangeCommand()
+        worldCommand()
     }
 }
