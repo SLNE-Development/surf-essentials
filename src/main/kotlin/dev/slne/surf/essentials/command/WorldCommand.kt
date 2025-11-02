@@ -1,7 +1,9 @@
 package dev.slne.surf.essentials.command
 
 import dev.jorel.commandapi.kotlindsl.*
+import dev.slne.surf.essentials.command.argument.world.worldEnvironmentArgument
 import dev.slne.surf.essentials.command.argument.world.worldFoldersArgument
+import dev.slne.surf.essentials.command.argument.world.worldTypeArgument
 import dev.slne.surf.essentials.command.argument.world.worldsArgument
 import dev.slne.surf.essentials.service.worldService
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
@@ -14,6 +16,7 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.World
+import org.bukkit.WorldType
 import org.bukkit.entity.Player
 
 fun worldCommand() = commandTree("world") {
@@ -125,6 +128,124 @@ fun worldCommand() = commandTree("world") {
                 }
 
                 worldService.create(executor, name, null, null, null, null, null)
+            }
+
+            worldEnvironmentArgument("environment") {
+                anyExecutor { executor, args ->
+                    val name: String by args
+                    val environment: World.Environment by args
+
+                    if (Bukkit.getServer().isFolia()) {
+                        executor.sendText {
+                            appendPrefix()
+                            error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
+                        }
+                        return@anyExecutor
+                    }
+
+                    worldService.create(executor, name, environment, null, null, null, null)
+                }
+
+                worldTypeArgument("type") {
+                    anyExecutor { executor, args ->
+                        val name: String by args
+                        val environment: World.Environment by args
+                        val type: WorldType by args
+
+                        if (Bukkit.getServer().isFolia()) {
+                            executor.sendText {
+                                appendPrefix()
+                                error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
+                            }
+                            return@anyExecutor
+                        }
+
+                        worldService.create(executor, name, environment, type, null, null, null)
+                    }
+
+                    booleanArgument("generateStructures") {
+                        anyExecutor { executor, args ->
+                            val name: String by args
+                            val environment: World.Environment by args
+                            val type: WorldType by args
+                            val generateStructures: Boolean by args
+
+                            if (Bukkit.getServer().isFolia()) {
+                                executor.sendText {
+                                    appendPrefix()
+                                    error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
+                                }
+                                return@anyExecutor
+                            }
+
+                            worldService.create(
+                                executor,
+                                name,
+                                environment,
+                                type,
+                                generateStructures,
+                                null,
+                                null
+                            )
+                        }
+                        booleanArgument("hardcore") {
+                            anyExecutor { executor, args ->
+                                val name: String by args
+                                val environment: World.Environment by args
+                                val type: WorldType by args
+                                val generateStructures: Boolean by args
+                                val hardcore: Boolean by args
+
+                                if (Bukkit.getServer().isFolia()) {
+                                    executor.sendText {
+                                        appendPrefix()
+                                        error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
+                                    }
+                                    return@anyExecutor
+                                }
+
+                                worldService.create(
+                                    executor,
+                                    name,
+                                    environment,
+                                    type,
+                                    generateStructures,
+                                    hardcore,
+                                    null
+                                )
+                            }
+
+                            longArgument("seed") {
+                                anyExecutor { executor, args ->
+                                    val name: String by args
+                                    val environment: World.Environment by args
+                                    val type: WorldType by args
+                                    val generateStructures: Boolean by args
+                                    val hardcore: Boolean by args
+                                    val seed: Long by args
+
+                                    if (Bukkit.getServer().isFolia()) {
+                                        executor.sendText {
+                                            appendPrefix()
+                                            error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
+                                        }
+                                        return@anyExecutor
+                                    }
+
+                                    worldService.create(
+                                        executor,
+                                        name,
+                                        environment,
+                                        type,
+                                        generateStructures,
+                                        hardcore,
+                                        seed
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
