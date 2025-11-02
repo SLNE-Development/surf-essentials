@@ -9,7 +9,7 @@ group = "dev.slne.surf.essentials"
 version = findProperty("version") as String
 
 dependencies {
-    compileOnly("dev.slne.surf.settings:surf-settings-api-common:1.21.10-1.0.0")
+    compileOnly("dev.slne.surf.settings:surf-settings-api-common:1.21.10-1.0.1")
 }
 
 surfPaperPluginApi {
