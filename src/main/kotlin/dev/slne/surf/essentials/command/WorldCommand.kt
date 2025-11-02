@@ -6,7 +6,11 @@ import dev.slne.surf.essentials.command.argument.world.worldsArgument
 import dev.slne.surf.essentials.service.worldService
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.util.isFolia
+import dev.slne.surf.surfapi.core.api.font.toSmallCaps
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import dev.slne.surf.surfapi.core.api.messages.pagination.Pagination
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.World
 
@@ -180,4 +184,59 @@ fun worldCommand() = commandTree("world") {
             }
         }
     }
+
+    literalArgument("list") {
+        anyExecutor { executor, _ ->
+            val worlds = Bukkit.getWorlds()
+
+            if (worlds.isEmpty()) {
+                executor.sendText {
+                    appendPrefix()
+                    error("Es sind keine Welten geladen.")
+                }
+                return@anyExecutor
+            }
+
+            val worldData = worlds.map {
+                WorldData(it.name, worldService.isLocked(it))
+            }
+
+            val pagination = Pagination<WorldData> {
+                title {
+                    primary("Geladene Welten".toSmallCaps(), TextDecoration.BOLD)
+                }
+
+                rowRenderer { row, index ->
+                    listOf(
+                        buildText {
+                            darkSpacer(">")
+                            appendSpace()
+                            variableValue(row.worldName)
+                            appendSpace()
+                            spacer("(")
+                            if (row.isLocked) {
+                                error("Gesperrt".toSmallCaps())
+                            } else {
+                                success("Entsperrt".toSmallCaps())
+                            }
+                            spacer(")")
+                        }
+                    )
+                }
+            }
+
+            executor.sendText {
+                appendPrefix()
+                info("Es sind insgesamt ")
+                variableValue(worlds.size.toString())
+                info(" Welt(en) geladen:")
+                append(pagination.renderComponent(worldData))
+            }
+        }
+    }
 }
+
+private data class WorldData(
+    val worldName: String,
+    val isLocked: Boolean
+)
