@@ -1,5 +1,8 @@
 package dev.slne.surf.essentials.listener
 
+import com.github.shynixn.mccoroutine.folia.launch
+import dev.slne.surf.essentials.plugin
+import dev.slne.surf.essentials.service.settingsService
 import dev.slne.surf.essentials.service.specialItemService
 import dev.slne.surf.essentials.util.util.appendNewLineArrow
 import dev.slne.surf.essentials.util.util.translatable
@@ -70,9 +73,19 @@ object SpecialItemListener : Listener {
                 success(" erhalten!")
             }
 
-            it.playSound(sound {
-                type(Sound.ENTITY_ENDER_DRAGON_GROWL)
-            }, net.kyori.adventure.sound.Sound.Emitter.self())
+            plugin.launch {
+                if (plugin.hasSettingsApi()) {
+                    if (settingsService.hasSoundsEnabled(it.uniqueId)) {
+                        it.playSound(sound {
+                            type(Sound.ENTITY_ENDER_DRAGON_GROWL)
+                        }, net.kyori.adventure.sound.Sound.Emitter.self())
+                    }
+                } else {
+                    it.playSound(sound {
+                        type(Sound.ENTITY_ENDER_DRAGON_GROWL)
+                    }, net.kyori.adventure.sound.Sound.Emitter.self())
+                }
+            }
         }
     }
 }
