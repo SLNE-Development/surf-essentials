@@ -60,6 +60,8 @@ object SpecialItemListener : Listener {
             it.lore(lore)
         }
 
+        val hasSettingsApi = plugin.hasSettingsApi()
+        
         forEachPlayer {
             it.sendText {
                 appendPrefix()
@@ -74,7 +76,7 @@ object SpecialItemListener : Listener {
             }
 
             plugin.launch {
-                if (plugin.hasSettingsApi()) {
+                if (hasSettingsApi) {
                     if (settingsService.hasSoundsEnabled(it.uniqueId)) {
                         it.playSound(sound {
                             type(Sound.ENTITY_ENDER_DRAGON_GROWL)
