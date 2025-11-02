@@ -16,7 +16,9 @@ class PaperMain : SuspendingJavaPlugin() {
         PaperCommandManager.registerAll()
         PaperListenerManager.registerAll()
 
-        settingsService.register()
+        if (hasSettingsApi()) {
+            settingsService.register()
+        }
     }
 
     override fun onDisable() {
