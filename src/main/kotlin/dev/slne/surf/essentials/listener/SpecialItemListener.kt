@@ -74,10 +74,12 @@ object SpecialItemListener : Listener {
             }
 
             plugin.launch {
-                if (settingsService.hasSoundsEnabled(it.uniqueId)) {
-                    it.playSound(sound {
-                        type(Sound.ENTITY_ENDER_DRAGON_GROWL)
-                    }, net.kyori.adventure.sound.Sound.Emitter.self())
+                if (plugin.hasSettingsApi()) {
+                    if (settingsService.hasSoundsEnabled(it.uniqueId)) {
+                        it.playSound(sound {
+                            type(Sound.ENTITY_ENDER_DRAGON_GROWL)
+                        }, net.kyori.adventure.sound.Sound.Emitter.self())
+                    }
                 }
             }
         }

@@ -2,10 +2,12 @@ package dev.slne.surf.essentials.service
 
 import dev.slne.surf.settings.api.common.dsl.settings
 import dev.slne.surf.settings.api.common.surfSettingApi
+import dev.slne.surf.surfapi.core.api.util.logger
 import java.util.*
 
 class SettingsService {
     suspend fun register() {
+        logger().atInfo().log("Hooking into surf-settings...")
         settings {
             setting {
                 identifier = SPECIAL_ITEM_SOUNDS
@@ -16,6 +18,7 @@ class SettingsService {
                 defaultValue = "true"
             }
         }
+        logger().atInfo().log("Successfully hooked into surf-settings.")
     }
 
     suspend fun hasSoundsEnabled(uuid: UUID): Boolean {
