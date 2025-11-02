@@ -1,6 +1,8 @@
 package dev.slne.surf.essentials.command
 
 import dev.jorel.commandapi.kotlindsl.*
+import dev.slne.surf.essentials.command.argument.world.worldFoldersArgument
+import dev.slne.surf.essentials.command.argument.world.worldsArgument
 import dev.slne.surf.essentials.service.worldService
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.util.isFolia
@@ -12,7 +14,7 @@ fun worldCommand() = commandTree("world") {
     withPermission(EssentialsPermissionRegistry.WORLD_COMMAND)
 
     literalArgument("lock") {
-        worldArgument("world") {
+        worldsArgument("world") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_LOCK)
             anyExecutor { executor, args ->
                 val world: World by args
@@ -45,7 +47,7 @@ fun worldCommand() = commandTree("world") {
     }
 
     literalArgument("unlock") {
-        worldArgument("world") {
+        worldsArgument("world") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_UNLOCK)
             anyExecutor { executor, args ->
                 val world: World by args
@@ -78,7 +80,7 @@ fun worldCommand() = commandTree("world") {
     }
 
     literalArgument("join") {
-        worldArgument("world") {
+        worldsArgument("world") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_JOIN)
             playerExecutor { player, args ->
                 val world: World by args
@@ -122,7 +124,7 @@ fun worldCommand() = commandTree("world") {
     }
 
     literalArgument("delete") {
-        worldArgument("world") {
+        worldsArgument("world") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_DELETE)
             anyExecutor { executor, args ->
                 val world: World by args
@@ -141,7 +143,7 @@ fun worldCommand() = commandTree("world") {
     }
 
     literalArgument("load") {
-        stringArgument("name") {
+        worldFoldersArgument("name") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_LOAD)
             anyExecutor { executor, args ->
                 val name: String by args
@@ -161,7 +163,7 @@ fun worldCommand() = commandTree("world") {
     }
 
     literalArgument("unload") {
-        worldArgument("world") {
+        worldsArgument("world") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_UNLOAD)
             anyExecutor { executor, args ->
                 val world: World by args

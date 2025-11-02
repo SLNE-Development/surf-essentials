@@ -6,6 +6,7 @@ import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.*
 import org.bukkit.command.CommandSender
 import org.bukkit.persistence.PersistentDataType
+import java.util.concurrent.CompletableFuture
 
 class WorldService {
     private val accessKey = NamespacedKey(plugin, "world_access")
@@ -137,23 +138,37 @@ class WorldService {
             return
         }
 
-        world.players.forEach {
-            it.teleportAsync(overworldSpawn)
+        val futures = mutableListOf<CompletableFuture<Boolean>>()
+
+        sender.sendText {
+            appendPrefix()
+            info("Teleporiere Spieler aus der Welt...")
         }
 
-        if (!Bukkit.unloadWorld(world, true)) {
-            sender.sendText {
-                appendPrefix()
-                error("Die Welt konnte nicht entladen werden.")
-            }
-            return
+        world.players.forEach {
+            futures.add(it.teleportAsync(overworldSpawn))
         }
 
         sender.sendText {
             appendPrefix()
-            success("Die Welt ")
-            variableValue(world.name)
-            success(" wurde entladen.")
+            info("Die Welt wird entladen...")
+        }
+
+        CompletableFuture.allOf(*futures.toTypedArray()).thenRun {
+            if (!Bukkit.unloadWorld(world, true)) {
+                sender.sendText {
+                    appendPrefix()
+                    error("Die Welt konnte nicht entladen werden.")
+                }
+                return@thenRun
+            }
+
+            sender.sendText {
+                appendPrefix()
+                success("Die Welt ")
+                variableValue(world.name)
+                success(" wurde entladen.")
+            }
         }
     }
 
@@ -174,36 +189,40 @@ class WorldService {
             return
         }
 
+        val futures = mutableListOf<CompletableFuture<Boolean>>()
+
         world.players.forEach {
-            it.teleportAsync(overworldSpawn)
+            futures.add(it.teleportAsync(overworldSpawn))
         }
 
-        if (Bukkit.getWorld(world.name) != null) {
-            if (!Bukkit.unloadWorld(world, true)) {
+        CompletableFuture.allOf(*futures.toTypedArray()).thenRun {
+            if (Bukkit.getWorld(world.name) != null) {
+                if (!Bukkit.unloadWorld(world, true)) {
+                    sender.sendText {
+                        appendPrefix()
+                        error("Die Welt konnte nicht entladen werden.")
+                    }
+                    return@thenRun
+                }
+            }
+
+            val file = Bukkit.getWorldContainer().resolve(world.name)
+            if (!file.exists() || !file.isDirectory) {
                 sender.sendText {
                     appendPrefix()
-                    error("Die Welt konnte nicht entladen werden.")
+                    error("Die Welt existiert nicht.")
                 }
-                return
+                return@thenRun
             }
-        }
 
-        val file = Bukkit.getWorldContainer().resolve(world.name)
-        if (!file.exists() || !file.isDirectory) {
+            file.deleteRecursively()
+
             sender.sendText {
                 appendPrefix()
-                error("Die Welt existiert nicht.")
+                success("Die Welt ")
+                variableValue(world.name)
+                success(" wurde gelöscht.")
             }
-            return
-        }
-
-        file.deleteRecursively()
-
-        sender.sendText {
-            appendPrefix()
-            success("Die Welt ")
-            variableValue(world.name)
-            success(" wurde gelöscht.")
         }
     }
 
