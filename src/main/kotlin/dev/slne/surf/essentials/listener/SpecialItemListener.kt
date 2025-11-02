@@ -80,6 +80,10 @@ object SpecialItemListener : Listener {
                             type(Sound.ENTITY_ENDER_DRAGON_GROWL)
                         }, net.kyori.adventure.sound.Sound.Emitter.self())
                     }
+                } else {
+                    it.playSound(sound {
+                        type(Sound.ENTITY_ENDER_DRAGON_GROWL)
+                    }, net.kyori.adventure.sound.Sound.Emitter.self())
                 }
             }
         }
