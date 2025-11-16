@@ -25,7 +25,6 @@ object PaperCommandManager {
         giveCommand()
         infoCommand()
         itemEditCommand()
-        signCommand()
         teleportCommand()
         teleportOfflineCommand()
         teleportRandomCommand()
@@ -62,7 +61,12 @@ object PaperCommandManager {
         soundCommand()
         stopCommand()
         restartCommand()
-        makeSpecialCommand()
+
+        if (!plugin.isSurvivalServer()) {
+            makeSpecialCommand()
+            signCommand()
+        }
+
         knightCommand()
         toolCommand()
         experienceCommand()
