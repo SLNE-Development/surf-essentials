@@ -29,7 +29,7 @@ fun pingCommand() = commandTree("ping") {
             executor.sendText {
                 appendPrefix()
                 variableValue(target.name)
-                info("hat einen Ping von ")
+                info(" hat einen Ping von ")
                 coloredPing(ping)
                 info(".")
             }
