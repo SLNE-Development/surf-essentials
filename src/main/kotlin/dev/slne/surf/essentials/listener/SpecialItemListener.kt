@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.listener
 
+import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.service.specialItemService
 import dev.slne.surf.essentials.util.util.appendNewLineArrow
 import dev.slne.surf.essentials.util.util.translatable
@@ -27,6 +28,10 @@ object SpecialItemListener : Listener {
     fun onPickup(event: EntityPickupItemEvent) {
         val player = event.entity as? Player ?: return
         val itemStack = event.item.itemStack
+
+        if (plugin.isSurvivalServer()) {
+            return
+        }
 
         if (!specialItemService.isSpecial(itemStack)) {
             return
