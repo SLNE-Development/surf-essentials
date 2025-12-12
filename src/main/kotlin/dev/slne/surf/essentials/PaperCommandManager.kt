@@ -75,5 +75,6 @@ object PaperCommandManager {
         timeCommand()
         skinChangeCommand()
         worldCommand()
+        pingCommand()
     }
 }
