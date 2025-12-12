@@ -177,6 +177,7 @@ fun whitelistCommand() = commandTree("whitelist") {
 
                         executor.sendText {
                             appendPrefix()
+                            success("Der Spieler ")
                             variableValue(offlinePlayer.name ?: offlinePlayer.uniqueId.toString())
                             success(" wurde von der Whitelist entfernt.")
                         }
