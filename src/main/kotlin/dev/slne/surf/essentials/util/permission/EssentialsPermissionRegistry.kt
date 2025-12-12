@@ -108,4 +108,6 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val WORLD_COMMAND_LIST = create("$PREFIX.world.command.list")
     val WORLD_COMMAND_JOIN = create("$PREFIX.world.command.join")
     val WORLD_BYPASS = create("$PREFIX.world.bypass")
+    val PING_COMMAND = create("$PREFIX.ping.command")
+    val PING_COMMAND_OTHER = create("$PREFIX.ping.command.other")
 }
