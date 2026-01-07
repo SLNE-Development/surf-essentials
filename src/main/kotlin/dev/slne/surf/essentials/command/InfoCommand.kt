@@ -21,7 +21,7 @@ fun infoCommand() = commandTree("pinfo") {
 
             val name = player.name
             val uuid = player.uniqueId.toString()
-            val ip = "${player.address.address.hostAddress}:${player.address.port}"
+            val ip = "${player.address?.address?.hostAddress}:${player.address?.port}"
             val host =
                 "${player.virtualHost?.hostName ?: "Unbekannt"}: ${player.virtualHost?.port ?: "Unbekannt"}"
             val client = player.clientBrandName

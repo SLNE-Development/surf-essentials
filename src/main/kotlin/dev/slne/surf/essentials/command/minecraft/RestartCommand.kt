@@ -17,6 +17,7 @@ import dev.slne.surf.surfapi.core.api.messages.adventure.sound
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import org.bukkit.Bukkit
 import org.bukkit.Sound
+import org.bukkit.event.player.PlayerKickEvent
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 
@@ -61,6 +62,12 @@ fun restartCommand() = commandTree("restart") {
             success(" startet den Server neu...")
         }, EssentialsPermissionRegistry.RESTART_NOTIFY)
 
+        forEachPlayer {
+            it.kick(buildText {
+                error("Der Server wird neugestartet...")
+            }, PlayerKickEvent.Cause.RESTART_COMMAND)
+        }
+
         Bukkit.shutdown()
     }
 
@@ -87,6 +94,12 @@ fun restartCommand() = commandTree("restart") {
                         variableValue("jetzt")
                         success(" neu gestartet...")
                     })
+
+                    forEachPlayer {
+                        it.kick(buildText {
+                            error("Der Server wird neugestartet...")
+                        }, PlayerKickEvent.Cause.RESTART_COMMAND)
+                    }
 
                     Bukkit.shutdown()
                     return@runAtFixedRate
@@ -142,6 +155,13 @@ fun restartCommand() = commandTree("restart") {
                             variableValue("jetzt")
                             success(" neu gestartet...")
                         })
+
+                        forEachPlayer {
+                            it.kick(buildText {
+                                error("Der Server wird neugestartet...")
+                            }, PlayerKickEvent.Cause.RESTART_COMMAND)
+                        }
+
                         Bukkit.shutdown()
                         return@runAtFixedRate
                     }
