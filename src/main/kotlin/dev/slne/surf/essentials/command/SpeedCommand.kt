@@ -15,7 +15,7 @@ fun speedCommand() = commandTree("speed") {
         player.flySpeed = DEFAULT_SPEED_FLY
 
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Deine Geh- und Fluggeschwindigkeit wurde zurückgesetzt.")
         }
     }
@@ -26,7 +26,7 @@ fun speedCommand() = commandTree("speed") {
 
             if (speed !in 0.0..10.0) {
                 player.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Die Geschwindigkeit muss zwischen 0 und 10 liegen.")
                 }
                 return@playerExecutor
@@ -36,7 +36,7 @@ fun speedCommand() = commandTree("speed") {
             player.flySpeed = (speed.toFloat() / 10).coerceIn(0.0f, 1.0f)
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Deine Geh- und Fluggeschwindigkeit wurde auf ")
                 variableValue(speed.toString())
                 success(" gesetzt.")
@@ -50,7 +50,7 @@ fun speedCommand() = commandTree("speed") {
             player.walkSpeed = DEFAULT_SPEED_WALK
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Deine Gehgeschwindigkeit wurde zurückgesetzt.")
             }
         }
@@ -60,7 +60,7 @@ fun speedCommand() = commandTree("speed") {
 
                 if (speed !in 0.0..10.0) {
                     player.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Die Geschwindigkeit muss zwischen 0 und 10 liegen.")
                     }
                     return@playerExecutor
@@ -69,7 +69,7 @@ fun speedCommand() = commandTree("speed") {
                 player.walkSpeed = (speed.toFloat() / 10).coerceIn(0.0f, 1.0f)
 
                 player.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Deine Gehgeschwindigkeit wurde auf ")
                     variableValue(speed.toString())
                     success(" gesetzt.")
@@ -84,7 +84,7 @@ fun speedCommand() = commandTree("speed") {
 
                     if (speed !in 0.0..10.0) {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Die Geschwindigkeit muss zwischen 0 und 10 liegen.")
                         }
                         return@anyExecutor
@@ -93,7 +93,7 @@ fun speedCommand() = commandTree("speed") {
                     player.walkSpeed = (speed.toFloat() / 10).coerceIn(0.0f, 1.0f)
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du hast die Gehgeschwindigkeit von ")
                         variableValue(player.name)
                         success(" auf ")
@@ -111,7 +111,7 @@ fun speedCommand() = commandTree("speed") {
             player.flySpeed = DEFAULT_SPEED_FLY
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Deine Fluggeschwindigkeit wurde zurückgesetzt.")
             }
         }
@@ -121,7 +121,7 @@ fun speedCommand() = commandTree("speed") {
 
                 if (speed !in 0.0..10.0) {
                     player.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Die Geschwindigkeit muss zwischen 0 und 10 liegen.")
                     }
                     return@playerExecutor
@@ -130,7 +130,7 @@ fun speedCommand() = commandTree("speed") {
                 player.flySpeed = (speed.toFloat() / 10).coerceIn(0.0f, 1.0f)
 
                 player.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Deine Fluggeschwindigkeit wurde auf ")
                     variableValue(speed.toString())
                     success(" gesetzt.")
@@ -145,7 +145,7 @@ fun speedCommand() = commandTree("speed") {
 
                     if (speed !in 0.0..10.0) {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Die Geschwindigkeit muss zwischen 0 und 10 liegen.")
                         }
                         return@anyExecutor
@@ -154,7 +154,7 @@ fun speedCommand() = commandTree("speed") {
                     player.flySpeed = (speed.toFloat() / 10).coerceIn(0.0f, 1.0f)
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du hast die Fluggeschwindigkeit von ")
                         variableValue(player.name)
                         success(" auf ")

@@ -14,7 +14,7 @@ class WorldEnvironmentArgument(nodeName: String) :
         World.Environment.entries.firstOrNull { it.name == info.input.uppercase() }
             ?: throw CustomArgumentException.fromAdventureComponent {
                 buildText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Das Welt-Umfeld wurde nicht gefunden.")
                 }
             }

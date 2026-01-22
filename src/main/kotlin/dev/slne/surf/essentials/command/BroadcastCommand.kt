@@ -19,7 +19,7 @@ fun broadcastCommand() = commandTree("broadcast") {
                 server.broadcast(component)
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Die Nachricht wurde an alle Spieler gesendet.")
                 }
             }
@@ -35,7 +35,7 @@ fun broadcastCommand() = commandTree("broadcast") {
                 forEachPlayer { it.sendActionBar(component) }
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Die Nachricht wurde an alle Spieler gesendet.")
                 }
             }
@@ -69,7 +69,7 @@ fun broadcastCommand() = commandTree("broadcast") {
                     }
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Die Nachricht wurde an alle Spieler gesendet.")
                     }
                 }

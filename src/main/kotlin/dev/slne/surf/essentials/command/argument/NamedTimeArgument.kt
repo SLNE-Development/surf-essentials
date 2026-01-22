@@ -14,7 +14,7 @@ class NamedTimeArgument(nodeName: String) :
         NamedTime.entries.find { it.name.equals(info.input, ignoreCase = true) }
             ?: throw CustomArgumentException.fromAdventureComponent {
                 buildText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Die Zeit wurde nicht gefunden.")
                 }
             }

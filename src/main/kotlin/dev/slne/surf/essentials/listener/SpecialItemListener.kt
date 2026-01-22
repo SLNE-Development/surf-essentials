@@ -64,7 +64,7 @@ object SpecialItemListener : Listener {
 
         forEachPlayer {
             it.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 variableValue(player.name)
                 success(" hat ")
 

@@ -11,20 +11,20 @@ fun backCommand() = commandTree("back") {
     playerExecutor { player, _ ->
         val lastLocation = lastLocationService.getLatestLocation(player.uniqueId) ?: run {
             player.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Du besitzt keinen letzten Standort.")
             }
             return@playerExecutor
         }
 
         player.sendText {
-            appendPrefix()
+            appendInfoPrefix()
             info("Du wirst zu deinem letzten Standort teleportiert...")
         }
 
         player.teleportAsync(lastLocation).thenRun {
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du wurdest zu deinem letzten Standort teleportiert.")
             }
         }

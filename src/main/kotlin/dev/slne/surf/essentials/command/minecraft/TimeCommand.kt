@@ -17,7 +17,7 @@ fun timeCommand() = commandTree("time") {
             val time = executor.world.fullTime / 24000L % Int.MAX_VALUE
 
             executor.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("Die")
                 appendSpace()
                 variableValue("Zeit")
@@ -37,7 +37,7 @@ fun timeCommand() = commandTree("time") {
                 val time = executor.world.fullTime / 24000L % Int.MAX_VALUE
 
                 executor.sendText {
-                    appendPrefix()
+                    appendInfoPrefix()
                     info("Die")
                     appendSpace()
                     variableValue("Zeit")
@@ -58,7 +58,7 @@ fun timeCommand() = commandTree("time") {
                 val time = executor.world.fullTime % 24000L
 
                 executor.sendText {
-                    appendPrefix()
+                    appendInfoPrefix()
                     info("Die")
                     appendSpace()
                     variableValue("Tageszeit")
@@ -79,7 +79,7 @@ fun timeCommand() = commandTree("time") {
                 val time = executor.world.gameTime
 
                 executor.sendText {
-                    appendPrefix()
+                    appendInfoPrefix()
                     info("Die")
                     appendSpace()
                     variableValue("Spielzeit")
@@ -106,7 +106,7 @@ fun timeCommand() = commandTree("time") {
                 }
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Die Zeit wurde auf")
                     appendSpace()
                     variableValue("$time Ticks")
@@ -135,7 +135,7 @@ fun timeCommand() = commandTree("time") {
 
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Die Zeit wurde auf")
                     appendSpace()
                     variableValue(namedTime.timeName)
@@ -162,7 +162,7 @@ fun timeCommand() = commandTree("time") {
                 }
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Die Zeit wurde um")
                     appendSpace()
                     variableValue("$time Ticks")

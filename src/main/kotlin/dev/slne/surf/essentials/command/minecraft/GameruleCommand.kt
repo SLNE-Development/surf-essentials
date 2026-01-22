@@ -17,7 +17,7 @@ fun gameRuleCommand() = commandTree("gamerule") {
             val value = player.world.getGameRuleValue(gamerule)
 
             player.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("Die Spielregel ")
                 translatable(gamerule.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
                 info(" ist aktuell auf ")
@@ -39,7 +39,7 @@ fun gameRuleCommand() = commandTree("gamerule") {
                     else -> null
                 } ?: run {
                     executor.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Bitte gebe einen gültigen Wert für die Spielregel an.")
                     }
                     return@anyExecutor
@@ -48,7 +48,7 @@ fun gameRuleCommand() = commandTree("gamerule") {
                 executor.server.worlds.forEach { it.setGameRule(gamerule, parsedValue) }
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Die Spielregel ")
                     translatable(gamerule.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
                     success(" wurde auf ")
@@ -69,7 +69,7 @@ fun gameRuleCommand() = commandTree("gamerule") {
                         else -> null
                     } ?: run {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Bitte gebe einen gültigen Wert für die Spielregel an.")
                         }
                         return@anyExecutor
@@ -79,7 +79,7 @@ fun gameRuleCommand() = commandTree("gamerule") {
                     world.setGameRule(gamerule, parsedValue)
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Die Spielregel ")
                         translatable(gamerule.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
                         success(" wurde auf ")

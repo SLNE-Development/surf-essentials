@@ -14,7 +14,7 @@ object CommandExecutionListener : Listener {
         when (command.split(" ").first().lowercase().replace("/", "")) {
             "kick", "ban", "pardon", "ban-ip", "pardon-ip", "fill", "fillbiome", "setblock", "clone" -> {
                 event.player.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Dieser Befehl wurde deaktiviert. Möchtest du ihn wirklich ausführen? ")
                     spacer("[")
                     success("Trotzdem ausführen")

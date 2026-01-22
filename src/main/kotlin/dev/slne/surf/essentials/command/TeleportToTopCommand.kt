@@ -13,7 +13,7 @@ fun teleportToTopCommand() = commandTree("teleporttop") {
             player.world.getHighestBlockAt(player.location).location.clone().add(0.0, 1.25, 0.0)
         )
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du wurdest zum höchsten Block teleportiert.")
         }
     }
@@ -26,13 +26,13 @@ fun teleportToTopCommand() = commandTree("teleporttop") {
             )
 
             executor.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 variableValue(player.name)
                 success(" wurde zum höchsten Block teleportiert.")
             }
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du wurdest zum höchsten Block teleportiert.")
             }
         }

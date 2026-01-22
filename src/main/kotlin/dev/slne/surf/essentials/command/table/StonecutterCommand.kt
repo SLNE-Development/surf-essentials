@@ -12,7 +12,7 @@ fun stoneCutterCommand() = commandTree("stonecutter") {
     playerExecutor { player, _ ->
         player.openStonecutter(null, true)
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du hast eine Steinschneidemaschine geöffnet.")
         }
     }

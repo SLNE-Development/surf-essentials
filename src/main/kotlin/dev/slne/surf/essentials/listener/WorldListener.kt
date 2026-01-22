@@ -19,7 +19,7 @@ object WorldListener : Listener {
             if (!player.hasPermission(EssentialsPermissionRegistry.WORLD_BYPASS)) {
                 event.cancel()
                 player.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
 
                     when (world.environment) {
                         World.Environment.NETHER -> error("Der Nether ist zurzeit deaktiviert.")
@@ -29,7 +29,7 @@ object WorldListener : Listener {
                 }
             } else {
                 player.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Du hast die Portal-Sperre umgangen.")
                 }
             }

@@ -14,7 +14,7 @@ class GameModeArgument(nodeName: String) :
         getGameMode(info.input.lowercase())
             ?: throw CustomArgumentException.fromAdventureComponent {
                 buildText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Der Spielmodus wurde nicht gefunden.")
                 }
             }

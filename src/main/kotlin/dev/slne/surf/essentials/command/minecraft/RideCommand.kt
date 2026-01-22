@@ -13,7 +13,7 @@ fun rideCommand() = commandTree("ride") {
             target.addPassenger(player)
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du sitzt nun auf ")
                 variableValue(target.name)
                 success(".")
@@ -28,7 +28,7 @@ fun rideCommand() = commandTree("ride") {
 
                     if (target.uniqueId == vehicle.uniqueId) {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Du kannst ein Entity nicht auf sich selbst setzen.")
                         }
                         return@anyExecutor
@@ -38,7 +38,7 @@ fun rideCommand() = commandTree("ride") {
 
                     if (result) {
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Du hast ")
                             variableValue(target.name)
                             success(" auf ")
@@ -47,7 +47,7 @@ fun rideCommand() = commandTree("ride") {
                         }
                     } else {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("${target.name} kann nicht auf ${vehicle.name} gesetzt werden.")
                         }
                     }
@@ -62,7 +62,7 @@ fun rideCommand() = commandTree("ride") {
                 target.vehicle?.removePassenger(target)
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     variableValue(target.name)
                     success(" wurde abgesetzt.")
                 }

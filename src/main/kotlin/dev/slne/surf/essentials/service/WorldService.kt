@@ -31,7 +31,7 @@ class WorldService {
     ) {
         if (Bukkit.getServer().isFolia()) {
             sender.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Das Erstellen von Welten wird auf Folia-Servern nicht unterstützt.")
             }
             return
@@ -39,7 +39,7 @@ class WorldService {
 
         if (Bukkit.getWorld(name) != null) {
             sender.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Die Welt existiert bereits.")
             }
             return
@@ -54,20 +54,20 @@ class WorldService {
         seed?.let { creator.seed(it) }
 
         sender.sendText {
-            appendPrefix()
+            appendInfoPrefix()
             info("Die Welt wird erstellt...")
         }
 
         val world = creator.createWorld() ?: run {
             sender.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Die Welt konnte nicht erstellt werden.")
             }
             return
         }
 
         sender.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Die Welt ")
             variableValue(world.name)
             success(" wurde erstellt.")
@@ -77,7 +77,7 @@ class WorldService {
     fun load(sender: CommandSender, name: String) {
         if (Bukkit.getServer().isFolia()) {
             sender.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Das Laden von Welten wird auf Folia-Servern nicht unterstützt.")
             }
             return
@@ -86,7 +86,7 @@ class WorldService {
         val file = Bukkit.getWorldContainer().resolve(name)
         if (!file.exists() || !file.isDirectory) {
             sender.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Die Welt existiert nicht.")
             }
             return
@@ -94,27 +94,27 @@ class WorldService {
 
         if (Bukkit.getWorld(name) != null) {
             sender.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Die Welt ist bereits geladen.")
             }
             return
         }
 
         sender.sendText {
-            appendPrefix()
+            appendInfoPrefix()
             info("Die Welt wird geladen...")
         }
 
         val world = WorldCreator(name).createWorld() ?: run {
             sender.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Die Welt konnte nicht geladen werden.")
             }
             return
         }
 
         sender.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Die Welt ")
             variableValue(world.name)
             success(" wurde geladen.")
@@ -124,7 +124,7 @@ class WorldService {
     fun unload(sender: CommandSender, world: World) {
         if (Bukkit.getServer().isFolia()) {
             sender.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Das Entladen von Welten wird auf Folia-Servern nicht unterstützt.")
             }
             return
@@ -132,7 +132,7 @@ class WorldService {
 
         val overworldSpawn = Bukkit.getWorlds().firstOrNull()?.spawnLocation ?: run {
             sender.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Es gibt keine andere Welt, in die Spieler teleportiert werden können.")
             }
             return
@@ -141,7 +141,7 @@ class WorldService {
         val futures = mutableListOf<CompletableFuture<Boolean>>()
 
         sender.sendText {
-            appendPrefix()
+            appendInfoPrefix()
             info("Teleporiere Spieler aus der Welt...")
         }
 
@@ -150,21 +150,21 @@ class WorldService {
         }
 
         sender.sendText {
-            appendPrefix()
+            appendInfoPrefix()
             info("Die Welt wird entladen...")
         }
 
         CompletableFuture.allOf(*futures.toTypedArray()).thenRun {
             if (!Bukkit.unloadWorld(world, true)) {
                 sender.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Die Welt konnte nicht entladen werden.")
                 }
                 return@thenRun
             }
 
             sender.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Die Welt ")
                 variableValue(world.name)
                 success(" wurde entladen.")
@@ -175,7 +175,7 @@ class WorldService {
     fun delete(sender: CommandSender, world: World) {
         if (Bukkit.getServer().isFolia()) {
             sender.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Das Löschen von Welten wird auf Folia-Servern nicht unterstützt.")
             }
             return
@@ -183,7 +183,7 @@ class WorldService {
 
         val overworldSpawn = Bukkit.getWorlds().firstOrNull()?.spawnLocation ?: run {
             sender.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Es gibt keine andere Welt, in die Spieler teleportiert werden können.")
             }
             return
@@ -199,7 +199,7 @@ class WorldService {
             if (Bukkit.getWorld(world.name) != null) {
                 if (!Bukkit.unloadWorld(world, true)) {
                     sender.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Die Welt konnte nicht entladen werden.")
                     }
                     return@thenRun
@@ -209,7 +209,7 @@ class WorldService {
             val file = Bukkit.getWorldContainer().resolve(world.name)
             if (!file.exists() || !file.isDirectory) {
                 sender.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Die Welt existiert nicht.")
                 }
                 return@thenRun
@@ -218,7 +218,7 @@ class WorldService {
             file.deleteRecursively()
 
             sender.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Die Welt ")
                 variableValue(world.name)
                 success(" wurde gelöscht.")

@@ -14,7 +14,7 @@ fun killCommand() = commandTree("kill") {
         player.sendHealthUpdate()
 
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du wurdest getötet.")
         }
     }
@@ -30,7 +30,7 @@ fun killCommand() = commandTree("kill") {
                     if (it is Player) {
                         it.sendHealthUpdate()
                         it.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Du wurdest von ")
                             variableValue(executor.name)
                             success(" getötet.")
@@ -42,7 +42,7 @@ fun killCommand() = commandTree("kill") {
             }
 
             executor.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du hast ")
                 variableValue(targets.size.toString())
                 success(" Entität(en) getötet.")

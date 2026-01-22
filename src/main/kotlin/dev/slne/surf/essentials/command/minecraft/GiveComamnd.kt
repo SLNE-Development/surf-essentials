@@ -17,7 +17,7 @@ fun giveCommand() = commandTree("give") {
                 players.forEach { it.inventory.addItem(itemStack) }
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Du hast ")
                     variableValue(itemStack.amount.toString())
                     success("x ")
@@ -29,7 +29,7 @@ fun giveCommand() = commandTree("give") {
 
                 players.forEach { player ->
                     player.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du hast ")
                         variableValue(itemStack.amount.toString())
                         success("x ")

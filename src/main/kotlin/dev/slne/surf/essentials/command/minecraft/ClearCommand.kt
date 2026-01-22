@@ -15,7 +15,7 @@ fun clearCommand() = commandTree("clear") {
     playerExecutor { player, _ ->
         if (player.inventory.isEmpty) {
             player.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Dein Inventar ist bereits leer.")
             }
             return@playerExecutor
@@ -24,7 +24,7 @@ fun clearCommand() = commandTree("clear") {
         player.inventory.clear()
 
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Dein Inventar wurde geleert.")
         }
     }
@@ -43,7 +43,7 @@ fun clearCommand() = commandTree("clear") {
                     player.inventory.clear()
                     clearedPlayers.add(player)
                     player.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Dein Inventar wurde geleert.")
                     }
                 }
@@ -51,7 +51,7 @@ fun clearCommand() = commandTree("clear") {
 
             if (clearedPlayers.isNotEmpty()) {
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Das Inventar von ")
                     variableValue(clearedPlayers.joinToString(", ") { it.name })
                     success(" wurde geleert.")
@@ -60,7 +60,7 @@ fun clearCommand() = commandTree("clear") {
 
             if (alreadyEmptyPlayers.isNotEmpty()) {
                 executor.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Das Inventar von ")
                     variableValue(alreadyEmptyPlayers.joinToString(", ") { it.name })
                     error(" war bereits leer.")
@@ -87,7 +87,7 @@ fun clearCommand() = commandTree("clear") {
                         player.inventory.remove(type.type)
                         clearedPlayers[player] = amount
                         player.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Es wurden ")
                             variableValue(amount.toString())
                             success(" Items aus deinem Inventar entfernt.")
@@ -97,14 +97,14 @@ fun clearCommand() = commandTree("clear") {
 
                 if (clearedPlayers.isNotEmpty()) {
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Es wurden ${clearedPlayers.values.sum()} Items aus ${clearedPlayers.size} Inventaren entfernt.")
                     }
                 }
 
                 if (notFoundPlayers.isNotEmpty()) {
                     executor.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("In den Inventaren von ")
                         variableValue(notFoundPlayers.joinToString(", ") { it.name })
                         error(" wurden keine  ")

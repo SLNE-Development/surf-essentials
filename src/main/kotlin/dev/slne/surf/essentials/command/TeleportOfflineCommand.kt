@@ -19,7 +19,7 @@ fun teleportOfflineCommand() = commandTree("teleportoffline") {
             val target: String by args
 
             player.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("Teleportiere zu ")
                 variableValue(target)
                 spacer(" (offline)")
@@ -30,7 +30,7 @@ fun teleportOfflineCommand() = commandTree("teleportoffline") {
                 val offlinePlayer = Bukkit.getOfflinePlayer(target)
                 val offlineLocation = offlinePlayer.getLatestLocation() ?: run {
                     player.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Der Spieler wurde nicht gefunden.")
                     }
                     return@launch
@@ -39,7 +39,7 @@ fun teleportOfflineCommand() = commandTree("teleportoffline") {
                 player.teleportAsync(offlineLocation)
 
                 player.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Du wurdest zu ")
                     variableValue(target)
                     spacer(" (offline)")
@@ -55,7 +55,7 @@ fun teleportOfflineCommand() = commandTree("teleportoffline") {
                 val target: String by args
 
                 executor.sendText {
-                    appendPrefix()
+                    appendInfoPrefix()
                     info("Teleportiere ")
                     variableValue(target)
                     spacer(" (offline)")
@@ -71,7 +71,7 @@ fun teleportOfflineCommand() = commandTree("teleportoffline") {
                     offlinePlayer.setOfflineLocation(onlineLocation)
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du hast ")
                         variableValue(target)
                         spacer(" (offline)")
@@ -90,7 +90,7 @@ fun teleportOfflineCommand() = commandTree("teleportoffline") {
                 val location: Location by args
 
                 executor.sendText {
-                    appendPrefix()
+                    appendInfoPrefix()
                     info("Teleportiere ")
                     variableValue(target)
                     spacer(" (offline)")
@@ -104,7 +104,7 @@ fun teleportOfflineCommand() = commandTree("teleportoffline") {
                     offlinePlayer.setOfflineLocation(location)
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du hast ")
                         variableValue(target)
                         spacer(" (offline)")

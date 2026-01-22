@@ -14,7 +14,7 @@ class GameruleArgument(nodeName: String) :
         GameRuleWrapper.getByName(info.input)
             ?: throw CustomArgumentException.fromAdventureComponent {
                 buildText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Die Spielregel wurde nicht gefunden.")
                 }
             }

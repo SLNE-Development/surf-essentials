@@ -34,7 +34,7 @@ fun enchantmentCommand() = commandTree("enchantment") {
 
                     if (!successfulPlayers.isEmpty()) {
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Du hast ")
                             append(enchantment.displayName(enchantmentLevel))
                             level?.let {
@@ -47,7 +47,7 @@ fun enchantmentCommand() = commandTree("enchantment") {
                         }
                     } else {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Es konnte keinem Spieler die Verzauberung vergeben werden.")
                         }
                     }

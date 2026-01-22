@@ -16,7 +16,7 @@ fun summonCommand() = commandTree("summon") {
 
             player.location.world.spawnEntity(player.location, entityType)
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du hast einen ")
                 translatable(entityType.translationKey()).color(Colors.VARIABLE_VALUE)
                 success(" beschworen.")
@@ -33,7 +33,7 @@ fun summonCommand() = commandTree("summon") {
                 }
 
                 player.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Du hast ")
                     variableValue(amount)
                     success(" ")
@@ -53,7 +53,7 @@ fun summonCommand() = commandTree("summon") {
                     }
 
                     player.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du hast ")
                         variableValue(amount)
                         success(" ")

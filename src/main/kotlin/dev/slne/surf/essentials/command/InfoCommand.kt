@@ -37,7 +37,7 @@ fun infoCommand() = commandTree("pinfo") {
 
             executor.sendText {
                 appendNewline()
-                appendPrefix()
+                appendInfoPrefix()
                 info("Spielerinformationen für ")
                 variableValue(player.name.toSmallCaps())
 

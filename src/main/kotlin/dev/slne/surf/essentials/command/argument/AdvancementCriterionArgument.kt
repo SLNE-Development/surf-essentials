@@ -16,7 +16,7 @@ class AdvancementCriterionArgument(nodeName: String) :
             } else {
                 throw CustomArgumentException.fromAdventureComponent {
                     buildText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Die Bedingung '$info.input' existiert nicht im Fortschritt für das Advancement ${it.key}.")
                     }
                 }

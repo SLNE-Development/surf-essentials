@@ -12,7 +12,7 @@ fun smithingTableCommand() = commandTree("smithingTable") {
     playerExecutor { player, _ ->
         player.openSmithingTable(null, true)
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du hast einen Schmiedetisch geöffnet.")
         }
     }
