@@ -13,7 +13,7 @@ fun repairCommand() = commandTree("repair") {
 
         if (itemInHand.isEmpty) {
             player.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Du musst ein Item in der Hand halten.")
             }
             return@playerExecutor
@@ -22,7 +22,7 @@ fun repairCommand() = commandTree("repair") {
         itemInHand.editMeta(Damageable::class.java) {
             if (!it.hasDamage()) {
                 player.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Das Item in deiner Hand ist nicht beschädigt.")
                 }
                 return@editMeta
@@ -31,7 +31,7 @@ fun repairCommand() = commandTree("repair") {
             it.damage = 0
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Das Item wurde repariert.")
             }
         }
@@ -45,7 +45,7 @@ fun repairCommand() = commandTree("repair") {
 
             if (itemInHand.isEmpty) {
                 executor.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Der Spieler muss ein Item in der Hand halten.")
                 }
                 return@anyExecutor
@@ -54,7 +54,7 @@ fun repairCommand() = commandTree("repair") {
             itemInHand.editMeta(Damageable::class.java) {
                 if (!it.hasDamage()) {
                     executor.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Das Item in der Hand des Spielers ist nicht beschädigt.")
                     }
                     return@editMeta
@@ -63,12 +63,12 @@ fun repairCommand() = commandTree("repair") {
                 it.damage = 0
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Das Item wurde repariert.")
                 }
 
                 player.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Dein Item wurde repariert.")
                 }
             }

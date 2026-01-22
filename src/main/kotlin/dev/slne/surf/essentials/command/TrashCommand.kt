@@ -19,7 +19,7 @@ fun trashCommand() = commandTree("trash") {
         }))
 
         executor.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du hast deinen Mülleimer geöffnet.")
         }
 
@@ -38,14 +38,14 @@ fun trashCommand() = commandTree("trash") {
             }))
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Dein Mülleimer wurde von ")
                 variableValue(executor.name)
                 success(" geöffnet.")
             }
 
             executor.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du hast den Mülleimer für ")
                 variableValue(player.name)
                 success(" geöffnet.")

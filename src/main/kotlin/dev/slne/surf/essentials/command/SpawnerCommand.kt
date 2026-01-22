@@ -17,14 +17,14 @@ fun spawnerCommand() = commandTree("spawner") {
                 val block: Location by arguments
                 val spawner = block.block.state as? CreatureSpawner ?: run {
                     player.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Du musst einen Spawner auswählen.")
                     }
                     return@playerExecutor
                 }
 
                 player.sendText {
-                    appendPrefix()
+                    appendInfoPrefix()
                     info("Der Spawner versucht alle ")
                     variableValue(spawner.delay)
                     info(" Ticks bis zu ")
@@ -55,7 +55,7 @@ fun spawnerCommand() = commandTree("spawner") {
 
                             val spawner = block.block.state as? CreatureSpawner ?: run {
                                 executor.sendText {
-                                    appendPrefix()
+                                    appendErrorPrefix()
                                     error("Du musst einen Spawner auswählen.")
                                 }
                                 return@anyExecutor
@@ -63,7 +63,7 @@ fun spawnerCommand() = commandTree("spawner") {
 
                             if (minTicks < 1 || maxTicks < 1 || minTicks > maxTicks) {
                                 executor.sendText {
-                                    appendPrefix()
+                                    appendErrorPrefix()
                                     error("Die minimale und maximale Tick-Anzahl muss mindestens 1 sein und die minimale Anzahl darf die maximale nicht übersteigen.")
                                 }
                                 return@anyExecutor
@@ -74,7 +74,7 @@ fun spawnerCommand() = commandTree("spawner") {
                             spawner.update()
 
                             executor.sendText {
-                                appendPrefix()
+                                appendSuccessPrefix()
                                 success("Der Spawner versucht nun alle ")
                                 variableValue("$minTicks bis $maxTicks Ticks")
                                 success(" neue Monster zu spawnen.")
@@ -92,7 +92,7 @@ fun spawnerCommand() = commandTree("spawner") {
 
                         val spawner = block.block.state as? CreatureSpawner ?: run {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Du musst einen Spawner auswählen.")
                             }
                             return@anyExecutor
@@ -100,7 +100,7 @@ fun spawnerCommand() = commandTree("spawner") {
 
                         if (amount < 1) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Die Anzahl der zu spawnenden Entitäten muss mindestens 1 sein.")
                             }
                             return@anyExecutor
@@ -110,7 +110,7 @@ fun spawnerCommand() = commandTree("spawner") {
                         spawner.update()
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Der Spawner spawnt nun ")
                             variableValue("$amount Entitäten")
                             success(" pro Spawn-Versuch.")
@@ -127,7 +127,7 @@ fun spawnerCommand() = commandTree("spawner") {
 
                         val spawner = block.block.state as? CreatureSpawner ?: run {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Du musst einen Spawner auswählen.")
                             }
                             return@anyExecutor
@@ -137,7 +137,7 @@ fun spawnerCommand() = commandTree("spawner") {
                         spawner.update()
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Der Spawner spawnt nun ")
                             translatable(entityType.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
                             success(".")
@@ -156,7 +156,7 @@ fun spawnerCommand() = commandTree("spawner") {
 
                             val spawner = block.block.state as? CreatureSpawner ?: run {
                                 executor.sendText {
-                                    appendPrefix()
+                                    appendErrorPrefix()
                                     error("Du musst einen Spawner auswählen.")
                                 }
                                 return@anyExecutor
@@ -164,7 +164,7 @@ fun spawnerCommand() = commandTree("spawner") {
 
                             if (spawnRange < 1 || requiredPlayerRange < 1) {
                                 executor.sendText {
-                                    appendPrefix()
+                                    appendErrorPrefix()
                                     error("Die Reichweiten müssen mindestens 1 Block betragen.")
                                 }
                                 return@anyExecutor
@@ -175,7 +175,7 @@ fun spawnerCommand() = commandTree("spawner") {
                             spawner.update()
 
                             executor.sendText {
-                                appendPrefix()
+                                appendSuccessPrefix()
                                 success("Der Spawner spawnt nun Entitäten in einem Radius von ")
                                 variableValue("$spawnRange Blöcken")
                                 success(" und benötigt einen Spieler in einem Radius von ")

@@ -13,7 +13,7 @@ fun makeSpecialCommand() = commandTree("makespecial") {
 
         if (itemInHand.type.isAir) {
             player.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Du musst ein Item in der Hand halten.")
             }
             return@playerExecutor
@@ -23,7 +23,7 @@ fun makeSpecialCommand() = commandTree("makespecial") {
         specialItemService.unMarkAsAnnounced(itemInHand)
 
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Das Item wurde als Spezialitem markiert.")
         }
     }

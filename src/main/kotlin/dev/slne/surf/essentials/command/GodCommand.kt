@@ -11,7 +11,7 @@ fun godCommand() = commandTree("god") {
         player.isInvulnerable = !player.isInvulnerable
 
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du bist nun ")
 
             if (player.isInvulnerable) {
@@ -30,7 +30,7 @@ fun godCommand() = commandTree("god") {
             player.isInvulnerable = !player.isInvulnerable
 
             executor.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 variableValue(player.name)
                 success(" ist nun ")
 
@@ -42,7 +42,7 @@ fun godCommand() = commandTree("god") {
             }
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du bist nun ")
 
                 if (player.isInvulnerable) {

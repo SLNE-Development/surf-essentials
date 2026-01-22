@@ -14,7 +14,7 @@ class DifficultyArgument(nodeName: String) :
         Difficulty.entries.firstOrNull { it.name == info.input.uppercase() }
             ?: throw CustomArgumentException.fromAdventureComponent {
                 buildText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Der Schwierigkeitsgrad wurde nicht gefunden.")
                 }
             }

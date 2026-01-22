@@ -14,7 +14,7 @@ fun flyCommand() = commandTree("fly") {
 
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du kannst nun nicht mehr fliegen.")
             }
         } else {
@@ -22,7 +22,7 @@ fun flyCommand() = commandTree("fly") {
             player.isFlying = true
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du kannst nun fliegen.")
             }
         }
@@ -38,13 +38,13 @@ fun flyCommand() = commandTree("fly") {
 
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     variableValue(player.name)
                     success(" kann nun nicht mehr fliegen.")
                 }
 
                 player.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Du kannst nun nicht mehr fliegen.")
                 }
             } else {
@@ -52,13 +52,13 @@ fun flyCommand() = commandTree("fly") {
                 player.isFlying = true
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     variableValue(player.name)
                     success(" kann nun fliegen.")
                 }
 
                 player.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Du kannst nun fliegen.")
                 }
             }

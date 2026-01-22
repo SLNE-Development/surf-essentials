@@ -13,7 +13,7 @@ fun healCommand() = commandTree("heal") {
         player.fireTicks = 0
         player.foodLevel = 20
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du hast dich geheilt.")
         }
     }
@@ -26,13 +26,13 @@ fun healCommand() = commandTree("heal") {
             player.health = player.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
 
             executor.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 variableValue(player.name)
                 success(" wurde geheilt.")
             }
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du wurdest geheilt.")
             }
         }

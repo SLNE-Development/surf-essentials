@@ -16,7 +16,7 @@ fun setPlayerIdleTimeoutCommand() = commandTree("setidletimeout") {
 
             Bukkit.setIdleTimeout(minutes)
             executor.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Die Inaktivitätszeit wurde auf ")
                 variableValue("$minutes Minuten")
                 success(" gesetzt.")
