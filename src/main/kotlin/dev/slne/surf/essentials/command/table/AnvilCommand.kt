@@ -12,7 +12,7 @@ fun anvilCommand() = commandTree("anvil") {
     playerExecutor { player, _ ->
         player.openAnvil(null, true)
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du hast einen Amboss geöffnet.")
         }
     }

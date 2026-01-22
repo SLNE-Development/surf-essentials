@@ -14,7 +14,7 @@ class WorldsArgument(nodeName: String) :
     CustomArgument<World, String>(StringArgument(nodeName), { info ->
         Bukkit.getWorld(info.input) ?: throw CustomArgumentException.fromAdventureComponent {
             buildText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Die Welt wurde nicht gefunden.")
             }
         }

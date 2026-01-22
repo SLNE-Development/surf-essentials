@@ -13,7 +13,7 @@ fun workbenchCommand() = commandTree("workbench") {
     playerExecutor { player, _ ->
         player.openWorkbench(null, true)
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du hast eine Werkbank geöffnet.")
         }
     }

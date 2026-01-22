@@ -24,11 +24,11 @@ object UnknownCommandListener : Listener {
         }
 
         event.message(buildText {
-            appendPrefix()
+            appendErrorPrefix()
             translatable("command.unknown.command").color(Colors.ERROR)
 
             appendNewline {
-                appendPrefix()
+                appendErrorPrefix()
                 error(event.commandLine, TextDecoration.UNDERLINED)
             }
             clickSuggestsCommand("/${event.commandLine}")

@@ -14,7 +14,7 @@ class SoundSourceArgument(nodeName: String) :
         Sound.Source.entries.firstOrNull { it.name == info.input.uppercase() }
             ?: throw CustomArgumentException.fromAdventureComponent {
                 buildText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Die Soundquelle wurde nicht gefunden.")
                 }
             }

@@ -14,7 +14,7 @@ fun spectateCommand() = commandTree("spectate") {
     playerExecutor { player, _ ->
         val target = player.spectatorTarget ?: run {
             player.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Du beobachtest gerade keinen Spieler.")
             }
             return@playerExecutor
@@ -23,7 +23,7 @@ fun spectateCommand() = commandTree("spectate") {
         player.spectatorTarget = null
 
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du beobachtest nun nicht mehr ")
             variableValue(target.name)
             success(".")
@@ -38,7 +38,7 @@ fun spectateCommand() = commandTree("spectate") {
             player.spectatorTarget = user
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du beobachtest nun ")
                 variableValue(user.name)
                 success(".")
@@ -55,7 +55,7 @@ fun spectateCommand() = commandTree("spectate") {
                 user.spectatorTarget = target
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     variableValue(user.name)
                     success(" beobachtet nun ")
                     variableValue(target.name)
@@ -63,7 +63,7 @@ fun spectateCommand() = commandTree("spectate") {
                 }
 
                 user.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Du beobachtest nun ")
                     variableValue(target.name)
                     success(".")

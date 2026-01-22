@@ -12,7 +12,7 @@ fun loomCommand() = commandTree("loom") {
     playerExecutor { player, _ ->
         player.openLoom(null, true)
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du hast einen Webstuhl geöffnet.")
         }
     }

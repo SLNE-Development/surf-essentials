@@ -16,7 +16,7 @@ fun teleportCommand() = commandTree("teleport") {
             player.teleportAsync(target.location)
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du wurdest zu ")
                 variableValue(target.name)
                 success(" teleportiert.")
@@ -30,7 +30,7 @@ fun teleportCommand() = commandTree("teleport") {
             player.teleportAsync(location)
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du wurdest zu ")
                 variableValue("${location.blockX}, ${location.blockY}, ${location.blockZ}")
                 success(" teleportiert.")
@@ -48,7 +48,7 @@ fun teleportCommand() = commandTree("teleport") {
 
                 if (players.size == 1) {
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         variableValue(players.firstOrNull()?.name ?: "Unbekannt")
                         success(" wurde zu ")
                         variableValue(target.name)
@@ -56,7 +56,7 @@ fun teleportCommand() = commandTree("teleport") {
                     }
                 } else {
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         variableValue(players.size.toString())
                         success(" Spieler wurden zu ")
                         variableValue(target.name)
@@ -66,7 +66,7 @@ fun teleportCommand() = commandTree("teleport") {
 
                 players.forEach {
                     it.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du wurdest zu ")
                         variableValue(target.name)
                         success(" teleportiert.")
@@ -83,7 +83,7 @@ fun teleportCommand() = commandTree("teleport") {
 
                 if (players.size == 1) {
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         variableValue(players.firstOrNull()?.name ?: "Unbekannt")
                         success(" wurde zu ")
                         variableValue("${location.blockX}, ${location.blockY}, ${location.blockZ}")
@@ -91,7 +91,7 @@ fun teleportCommand() = commandTree("teleport") {
                     }
                 } else {
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         variableValue(players.size.toString())
                         success(" Spieler wurden zu ")
                         variableValue("${location.blockX}, ${location.blockY}, ${location.blockZ}")
@@ -101,7 +101,7 @@ fun teleportCommand() = commandTree("teleport") {
 
                 players.forEach {
                     it.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du wurdest zu ")
                         variableValue("${location.blockX}, ${location.blockY}, ${location.blockZ}")
                         success(" teleportiert.")

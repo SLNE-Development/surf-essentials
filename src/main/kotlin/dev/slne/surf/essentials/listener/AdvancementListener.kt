@@ -5,6 +5,7 @@ import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.advancement.AdvancementDisplay
 import org.bukkit.GameRule
+import org.bukkit.GameRules
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
@@ -19,7 +20,7 @@ object AdvancementListener : Listener {
             return
         }
 
-        if (player.world.getGameRuleValue(GameRule.ANNOUNCE_ADVANCEMENTS) == false) {
+        if (player.world.getGameRuleValue(GameRules.SHOW_ADVANCEMENT_MESSAGES) == false) {
             return
         }
 
@@ -30,7 +31,7 @@ object AdvancementListener : Listener {
         }
 
         event.message(buildText {
-            appendPrefix()
+            appendErrorPrefix()
             translatable(
                 translationKey,
                 player.displayName().colorIfAbsent(Colors.VARIABLE_VALUE),
