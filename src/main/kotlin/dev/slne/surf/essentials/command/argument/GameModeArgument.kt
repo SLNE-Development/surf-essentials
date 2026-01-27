@@ -11,20 +11,34 @@ import org.bukkit.command.CommandSender
 
 class GameModeArgument(nodeName: String) :
     CustomArgument<GameMode, String>(StringArgument(nodeName), { info ->
-        getGameMode(info.input.lowercase())
+        val gameMode = getGameMode(info.input.lowercase())
             ?: throw CustomArgumentException.fromAdventureComponent {
                 buildText {
                     appendErrorPrefix()
                     error("Der Spielmodus wurde nicht gefunden.")
                 }
             }
+
+        val permission = "surf.essentials.gameMode.${gameMode.name.lowercase()}"
+        val sender = info.sender
+
+        if (!sender.hasPermission(permission)) {
+            throw CustomArgumentException.fromAdventureComponent {
+                buildText {
+                    appendErrorPrefix()
+                    error("Dazu hast du keine Berechtigung.")
+                }
+            }
+        }
+
+        gameMode
     }) {
     init {
         this.replaceSuggestions(
-            ArgumentSuggestions.stringCollection<CommandSender> {
-                GameMode.entries.map {
-                    it.name.lowercase()
-                }
+            ArgumentSuggestions.stringCollection<CommandSender> { sender ->
+                GameMode.entries
+                    .filter { sender.sender.hasPermission("surf.essentials.gameMode.${it.name.lowercase()}") }
+                    .map { it.name.lowercase() }
             }
         )
     }
