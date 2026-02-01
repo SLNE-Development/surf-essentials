@@ -8,6 +8,14 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
 
+
+/**
+ * As of Minecraft 1.21.6, this is no longer possible. There is a PR to Paper to reintroduce this functionality.
+ *
+ * @see [Paper Issue #13489](https://github.com/PaperMC/Paper/issues/13489)
+ * @see [Paper PR #13507](https://github.com/PaperMC/Paper/pull/13507)
+ */
+
 object GameModeSwitcherCorrectionListener : Listener {
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
