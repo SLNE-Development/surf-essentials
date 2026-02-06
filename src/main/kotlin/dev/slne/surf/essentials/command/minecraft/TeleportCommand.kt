@@ -4,14 +4,15 @@ import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.Location
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 
 fun teleportCommand() = commandTree("teleport") {
     withPermission(EssentialsPermissionRegistry.TELEPORT_COMMAND)
     withAliases("tp")
-    entitySelectorArgumentOnePlayer("target") {
+    entitySelectorArgumentOneEntity("target") {
         playerExecutor { player, args ->
-            val target: Player by args
+            val target: Entity by args
 
             player.teleportAsync(target.location)
 
@@ -39,10 +40,10 @@ fun teleportCommand() = commandTree("teleport") {
     }
     entitySelectorArgumentManyPlayers("players") {
         withPermission(EssentialsPermissionRegistry.TELEPORT_COMMAND_OTHERS)
-        entitySelectorArgumentOnePlayer("target") {
+        entitySelectorArgumentOneEntity("target") {
             anyExecutor { executor, args ->
                 val players: Collection<Player> by args
-                val target: Player by args
+                val target: Entity by args
 
                 players.forEach { it.teleportAsync(target.location) }
 
