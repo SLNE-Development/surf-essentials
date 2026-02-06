@@ -157,10 +157,10 @@ fun timeCommand() = commandTree("time") {
                 val time: Int by args
 
                 Bukkit.getWorlds().forEach {
-                    if (time !in 100..24000) {
-                        it.fullTime += time
-                    } else {
-                        plugin.launch(plugin.globalRegionDispatcher) {
+                    plugin.launch(plugin.globalRegionDispatcher) {
+                        if (time !in 100..24000) {
+                            it.fullTime += time
+                        } else {
                             surfBukkitApi.skipTimeSmoothly(it, time.toLong())
                         }
                     }
