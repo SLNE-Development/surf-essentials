@@ -81,6 +81,26 @@ fun summonCommand() = commandTree("summon") {
                     }
                 }
             }
+
+            integerArgument("amount") {
+                playerExecutor { player, args ->
+                    val entityType: EntityType by args
+                    val location: Location by args
+                    val amount: Int by args
+
+                    repeat(amount) {
+                        location.world.spawnEntity(location, entityType)
+                    }
+
+                    player.sendText {
+                        appendSuccessPrefix()
+                        success("Du hast ")
+                        success("$amount ")
+                        translatable(entityType.translationKey()).color(Colors.VARIABLE_VALUE)
+                        success(" beschworen.")
+                    }
+                }
+            }
         }
     }
 }
