@@ -63,15 +63,6 @@ fun teleportCommand() = commandTree("teleport") {
                         success(" teleportiert.")
                     }
                 }
-
-                players.forEach {
-                    it.sendText {
-                        appendSuccessPrefix()
-                        success("Du wurdest zu ")
-                        variableValue(target.name)
-                        success(" teleportiert.")
-                    }
-                }
             }
         }
         locationArgument("location") {
