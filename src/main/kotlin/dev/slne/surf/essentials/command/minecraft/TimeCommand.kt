@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.command.minecraft
 
+import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.command.argument.namedTimeArgument
@@ -102,7 +103,9 @@ fun timeCommand() = commandTree("time") {
                 val time: Int by args
 
                 Bukkit.getWorlds().forEach {
-                    it.fullTime = time.toLong()
+                    plugin.launch(plugin.globalRegionDispatcher) {
+                        it.fullTime = time.toLong()
+                    }
                 }
 
                 executor.sendText {
@@ -130,7 +133,9 @@ fun timeCommand() = commandTree("time") {
                         (24000 - current) + target
                     }
 
-                    world.fullTime += diff
+                    plugin.launch(plugin.globalRegionDispatcher) {
+                        world.fullTime += diff
+                    }
                 }
 
 
@@ -152,10 +157,10 @@ fun timeCommand() = commandTree("time") {
                 val time: Int by args
 
                 Bukkit.getWorlds().forEach {
-                    if (time !in 100..24000) {
-                        it.fullTime += time
-                    } else {
-                        plugin.launch {
+                    plugin.launch(plugin.globalRegionDispatcher) {
+                        if (time !in 100..24000) {
+                            it.fullTime += time
+                        } else {
                             surfBukkitApi.skipTimeSmoothly(it, time.toLong())
                         }
                     }

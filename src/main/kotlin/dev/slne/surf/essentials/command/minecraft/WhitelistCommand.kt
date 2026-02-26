@@ -1,21 +1,21 @@
 package dev.slne.surf.essentials.command.minecraft
 
-import com.destroystokyo.paper.profile.PlayerProfile
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.arguments.AsyncPlayerProfileArgument
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
+import dev.slne.surf.surfapi.bukkit.api.command.executors.anyExecutorSuspend
+import dev.slne.surf.surfapi.bukkit.api.command.util.awaitAsyncPlayerProfile
+import dev.slne.surf.surfapi.bukkit.api.command.util.idOrThrow
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.CommonComponents
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import dev.slne.surf.surfapi.core.api.messages.pagination.Pagination
-import kotlinx.coroutines.future.await
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
-import java.util.concurrent.CompletableFuture
 
 fun whitelistCommand() = commandTree("whitelist") {
     withPermission(EssentialsPermissionRegistry.WHITELIST_COMMAND)
@@ -100,43 +100,26 @@ fun whitelistCommand() = commandTree("whitelist") {
     literalArgument("player") {
         literalArgument("add") {
             argument(AsyncPlayerProfileArgument("offlinePlayer")) {
-                anyExecutor { executor, args ->
-                    val offlinePlayers: CompletableFuture<List<PlayerProfile>> by args
+                anyExecutorSuspend { executor, args ->
+                    val profile = args.awaitAsyncPlayerProfile("offlinePlayer")
+                    val id = profile.idOrThrow()
+                    val offlinePlayer = Bukkit.getOfflinePlayer(id)
 
-                    plugin.launch {
-                        val profile = offlinePlayers.await().firstOrNull() ?: run {
-                            executor.sendText {
-                                appendErrorPrefix()
-                                error("Der Spieler wurde nicht gefunden.")
-                            }
-                            return@launch
-                        }
-
-                        val id = profile.id ?: run {
-                            executor.sendText {
-                                appendErrorPrefix()
-                                error("Der Spieler hat keine gültige UUID.")
-                            }
-                            return@launch
-                        }
-                        val offlinePlayer = Bukkit.getOfflinePlayer(id)
-
-                        if (offlinePlayer.isWhitelisted) {
-                            executor.sendText {
-                                appendErrorPrefix()
-                                error("Der Spieler ist bereits auf der Whitelist.")
-                            }
-                            return@launch
-                        }
-
-                        offlinePlayer.isWhitelisted = true
-
+                    if (offlinePlayer.isWhitelisted) {
                         executor.sendText {
-                            appendSuccessPrefix()
-                            success("Der Spieler ")
-                            variableValue(offlinePlayer.name ?: offlinePlayer.uniqueId.toString())
-                            success(" wurde zur Whitelist hinzugefügt.")
+                            appendErrorPrefix()
+                            error("Der Spieler ist bereits auf der Whitelist.")
                         }
+                        return@anyExecutorSuspend
+                    }
+
+                    offlinePlayer.isWhitelisted = true
+
+                    executor.sendText {
+                        appendSuccessPrefix()
+                        success("Der Spieler ")
+                        variableValue(offlinePlayer.name ?: offlinePlayer.uniqueId.toString())
+                        success(" wurde zur Whitelist hinzugefügt.")
                     }
                 }
             }
@@ -144,43 +127,26 @@ fun whitelistCommand() = commandTree("whitelist") {
 
         literalArgument("remove") {
             argument(AsyncPlayerProfileArgument("offlinePlayer")) {
-                anyExecutor { executor, args ->
-                    val offlinePlayers: CompletableFuture<List<PlayerProfile>> by args
+                anyExecutorSuspend { executor, args ->
+                    val profile = args.awaitAsyncPlayerProfile("offlinePlayer")
+                    val id = profile.idOrThrow()
+                    val offlinePlayer = Bukkit.getOfflinePlayer(id)
 
-                    plugin.launch {
-                        val profile = offlinePlayers.await().firstOrNull() ?: run {
-                            executor.sendText {
-                                appendErrorPrefix()
-                                error("Der Spieler wurde nicht gefunden.")
-                            }
-                            return@launch
-                        }
-
-                        val id = profile.id ?: run {
-                            executor.sendText {
-                                appendErrorPrefix()
-                                error("Der Spieler hat keine gültige UUID.")
-                            }
-                            return@launch
-                        }
-                        val offlinePlayer = Bukkit.getOfflinePlayer(id)
-
-                        if (!offlinePlayer.isWhitelisted) {
-                            executor.sendText {
-                                appendErrorPrefix()
-                                error("Der Spieler ist nicht auf der Whitelist.")
-                            }
-                            return@launch
-                        }
-
-                        offlinePlayer.isWhitelisted = false
-
+                    if (!offlinePlayer.isWhitelisted) {
                         executor.sendText {
-                            appendSuccessPrefix()
-                            success("Der Spieler ")
-                            variableValue(offlinePlayer.name ?: offlinePlayer.uniqueId.toString())
-                            success(" wurde von der Whitelist entfernt.")
+                            appendErrorPrefix()
+                            error("Der Spieler ist nicht auf der Whitelist.")
                         }
+                        return@anyExecutorSuspend
+                    }
+
+                    offlinePlayer.isWhitelisted = false
+
+                    executor.sendText {
+                        appendSuccessPrefix()
+                        success("Der Spieler ")
+                        variableValue(offlinePlayer.name ?: offlinePlayer.uniqueId.toString())
+                        success(" wurde von der Whitelist entfernt.")
                     }
                 }
             }

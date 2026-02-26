@@ -4,7 +4,6 @@ import dev.slne.surf.essentials.util.util.translatable
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.advancement.AdvancementDisplay
-import org.bukkit.GameRule
 import org.bukkit.GameRules
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -31,7 +30,7 @@ object AdvancementListener : Listener {
         }
 
         event.message(buildText {
-            appendErrorPrefix()
+            appendInfoPrefix()
             translatable(
                 translationKey,
                 player.displayName().colorIfAbsent(Colors.VARIABLE_VALUE),
