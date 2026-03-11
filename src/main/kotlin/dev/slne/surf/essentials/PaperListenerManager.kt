@@ -12,6 +12,5 @@ object PaperListenerManager {
         UnknownCommandListener.register()
         WorldListener.register()
         SpecialItemListener.register()
-        CommandExecutionListener.register()
     }
 }
