@@ -9,6 +9,8 @@ surfPaperPluginApi {
     mainClass("dev.slne.surf.essentials.PaperMain")
     generateLibraryLoader(false)
     foliaSupported(true)
+    
+    useCanvasMc()
 
     authors.addAll("twisti", "red")
 }
