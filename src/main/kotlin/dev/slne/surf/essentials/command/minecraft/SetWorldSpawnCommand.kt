@@ -12,7 +12,7 @@ fun setWorldSpawnCommand() = commandTree("setworldspawn") {
         player.world.spawnLocation = player.location
 
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Der Wiedereinstiegspunkt der Welt ")
             variableValue(player.world.name)
             success(" wurde geändert.")
@@ -27,7 +27,7 @@ fun setWorldSpawnCommand() = commandTree("setworldspawn") {
             world.spawnLocation = location
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Der Wiedereinstiegspunkt der Welt ")
                 variableValue(world.name)
                 success(" wurde geändert.")
@@ -42,7 +42,7 @@ fun setWorldSpawnCommand() = commandTree("setworldspawn") {
                 world.spawnLocation = location
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Der Wiedereinstiegspunkt der Welt ")
                     variableValue(world.name)
                     success(" wurde geändert.")

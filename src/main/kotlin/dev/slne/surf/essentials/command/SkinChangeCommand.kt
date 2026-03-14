@@ -19,14 +19,14 @@ fun skinChangeCommand() = commandTree("skin") {
             val targetName: String by args
 
             player.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("Die Skin-Daten werden geladen...")
             }
 
             plugin.launch {
                 val skinData = retrieveSkin(targetName) ?: run {
                     player.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Der Skin konnte nicht gefunden werden.")
                     }
                     return@launch
@@ -35,7 +35,7 @@ fun skinChangeCommand() = commandTree("skin") {
                 assignSkin(player, skinData)
 
                 player.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Dein Skin wurde erfolgreich zu ")
                     variableValue(targetName)
                     success(" geändert.")
@@ -50,7 +50,7 @@ fun skinChangeCommand() = commandTree("skin") {
                 val target: Player by args
 
                 executor.sendText {
-                    appendPrefix()
+                    appendInfoPrefix()
                     info("Die Skin-Daten von ")
                     variableValue(targetName)
                     info(" werden geladen...")
@@ -59,7 +59,7 @@ fun skinChangeCommand() = commandTree("skin") {
                 plugin.launch {
                     val skinData = retrieveSkin(targetName) ?: run {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Der Skin von ")
                             variableValue(targetName)
                             error(" konnte nicht gefunden werden.")
@@ -70,14 +70,14 @@ fun skinChangeCommand() = commandTree("skin") {
                     assignSkin(target, skinData)
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Der Skin von ")
                         variableValue(target.name)
                         success(" wurde geändert.")
                     }
 
                     target.sendText {
-                        appendPrefix()
+                        appendInfoPrefix()
                         info("Dein Skin wurde zu ")
                         variableValue(targetName)
                         info(" geändert.")
@@ -90,14 +90,14 @@ fun skinChangeCommand() = commandTree("skin") {
     literalArgument("reset") {
         playerExecutor { player, _ ->
             player.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("Deine Skin-Daten werden zurückgesetzt...")
             }
 
             plugin.launch {
                 val skinData = retrieveSkin(player.name) ?: run {
                     player.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Deine Skin-Daten konnten nicht zurückgesetzt werden.")
                     }
                     return@launch
@@ -106,7 +106,7 @@ fun skinChangeCommand() = commandTree("skin") {
                 assignSkin(player, skinData)
 
                 player.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Deine Skin-Daten wurden erfolgreich zurückgesetzt.")
                 }
             }
@@ -118,7 +118,7 @@ fun skinChangeCommand() = commandTree("skin") {
                 val target: Player by args
 
                 executor.sendText {
-                    appendPrefix()
+                    appendInfoPrefix()
                     info("Die Skin-Daten von ")
                     variableValue(target.name)
                     info(" werden zurückgesetzt...")
@@ -127,7 +127,7 @@ fun skinChangeCommand() = commandTree("skin") {
                 plugin.launch {
                     val skinData = retrieveSkin(target.name) ?: run {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Die Skin-Daten von ")
                             variableValue(target.name)
                             error(" konnten nicht zurückgesetzt werden.")
@@ -138,14 +138,14 @@ fun skinChangeCommand() = commandTree("skin") {
                     assignSkin(target, skinData)
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Die Skin-Daten von ")
                         variableValue(target.name)
                         success(" wurden zurückgesetzt.")
                     }
 
                     target.sendText {
-                        appendPrefix()
+                        appendInfoPrefix()
                         info("Deine Skin-Daten wurden zurückgesetzt.")
                     }
                 }

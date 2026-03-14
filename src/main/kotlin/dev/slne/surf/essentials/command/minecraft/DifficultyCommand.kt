@@ -14,7 +14,7 @@ fun difficultyCommand() = commandTree("difficulty") {
     withPermission(EssentialsPermissionRegistry.DIFFICULTY_COMMAND)
     playerExecutor { player, _ ->
         player.sendText {
-            appendPrefix()
+            appendInfoPrefix()
             info("Der Schwierigkeitsgrad der Welt ")
             variableValue(player.world.name)
             info(" ist auf ")
@@ -28,7 +28,7 @@ fun difficultyCommand() = commandTree("difficulty") {
 
             Bukkit.getWorlds().forEach { it.difficulty = difficulty }
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du hast den Schwierigkeitsgrad aller Welten auf ")
                 translatable(difficulty.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
                 success(" gesetzt.")
@@ -42,7 +42,7 @@ fun difficultyCommand() = commandTree("difficulty") {
 
                 if (difficulty == world.difficulty) {
                     executor.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Der Schwierigkeitsgrad der Welt ")
                         variableValue(world.name)
                         error(" ist bereits auf ")
@@ -55,7 +55,7 @@ fun difficultyCommand() = commandTree("difficulty") {
                 world.difficulty = difficulty
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Du hast den Schwierigkeitsgrad der Welt ")
                     variableValue(world.name)
                     success(" auf ")

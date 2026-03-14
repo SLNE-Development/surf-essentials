@@ -90,3 +90,49 @@ fun Duration.userContent(): String {
 
     return parts.joinToString(", ")
 }
+
+fun SurfComponentBuilder.coloredDuration(
+    duration: Duration,
+    good: Duration = Duration.ofMillis(200),
+    okay: Duration = Duration.ofMillis(1000)
+) {
+    val millis = duration.toMillis()
+    when {
+        duration < good -> text(
+            millis.toString() + "ms",
+            Colors.GREEN
+        )
+
+        duration < okay -> text(
+            millis.toString() + "ms",
+            Colors.YELLOW
+        )
+
+        else -> text(millis.toString() + "ms", Colors.RED)
+    }
+}
+
+fun SurfComponentBuilder.coloredPing(
+    ping: Long
+) = coloredDuration(Duration.ofMillis(ping), Duration.ofMillis(100), Duration.ofMillis(300))
+
+fun Long.coloredComponent(good: Long = 200L, okay: Long = 1000L) =
+    buildText {
+        when {
+            this@coloredComponent < good -> append(
+                Component.text(
+                    this@coloredComponent.toString() + "ms",
+                    Colors.GREEN
+                )
+            )
+
+            this@coloredComponent < okay -> append(
+                Component.text(
+                    this@coloredComponent.toString() + "ms",
+                    Colors.YELLOW
+                )
+            )
+
+            else -> append(Component.text(this@coloredComponent.toString() + "ms", Colors.RED))
+        }
+    }

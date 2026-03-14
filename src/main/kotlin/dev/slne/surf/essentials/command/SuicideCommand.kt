@@ -14,7 +14,7 @@ fun suicideCommand() = commandTree("suicide") {
         player.sendHealthUpdate()
 
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du wurdest auf tragische Weise getötet!")
         }
     }
@@ -29,7 +29,7 @@ fun suicideCommand() = commandTree("suicide") {
             player.sendHealthUpdate()
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("${executor.name} starb auf tragischer Weise.")
             }
         }

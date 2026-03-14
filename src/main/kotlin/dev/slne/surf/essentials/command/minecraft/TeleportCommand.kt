@@ -4,19 +4,20 @@ import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.Location
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 
 fun teleportCommand() = commandTree("teleport") {
     withPermission(EssentialsPermissionRegistry.TELEPORT_COMMAND)
     withAliases("tp")
-    entitySelectorArgumentOnePlayer("target") {
+    entitySelectorArgumentOneEntity("target") {
         playerExecutor { player, args ->
-            val target: Player by args
+            val target: Entity by args
 
             player.teleportAsync(target.location)
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du wurdest zu ")
                 variableValue(target.name)
                 success(" teleportiert.")
@@ -30,7 +31,7 @@ fun teleportCommand() = commandTree("teleport") {
             player.teleportAsync(location)
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du wurdest zu ")
                 variableValue("${location.blockX}, ${location.blockY}, ${location.blockZ}")
                 success(" teleportiert.")
@@ -39,16 +40,16 @@ fun teleportCommand() = commandTree("teleport") {
     }
     entitySelectorArgumentManyPlayers("players") {
         withPermission(EssentialsPermissionRegistry.TELEPORT_COMMAND_OTHERS)
-        entitySelectorArgumentOnePlayer("target") {
+        entitySelectorArgumentOneEntity("target") {
             anyExecutor { executor, args ->
                 val players: Collection<Player> by args
-                val target: Player by args
+                val target: Entity by args
 
                 players.forEach { it.teleportAsync(target.location) }
 
                 if (players.size == 1) {
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         variableValue(players.firstOrNull()?.name ?: "Unbekannt")
                         success(" wurde zu ")
                         variableValue(target.name)
@@ -56,7 +57,7 @@ fun teleportCommand() = commandTree("teleport") {
                     }
                 } else {
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         variableValue(players.size.toString())
                         success(" Spieler wurden zu ")
                         variableValue(target.name)
@@ -66,7 +67,7 @@ fun teleportCommand() = commandTree("teleport") {
 
                 players.forEach {
                     it.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du wurdest zu ")
                         variableValue(target.name)
                         success(" teleportiert.")
@@ -83,7 +84,7 @@ fun teleportCommand() = commandTree("teleport") {
 
                 if (players.size == 1) {
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         variableValue(players.firstOrNull()?.name ?: "Unbekannt")
                         success(" wurde zu ")
                         variableValue("${location.blockX}, ${location.blockY}, ${location.blockZ}")
@@ -91,7 +92,7 @@ fun teleportCommand() = commandTree("teleport") {
                     }
                 } else {
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         variableValue(players.size.toString())
                         success(" Spieler wurden zu ")
                         variableValue("${location.blockX}, ${location.blockY}, ${location.blockZ}")
@@ -101,7 +102,7 @@ fun teleportCommand() = commandTree("teleport") {
 
                 players.forEach {
                     it.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du wurdest zu ")
                         variableValue("${location.blockX}, ${location.blockY}, ${location.blockZ}")
                         success(" teleportiert.")

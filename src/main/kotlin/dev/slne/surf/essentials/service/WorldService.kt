@@ -1,0 +1,234 @@
+package dev.slne.surf.essentials.service
+
+import dev.slne.surf.essentials.plugin
+import dev.slne.surf.essentials.util.util.isFolia
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import org.bukkit.*
+import org.bukkit.command.CommandSender
+import org.bukkit.persistence.PersistentDataType
+import java.util.concurrent.CompletableFuture
+
+class WorldService {
+    private val accessKey = NamespacedKey(plugin, "world_access")
+
+    fun isLocked(world: World): Boolean =
+        world.persistentDataContainer.getOrDefault(accessKey, PersistentDataType.BOOLEAN, false)
+
+    fun lock(world: World) =
+        world.persistentDataContainer.set(accessKey, PersistentDataType.BOOLEAN, true)
+
+    fun unlock(world: World) =
+        world.persistentDataContainer.set(accessKey, PersistentDataType.BOOLEAN, false)
+
+    fun create(
+        sender: CommandSender,
+        name: String,
+        environment: World.Environment?,
+        type: WorldType?,
+        generateStructures: Boolean?,
+        hardcore: Boolean?,
+        seed: Long?
+    ) {
+        if (Bukkit.getServer().isFolia()) {
+            sender.sendText {
+                appendErrorPrefix()
+                error("Das Erstellen von Welten wird auf Folia-Servern nicht unterstützt.")
+            }
+            return
+        }
+
+        if (Bukkit.getWorld(name) != null) {
+            sender.sendText {
+                appendErrorPrefix()
+                error("Die Welt existiert bereits.")
+            }
+            return
+        }
+
+        val creator = WorldCreator(name)
+
+        environment?.let { creator.environment(it) }
+        type?.let { creator.type(it) }
+        generateStructures?.let { creator.generateStructures(it) }
+        hardcore?.let { creator.hardcore(it) }
+        seed?.let { creator.seed(it) }
+
+        sender.sendText {
+            appendInfoPrefix()
+            info("Die Welt wird erstellt...")
+        }
+
+        val world = creator.createWorld() ?: run {
+            sender.sendText {
+                appendErrorPrefix()
+                error("Die Welt konnte nicht erstellt werden.")
+            }
+            return
+        }
+
+        sender.sendText {
+            appendSuccessPrefix()
+            success("Die Welt ")
+            variableValue(world.name)
+            success(" wurde erstellt.")
+        }
+    }
+
+    fun load(sender: CommandSender, name: String) {
+        if (Bukkit.getServer().isFolia()) {
+            sender.sendText {
+                appendErrorPrefix()
+                error("Das Laden von Welten wird auf Folia-Servern nicht unterstützt.")
+            }
+            return
+        }
+
+        val file = Bukkit.getWorldContainer().resolve(name)
+        if (!file.exists() || !file.isDirectory) {
+            sender.sendText {
+                appendErrorPrefix()
+                error("Die Welt existiert nicht.")
+            }
+            return
+        }
+
+        if (Bukkit.getWorld(name) != null) {
+            sender.sendText {
+                appendErrorPrefix()
+                error("Die Welt ist bereits geladen.")
+            }
+            return
+        }
+
+        sender.sendText {
+            appendInfoPrefix()
+            info("Die Welt wird geladen...")
+        }
+
+        val world = WorldCreator(name).createWorld() ?: run {
+            sender.sendText {
+                appendErrorPrefix()
+                error("Die Welt konnte nicht geladen werden.")
+            }
+            return
+        }
+
+        sender.sendText {
+            appendSuccessPrefix()
+            success("Die Welt ")
+            variableValue(world.name)
+            success(" wurde geladen.")
+        }
+    }
+
+    fun unload(sender: CommandSender, world: World) {
+        if (Bukkit.getServer().isFolia()) {
+            sender.sendText {
+                appendErrorPrefix()
+                error("Das Entladen von Welten wird auf Folia-Servern nicht unterstützt.")
+            }
+            return
+        }
+
+        val overworldSpawn = Bukkit.getWorlds().firstOrNull()?.spawnLocation ?: run {
+            sender.sendText {
+                appendErrorPrefix()
+                error("Es gibt keine andere Welt, in die Spieler teleportiert werden können.")
+            }
+            return
+        }
+
+        val futures = mutableListOf<CompletableFuture<Boolean>>()
+
+        sender.sendText {
+            appendInfoPrefix()
+            info("Teleporiere Spieler aus der Welt...")
+        }
+
+        world.players.forEach {
+            futures.add(it.teleportAsync(overworldSpawn))
+        }
+
+        sender.sendText {
+            appendInfoPrefix()
+            info("Die Welt wird entladen...")
+        }
+
+        CompletableFuture.allOf(*futures.toTypedArray()).thenRun {
+            if (!Bukkit.unloadWorld(world, true)) {
+                sender.sendText {
+                    appendErrorPrefix()
+                    error("Die Welt konnte nicht entladen werden.")
+                }
+                return@thenRun
+            }
+
+            sender.sendText {
+                appendSuccessPrefix()
+                success("Die Welt ")
+                variableValue(world.name)
+                success(" wurde entladen.")
+            }
+        }
+    }
+
+    fun delete(sender: CommandSender, world: World) {
+        if (Bukkit.getServer().isFolia()) {
+            sender.sendText {
+                appendErrorPrefix()
+                error("Das Löschen von Welten wird auf Folia-Servern nicht unterstützt.")
+            }
+            return
+        }
+
+        val overworldSpawn = Bukkit.getWorlds().firstOrNull()?.spawnLocation ?: run {
+            sender.sendText {
+                appendErrorPrefix()
+                error("Es gibt keine andere Welt, in die Spieler teleportiert werden können.")
+            }
+            return
+        }
+
+        val futures = mutableListOf<CompletableFuture<Boolean>>()
+
+        world.players.forEach {
+            futures.add(it.teleportAsync(overworldSpawn))
+        }
+
+        CompletableFuture.allOf(*futures.toTypedArray()).thenRun {
+            if (Bukkit.getWorld(world.name) != null) {
+                if (!Bukkit.unloadWorld(world, true)) {
+                    sender.sendText {
+                        appendErrorPrefix()
+                        error("Die Welt konnte nicht entladen werden.")
+                    }
+                    return@thenRun
+                }
+            }
+
+            val file = Bukkit.getWorldContainer().resolve(world.name)
+            if (!file.exists() || !file.isDirectory) {
+                sender.sendText {
+                    appendErrorPrefix()
+                    error("Die Welt existiert nicht.")
+                }
+                return@thenRun
+            }
+
+            file.deleteRecursively()
+
+            sender.sendText {
+                appendSuccessPrefix()
+                success("Die Welt ")
+                variableValue(world.name)
+                success(" wurde gelöscht.")
+            }
+        }
+    }
+
+    companion object {
+        val INSTANCE = WorldService()
+    }
+}
+
+val worldService get() = WorldService.INSTANCE

@@ -16,7 +16,7 @@ fun deopCommand() = commandTree("deop") {
 
             if (!player.isOp) {
                 executor.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Der Spieler ist kein Operator.")
                 }
                 return@anyExecutor
@@ -25,13 +25,13 @@ fun deopCommand() = commandTree("deop") {
             player.isOp = false
 
             executor.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 variableValue(player.name)
                 success(" ist nun kein Operator mehr.")
             }
 
             player.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("Du bist nun kein Operator mehr.")
             }
         }

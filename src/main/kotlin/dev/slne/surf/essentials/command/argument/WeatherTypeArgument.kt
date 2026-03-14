@@ -14,7 +14,7 @@ class WeatherTypeArgument(nodeName: String) :
         WeatherType.entries.firstOrNull { it.name == info.input.uppercase() }
             ?: throw CustomArgumentException.fromAdventureComponent {
                 buildText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Der Wettertyp wurde nicht gefunden.")
                 }
             }

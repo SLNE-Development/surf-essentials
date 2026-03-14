@@ -15,7 +15,7 @@ fun teleportRandomCommand() = commandTree("teleportrandom") {
             .filter { !it.hasPermission(EssentialsPermissionRegistry.TELEPORT_RANDOM_BYPASS) }
             .randomOrNull() ?: run {
             player.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Es wurde kein Spieler gefunden, zu dem du teleportiert werden kannst.")
             }
             return@playerExecutor
@@ -23,7 +23,7 @@ fun teleportRandomCommand() = commandTree("teleportrandom") {
 
         player.teleportAsync(selected.location)
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du wurdest zu ")
             variableValue(selected.name)
             success(" teleportiert.")

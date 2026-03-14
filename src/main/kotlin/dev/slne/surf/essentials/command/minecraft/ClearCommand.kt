@@ -2,9 +2,11 @@ package dev.slne.surf.essentials.command.minecraft
 
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
 import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
+import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -13,7 +15,7 @@ fun clearCommand() = commandTree("clear") {
     playerExecutor { player, _ ->
         if (player.inventory.isEmpty) {
             player.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Dein Inventar ist bereits leer.")
             }
             return@playerExecutor
@@ -22,35 +24,8 @@ fun clearCommand() = commandTree("clear") {
         player.inventory.clear()
 
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Dein Inventar wurde geleert.")
-        }
-
-        itemStackArgument("type") {
-            playerExecutor { player, args ->
-                val type: ItemStack by args
-
-                val amount = player.inventory.filter { it.type == type.type }.sumOf { it.amount }
-
-                if (amount == 0) {
-                    player.sendText {
-                        appendPrefix()
-                        error("In deinem Inventar wurden keine Items vom Typ ")
-                        variableValue(type.type.name)
-                        error(" gefunden.")
-                    }
-                    return@playerExecutor
-                }
-
-                player.inventory.remove(type.type)
-
-                player.sendText {
-                    appendPrefix()
-                    success("Es wurden ")
-                    variableValue(amount.toString())
-                    success(" Items aus deinem Inventar entfernt.")
-                }
-            }
         }
     }
 
@@ -68,7 +43,7 @@ fun clearCommand() = commandTree("clear") {
                     player.inventory.clear()
                     clearedPlayers.add(player)
                     player.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Dein Inventar wurde geleert.")
                     }
                 }
@@ -76,7 +51,7 @@ fun clearCommand() = commandTree("clear") {
 
             if (clearedPlayers.isNotEmpty()) {
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Das Inventar von ")
                     variableValue(clearedPlayers.joinToString(", ") { it.name })
                     success(" wurde geleert.")
@@ -85,7 +60,7 @@ fun clearCommand() = commandTree("clear") {
 
             if (alreadyEmptyPlayers.isNotEmpty()) {
                 executor.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Das Inventar von ")
                     variableValue(alreadyEmptyPlayers.joinToString(", ") { it.name })
                     error(" war bereits leer.")
@@ -100,8 +75,11 @@ fun clearCommand() = commandTree("clear") {
                 val notFoundPlayers = mutableObjectSetOf<Player>()
 
                 for (player in players) {
-                    val amount =
-                        player.inventory.filter { it.type == type.type }.sumOf { it.amount }
+                    val amount = player.inventory.contents
+                        .filterNotNull()
+                        .filter { it.type == type.type }
+                        .sumOf { it.amount }
+
 
                     if (amount == 0) {
                         notFoundPlayers.add(player)
@@ -109,7 +87,7 @@ fun clearCommand() = commandTree("clear") {
                         player.inventory.remove(type.type)
                         clearedPlayers[player] = amount
                         player.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Es wurden ")
                             variableValue(amount.toString())
                             success(" Items aus deinem Inventar entfernt.")
@@ -119,18 +97,21 @@ fun clearCommand() = commandTree("clear") {
 
                 if (clearedPlayers.isNotEmpty()) {
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Es wurden ${clearedPlayers.values.sum()} Items aus ${clearedPlayers.size} Inventaren entfernt.")
                     }
                 }
 
                 if (notFoundPlayers.isNotEmpty()) {
                     executor.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("In den Inventaren von ")
                         variableValue(notFoundPlayers.joinToString(", ") { it.name })
-                        error(" wurden keine Items vom Typ ")
-                        variableValue(type.type.name)
+                        error(" wurden keine  ")
+                        append(
+                            Component.translatable(type.type.translationKey())
+                                .colorIfAbsent(Colors.VARIABLE_VALUE)
+                        )
                         error(" gefunden.")
                     }
                 }

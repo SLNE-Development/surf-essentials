@@ -13,7 +13,7 @@ fun seedCommand() = commandTree("seed") {
     playerExecutor { player, _ ->
         val world = player.world
         player.sendText {
-            appendPrefix()
+            appendInfoPrefix()
             info("Der Ursprungswert der Welt ")
             variableValue(world.name)
             info(" ist ")
@@ -30,7 +30,7 @@ fun seedCommand() = commandTree("seed") {
             val world: World by args
 
             executor.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("Der Ursprungswert der Welt ")
                 variableValue(world.name)
                 info(" ist ")

@@ -16,7 +16,7 @@ fun changeSlotCommand() = commandTree("changeslot") {
             Bukkit.getServer().maxPlayers = amount
 
             executor.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Die maximale Spieleranzahl wurde auf ")
                 variableValue(amount)
                 success(" gesetzt.")

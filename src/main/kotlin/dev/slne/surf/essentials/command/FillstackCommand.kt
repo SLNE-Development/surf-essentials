@@ -12,7 +12,7 @@ fun fillStackCommand() = commandTree("fillstack") {
 
         if (itemInHand.isEmpty) {
             player.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Du musst ein Item in der Hand halten.")
             }
             return@playerExecutor
@@ -21,7 +21,7 @@ fun fillStackCommand() = commandTree("fillstack") {
         itemInHand.amount = itemInHand.maxStackSize
 
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Der Item wurde aufgefüllt.")
         }
     }

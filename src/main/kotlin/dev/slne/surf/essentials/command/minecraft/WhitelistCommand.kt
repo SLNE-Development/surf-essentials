@@ -1,10 +1,13 @@
 package dev.slne.surf.essentials.command.minecraft
 
 import com.github.shynixn.mccoroutine.folia.launch
-import dev.jorel.commandapi.arguments.PlayerProfileArgument
+import dev.jorel.commandapi.arguments.AsyncPlayerProfileArgument
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
+import dev.slne.surf.surfapi.bukkit.api.command.executors.anyExecutorSuspend
+import dev.slne.surf.surfapi.bukkit.api.command.util.awaitAsyncPlayerProfile
+import dev.slne.surf.surfapi.bukkit.api.command.util.idOrThrow
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.CommonComponents
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
@@ -20,7 +23,7 @@ fun whitelistCommand() = commandTree("whitelist") {
         anyExecutor { executor, _ ->
             if (Bukkit.hasWhitelist()) {
                 executor.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Die Whitelist ist bereits aktiviert.")
                 }
                 return@anyExecutor
@@ -28,7 +31,7 @@ fun whitelistCommand() = commandTree("whitelist") {
 
             Bukkit.setWhitelist(true)
             executor.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Die Whitelist wurde aktiviert.")
             }
         }
@@ -38,7 +41,7 @@ fun whitelistCommand() = commandTree("whitelist") {
         anyExecutor { executor, _ ->
             if (!Bukkit.hasWhitelist()) {
                 executor.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Die Whitelist ist nicht aktiviert.")
                 }
                 return@anyExecutor
@@ -46,7 +49,7 @@ fun whitelistCommand() = commandTree("whitelist") {
 
             Bukkit.setWhitelist(false)
             executor.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Die Whitelist wurde deaktiviert.")
             }
         }
@@ -57,14 +60,14 @@ fun whitelistCommand() = commandTree("whitelist") {
             if (Bukkit.hasWhitelist()) {
                 Bukkit.setWhitelist(false)
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Die Whitelist wurde deaktiviert.")
                 }
                 return@anyExecutor
             } else {
                 Bukkit.setWhitelist(true)
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Die Whitelist wurde aktiviert.")
                 }
                 return@anyExecutor
@@ -76,7 +79,7 @@ fun whitelistCommand() = commandTree("whitelist") {
         anyExecutor { executor, _ ->
             if (Bukkit.hasWhitelist()) {
                 executor.sendText {
-                    appendPrefix()
+                    appendInfoPrefix()
                     info("Die Whitelist ist aktuell ")
                     variableValue("aktiviert")
                     info(".")
@@ -84,7 +87,7 @@ fun whitelistCommand() = commandTree("whitelist") {
                 return@anyExecutor
             } else {
                 executor.sendText {
-                    appendPrefix()
+                    appendInfoPrefix()
                     info("Die Whitelist ist aktuell ")
                     variableValue("deaktiviert")
                     info(".")
@@ -96,22 +99,25 @@ fun whitelistCommand() = commandTree("whitelist") {
 
     literalArgument("player") {
         literalArgument("add") {
-            argument(PlayerProfileArgument("offlinePlayer")) {
-                anyExecutor { executor, args ->
-                    val offlinePlayer: OfflinePlayer by args
+            argument(AsyncPlayerProfileArgument("offlinePlayer")) {
+                anyExecutorSuspend { executor, args ->
+                    val profile = args.awaitAsyncPlayerProfile("offlinePlayer")
+                    val id = profile.idOrThrow()
+                    val offlinePlayer = Bukkit.getOfflinePlayer(id)
 
                     if (offlinePlayer.isWhitelisted) {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Der Spieler ist bereits auf der Whitelist.")
                         }
-                        return@anyExecutor
+                        return@anyExecutorSuspend
                     }
 
                     offlinePlayer.isWhitelisted = true
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
+                        success("Der Spieler ")
                         variableValue(offlinePlayer.name ?: offlinePlayer.uniqueId.toString())
                         success(" wurde zur Whitelist hinzugefügt.")
                     }
@@ -120,22 +126,25 @@ fun whitelistCommand() = commandTree("whitelist") {
         }
 
         literalArgument("remove") {
-            argument(PlayerProfileArgument("offlinePlayer")) {
-                anyExecutor { executor, args ->
-                    val offlinePlayer: OfflinePlayer by args
+            argument(AsyncPlayerProfileArgument("offlinePlayer")) {
+                anyExecutorSuspend { executor, args ->
+                    val profile = args.awaitAsyncPlayerProfile("offlinePlayer")
+                    val id = profile.idOrThrow()
+                    val offlinePlayer = Bukkit.getOfflinePlayer(id)
 
                     if (!offlinePlayer.isWhitelisted) {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Der Spieler ist nicht auf der Whitelist.")
                         }
-                        return@anyExecutor
+                        return@anyExecutorSuspend
                     }
 
                     offlinePlayer.isWhitelisted = false
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
+                        success("Der Spieler ")
                         variableValue(offlinePlayer.name ?: offlinePlayer.uniqueId.toString())
                         success(" wurde von der Whitelist entfernt.")
                     }
@@ -148,7 +157,7 @@ fun whitelistCommand() = commandTree("whitelist") {
                     val page: Int? by args
 
                     executor.sendText {
-                        appendPrefix()
+                        appendInfoPrefix()
                         info("Whitelist Informationen werden geladen...")
                     }
 
@@ -158,7 +167,7 @@ fun whitelistCommand() = commandTree("whitelist") {
 
                         if (whitelistedPlayers.isEmpty()) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Es sind keine Spieler auf der Whitelist.")
                             }
                             return@launch

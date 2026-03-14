@@ -17,14 +17,14 @@ fun listCommand() = commandTree("list") {
 
         if (onlinePlayers.isEmpty()) {
             executor.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Es sind aktuell keine Spieler online.")
             }
             return@anyExecutor
         }
 
         executor.sendText {
-            appendPrefix()
+            appendInfoPrefix()
             info("Es sind aktuell ")
             variableValue(onlinePlayers.size)
             info(" von ")
@@ -40,7 +40,7 @@ fun listCommand() = commandTree("list") {
 
             if (playersInWorld.isEmpty()) {
                 executor.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("In der Welt ")
                     variableValue(world.name)
                     error(" sind aktuell keine Spieler online.")
@@ -49,7 +49,7 @@ fun listCommand() = commandTree("list") {
             }
 
             executor.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("In der Welt ")
                 variableValue(world.name)
                 info(" sind aktuell ")

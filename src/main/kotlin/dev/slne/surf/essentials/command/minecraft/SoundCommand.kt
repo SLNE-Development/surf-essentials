@@ -17,7 +17,7 @@ fun soundCommand() = commandTree("sound") {
         playerExecutor { player, _ ->
             player.stopAllSounds()
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Alle Sounds wurden gestoppt.")
             }
         }
@@ -31,7 +31,7 @@ fun soundCommand() = commandTree("sound") {
                 }
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Die Sounds von ")
 
                     if (targets.size == 1) {
@@ -78,7 +78,7 @@ fun soundCommand() = commandTree("sound") {
                         }
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Der Sound wurde für ")
 
                             if (targets.size == 1) {
@@ -106,7 +106,7 @@ fun soundCommand() = commandTree("sound") {
                             }
 
                             executor.sendText {
-                                appendPrefix()
+                                appendSuccessPrefix()
                                 success("Der Sound wurde für ")
 
                                 if (targets.size == 1) {
@@ -138,7 +138,7 @@ fun soundCommand() = commandTree("sound") {
                                     }
 
                                     executor.sendText {
-                                        appendPrefix()
+                                        appendSuccessPrefix()
                                         success("Der Sound wurde für ")
 
                                         if (targets.size == 1) {

@@ -12,7 +12,7 @@ fun reloadCommand() = commandTree("reload") {
     withPermission(EssentialsPermissionRegistry.RELOAD_COMMAND)
     anyExecutor { executor, _ ->
         executor.sendText {
-            appendPrefix()
+            appendInfoPrefix()
             info("Der Server wird neugeladen...")
         }
 
@@ -20,7 +20,7 @@ fun reloadCommand() = commandTree("reload") {
             Bukkit.getServer().reloadData()
         } else {
             executor.sendText {
-                appendPrefix()
+                appendErrorPrefix()
                 error(
                     "Der Server konnte nicht komplett neu geladen werden, da Folia verwendet wird.".toSmallCaps()
                 )
@@ -33,7 +33,7 @@ fun reloadCommand() = commandTree("reload") {
         Bukkit.getServer().reloadPermissions()
 
         executor.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Der Server wurde neu geladen.")
             appendNewPrefixedLine {
                 error("Bitte beachte, das dies kein Plugin-Reload ist, da dieser nicht mehr unterstützt wird. Bei Plugin Änderungen, bitte starte den Server neu.".toSmallCaps())
