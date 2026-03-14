@@ -2,10 +2,12 @@ package dev.slne.surf.essentials.command.minecraft
 
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.command.argument.gameruleArgument
+import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.util.translatable
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import org.bukkit.Bukkit
 import org.bukkit.GameRule
 import org.bukkit.World
 
@@ -45,7 +47,9 @@ fun gameRuleCommand() = commandTree("gamerule") {
                     return@anyExecutor
                 }
 
-                executor.server.worlds.forEach { it.setGameRule(gamerule, parsedValue) }
+                Bukkit.getGlobalRegionScheduler().run(plugin) {
+                    executor.server.worlds.forEach { it.setGameRule(gamerule, parsedValue) }
+                }
 
                 executor.sendText {
                     appendSuccessPrefix()
@@ -75,8 +79,10 @@ fun gameRuleCommand() = commandTree("gamerule") {
                         return@anyExecutor
                     }
 
+                    Bukkit.getGlobalRegionScheduler().run(plugin) {
+                        world.setGameRule(gamerule, parsedValue)
+                    }
 
-                    world.setGameRule(gamerule, parsedValue)
 
                     executor.sendText {
                         appendSuccessPrefix()
