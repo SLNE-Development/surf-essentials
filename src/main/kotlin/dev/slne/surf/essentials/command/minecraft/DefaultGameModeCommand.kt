@@ -15,7 +15,7 @@ fun defaultGameModeCommand() = commandTree("defaultgamemode") {
     withPermission(EssentialsPermissionRegistry.GAME_MODE_COMMAND_DEFAULT)
     anyExecutor { executor, _ ->
         executor.sendText {
-            appendPrefix()
+            appendInfoPrefix()
             info("Der Standard-Spielmodus ist zurzeit auf ")
             translatable(Bukkit.getDefaultGameMode().translationKey()).color(Colors.VARIABLE_VALUE)
             info("gesetzt.")
@@ -29,7 +29,7 @@ fun defaultGameModeCommand() = commandTree("defaultgamemode") {
 
             if (gameMode == defaultGameMode) {
                 executor.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Der Standard-Spielmodus ist bereits auf ")
                     translatable(gameMode.translationKey()).color(Colors.VARIABLE_VALUE)
                     error(" gesetzt.")
@@ -40,7 +40,7 @@ fun defaultGameModeCommand() = commandTree("defaultgamemode") {
             Bukkit.setDefaultGameMode(gameMode)
 
             executor.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du hast den Standard-Spielmodus auf ")
                 translatable(gameMode.translationKey()).color(Colors.VARIABLE_VALUE)
                 success(" gesetzt.")

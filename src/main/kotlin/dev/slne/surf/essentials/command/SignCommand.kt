@@ -24,7 +24,7 @@ fun signCommand() = commandTree("sign") {
 
             if (item.isEmpty) {
                 player.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Du musst ein Item in der Hand halten.")
                 }
                 return@playerExecutor
@@ -48,7 +48,7 @@ fun signCommand() = commandTree("sign") {
             }
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Das Item wurde signiert.")
             }
         }

@@ -21,7 +21,7 @@ fun experienceCommand() = commandTree("experience") {
                     }
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du hast ")
                         variableValue(amount.toString())
                         success(" Erfahrungspunkte an ")
@@ -45,7 +45,7 @@ fun experienceCommand() = commandTree("experience") {
                         }
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Du hast ")
                             variableValue(amount.toString())
                             success(" Erfahrungsstufen an ")
@@ -70,7 +70,7 @@ fun experienceCommand() = commandTree("experience") {
                         }
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Du hast ")
                             variableValue(amount.toString())
                             success(" Erfahrungspunkte an ")
@@ -100,7 +100,7 @@ fun experienceCommand() = commandTree("experience") {
                     }
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du hast ")
                         variableValue(amount.toString())
                         success(" Erfahrungspunkte von ")
@@ -124,7 +124,7 @@ fun experienceCommand() = commandTree("experience") {
                         }
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Du hast ")
                             variableValue(amount.toString())
                             success(" Erfahrungsstufen von ")
@@ -149,7 +149,7 @@ fun experienceCommand() = commandTree("experience") {
                         }
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Du hast ")
                             variableValue(amount.toString())
                             success(" Erfahrungspunkte von ")
@@ -175,7 +175,7 @@ fun experienceCommand() = commandTree("experience") {
                 val exp = player.totalExperience
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     variableValue(player.name)
                     success(" hat ")
                     variableValue(level.toString())
@@ -208,7 +208,7 @@ fun experienceCommand() = commandTree("experience") {
                     }
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du hast die Erfahrungspunkte auf ")
                         variableValue(amount)
                         success(" für ")
@@ -232,7 +232,7 @@ fun experienceCommand() = commandTree("experience") {
                         }
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Du hast die Erfahrungsstufe auf ")
                             variableValue(amount)
                             success(" für ")
@@ -257,7 +257,7 @@ fun experienceCommand() = commandTree("experience") {
                         }
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Du hast die Erfahrungspunkte auf ")
                             variableValue(amount)
                             success(" für ")

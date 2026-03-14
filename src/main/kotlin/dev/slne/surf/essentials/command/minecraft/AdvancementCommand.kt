@@ -40,7 +40,7 @@ fun advancementCommand() = commandTree("advancement") {
 
                             if (successfulPlayers.size < players.size) {
                                 executor.sendText {
-                                    appendPrefix()
+                                    appendErrorPrefix()
                                     error("Der Erfolg konnte nicht an alle Spieler vergeben werden.")
                                     hoverEvent(buildText {
                                         info("Erfolgreich vergeben an")
@@ -56,14 +56,14 @@ fun advancementCommand() = commandTree("advancement") {
 
                             if (successfulPlayers.isEmpty()) {
                                 executor.sendText {
-                                    appendPrefix()
+                                    appendErrorPrefix()
                                     error("Es konnte kein Erfolg vergeben werden.")
                                 }
                                 return@anyExecutor
                             }
 
                             executor.sendText {
-                                appendPrefix()
+                                appendSuccessPrefix()
                                 success("Es wurden erfolgreich")
                                 appendSpace()
                                 variableValue(successfulPlayers.size)
@@ -92,7 +92,7 @@ fun advancementCommand() = commandTree("advancement") {
 
                             if (successfulPlayers.size < players.size) {
                                 executor.sendText {
-                                    appendPrefix()
+                                    appendErrorPrefix()
                                     error("Der Fortschritt konnte nicht an alle Spieler vergeben werden.")
                                     hoverEvent(buildText {
                                         info("Erfolgreich vergeben an")
@@ -108,14 +108,14 @@ fun advancementCommand() = commandTree("advancement") {
 
                             if (successfulPlayers.isEmpty()) {
                                 executor.sendText {
-                                    appendPrefix()
+                                    appendErrorPrefix()
                                     error("Es konnte kein Fortschritt vergeben werden.")
                                 }
                                 return@anyExecutor
                             }
 
                             executor.sendText {
-                                appendPrefix()
+                                appendSuccessPrefix()
                                 success("Es wurden erfolgreich")
                                 appendSpace()
                                 variableValue(successfulPlayers.size)
@@ -161,7 +161,7 @@ fun advancementCommand() = commandTree("advancement") {
 
                         if (successfulPlayers.size < players.size) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Der Erfolg konnte nicht an alle Spieler vergeben werden.")
                                 hoverEvent(buildText {
                                     info("Erfolgreich vergeben an")
@@ -177,14 +177,14 @@ fun advancementCommand() = commandTree("advancement") {
 
                         if (successfulPlayers.isEmpty()) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Es konnte kein Erfolg vergeben werden.")
                             }
                             return@anyExecutor
                         }
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Es wurden erfolgreich")
                             appendSpace()
                             variableValue(successfulPlayers.size)
@@ -229,7 +229,7 @@ fun advancementCommand() = commandTree("advancement") {
 
                         if (successfulPlayers.size < players.size) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Der Erfolg konnte nicht an alle Spieler vergeben werden.")
                                 hoverEvent(buildText {
                                     info("Erfolgreich vergeben an")
@@ -245,14 +245,14 @@ fun advancementCommand() = commandTree("advancement") {
 
                         if (successfulPlayers.isEmpty()) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Es konnte kein Erfolg vergeben werden.")
                             }
                             return@anyExecutor
                         }
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Es wurden erfolgreich")
                             appendSpace()
                             variableValue(successfulPlayers.size)
@@ -297,7 +297,7 @@ fun advancementCommand() = commandTree("advancement") {
 
                         if (successfulPlayers.size < players.size) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Der Erfolg konnte nicht an alle Spieler vergeben werden.")
                                 hoverEvent(buildText {
                                     info("Erfolgreich vergeben an")
@@ -313,14 +313,14 @@ fun advancementCommand() = commandTree("advancement") {
 
                         if (successfulPlayers.isEmpty()) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Es konnte kein Erfolg vergeben werden.")
                             }
                             return@anyExecutor
                         }
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Es wurden erfolgreich")
                             appendSpace()
                             variableValue(successfulPlayers.size)
@@ -358,7 +358,7 @@ fun advancementCommand() = commandTree("advancement") {
 
                     if (successfulPlayers.size < players.size) {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Der Erfolg konnte nicht an alle Spieler vergeben werden.")
                             hoverEvent(buildText {
                                 info("Erfolgreich vergeben an")
@@ -374,14 +374,14 @@ fun advancementCommand() = commandTree("advancement") {
 
                     if (successfulPlayers.isEmpty()) {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Es konnte kein Erfolg vergeben werden.")
                         }
                         return@anyExecutor
                     }
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Es wurden erfolgreich")
                         appendSpace()
                         variableValue(successfulPlayers.size)
@@ -417,7 +417,7 @@ fun advancementCommand() = commandTree("advancement") {
 
                             if (successfulPlayers.size < players.size) {
                                 executor.sendText {
-                                    appendPrefix()
+                                    appendErrorPrefix()
                                     error("Der Erfolg konnte nicht von allen angegeben Spielern entfernt werden.")
                                     hoverEvent(buildText {
                                         info("Erfolgreich entfernt an")
@@ -433,14 +433,14 @@ fun advancementCommand() = commandTree("advancement") {
 
                             if (successfulPlayers.isEmpty()) {
                                 executor.sendText {
-                                    appendPrefix()
+                                    appendErrorPrefix()
                                     error("Es konnte kein Erfolg entfernt werden.")
                                 }
                                 return@anyExecutor
                             }
 
                             executor.sendText {
-                                appendPrefix()
+                                appendSuccessPrefix()
                                 success("Es wurden erfolgreich")
                                 appendSpace()
                                 variableValue(successfulPlayers.size)
@@ -469,7 +469,7 @@ fun advancementCommand() = commandTree("advancement") {
 
                             if (successfulPlayers.size < players.size) {
                                 executor.sendText {
-                                    appendPrefix()
+                                    appendErrorPrefix()
                                     error("Der Fortschritt konnte nicht von allen angegeben Spielern entfernt werden.")
                                     hoverEvent(buildText {
                                         info("Erfolgreich entfernt an")
@@ -485,14 +485,14 @@ fun advancementCommand() = commandTree("advancement") {
 
                             if (successfulPlayers.isEmpty()) {
                                 executor.sendText {
-                                    appendPrefix()
+                                    appendErrorPrefix()
                                     error("Es konnte kein Fortschritt entfernt werden.")
                                 }
                                 return@anyExecutor
                             }
 
                             executor.sendText {
-                                appendPrefix()
+                                appendSuccessPrefix()
                                 success("Es wurden erfolgreich")
                                 appendSpace()
                                 variableValue(successfulPlayers.size)
@@ -538,7 +538,7 @@ fun advancementCommand() = commandTree("advancement") {
 
                         if (successfulPlayers.size < players.size) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Der Erfolg konnte nicht von allen angegeben Spielern entfernt werden.")
                                 hoverEvent(buildText {
                                     info("Erfolgreich entfernt von")
@@ -554,14 +554,14 @@ fun advancementCommand() = commandTree("advancement") {
 
                         if (successfulPlayers.isEmpty()) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Es konnte kein Erfolg entfernt werden.")
                             }
                             return@anyExecutor
                         }
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Es wurden erfolgreich")
                             appendSpace()
                             variableValue(successfulPlayers.size)
@@ -606,7 +606,7 @@ fun advancementCommand() = commandTree("advancement") {
 
                         if (successfulPlayers.size < players.size) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Der Erfolg konnte nicht von allen angegebenen Spielern entfernt werden.")
                                 hoverEvent(buildText {
                                     info("Erfolgreich entfernt von")
@@ -622,14 +622,14 @@ fun advancementCommand() = commandTree("advancement") {
 
                         if (successfulPlayers.isEmpty()) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Es konnte kein Erfolg entfernt werden.")
                             }
                             return@anyExecutor
                         }
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Es wurden erfolgreich")
                             appendSpace()
                             variableValue(successfulPlayers.size)
@@ -674,7 +674,7 @@ fun advancementCommand() = commandTree("advancement") {
 
                         if (successfulPlayers.size < players.size) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Der Erfolg konnte nicht von allen angegebenen Spielern entfernt werden.")
                                 hoverEvent(buildText {
                                     info("Erfolgreich entfernt von")
@@ -690,14 +690,14 @@ fun advancementCommand() = commandTree("advancement") {
 
                         if (successfulPlayers.isEmpty()) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Es konnte kein Erfolg entfernt werden.")
                             }
                             return@anyExecutor
                         }
 
                         executor.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Es wurden erfolgreich")
                             appendSpace()
                             variableValue(successfulPlayers.size)
@@ -736,7 +736,7 @@ fun advancementCommand() = commandTree("advancement") {
 
                     if (successfulPlayers.size < players.size) {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Der Erfolg konnte nicht von allen angegebenen Spielern entfernt werden.")
                             hoverEvent(buildText {
                                 info("Erfolgreich entfernt von")
@@ -752,14 +752,14 @@ fun advancementCommand() = commandTree("advancement") {
 
                     if (successfulPlayers.isEmpty()) {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Es konnte kein Erfolg entfernt werden.")
                         }
                         return@anyExecutor
                     }
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Es wurden erfolgreich")
                         appendSpace()
                         variableValue(successfulPlayers.size)
@@ -780,7 +780,7 @@ fun advancementCommand() = commandTree("advancement") {
 
                     if (progress.isDone) {
                         executor.sendText {
-                            appendPrefix()
+                            appendInfoPrefix()
                             info("Der Spieler ")
                             variableValue(player.name)
                             info(" hat den Erfolg ")
@@ -792,7 +792,7 @@ fun advancementCommand() = commandTree("advancement") {
 
                     if (progress.awardedCriteria.isEmpty()) {
                         executor.sendText {
-                            appendPrefix()
+                            appendInfoPrefix()
                             info("Der Spieler ")
                             variableValue(player.name)
                             info(" hat den Erfolg ")
@@ -803,7 +803,7 @@ fun advancementCommand() = commandTree("advancement") {
                     }
 
                     executor.sendText {
-                        appendPrefix()
+                        appendInfoPrefix()
                         info("Der Spieler ")
                         variableValue(player.name)
                         info(" hat den Erfolg ")

@@ -18,7 +18,7 @@ fun toolCommand() = commandTree("tool") {
 
             if (itemInHand.isEmpty) {
                 player.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Du musst ein Item in der Hand halten.")
                 }
                 return@playerExecutor
@@ -27,7 +27,7 @@ fun toolCommand() = commandTree("tool") {
             itemInHand.editMeta(Damageable::class.java) {
                 if (!it.hasDamage()) {
                     player.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Das Item in deiner Hand ist nicht beschädigt.")
                     }
                     return@editMeta
@@ -36,7 +36,7 @@ fun toolCommand() = commandTree("tool") {
                 it.damage = 0
 
                 player.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Das Item wurde repariert.")
                 }
             }
@@ -50,7 +50,7 @@ fun toolCommand() = commandTree("tool") {
 
             if (itemInHand.type.isAir) {
                 player.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Du musst ein Item in der Hand halten.")
                 }
                 return@playerExecutor
@@ -58,7 +58,7 @@ fun toolCommand() = commandTree("tool") {
 
             val upgradedItem = upgradeItem(itemInHand) ?: run {
                 player.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Dieses Item kann nicht verbessert werden.")
                 }
                 return@playerExecutor
@@ -67,7 +67,7 @@ fun toolCommand() = commandTree("tool") {
             player.inventory.setItemInMainHand(upgradedItem)
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Das Item wurde verbessert.")
             }
         }
@@ -80,7 +80,7 @@ fun toolCommand() = commandTree("tool") {
 
             if (itemInHand.type.isAir) {
                 player.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Du musst ein Item in der Hand halten.")
                 }
                 return@playerExecutor
@@ -88,7 +88,7 @@ fun toolCommand() = commandTree("tool") {
 
             val downgradedItem = downgradeItem(itemInHand) ?: run {
                 player.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Dieses Item kann nicht verschlechtert werden.")
                 }
                 return@playerExecutor
@@ -97,7 +97,7 @@ fun toolCommand() = commandTree("tool") {
             player.inventory.setItemInMainHand(downgradedItem)
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Das Item wurde verschlechtert.")
             }
         }

@@ -13,14 +13,14 @@ fun spawnCommand() = commandTree("spawn") {
     withPermission(EssentialsPermissionRegistry.SPAWN_COMMAND)
     playerExecutor { player, _ ->
         player.sendText {
-            appendPrefix()
+            appendInfoPrefix()
             info("Du wirst zum Spawn teleportiert...")
         }
 
         player.teleportAsync(player.world.spawnLocation, PlayerTeleportEvent.TeleportCause.COMMAND)
             .thenRun {
                 player.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Du wurdest zum Spawn teleportiert.")
                 }
             }
@@ -32,7 +32,7 @@ fun spawnCommand() = commandTree("spawn") {
             val world: World by args
 
             player.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("Du wirst zum Spawn der Welt ")
                 variableValue(world.name)
                 info(" teleportiert...")
@@ -41,7 +41,7 @@ fun spawnCommand() = commandTree("spawn") {
             player.teleportAsync(world.spawnLocation, PlayerTeleportEvent.TeleportCause.COMMAND)
                 .thenRun {
                     player.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du wurdest zum Spawn der Welt ")
                         variableValue(world.name)
                         success(" teleportiert.")

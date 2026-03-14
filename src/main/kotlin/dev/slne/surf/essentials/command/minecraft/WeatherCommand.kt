@@ -20,7 +20,7 @@ fun weatherCommand() = commandTree("weather") {
     literalArgument("query") {
         playerExecutor { player, _ ->
             player.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("In der Welt ")
                 variableValue(player.world.name)
                 info(" ist das Wetter aktuell ")
@@ -36,7 +36,7 @@ fun weatherCommand() = commandTree("weather") {
 
             weather.setWeather(player.world, 6000)
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Das Wetter wurde zu ")
                 variableValue(weather.displayName)
                 success(" geändert.")
@@ -50,7 +50,7 @@ fun weatherCommand() = commandTree("weather") {
 
                 weather.setWeather(player.world, duration.toMillis().ticks())
                 player.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Das Wetter wurde zu ")
                     variableValue(weather.displayName)
                     success(" für ")

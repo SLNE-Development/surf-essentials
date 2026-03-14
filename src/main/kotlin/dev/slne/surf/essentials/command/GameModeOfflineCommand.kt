@@ -30,7 +30,7 @@ fun gameModeOfflineCommand() = commandTree("gamemodeoffline") {
 
                     player.setOfflineGameMode(gameMode)
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Der Spielmodus von ")
                         variableValue(player.name ?: target)
                         success(" wurde zu ")

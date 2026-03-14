@@ -4,17 +4,18 @@ import dev.jorel.commandapi.CommandTree
 import dev.jorel.commandapi.arguments.Argument
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.CustomArgument
-import dev.jorel.commandapi.arguments.StringArgument
+import dev.jorel.commandapi.arguments.NamespacedKeyArgument
 import dev.slne.surf.essentials.util.GameRuleWrapper
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import org.bukkit.GameRule
+import org.bukkit.NamespacedKey
 
 class GameruleArgument(nodeName: String) :
-    CustomArgument<GameRule<*>, String>(StringArgument(nodeName), { info ->
-        GameRuleWrapper.getByName(info.input)
+    CustomArgument<GameRule<*>, NamespacedKey>(NamespacedKeyArgument(nodeName), { info ->
+        GameRuleWrapper.getByKey(info.input)
             ?: throw CustomArgumentException.fromAdventureComponent {
                 buildText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Die Spielregel wurde nicht gefunden.")
                 }
             }

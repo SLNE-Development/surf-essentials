@@ -17,7 +17,7 @@ class WorldFoldersArgument(nodeName: String) :
         } else {
             throw CustomArgumentException.fromAdventureComponent {
                 buildText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Der Welten-Ordner wurde nicht gefunden.")
                 }
             }

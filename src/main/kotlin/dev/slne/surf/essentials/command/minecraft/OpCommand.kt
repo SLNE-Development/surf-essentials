@@ -16,7 +16,7 @@ fun opCommand() = commandTree("op") {
 
             if (player.isOp) {
                 executor.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Der Spieler ist bereits ein Operator.")
                 }
                 return@anyExecutor
@@ -25,13 +25,13 @@ fun opCommand() = commandTree("op") {
             player.isOp = true
 
             executor.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 variableValue(player.name)
                 success(" ist nun ein Operator.")
             }
 
             player.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("Du bist nun ein Operator.")
             }
         }

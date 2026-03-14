@@ -20,14 +20,14 @@ fun effectCommand() = commandTree("effect") {
         playerExecutor { player, _ ->
             if (player.activePotionEffects.isEmpty()) {
                 player.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Du hast keine aktiven Effekte.")
                 }
                 return@playerExecutor
             }
 
             player.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("Du hast aktuell ")
                 variableValue(player.activePotionEffects.size)
                 info(" aktive Effekte: ")
@@ -72,7 +72,7 @@ fun effectCommand() = commandTree("effect") {
                                 }
 
                                 executor.sendText {
-                                    appendPrefix()
+                                    appendSuccessPrefix()
                                     success("Du hast ")
                                     translatable(effect.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
                                     success(" für ")
@@ -99,7 +99,7 @@ fun effectCommand() = commandTree("effect") {
         playerExecutor { player, _ ->
             if (player.activePotionEffects.isEmpty()) {
                 player.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Du hast keine aktiven Effekte.")
                 }
                 return@playerExecutor
@@ -108,7 +108,7 @@ fun effectCommand() = commandTree("effect") {
             player.clearActivePotionEffects()
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du hast alle deine Effekte entfernt.")
             }
         }
@@ -122,7 +122,7 @@ fun effectCommand() = commandTree("effect") {
                 }
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Du hast alle Effekte von ")
 
                     if (players.size == 1) {
@@ -145,7 +145,7 @@ fun effectCommand() = commandTree("effect") {
                     }
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du hast den Effekt ")
                         translatable(effect.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
                         success(" von ")

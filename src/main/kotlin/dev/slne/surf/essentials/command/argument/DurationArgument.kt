@@ -13,7 +13,7 @@ class DurationArgument(nodeName: String) :
     CustomArgument<Duration, String>(StringArgument(nodeName), { info ->
         parseDuration(info.input) ?: throw CustomArgumentException.fromAdventureComponent {
             buildText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Bitte gebe eine gültige Dauer an.")
             }
         }

@@ -14,7 +14,7 @@ class WorldTypeArgument(nodeName: String) :
         WorldType.entries.firstOrNull { it.name == info.input.uppercase() }
             ?: throw CustomArgumentException.fromAdventureComponent {
                 buildText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Der Welttyp wurde nicht gefunden.")
                 }
             }

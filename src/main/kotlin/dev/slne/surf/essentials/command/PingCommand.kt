@@ -12,7 +12,7 @@ fun pingCommand() = commandTree("ping") {
         val ping = player.ping.toLong()
 
         player.sendText {
-            appendPrefix()
+            appendInfoPrefix()
             info("Du hast einen Ping von ")
             coloredPing(ping)
             info(".")
@@ -27,7 +27,7 @@ fun pingCommand() = commandTree("ping") {
             val ping = target.ping.toLong()
 
             executor.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 variableValue(target.name)
                 info(" hat einen Ping von ")
                 coloredPing(ping)

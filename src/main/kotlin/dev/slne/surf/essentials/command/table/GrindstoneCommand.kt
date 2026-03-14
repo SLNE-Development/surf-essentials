@@ -12,7 +12,7 @@ fun grindstoneCommand() = commandTree("grindstone") {
     playerExecutor { player, _ ->
         player.openGrindstone(null, true)
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du hast einen Schleifstein geöffnet.")
         }
     }

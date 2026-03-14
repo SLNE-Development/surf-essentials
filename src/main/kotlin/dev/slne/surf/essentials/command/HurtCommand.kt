@@ -17,7 +17,7 @@ fun hurtCommand() = commandTree("hurt") {
                 player.damage(damage)
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Du hast ")
                     variableValue(player.name)
                     success(" ")

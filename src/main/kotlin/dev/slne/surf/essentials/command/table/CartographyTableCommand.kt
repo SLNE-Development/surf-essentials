@@ -12,7 +12,7 @@ fun cartographyTableCommand() = commandTree("cartographyTable") {
     playerExecutor { player, _ ->
         player.openCartographyTable(null, true)
         player.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du hast einen Kartentisch geöffnet.")
         }
     }

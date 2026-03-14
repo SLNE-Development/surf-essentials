@@ -1,5 +1,6 @@
 package dev.slne.surf.essentials.command.minecraft
 
+import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.command.argument.namedTimeArgument
@@ -17,7 +18,7 @@ fun timeCommand() = commandTree("time") {
             val time = executor.world.fullTime / 24000L % Int.MAX_VALUE
 
             executor.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("Die")
                 appendSpace()
                 variableValue("Zeit")
@@ -37,7 +38,7 @@ fun timeCommand() = commandTree("time") {
                 val time = executor.world.fullTime / 24000L % Int.MAX_VALUE
 
                 executor.sendText {
-                    appendPrefix()
+                    appendInfoPrefix()
                     info("Die")
                     appendSpace()
                     variableValue("Zeit")
@@ -58,7 +59,7 @@ fun timeCommand() = commandTree("time") {
                 val time = executor.world.fullTime % 24000L
 
                 executor.sendText {
-                    appendPrefix()
+                    appendInfoPrefix()
                     info("Die")
                     appendSpace()
                     variableValue("Tageszeit")
@@ -79,7 +80,7 @@ fun timeCommand() = commandTree("time") {
                 val time = executor.world.gameTime
 
                 executor.sendText {
-                    appendPrefix()
+                    appendInfoPrefix()
                     info("Die")
                     appendSpace()
                     variableValue("Spielzeit")
@@ -102,11 +103,13 @@ fun timeCommand() = commandTree("time") {
                 val time: Int by args
 
                 Bukkit.getWorlds().forEach {
-                    it.fullTime = time.toLong()
+                    plugin.launch(plugin.globalRegionDispatcher) {
+                        it.fullTime = time.toLong()
+                    }
                 }
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Die Zeit wurde auf")
                     appendSpace()
                     variableValue("$time Ticks")
@@ -130,12 +133,14 @@ fun timeCommand() = commandTree("time") {
                         (24000 - current) + target
                     }
 
-                    world.fullTime += diff
+                    plugin.launch(plugin.globalRegionDispatcher) {
+                        world.fullTime += diff
+                    }
                 }
 
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Die Zeit wurde auf")
                     appendSpace()
                     variableValue(namedTime.timeName)
@@ -152,17 +157,17 @@ fun timeCommand() = commandTree("time") {
                 val time: Int by args
 
                 Bukkit.getWorlds().forEach {
-                    if (time !in 100..24000) {
-                        it.fullTime += time
-                    } else {
-                        plugin.launch {
+                    plugin.launch(plugin.globalRegionDispatcher) {
+                        if (time !in 100..24000) {
+                            it.fullTime += time
+                        } else {
                             surfBukkitApi.skipTimeSmoothly(it, time.toLong())
                         }
                     }
                 }
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Die Zeit wurde um")
                     appendSpace()
                     variableValue("$time Ticks")

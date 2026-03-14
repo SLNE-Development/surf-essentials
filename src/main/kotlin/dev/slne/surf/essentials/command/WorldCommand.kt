@@ -30,7 +30,7 @@ fun worldCommand() = commandTree("world") {
 
                 if (Bukkit.getServer().isFolia()) {
                     executor.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
                     }
                     return@anyExecutor
@@ -38,7 +38,7 @@ fun worldCommand() = commandTree("world") {
 
                 if (worldService.isLocked(world)) {
                     executor.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Die Welt ist bereits gesperrt.")
                     }
                     return@anyExecutor
@@ -46,7 +46,7 @@ fun worldCommand() = commandTree("world") {
 
                 worldService.lock(world)
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Die Welt ")
                     variableValue(world.name)
                     success(" wurde gesperrt.")
@@ -63,7 +63,7 @@ fun worldCommand() = commandTree("world") {
 
                 if (Bukkit.getServer().isFolia()) {
                     executor.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
                     }
                     return@anyExecutor
@@ -71,7 +71,7 @@ fun worldCommand() = commandTree("world") {
 
                 if (!worldService.isLocked(world)) {
                     executor.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Die Welt ist nicht gesperrt.")
                     }
                     return@anyExecutor
@@ -79,7 +79,7 @@ fun worldCommand() = commandTree("world") {
 
                 worldService.unlock(world)
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Die Welt ")
                     variableValue(world.name)
                     success(" wurde entsperrt.")
@@ -95,7 +95,7 @@ fun worldCommand() = commandTree("world") {
                 val world: World by args
 
                 player.sendText {
-                    appendPrefix()
+                    appendInfoPrefix()
                     info("Du wirst in die Welt ")
                     variableValue(world.name)
                     info(" teleportiert...")
@@ -103,7 +103,7 @@ fun worldCommand() = commandTree("world") {
 
                 player.teleportAsync(world.spawnLocation).thenRun {
                     player.sendText {
-                        appendPrefix()
+                        appendInfoPrefix()
                         success("Du wurdest in die Welt ")
                         variableValue(world.name)
                         success(" teleportiert.")
@@ -121,7 +121,7 @@ fun worldCommand() = commandTree("world") {
 
                 if (Bukkit.getServer().isFolia()) {
                     executor.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
                     }
                     return@anyExecutor
@@ -137,7 +137,7 @@ fun worldCommand() = commandTree("world") {
 
                     if (Bukkit.getServer().isFolia()) {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
                         }
                         return@anyExecutor
@@ -154,7 +154,7 @@ fun worldCommand() = commandTree("world") {
 
                         if (Bukkit.getServer().isFolia()) {
                             executor.sendText {
-                                appendPrefix()
+                                appendErrorPrefix()
                                 error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
                             }
                             return@anyExecutor
@@ -172,7 +172,7 @@ fun worldCommand() = commandTree("world") {
 
                             if (Bukkit.getServer().isFolia()) {
                                 executor.sendText {
-                                    appendPrefix()
+                                    appendErrorPrefix()
                                     error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
                                 }
                                 return@anyExecutor
@@ -198,7 +198,7 @@ fun worldCommand() = commandTree("world") {
 
                                 if (Bukkit.getServer().isFolia()) {
                                     executor.sendText {
-                                        appendPrefix()
+                                        appendErrorPrefix()
                                         error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
                                     }
                                     return@anyExecutor
@@ -226,7 +226,7 @@ fun worldCommand() = commandTree("world") {
 
                                     if (Bukkit.getServer().isFolia()) {
                                         executor.sendText {
-                                            appendPrefix()
+                                            appendErrorPrefix()
                                             error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
                                         }
                                         return@anyExecutor
@@ -258,7 +258,7 @@ fun worldCommand() = commandTree("world") {
 
                 if (Bukkit.getServer().isFolia()) {
                     executor.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
                     }
                     return@anyExecutor
@@ -277,7 +277,7 @@ fun worldCommand() = commandTree("world") {
 
                 if (Bukkit.getServer().isFolia()) {
                     executor.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
                     }
                     return@anyExecutor
@@ -297,7 +297,7 @@ fun worldCommand() = commandTree("world") {
 
                 if (Bukkit.getServer().isFolia()) {
                     executor.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
                     }
                     return@anyExecutor
@@ -314,7 +314,7 @@ fun worldCommand() = commandTree("world") {
 
             if (worlds.isEmpty()) {
                 executor.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Es sind keine Welten geladen.")
                 }
                 return@anyExecutor
@@ -351,7 +351,7 @@ fun worldCommand() = commandTree("world") {
 
                                 if (world == null) {
                                     executor.sendText {
-                                        appendPrefix()
+                                        appendErrorPrefix()
                                         error("Die Welt ${row.worldName} ist nicht mehr geladen.")
                                     }
                                     return@callback
@@ -359,14 +359,14 @@ fun worldCommand() = commandTree("world") {
 
                                 val player = it as? Player ?: run {
                                     executor.sendText {
-                                        appendPrefix()
+                                        appendErrorPrefix()
                                         error("Du musst ein Spieler sein, um teleportiert zu werden.")
                                     }
                                     return@callback
                                 }
 
                                 player.sendText {
-                                    appendPrefix()
+                                    appendInfoPrefix()
                                     info("Du wirst in die Welt ")
                                     variableValue(world.name)
                                     info(" teleportiert...")
@@ -374,7 +374,7 @@ fun worldCommand() = commandTree("world") {
 
                                 player.teleportAsync(world.spawnLocation).thenRun {
                                     player.sendText {
-                                        appendPrefix()
+                                        appendSuccessPrefix()
                                         success("Du wurdest in die Welt ")
                                         variableValue(world.name)
                                         success(" teleportiert.")
@@ -387,7 +387,7 @@ fun worldCommand() = commandTree("world") {
             }
 
             executor.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("Es sind insgesamt ")
                 variableValue(worlds.size.toString())
                 info(" Welt(en) geladen:")

@@ -13,12 +13,12 @@ fun stopCommand() = commandTree("stop") {
     withPermission(EssentialsPermissionRegistry.STOP_COMMAND)
     anyExecutor { executor, _ ->
         executor.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Der Server wird heruntergefahren...")
         }
 
         Bukkit.broadcast(buildText {
-            appendPrefix()
+            appendSuccessPrefix()
             variableValue(executor.name)
             success(" fährt den Server herunter...")
         }, EssentialsPermissionRegistry.STOP_NOTIFY)

@@ -79,7 +79,7 @@ fun knightCommand() = commandTree("knight") {
             })
 
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Du bist nun ein edler Ritter!")
             }
         }

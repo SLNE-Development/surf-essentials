@@ -30,7 +30,7 @@ fun restartCommand() = commandTree("restart") {
         anyExecutor { executor, _ ->
             if (restartTask == null) {
                 executor.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Es läuft kein geplanter Neustart.")
                 }
             }
@@ -39,12 +39,12 @@ fun restartCommand() = commandTree("restart") {
             restartTask = null
 
             executor.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Der geplante Neustart wurde abgebrochen.")
             }
 
             Bukkit.broadcast(buildText {
-                appendPrefix()
+                appendErrorPrefix()
                 error("Der geplante Neustart wurde abgebrochen.")
             }, EssentialsPermissionRegistry.RESTART_NOTIFY)
         }
@@ -52,12 +52,12 @@ fun restartCommand() = commandTree("restart") {
 
     anyExecutor { executor, _ ->
         executor.sendText {
-            appendPrefix()
+            appendSuccessPrefix()
             success("Du startest den Server neu...")
         }
 
         Bukkit.broadcast(buildText {
-            appendPrefix()
+            appendSuccessPrefix()
             variableValue(executor.name)
             success(" startet den Server neu...")
         }, EssentialsPermissionRegistry.RESTART_NOTIFY)
@@ -78,7 +78,7 @@ fun restartCommand() = commandTree("restart") {
 
             if (seconds < 1) {
                 executor.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Die Verzögerung muss mindestens 1 Sekunde betragen.")
                 }
                 return@anyExecutor
@@ -89,7 +89,7 @@ fun restartCommand() = commandTree("restart") {
             restartTask = Bukkit.getAsyncScheduler().runAtFixedRate(plugin, {
                 if (remaining.seconds <= 0) {
                     Bukkit.broadcast(buildText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Der Server wird ")
                         variableValue("jetzt")
                         success(" neu gestartet...")
@@ -108,7 +108,7 @@ fun restartCommand() = commandTree("restart") {
                 if (shouldNotify(remaining, delay)) {
                     forEachPlayer {
                         it.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Der Server wird in ")
                             variableValue(remaining.userContent())
                             success(" neu gestartet...")
@@ -139,7 +139,7 @@ fun restartCommand() = commandTree("restart") {
 
                 if (seconds < 1) {
                     executor.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Die Verzögerung muss mindestens 1 Sekunde betragen.")
                     }
                     return@anyExecutor
@@ -150,7 +150,7 @@ fun restartCommand() = commandTree("restart") {
                 restartTask = Bukkit.getAsyncScheduler().runAtFixedRate(plugin, {
                     if (remaining.seconds <= 0) {
                         Bukkit.broadcast(buildText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Der Server wird ")
                             variableValue("jetzt")
                             success(" neu gestartet...")
@@ -169,7 +169,7 @@ fun restartCommand() = commandTree("restart") {
                     if (shouldNotify(remaining, delay)) {
                         forEachPlayer {
                             it.sendText {
-                                appendPrefix()
+                                appendSuccessPrefix()
                                 success("Der Server wird in ")
                                 variableValue(remaining.userContent())
                                 success(" neu gestartet...")

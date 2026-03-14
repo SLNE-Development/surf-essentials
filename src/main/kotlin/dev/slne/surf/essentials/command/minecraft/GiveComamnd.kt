@@ -2,6 +2,7 @@ package dev.slne.surf.essentials.command.minecraft
 
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
+import dev.slne.surf.essentials.util.util.translatable
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -17,11 +18,9 @@ fun giveCommand() = commandTree("give") {
                 players.forEach { it.inventory.addItem(itemStack) }
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Du hast ")
-                    variableValue(itemStack.amount.toString())
-                    success("x ")
-                    variableValue(itemStack.type.name)
+                    translatable(itemStack.type.translationKey())
                     success(" an ")
                     variableValue(players.size.toString())
                     success(" Spieler vergeben.")
@@ -29,12 +28,43 @@ fun giveCommand() = commandTree("give") {
 
                 players.forEach { player ->
                     player.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Du hast ")
-                        variableValue(itemStack.amount.toString())
-                        success("x ")
-                        variableValue(itemStack.type.name)
+                        translatable(itemStack.type.translationKey())
                         success(" erhalten.")
+                    }
+                }
+            }
+
+            integerArgument("amount") {
+                anyExecutor { executor, args ->
+                    val itemStack: ItemStack by args
+                    val amount: Int by args
+                    val players: Collection<Player> by args
+
+                    itemStack.amount = amount
+                    players.forEach { it.inventory.addItem(itemStack) }
+
+                    executor.sendText {
+                        appendSuccessPrefix()
+                        success("Du hast ")
+                        variableValue(amount.toString())
+                        success("x ")
+                        translatable(itemStack.type.translationKey())
+                        success(" an ")
+                        variableValue(players.size.toString())
+                        success(" Spieler vergeben.")
+                    }
+
+                    players.forEach { player ->
+                        player.sendText {
+                            appendSuccessPrefix()
+                            success("Du hast ")
+                            variableValue(amount.toString())
+                            success("x ")
+                            translatable(itemStack.type.translationKey())
+                            success(" erhalten.")
+                        }
                     }
                 }
             }

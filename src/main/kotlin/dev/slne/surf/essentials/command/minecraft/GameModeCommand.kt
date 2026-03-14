@@ -19,7 +19,7 @@ fun gameModeCommand() = commandTree("gamemode") {
 
             player.gameMode = gameMode
             player.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Dein Spielmodus wurde zu ")
                 translatable(gameMode.translationKey()).color(Colors.VARIABLE_VALUE)
                 success(" geändert.")
@@ -39,7 +39,7 @@ fun gameModeCommand() = commandTree("gamemode") {
                 }
 
                 executor.sendText {
-                    appendPrefix()
+                    appendSuccessPrefix()
                     success("Der Spielmodus von ")
 
                     if (changedPlayers.keys.size == 1) {
@@ -55,7 +55,7 @@ fun gameModeCommand() = commandTree("gamemode") {
 
                 for (player in changedPlayers.keys) {
                     player.sendText {
-                        appendPrefix()
+                        appendInfoPrefix()
                         info("Dein Spielmodus wurde zu ")
                         translatable(gameMode.translationKey()).color(Colors.VARIABLE_VALUE)
                         info(" geändert.")

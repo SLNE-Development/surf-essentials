@@ -14,7 +14,7 @@ fun functionCommand() = commandTree("function") {
         anyExecutor { executor, args ->
             if (Bukkit.getServer().isFolia()) {
                 executor.sendText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Der Function-Befehl wird auf Folia-Servern nicht unterstützt.")
                 }
                 return@anyExecutor
@@ -24,7 +24,7 @@ fun functionCommand() = commandTree("function") {
             function.run()
 
             executor.sendText {
-                appendPrefix()
+                appendSuccessPrefix()
                 success("Die Funktion ")
                 variableValue(function.key.toString())
                 success(" wurde ausgeführt.")
@@ -36,7 +36,7 @@ fun functionCommand() = commandTree("function") {
                 anyExecutor { executor, args ->
                     if (Bukkit.getServer().isFolia()) {
                         executor.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Der Function-Befehl wird auf Folia-Servern nicht unterstützt.")
                         }
                         return@anyExecutor
@@ -48,7 +48,7 @@ fun functionCommand() = commandTree("function") {
                     function.runAs(entity)
 
                     executor.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Die Funktion ")
                         variableValue(function.key.toString())
                         success(" wurde als ")
