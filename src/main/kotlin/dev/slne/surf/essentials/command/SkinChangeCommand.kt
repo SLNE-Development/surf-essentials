@@ -72,7 +72,7 @@ fun skinChangeCommand() = commandTree("skin") {
                     executor.sendText {
                         appendSuccessPrefix()
                         success("Der Skin von ")
-                        variableValue(targetName)
+                        variableValue(target.name)
                         success(" wurde geändert.")
                     }
 
