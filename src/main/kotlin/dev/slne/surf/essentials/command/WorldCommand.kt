@@ -8,6 +8,7 @@ import dev.slne.surf.essentials.command.argument.world.worldsArgument
 import dev.slne.surf.essentials.service.worldService
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.util.isFolia
+import dev.slne.surf.surfapi.bukkit.api.surfBukkitApi
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
@@ -28,10 +29,10 @@ fun worldCommand() = commandTree("world") {
             anyExecutor { executor, args ->
                 val world: World by args
 
-                if (Bukkit.getServer().isFolia()) {
+                if (Bukkit.getServer().isFolia() && !surfBukkitApi.isCanvasMc) {
                     executor.sendText {
                         appendErrorPrefix()
-                        error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
+                        error("Dieser Befehl wird auf Folia-Non-Canvas-Servern nicht unterstützt.")
                     }
                     return@anyExecutor
                 }
@@ -61,10 +62,10 @@ fun worldCommand() = commandTree("world") {
             anyExecutor { executor, args ->
                 val world: World by args
 
-                if (Bukkit.getServer().isFolia()) {
+                if (Bukkit.getServer().isFolia() && !surfBukkitApi.isCanvasMc) {
                     executor.sendText {
                         appendErrorPrefix()
-                        error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
+                        error("Dieser Befehl wird auf Folia-Non-Canvas-Servern nicht unterstützt.")
                     }
                     return@anyExecutor
                 }
