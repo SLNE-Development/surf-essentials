@@ -1,7 +1,10 @@
 package dev.slne.surf.essentials.command.minecraft
 
+import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
+import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.essentials.command.argument.gameruleArgument
+import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.util.translatable
 import dev.slne.surf.surfapi.core.api.messages.Colors
@@ -45,15 +48,17 @@ fun gameRuleCommand() = commandTree("gamerule") {
                     return@anyExecutor
                 }
 
-                executor.server.worlds.forEach { it.setGameRule(gamerule, parsedValue) }
+                plugin.launch(plugin.globalRegionDispatcher) {
+                    executor.server.worlds.forEach { it.setGameRule(gamerule, parsedValue) }
 
-                executor.sendText {
-                    appendSuccessPrefix()
-                    success("Die Spielregel ")
-                    translatable(gamerule.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
-                    success(" wurde auf ")
-                    variableValue(parsedValue.toString())
-                    success(" für alle Welten gesetzt.")
+                    executor.sendText {
+                        appendSuccessPrefix()
+                        success("Die Spielregel ")
+                        translatable(gamerule.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
+                        success(" wurde auf ")
+                        variableValue(parsedValue.toString())
+                        success(" für alle Welten gesetzt.")
+                    }
                 }
             }
 
@@ -75,18 +80,19 @@ fun gameRuleCommand() = commandTree("gamerule") {
                         return@anyExecutor
                     }
 
+                    plugin.launch(plugin.globalRegionDispatcher) {
+                        world.setGameRule(gamerule, parsedValue)
 
-                    world.setGameRule(gamerule, parsedValue)
-
-                    executor.sendText {
-                        appendSuccessPrefix()
-                        success("Die Spielregel ")
-                        translatable(gamerule.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
-                        success(" wurde auf ")
-                        variableValue(parsedValue.toString())
-                        success(" für die Welt ")
-                        variableValue(world.name)
-                        success(" gesetzt.")
+                        executor.sendText {
+                            appendSuccessPrefix()
+                            success("Die Spielregel ")
+                            translatable(gamerule.translationKey()).colorIfAbsent(Colors.VARIABLE_VALUE)
+                            success(" wurde auf ")
+                            variableValue(parsedValue.toString())
+                            success(" für die Welt ")
+                            variableValue(world.name)
+                            success(" gesetzt.")
+                        }
                     }
                 }
             }
