@@ -12,5 +12,6 @@ object PaperListenerManager {
         UnknownCommandListener.register()
         WorldListener.register()
         SpecialItemListener.register()
+        HungerListener.register()
     }
 }
