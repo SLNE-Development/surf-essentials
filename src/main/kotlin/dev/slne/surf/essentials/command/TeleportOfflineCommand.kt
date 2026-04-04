@@ -2,11 +2,11 @@ package dev.slne.surf.essentials.command
 
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.*
+import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.util.getLatestLocation
 import dev.slne.surf.essentials.util.util.setOfflineLocation
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player

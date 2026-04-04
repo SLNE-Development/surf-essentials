@@ -1,11 +1,11 @@
 package dev.slne.surf.essentials.command
 
 import dev.jorel.commandapi.kotlindsl.*
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.core.messages.adventure.showTitle
+import dev.slne.surf.api.paper.extensions.server
+import dev.slne.surf.api.paper.util.forEachPlayer
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
-import dev.slne.surf.surfapi.bukkit.api.extensions.server
-import dev.slne.surf.surfapi.bukkit.api.util.forEachPlayer
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import dev.slne.surf.surfapi.core.api.messages.adventure.showTitle
 import net.kyori.adventure.text.minimessage.MiniMessage
 
 fun broadcastCommand() = commandTree("broadcast") {

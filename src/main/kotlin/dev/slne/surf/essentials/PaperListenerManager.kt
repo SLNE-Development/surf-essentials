@@ -1,7 +1,7 @@
 package dev.slne.surf.essentials
 
+import dev.slne.surf.api.paper.event.register
 import dev.slne.surf.essentials.listener.*
-import dev.slne.surf.surfapi.bukkit.api.event.register
 
 object PaperListenerManager {
     fun registerAll() {

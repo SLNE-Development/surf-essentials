@@ -1,11 +1,11 @@
 package dev.slne.surf.essentials.command
 
 import dev.jorel.commandapi.kotlindsl.*
+import dev.slne.surf.api.core.font.toSmallCaps
+import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.core.messages.adventure.sound
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
-import dev.slne.surf.surfapi.core.api.font.toSmallCaps
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import dev.slne.surf.surfapi.core.api.messages.adventure.sound
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit

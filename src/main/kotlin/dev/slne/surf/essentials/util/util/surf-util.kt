@@ -1,10 +1,10 @@
 package dev.slne.surf.essentials.util.util
 
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.messages.adventure.clickOpensUrl
-import dev.slne.surf.surfapi.core.api.messages.adventure.clickRunsCommand
-import dev.slne.surf.surfapi.core.api.messages.builder.SurfComponentBuilder
+import dev.slne.surf.api.core.messages.Colors
+import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.adventure.clickOpensUrl
+import dev.slne.surf.api.core.messages.adventure.clickRunsCommand
+import dev.slne.surf.api.core.messages.builder.SurfComponentBuilder
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.Style
@@ -16,7 +16,7 @@ fun SurfComponentBuilder.translatable(key: String, vararg args: ComponentLike) =
     append(Component.translatable(key, Style.empty(), *args))
 
 fun SurfComponentBuilder.appendPrefixedKeyArrowLine(key: String, value: String) =
-    appendNewPrefixedLine {
+    appendNewSuccessPrefixedLine {
         appendKeyValue(key, value)
     }
 

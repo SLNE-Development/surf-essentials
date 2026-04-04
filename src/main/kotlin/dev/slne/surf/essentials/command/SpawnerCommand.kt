@@ -1,10 +1,9 @@
 package dev.slne.surf.essentials.command
 
 import dev.jorel.commandapi.kotlindsl.*
+import dev.slne.surf.api.core.messages.Colors
+import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
-import dev.slne.surf.essentials.util.util.translatable
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.Location
 import org.bukkit.block.CreatureSpawner
 import org.bukkit.entity.EntityType

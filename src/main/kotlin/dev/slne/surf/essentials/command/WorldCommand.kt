@@ -1,18 +1,19 @@
 package dev.slne.surf.essentials.command
 
 import dev.jorel.commandapi.kotlindsl.*
+import dev.slne.surf.api.core.font.toSmallCaps
+import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.core.messages.pagination.Pagination
+import dev.slne.surf.api.paper.SurfApiPaper
+import dev.slne.surf.api.paper.command.executors.anyExecutorSuspend
 import dev.slne.surf.essentials.command.argument.world.worldEnvironmentArgument
 import dev.slne.surf.essentials.command.argument.world.worldFoldersArgument
 import dev.slne.surf.essentials.command.argument.world.worldTypeArgument
 import dev.slne.surf.essentials.command.argument.world.worldsArgument
-import dev.slne.surf.essentials.service.worldService
+import dev.slne.surf.essentials.service.WorldService
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.util.isFolia
-import dev.slne.surf.surfapi.bukkit.api.surfBukkitApi
-import dev.slne.surf.surfapi.core.api.font.toSmallCaps
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import dev.slne.surf.surfapi.core.api.messages.pagination.Pagination
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
@@ -29,7 +30,7 @@ fun worldCommand() = commandTree("world") {
             anyExecutor { executor, args ->
                 val world: World by args
 
-                if (Bukkit.getServer().isFolia() && !surfBukkitApi.isCanvasMc) {
+                if (Bukkit.getServer().isFolia() && !SurfApiPaper.isCanvasMc) {
                     executor.sendText {
                         appendErrorPrefix()
                         error("Dieser Befehl wird auf Folia-Non-Canvas-Servern nicht unterstützt.")
@@ -37,7 +38,7 @@ fun worldCommand() = commandTree("world") {
                     return@anyExecutor
                 }
 
-                if (worldService.isLocked(world)) {
+                if (WorldService.isLocked(world)) {
                     executor.sendText {
                         appendErrorPrefix()
                         error("Die Welt ist bereits gesperrt.")
@@ -45,7 +46,7 @@ fun worldCommand() = commandTree("world") {
                     return@anyExecutor
                 }
 
-                worldService.lock(world)
+                WorldService.lock(world)
                 executor.sendText {
                     appendSuccessPrefix()
                     success("Die Welt ")
@@ -62,7 +63,7 @@ fun worldCommand() = commandTree("world") {
             anyExecutor { executor, args ->
                 val world: World by args
 
-                if (Bukkit.getServer().isFolia() && !surfBukkitApi.isCanvasMc) {
+                if (Bukkit.getServer().isFolia() && !SurfApiPaper.isCanvasMc) {
                     executor.sendText {
                         appendErrorPrefix()
                         error("Dieser Befehl wird auf Folia-Non-Canvas-Servern nicht unterstützt.")
@@ -70,7 +71,7 @@ fun worldCommand() = commandTree("world") {
                     return@anyExecutor
                 }
 
-                if (!worldService.isLocked(world)) {
+                if (!WorldService.isLocked(world)) {
                     executor.sendText {
                         appendErrorPrefix()
                         error("Die Welt ist nicht gesperrt.")
@@ -78,7 +79,7 @@ fun worldCommand() = commandTree("world") {
                     return@anyExecutor
                 }
 
-                worldService.unlock(world)
+                WorldService.unlock(world)
                 executor.sendText {
                     appendSuccessPrefix()
                     success("Die Welt ")
@@ -128,7 +129,7 @@ fun worldCommand() = commandTree("world") {
                     return@anyExecutor
                 }
 
-                worldService.create(executor, name, null, null, null, null, null)
+                WorldService.create(executor, name, null, null, null, null, null)
             }
 
             worldEnvironmentArgument("environment") {
@@ -144,7 +145,7 @@ fun worldCommand() = commandTree("world") {
                         return@anyExecutor
                     }
 
-                    worldService.create(executor, name, environment, null, null, null, null)
+                    WorldService.create(executor, name, environment, null, null, null, null)
                 }
 
                 worldTypeArgument("type") {
@@ -161,7 +162,7 @@ fun worldCommand() = commandTree("world") {
                             return@anyExecutor
                         }
 
-                        worldService.create(executor, name, environment, type, null, null, null)
+                        WorldService.create(executor, name, environment, type, null, null, null)
                     }
 
                     booleanArgument("generateStructures") {
@@ -179,7 +180,7 @@ fun worldCommand() = commandTree("world") {
                                 return@anyExecutor
                             }
 
-                            worldService.create(
+                            WorldService.create(
                                 executor,
                                 name,
                                 environment,
@@ -205,7 +206,7 @@ fun worldCommand() = commandTree("world") {
                                     return@anyExecutor
                                 }
 
-                                worldService.create(
+                                WorldService.create(
                                     executor,
                                     name,
                                     environment,
@@ -233,7 +234,7 @@ fun worldCommand() = commandTree("world") {
                                         return@anyExecutor
                                     }
 
-                                    worldService.create(
+                                    WorldService.create(
                                         executor,
                                         name,
                                         environment,
@@ -254,7 +255,7 @@ fun worldCommand() = commandTree("world") {
     literalArgument("delete") {
         worldsArgument("world") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_DELETE)
-            anyExecutor { executor, args ->
+            anyExecutorSuspend { executor, args ->
                 val world: World by args
 
                 if (Bukkit.getServer().isFolia()) {
@@ -262,10 +263,10 @@ fun worldCommand() = commandTree("world") {
                         appendErrorPrefix()
                         error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
                     }
-                    return@anyExecutor
+                    return@anyExecutorSuspend
                 }
 
-                worldService.delete(executor, world)
+                WorldService.delete(executor, world)
             }
         }
     }
@@ -285,7 +286,7 @@ fun worldCommand() = commandTree("world") {
                 }
 
 
-                worldService.load(executor, name)
+                WorldService.load(executor, name)
             }
         }
     }
@@ -293,18 +294,9 @@ fun worldCommand() = commandTree("world") {
     literalArgument("unload") {
         worldsArgument("world") {
             withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_UNLOAD)
-            anyExecutor { executor, args ->
+            anyExecutorSuspend { executor, args ->
                 val world: World by args
-
-                if (Bukkit.getServer().isFolia()) {
-                    executor.sendText {
-                        appendErrorPrefix()
-                        error("Dieser Befehl wird auf Folia-Servern nicht unterstützt.")
-                    }
-                    return@anyExecutor
-                }
-
-                worldService.unload(executor, world)
+                WorldService.unload(executor, world)
             }
         }
     }
@@ -322,7 +314,7 @@ fun worldCommand() = commandTree("world") {
             }
 
             val worldData = worlds.map {
-                WorldData(it.name, worldService.isLocked(it))
+                WorldData(it.name, WorldService.isLocked(it))
             }
 
             val pagination = Pagination<WorldData> {

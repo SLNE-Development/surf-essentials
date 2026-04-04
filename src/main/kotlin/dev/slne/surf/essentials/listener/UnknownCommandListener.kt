@@ -1,9 +1,8 @@
 package dev.slne.surf.essentials.listener
 
-import dev.slne.surf.essentials.util.util.translatable
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.messages.adventure.clickSuggestsCommand
+import dev.slne.surf.api.core.messages.Colors
+import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.adventure.clickSuggestsCommand
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.command.RemoteConsoleCommandSender

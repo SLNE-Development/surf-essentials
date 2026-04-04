@@ -4,8 +4,8 @@ package dev.slne.surf.essentials.command.table
 
 import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.playerExecutor
+import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 fun workbenchCommand() = commandTree("workbench") {
     withAliases("wb")

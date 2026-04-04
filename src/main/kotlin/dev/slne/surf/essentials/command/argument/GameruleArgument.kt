@@ -6,7 +6,7 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.CustomArgument
 import dev.jorel.commandapi.arguments.NamespacedKeyArgument
 import dev.slne.surf.essentials.util.GameRuleWrapper
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.adventure.buildText
 import org.bukkit.GameRule
 import org.bukkit.NamespacedKey
 

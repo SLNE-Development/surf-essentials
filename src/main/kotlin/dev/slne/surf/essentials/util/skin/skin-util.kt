@@ -4,7 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.gson.JsonParser
 import com.sksamuel.aedile.core.asLoadingCache
 import com.sksamuel.aedile.core.expireAfterWrite
-import dev.slne.surf.surfapi.core.api.service.PlayerLookupService
+import dev.slne.surf.api.core.service.PlayerLookupService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient

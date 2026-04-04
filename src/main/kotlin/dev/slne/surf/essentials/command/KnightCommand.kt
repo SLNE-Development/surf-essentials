@@ -4,12 +4,12 @@ import com.github.shynixn.mccoroutine.folia.entityDispatcher
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.playerExecutor
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.builder.buildItem
+import dev.slne.surf.api.paper.builder.displayName
+import dev.slne.surf.api.paper.builder.meta
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
-import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
-import dev.slne.surf.surfapi.bukkit.api.builder.displayName
-import dev.slne.surf.surfapi.bukkit.api.builder.meta
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 

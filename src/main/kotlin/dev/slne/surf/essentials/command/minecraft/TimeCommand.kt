@@ -3,12 +3,12 @@ package dev.slne.surf.essentials.command.minecraft
 import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.*
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.SurfApiPaper
 import dev.slne.surf.essentials.command.argument.namedTimeArgument
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.time.NamedTime
-import dev.slne.surf.surfapi.bukkit.api.surfBukkitApi
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.Bukkit
 
 fun timeCommand() = commandTree("time") {
@@ -168,7 +168,7 @@ fun timeCommand() = commandTree("time") {
                         if (time !in 100..24000) {
                             it.fullTime += time
                         } else {
-                            surfBukkitApi.skipTimeSmoothly(it, time.toLong())
+                            SurfApiPaper.skipTimeSmoothly(it, time.toLong())
                         }
                     }
                 }

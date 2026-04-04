@@ -4,12 +4,12 @@ import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.entitySelectorArgumentOnePlayer
 import dev.jorel.commandapi.kotlindsl.getValue
+import dev.slne.surf.api.core.font.toSmallCaps
+import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.util.appendCommandButton
 import dev.slne.surf.essentials.util.util.appendLinkButton
 import dev.slne.surf.essentials.util.util.appendPrefixedKeyArrowLine
-import dev.slne.surf.surfapi.core.api.font.toSmallCaps
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 
@@ -51,7 +51,7 @@ fun infoCommand() = commandTree("pinfo") {
                 appendPrefixedKeyArrowLine("Ping", ping)
                 appendPrefixedKeyArrowLine("Standort", location)
 
-                appendNewPrefixedLine {
+                appendNewSuccessPrefixedLine {
                     appendLinkButton("Laby.net Profil", labyProfile)
                     appendSpace()
                     appendLinkButton("NameMC Profil", nameMcProfile)

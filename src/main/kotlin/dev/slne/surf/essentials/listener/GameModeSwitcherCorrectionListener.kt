@@ -1,9 +1,8 @@
 package dev.slne.surf.essentials.listener
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
+import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
-import dev.slne.surf.essentials.util.util.translatable
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener

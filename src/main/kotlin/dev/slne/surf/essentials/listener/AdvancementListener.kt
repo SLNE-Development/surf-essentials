@@ -1,8 +1,8 @@
 package dev.slne.surf.essentials.listener
 
+import dev.slne.surf.api.core.messages.Colors
+import dev.slne.surf.api.core.messages.adventure.buildText
 import dev.slne.surf.essentials.util.util.translatable
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.advancement.AdvancementDisplay
 import org.bukkit.GameRules
 import org.bukkit.event.EventHandler

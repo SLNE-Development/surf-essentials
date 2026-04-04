@@ -1,10 +1,10 @@
 package dev.slne.surf.essentials.listener
 
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.event.cancel
+import dev.slne.surf.essentials.service.WorldService
 import dev.slne.surf.essentials.service.lastLocationService
-import dev.slne.surf.essentials.service.worldService
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
-import dev.slne.surf.surfapi.bukkit.api.event.cancel
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import io.canvasmc.canvas.event.EntityPortalAsyncEvent
 import io.canvasmc.canvas.event.EntityTeleportAsyncEvent
 import org.bukkit.World
@@ -19,7 +19,7 @@ object CanvasListener : Listener {
     fun onPortal(event: EntityPortalAsyncEvent) {
         val world = event.to
 
-        if (!worldService.isLocked(world)) {
+        if (!WorldService.isLocked(world)) {
             return
         }
 

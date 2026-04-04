@@ -4,6 +4,7 @@ import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.getValue
 import dev.jorel.commandapi.kotlindsl.literalArgument
 import dev.jorel.commandapi.kotlindsl.playerExecutor
+import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.essentials.command.argument.durationArgument
 import dev.slne.surf.essentials.command.argument.weatherTypeArgument
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
@@ -11,7 +12,6 @@ import dev.slne.surf.essentials.util.util.ticks
 import dev.slne.surf.essentials.util.util.userContent
 import dev.slne.surf.essentials.util.weather.WeatherType
 import dev.slne.surf.essentials.util.weather.getWeatherType
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import java.time.Duration
 
 fun weatherCommand() = commandTree("weather") {

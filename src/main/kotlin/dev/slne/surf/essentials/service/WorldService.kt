@@ -1,14 +1,28 @@
 package dev.slne.surf.essentials.service
 
+import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
+import dev.jorel.commandapi.CommandAPI
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.SurfApiPaper
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.util.isFolia
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import dev.slne.surf.essentials.util.world.unloadCanvasWorld
+import io.canvasmc.canvas.WorldUnloadResult
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.future.await
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.withContext
 import org.bukkit.*
 import org.bukkit.command.CommandSender
 import org.bukkit.persistence.PersistentDataType
-import java.util.concurrent.CompletableFuture
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.deleteRecursively
+import kotlin.io.path.exists
+import kotlin.io.path.isDirectory
 
-class WorldService {
+object WorldService {
     private val accessKey = NamespacedKey(plugin, "world_access")
 
     fun isLocked(world: World): Boolean =
@@ -121,32 +135,24 @@ class WorldService {
         }
     }
 
-    fun unload(sender: CommandSender, world: World) {
-        if (Bukkit.getServer().isFolia()) {
-            sender.sendText {
-                appendErrorPrefix()
-                error("Das Entladen von Welten wird auf Folia-Servern nicht unterstützt.")
-            }
-            return
-        }
-
-        val overworldSpawn = Bukkit.getWorlds().firstOrNull()?.spawnLocation ?: run {
-            sender.sendText {
-                appendErrorPrefix()
-                error("Es gibt keine andere Welt, in die Spieler teleportiert werden können.")
-            }
-            return
-        }
-
-        val futures = mutableListOf<CompletableFuture<Boolean>>()
+    suspend fun unload(sender: CommandSender, world: World) {
+        val overworld = Bukkit.getWorlds().firstOrNull() ?: throw CommandAPI.failWithString("Es gibt keine Overworld")
+        val overworldSpawn = withContext(plugin.globalRegionDispatcher) { overworld.spawnLocation }
 
         sender.sendText {
             appendInfoPrefix()
             info("Teleporiere Spieler aus der Welt...")
         }
 
-        world.players.forEach {
-            futures.add(it.teleportAsync(overworldSpawn))
+        val semaphore = Semaphore(64)
+        coroutineScope {
+            world.players.forEach {
+                launch {
+                    semaphore.withPermit {
+                        it.teleportAsync(overworldSpawn).await()
+                    }
+                }
+            }
         }
 
         sender.sendText {
@@ -154,15 +160,20 @@ class WorldService {
             info("Die Welt wird entladen...")
         }
 
-        CompletableFuture.allOf(*futures.toTypedArray()).thenRun {
-            if (!Bukkit.unloadWorld(world, true)) {
-                sender.sendText {
-                    appendErrorPrefix()
-                    error("Die Welt konnte nicht entladen werden.")
-                }
-                return@thenRun
-            }
+        val result: Boolean = if (SurfApiPaper.isCanvasMc) {
+            val result = world.unloadCanvasWorld()
+            result == WorldUnloadResult.SUCCESS
+        } else {
+            @Suppress("removal", "DEPRECATION")
+            Bukkit.unloadWorld(world, true)
+        }
 
+        if (!result) {
+            sender.sendText {
+                appendErrorPrefix()
+                error("Die Welt konnte nicht entladen werden.")
+            }
+        } else {
             sender.sendText {
                 appendSuccessPrefix()
                 success("Die Welt ")
@@ -172,50 +183,46 @@ class WorldService {
         }
     }
 
-    fun delete(sender: CommandSender, world: World) {
-        if (Bukkit.getServer().isFolia()) {
-            sender.sendText {
-                appendErrorPrefix()
-                error("Das Löschen von Welten wird auf Folia-Servern nicht unterstützt.")
-            }
-            return
-        }
+    @OptIn(ExperimentalPathApi::class)
+    suspend fun delete(sender: CommandSender, world: World) {
+        val overworld = Bukkit.getWorlds().firstOrNull() ?: throw CommandAPI.failWithString("Es gibt keine Overworld")
+        val spawnLocation = withContext(plugin.globalRegionDispatcher) { overworld.spawnLocation }
 
-        val overworldSpawn = Bukkit.getWorlds().firstOrNull()?.spawnLocation ?: run {
-            sender.sendText {
-                appendErrorPrefix()
-                error("Es gibt keine andere Welt, in die Spieler teleportiert werden können.")
-            }
-            return
-        }
-
-        val futures = mutableListOf<CompletableFuture<Boolean>>()
-
-        world.players.forEach {
-            futures.add(it.teleportAsync(overworldSpawn))
-        }
-
-        CompletableFuture.allOf(*futures.toTypedArray()).thenRun {
-            if (Bukkit.getWorld(world.name) != null) {
-                if (!Bukkit.unloadWorld(world, true)) {
-                    sender.sendText {
-                        appendErrorPrefix()
-                        error("Die Welt konnte nicht entladen werden.")
+        val semaphore = Semaphore(64)
+        coroutineScope {
+            world.players.forEach { player ->
+                launch {
+                    semaphore.withPermit {
+                        player.teleportAsync(spawnLocation).await()
                     }
-                    return@thenRun
                 }
             }
+        }
 
-            val file = Bukkit.getWorldContainer().resolve(world.name)
-            if (!file.exists() || !file.isDirectory) {
+        val result = if (SurfApiPaper.isCanvasMc) {
+            val result = world.unloadCanvasWorld()
+            result == WorldUnloadResult.SUCCESS
+        } else {
+            @Suppress("removal", "DEPRECATION")
+            Bukkit.unloadWorld(world, true)
+        }
+
+        if (!result) {
+            sender.sendText {
+                appendErrorPrefix()
+                error("Die Welt konnte nicht entladen werden.")
+            }
+        } else {
+            val path = world.worldPath
+            if (!path.exists() || !path.isDirectory()) {
                 sender.sendText {
                     appendErrorPrefix()
                     error("Die Welt existiert nicht.")
                 }
-                return@thenRun
+                return
             }
 
-            file.deleteRecursively()
+            path.deleteRecursively()
 
             sender.sendText {
                 appendSuccessPrefix()
@@ -225,10 +232,4 @@ class WorldService {
             }
         }
     }
-
-    companion object {
-        val INSTANCE = WorldService()
-    }
 }
-
-val worldService get() = WorldService.INSTANCE

@@ -1,9 +1,9 @@
 package dev.slne.surf.essentials.listener
 
-import dev.slne.surf.essentials.service.worldService
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.event.cancel
+import dev.slne.surf.essentials.service.WorldService
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
-import dev.slne.surf.surfapi.bukkit.api.event.cancel
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -15,7 +15,7 @@ object WorldListener : Listener {
     fun onPortal(event: EntityPortalEvent) {
         val world = event.to?.world ?: return
 
-        if (!worldService.isLocked(world)) {
+        if (!WorldService.isLocked(world)) {
             return
         }
 

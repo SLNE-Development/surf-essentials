@@ -2,9 +2,9 @@ package dev.slne.surf.essentials.command
 
 import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.playerExecutor
+import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.essentials.service.specialItemService
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 fun makeSpecialCommand() = commandTree("makespecial") {
     withPermission(EssentialsPermissionRegistry.MAKE_SPECIAL_COMMAND)

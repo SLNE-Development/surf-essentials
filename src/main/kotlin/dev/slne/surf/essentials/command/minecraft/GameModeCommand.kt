@@ -1,12 +1,11 @@
 package dev.slne.surf.essentials.command.minecraft
 
 import dev.jorel.commandapi.kotlindsl.*
+import dev.slne.surf.api.core.messages.Colors
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.core.util.mutableObject2ObjectMapOf
 import dev.slne.surf.essentials.command.argument.gameModeArgument
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
-import dev.slne.surf.essentials.util.util.translatable
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
 

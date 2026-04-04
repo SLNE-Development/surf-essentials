@@ -4,19 +4,21 @@ import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.getValue
 import dev.jorel.commandapi.kotlindsl.literalArgument
+import dev.slne.surf.api.core.font.toSmallCaps
+import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.core.messages.adventure.sound
+import dev.slne.surf.api.paper.extensions.server
+import dev.slne.surf.api.paper.util.forEachPlayer
 import dev.slne.surf.essentials.command.argument.durationArgument
 import dev.slne.surf.essentials.command.argument.greedyRestartReasonArgument
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.util.userContent
-import dev.slne.surf.surfapi.bukkit.api.util.forEachPlayer
-import dev.slne.surf.surfapi.core.api.font.toSmallCaps
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import dev.slne.surf.surfapi.core.api.messages.adventure.sound
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import org.bukkit.Bukkit
 import org.bukkit.Sound
+import org.bukkit.World
 import org.bukkit.event.player.PlayerKickEvent
 import java.time.Duration
 import java.util.concurrent.TimeUnit
@@ -68,6 +70,8 @@ fun restartCommand() = commandTree("restart") {
             }, PlayerKickEvent.Cause.RESTART_COMMAND)
         }
 
+        server.worlds.forEach(World::save)
+
         Bukkit.shutdown()
     }
 
@@ -100,6 +104,8 @@ fun restartCommand() = commandTree("restart") {
                             error("Der Server wird neugestartet...")
                         }, PlayerKickEvent.Cause.RESTART_COMMAND)
                     }
+
+                    server.worlds.forEach(World::save)
 
                     Bukkit.shutdown()
                     return@runAtFixedRate
@@ -162,6 +168,8 @@ fun restartCommand() = commandTree("restart") {
                             }, PlayerKickEvent.Cause.RESTART_COMMAND)
                         }
 
+                        server.worlds.forEach(World::save)
+
                         Bukkit.shutdown()
                         return@runAtFixedRate
                     }
@@ -173,7 +181,7 @@ fun restartCommand() = commandTree("restart") {
                                 success("Der Server wird in ")
                                 variableValue(remaining.userContent())
                                 success(" neu gestartet...")
-                                appendNewPrefixedLine {
+                                appendNewInfoPrefixedLine {
                                     spacer("Grund: ")
                                     info(reason.toSmallCaps())
                                 }

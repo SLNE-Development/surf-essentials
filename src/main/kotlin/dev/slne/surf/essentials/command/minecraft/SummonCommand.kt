@@ -1,13 +1,12 @@
 package dev.slne.surf.essentials.command.minecraft
 
 import dev.jorel.commandapi.kotlindsl.*
+import dev.slne.surf.api.core.messages.Colors
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.command.args.adventureCompoundBinaryTagArgument
+import dev.slne.surf.api.paper.nms.NmsUseWithCaution
+import dev.slne.surf.api.paper.nms.bridges.SurfPaperNmsEntityBridge
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
-import dev.slne.surf.essentials.util.util.translatable
-import dev.slne.surf.surfapi.bukkit.api.command.args.adventureCompoundBinaryTagArgument
-import dev.slne.surf.surfapi.bukkit.api.nms.NmsUseWithCaution
-import dev.slne.surf.surfapi.bukkit.api.nms.bridges.entityBridge
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.nbt.CompoundBinaryTag
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
@@ -50,7 +49,7 @@ fun summonCommand() = commandTree("summon") {
                     val location: Location by args
                     val nbt: CompoundBinaryTag by args
 
-                    entityBridge.createEntityByNbt(player.world, entityType, location, nbt)
+                    SurfPaperNmsEntityBridge.createEntityByNbt(player.world, entityType, location, nbt)
 
                     player.sendText {
                         appendSuccessPrefix()
@@ -68,7 +67,7 @@ fun summonCommand() = commandTree("summon") {
                         val amount: Int by args
 
                         repeat(amount) {
-                            entityBridge.createEntityByNbt(player.world, entityType, location, nbt)
+                            SurfPaperNmsEntityBridge.createEntityByNbt(player.world, entityType, location, nbt)
                         }
 
                         player.sendText {

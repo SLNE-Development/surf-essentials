@@ -1,6 +1,7 @@
 package dev.slne.surf.essentials.util.permission
 
-import dev.slne.surf.surfapi.bukkit.api.permission.PermissionRegistry
+import dev.slne.surf.api.paper.permission.PermissionRegistry
+
 
 object EssentialsPermissionRegistry : PermissionRegistry() {
     const val PREFIX = "surf.essentials"
