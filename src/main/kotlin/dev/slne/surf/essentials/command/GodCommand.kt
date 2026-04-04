@@ -17,7 +17,7 @@ fun godCommand() = commandTree("god") {
             if (player.isInvulnerable) {
                 variableValue("unverwundbar.")
             } else {
-                variableValue("nicht mehr unverwundbar.")
+                variableValue("verwundbar.")
             }
         }
     }
@@ -37,7 +37,7 @@ fun godCommand() = commandTree("god") {
                 if (player.isInvulnerable) {
                     variableValue("unverwundbar.")
                 } else {
-                    variableValue("nicht mehr unverwundbar.")
+                    variableValue("verwundbar.")
                 }
             }
 
@@ -48,7 +48,7 @@ fun godCommand() = commandTree("god") {
                 if (player.isInvulnerable) {
                     variableValue("unverwundbar.")
                 } else {
-                    variableValue("nicht mehr unverwundbar.")
+                    variableValue("verwundbar.")
                 }
             }
         }
