@@ -10,8 +10,14 @@ object HungerListener : Listener {
     fun onHungerLose(event: FoodLevelChangeEvent) {
         val player = event.entity as? Player ?: return
 
-        if (player.isInvulnerable) {
+        if (!player.isInvulnerable) return
+
+        val oldLevel = player.foodLevel
+        val newLevel = event.foodLevel
+
+        if (newLevel < oldLevel) {
             event.isCancelled = true
+
         }
     }
 }
