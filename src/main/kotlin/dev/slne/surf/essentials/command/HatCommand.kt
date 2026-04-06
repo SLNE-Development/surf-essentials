@@ -12,7 +12,9 @@ fun hatCommand() = commandTree("hat") {
     withPermission(EssentialsPermissionRegistry.HAT_COMMAND)
     playerExecutor { player, _ ->
         val itemInHand = player.inventory.itemInMainHand
+        val helmet = player.inventory.helmet
         player.inventory.helmet = itemInHand
+        player.inventory.setItemInMainHand(helmet)
 
         if (itemInHand.type.isAir) {
             player.sendText {
@@ -31,7 +33,9 @@ fun hatCommand() = commandTree("hat") {
         playerExecutor { executor, args ->
             val player: Player by args
             val itemInHand = executor.inventory.itemInMainHand
+            val helmet = player.inventory.helmet
             player.inventory.helmet = itemInHand
+            player.inventory.setItemInMainHand(helmet)
 
             if (itemInHand.type.isAir) {
                 executor.sendText {
