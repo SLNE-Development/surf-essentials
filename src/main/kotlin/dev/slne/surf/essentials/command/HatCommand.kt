@@ -22,6 +22,7 @@ fun hatCommand() = commandTree("hat") {
 
         val itemInHand = player.inventory.itemInMainHand
         player.inventory.helmet = itemInHand
+        player.inventory.setItemInMainHand(helmet)
 
         if (itemInHand.type.isAir) {
             player.sendText {
@@ -51,6 +52,7 @@ fun hatCommand() = commandTree("hat") {
 
             val itemInHand = executor.inventory.itemInMainHand
             player.inventory.helmet = itemInHand
+            player.inventory.setItemInMainHand(helmet)
 
             if (itemInHand.type.isAir) {
                 executor.sendText {
