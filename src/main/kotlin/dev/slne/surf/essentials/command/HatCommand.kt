@@ -11,6 +11,15 @@ import org.bukkit.entity.Player
 fun hatCommand() = commandTree("hat") {
     withPermission(EssentialsPermissionRegistry.HAT_COMMAND)
     playerExecutor { player, _ ->
+        val helmet = player.inventory.helmet
+        if (helmet != null && !helmet.type.isAir) {
+            player.sendText {
+                appendErrorPrefix()
+                error("Du trägst bereits einen Hut.")
+            }
+            return@playerExecutor
+        }
+
         val itemInHand = player.inventory.itemInMainHand
         player.inventory.helmet = itemInHand
 
@@ -30,6 +39,16 @@ fun hatCommand() = commandTree("hat") {
         withPermission(EssentialsPermissionRegistry.HAT_COMMAND_OTHERS)
         playerExecutor { executor, args ->
             val player: Player by args
+            val helmet = player.inventory.helmet
+            if (helmet != null && !helmet.type.isAir) {
+                executor.sendText {
+                    appendErrorPrefix()
+                    variableValue(player.name)
+                    error(" trägt bereits einen Hut.")
+                }
+                return@playerExecutor
+            }
+
             val itemInHand = executor.inventory.itemInMainHand
             player.inventory.helmet = itemInHand
 
