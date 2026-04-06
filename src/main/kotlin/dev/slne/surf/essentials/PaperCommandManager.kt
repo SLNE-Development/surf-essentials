@@ -76,5 +76,6 @@ object PaperCommandManager {
         skinChangeCommand()
         worldCommand()
         pingCommand()
+        echestCommand()
     }
 }
