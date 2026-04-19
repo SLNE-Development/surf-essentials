@@ -4,22 +4,16 @@ import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.getValue
 import dev.jorel.commandapi.kotlindsl.greedyStringArgument
 import dev.jorel.commandapi.kotlindsl.playerExecutor
-import dev.slne.surf.api.core.font.toSmallCaps
-import dev.slne.surf.api.core.messages.Colors
-import dev.slne.surf.api.core.messages.adventure.buildText
 import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.essentials.service.SignService
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.minimessage.MiniMessage
-import org.bukkit.inventory.meta.ItemMeta
+import net.luckperms.api.LuckPermsProvider
 
 fun signCommand() = commandTree("sign") {
     withPermission(EssentialsPermissionRegistry.SIGN_COMMAND)
     greedyStringArgument("text", optional = true) {
         playerExecutor { player, args ->
             val text: String? by args
-            val component = text?.let { MiniMessage.miniMessage().deserialize(it) }
             val item = player.inventory.itemInMainHand
 
             if (item.isEmpty) {
@@ -30,22 +24,11 @@ fun signCommand() = commandTree("sign") {
                 return@playerExecutor
             }
 
-            item.editMeta(ItemMeta::class.java) {
-                val lore = it.lore() ?: mutableListOf<Component>()
+            val prefix =
+                LuckPermsProvider.get().userManager.getUser(player.uniqueId)?.cachedData?.metaData?.prefix
+                    ?: ""
 
-                lore.addLast(buildText {
-                    text("Signiert von ".toSmallCaps(), Colors.WHITE)
-                    variableValue(player.name.toSmallCaps(), TextDecoration.BOLD)
-                }.decoration(TextDecoration.ITALIC, false))
-
-                component?.let { comp ->
-                    lore.addLast(buildText {
-                        append(comp).colorIfAbsent(Colors.WHITE)
-                    }.decoration(TextDecoration.ITALIC, false))
-                }
-
-                it.lore(lore)
-            }
+            SignService.sign(item, "$prefix${player.name}", text)
 
             player.sendText {
                 appendSuccessPrefix()
