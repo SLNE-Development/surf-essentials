@@ -35,5 +35,5 @@ class PaperMain : SuspendingJavaPlugin() {
         super.onDisable()
     }
 
-    fun isSurvivalServer() = pluginManager.isPluginEnabled("surf-freebuild-bukkit")
+    fun isSurvivalServer() = pluginManager.isPluginEnabled("surf-freebuild-paper")
 }
