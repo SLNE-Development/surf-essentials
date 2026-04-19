@@ -14,6 +14,8 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 object SignVisualHandler : SurfPaperPacketLoreHandler {
     override fun handleLore(
@@ -25,7 +27,12 @@ object SignVisualHandler : SurfPaperPacketLoreHandler {
         val signedText = pdc.get(SignService.keySignedText, PersistentDataType.STRING)
         val signedAt = pdc.get(SignService.keySignedAt, PersistentDataType.LONG) ?: return
 
-        val signedAtFormatted = dateTimeFormatter.format(Instant.ofEpochMilli(signedAt))
+        val signedAtFormatted = dateTimeFormatter.format(
+            LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(signedAt),
+                ZoneId.systemDefault()
+            )
+        )
 
         loreToDisplay.add(Component.space())
 
@@ -44,15 +51,24 @@ object SignVisualHandler : SurfPaperPacketLoreHandler {
         }.decoration(TextDecoration.ITALIC, false))
 
         if (signedText != null) {
+            loreToDisplay.add(Component.empty())
             loreToDisplay.add(buildText {
                 text("» ", Colors.VARIABLE_VALUE)
                 text("Beschreibung:".toSmallCaps(), Colors.WHITE)
             })
 
-            val component = MiniMessage.miniMessage().deserialize(signedText)
-            loreToDisplay.add(buildText {
-                append(component).colorIfAbsent(Colors.WHITE)
-            }.decoration(TextDecoration.ITALIC, false))
+            signedText.split("<br>").forEach { line ->
+                if (line.isBlank()) {
+                    loreToDisplay.add(Component.empty())
+                    return@forEach
+                }
+
+                loreToDisplay.add(buildText {
+                    append(MiniMessage.miniMessage().deserialize(line)).colorIfAbsent(Colors.WHITE)
+                }.decoration(TextDecoration.ITALIC, false))
+            }
+
+            loreToDisplay.add(Component.empty())
         }
     }
 }
