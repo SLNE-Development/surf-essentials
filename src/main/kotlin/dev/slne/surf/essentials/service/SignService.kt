@@ -16,6 +16,8 @@ object SignService {
             it.set(keySignedAt, PersistentDataType.LONG, System.currentTimeMillis())
             if (text != null) {
                 it.set(keySignedText, PersistentDataType.STRING, text)
+            } else {
+                it.remove(keySignedText)
             }
         }
     }
