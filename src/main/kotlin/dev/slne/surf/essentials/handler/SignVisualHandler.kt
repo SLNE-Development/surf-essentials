@@ -55,7 +55,7 @@ object SignVisualHandler : SurfPaperPacketLoreHandler {
             loreToDisplay.add(buildText {
                 text("» ", Colors.VARIABLE_VALUE)
                 text("Beschreibung:".toSmallCaps(), Colors.WHITE)
-            })
+            }.decoration(TextDecoration.ITALIC, false))
 
             signedText.split("<br>").forEach { line ->
                 if (line.isBlank()) {
