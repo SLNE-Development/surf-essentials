@@ -77,7 +77,7 @@ fun teleportCommand() = commandTree("teleport") {
                     executor.sendText {
                         appendSuccessPrefix()
                         variableValue(players.size.toString())
-                        success(" Entity wurden zu ")
+                        success(" Entitäten wurden zu ")
                         variableValue(target.name)
                         success(" teleportiert.")
                     }
