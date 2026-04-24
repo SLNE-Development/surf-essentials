@@ -6,7 +6,6 @@ import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Entity
-import org.bukkit.entity.Player
 
 fun teleportCommand() = commandTree("teleport") {
     withPermission(EssentialsPermissionRegistry.TELEPORT_COMMAND)
@@ -87,7 +86,7 @@ fun teleportCommand() = commandTree("teleport") {
         }
         locationArgument("location") {
             anyExecutor { executor, args ->
-                val players: Collection<Player> by args
+                val players: Collection<Entity> by args
                 val location: Location by args
 
                 players.forEach { it.teleportAsync(location) }
