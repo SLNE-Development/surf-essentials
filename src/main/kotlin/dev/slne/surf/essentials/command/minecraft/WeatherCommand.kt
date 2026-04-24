@@ -1,9 +1,6 @@
 package dev.slne.surf.essentials.command.minecraft
 
-import dev.jorel.commandapi.kotlindsl.commandTree
-import dev.jorel.commandapi.kotlindsl.getValue
-import dev.jorel.commandapi.kotlindsl.literalArgument
-import dev.jorel.commandapi.kotlindsl.playerExecutor
+import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.essentials.command.argument.durationArgument
 import dev.slne.surf.essentials.command.argument.weatherTypeArgument
@@ -12,6 +9,7 @@ import dev.slne.surf.essentials.util.util.ticks
 import dev.slne.surf.essentials.util.util.userContent
 import dev.slne.surf.essentials.util.weather.WeatherType
 import dev.slne.surf.essentials.util.weather.getWeatherType
+import org.bukkit.Bukkit
 import java.time.Duration
 
 fun weatherCommand() = commandTree("weather") {
@@ -31,27 +29,33 @@ fun weatherCommand() = commandTree("weather") {
     }
 
     weatherTypeArgument("weather") {
-        playerExecutor { player, args ->
-            val weather: WeatherType by args
+        anyExecutor { sender, arguments ->
+            val weather: WeatherType by arguments
 
-            weather.setWeather(player.world, 6000)
-            player.sendText {
+            Bukkit.getWorlds().forEach {
+                weather.setWeather(it, 6000)
+            }
+
+            sender.sendText {
                 appendSuccessPrefix()
-                success("Das Wetter wurde zu ")
+                success("Das Wetter in allen Welten wurde zu ")
                 variableValue(weather.displayName)
                 success(" geändert.")
             }
         }
 
         durationArgument("duration") {
-            playerExecutor { player, args ->
-                val weather: WeatherType by args
-                val duration: Duration by args
+            anyExecutor { sender, arguments ->
+                val weather: WeatherType by arguments
+                val duration: Duration by arguments
 
-                weather.setWeather(player.world, duration.toMillis().ticks())
-                player.sendText {
+                Bukkit.getWorlds().forEach {
+                    weather.setWeather(it, duration.toMillis().ticks())
+                }
+
+                sender.sendText {
                     appendSuccessPrefix()
-                    success("Das Wetter wurde zu ")
+                    success("Das Wetter in allen Welten wurde zu ")
                     variableValue(weather.displayName)
                     success(" für ")
                     variableValue(duration.userContent())

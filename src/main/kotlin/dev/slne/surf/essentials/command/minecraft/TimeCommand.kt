@@ -107,7 +107,7 @@ fun timeCommand() = commandTree("time") {
 
     literalArgument("set") {
         timeArgument("time") {
-            nativeExecutor { executor, args ->
+            anyExecutor { sender, args ->
                 val time: Int by args
 
                 plugin.launch(plugin.globalRegionDispatcher) {
@@ -116,7 +116,7 @@ fun timeCommand() = commandTree("time") {
                     }
                 }
 
-                executor.sendText {
+                sender.sendText {
                     appendSuccessPrefix()
                     success("Die Zeit wurde auf")
                     appendSpace()
@@ -128,7 +128,7 @@ fun timeCommand() = commandTree("time") {
         }
 
         namedTimeArgument("namedTime") {
-            nativeExecutor { executor, args ->
+            anyExecutor { executor, args ->
                 val namedTime: NamedTime by args
 
                 plugin.launch(plugin.globalRegionDispatcher) {
@@ -160,7 +160,7 @@ fun timeCommand() = commandTree("time") {
 
     literalArgument("add") {
         timeArgument("time") {
-            nativeExecutor { executor, args ->
+            anyExecutor { executor, args ->
                 val time: Int by args
 
                 plugin.launch(plugin.globalRegionDispatcher) {

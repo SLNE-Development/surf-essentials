@@ -61,10 +61,10 @@ object PaperCommandManager {
         soundCommand()
         stopCommand()
         restartCommand()
+        signCommand()
 
         if (!plugin.isSurvivalServer()) {
             makeSpecialCommand()
-            signCommand()
         }
 
         knightCommand()
