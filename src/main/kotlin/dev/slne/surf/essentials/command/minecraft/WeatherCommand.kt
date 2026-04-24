@@ -1,12 +1,9 @@
 package dev.slne.surf.essentials.command.minecraft
 
-import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
-import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.essentials.command.argument.durationArgument
 import dev.slne.surf.essentials.command.argument.weatherTypeArgument
-import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.util.ticks
 import dev.slne.surf.essentials.util.util.userContent
@@ -35,10 +32,8 @@ fun weatherCommand() = commandTree("weather") {
         anyExecutor { sender, arguments ->
             val weather: WeatherType by arguments
 
-            plugin.launch(plugin.globalRegionDispatcher) {
-                Bukkit.getWorlds().forEach {
-                    weather.setWeather(it, 6000)
-                }
+            Bukkit.getWorlds().forEach {
+                weather.setWeather(it, 6000)
             }
 
             sender.sendText {
@@ -54,10 +49,8 @@ fun weatherCommand() = commandTree("weather") {
                 val weather: WeatherType by arguments
                 val duration: Duration by arguments
 
-                plugin.launch(plugin.globalRegionDispatcher) {
-                    Bukkit.getWorlds().forEach {
-                        weather.setWeather(it, duration.toMillis().ticks())
-                    }
+                Bukkit.getWorlds().forEach {
+                    weather.setWeather(it, duration.toMillis().ticks())
                 }
 
                 sender.sendText {
