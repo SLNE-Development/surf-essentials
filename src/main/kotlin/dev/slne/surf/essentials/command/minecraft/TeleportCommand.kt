@@ -50,7 +50,7 @@ fun teleportCommand() = commandTree("teleport") {
                 player.sendText {
                     appendSuccessPrefix()
                     success("Du wurdest zu ")
-                    variableValue("${location.blockX}, ${location.blockY}, ${location.blockZ} in Welt ${location.world?.name ?: "Unbekannt"}")
+                    variableValue("${location.blockX}, ${location.blockY}, ${location.blockZ} in Welt ${world.name}")
                     success(" teleportiert.")
                 }
             }
