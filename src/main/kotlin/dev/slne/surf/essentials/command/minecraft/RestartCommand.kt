@@ -28,7 +28,7 @@ private var restartTask: ScheduledTask? = null
 fun restartCommand() = commandTree("restart") {
     withPermission(EssentialsPermissionRegistry.RESTART_COMMAND)
 
-    literalArgument("stop") {
+    literalArgument("#cancel") {
         anyExecutor { executor, _ ->
             if (restartTask == null) {
                 executor.sendText {
@@ -105,7 +105,9 @@ fun restartCommand() = commandTree("restart") {
                         }, PlayerKickEvent.Cause.RESTART_COMMAND)
                     }
 
-                    server.worlds.forEach(World::save)
+                    Bukkit.getGlobalRegionScheduler().run(plugin, {
+                        server.worlds.forEach(World::save)
+                    })
 
                     Bukkit.shutdown()
                     return@runAtFixedRate
@@ -168,7 +170,13 @@ fun restartCommand() = commandTree("restart") {
                             }, PlayerKickEvent.Cause.RESTART_COMMAND)
                         }
 
-                        server.worlds.forEach(World::save)
+                        Bukkit.getGlobalRegionScheduler().run(
+                            plugin, {
+                                server.worlds.forEach(World::save)
+                            }
+                        )
+
+
 
                         Bukkit.shutdown()
                         return@runAtFixedRate
