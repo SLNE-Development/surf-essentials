@@ -117,4 +117,6 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val PING_COMMAND_OTHER = create("$PREFIX.ping.command.other")
     val ECHEST_COMMAND = create("$PREFIX.echest.command")
     val ECHEST_COMMAND_OTHERS = create("$PREFIX.echest.command.others")
+    val RENAME_COMMAND = create("$PREFIX.rename.command")
+    val RENAME_COMMAND_MINIMESSAGE = create("$PREFIX.rename.command.minimessage")
 }
