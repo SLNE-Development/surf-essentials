@@ -62,6 +62,7 @@ object PaperCommandManager {
         stopCommand()
         restartCommand()
         signCommand()
+        renameCommand()
 
         if (!plugin.isSurvivalServer()) {
             makeSpecialCommand()
