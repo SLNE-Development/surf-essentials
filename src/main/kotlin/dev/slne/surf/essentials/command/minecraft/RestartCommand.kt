@@ -48,7 +48,7 @@ fun restartCommand() = commandTree("restart") {
             Bukkit.broadcast(buildText {
                 appendErrorPrefix()
                 error("Der geplante Neustart wurde abgebrochen.")
-            }, EssentialsPermissionRegistry.RESTART_NOTIFY)
+            })
         }
     }
 
