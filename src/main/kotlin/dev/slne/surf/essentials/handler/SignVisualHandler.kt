@@ -6,6 +6,7 @@ import dev.slne.surf.api.core.messages.adventure.buildText
 import dev.slne.surf.api.core.minimessage.miniMessage
 import dev.slne.surf.api.core.util.dateTimeFormatter
 import dev.slne.surf.api.paper.packet.lore.SurfPaperPacketLoreHandler
+import dev.slne.surf.api.paper.packet.lore.SurfPaperPacketLorePriority
 import dev.slne.surf.essentials.service.SignService
 import io.papermc.paper.persistence.PersistentDataContainerView
 import net.kyori.adventure.text.Component
@@ -18,6 +19,9 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 object SignVisualHandler : SurfPaperPacketLoreHandler {
+
+    override val priority = SurfPaperPacketLorePriority.LAST
+
     override fun handleLore(
         loreToDisplay: MutableList<Component>,
         pdc: PersistentDataContainerView,
