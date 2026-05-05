@@ -13,5 +13,6 @@ object PaperListenerManager {
         WorldListener.register()
         SpecialItemListener.register()
         HungerListener.register()
+        RestartListener.register()
     }
 }

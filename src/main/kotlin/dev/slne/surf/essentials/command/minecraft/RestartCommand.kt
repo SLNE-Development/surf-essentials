@@ -21,9 +21,15 @@ import org.bukkit.Sound
 import org.bukkit.World
 import org.bukkit.event.player.PlayerKickEvent
 import java.time.Duration
+import java.util.logging.Level
 import java.util.concurrent.TimeUnit
 
 private var restartTask: ScheduledTask? = null
+private var shutdownTask: ScheduledTask? = null
+@Volatile
+private var blockRestartJoins = false
+
+fun isRestartJoinBlocked() = blockRestartJoins
 
 fun restartCommand() = commandTree("restart") {
     withPermission(EssentialsPermissionRegistry.RESTART_COMMAND)
@@ -39,6 +45,9 @@ fun restartCommand() = commandTree("restart") {
 
             restartTask?.cancel()
             restartTask = null
+            shutdownTask?.cancel()
+            shutdownTask = null
+            blockRestartJoins = false
 
             executor.sendText {
                 appendSuccessPrefix()
@@ -64,15 +73,7 @@ fun restartCommand() = commandTree("restart") {
             success(" startet den Server neu...")
         }, EssentialsPermissionRegistry.RESTART_NOTIFY)
 
-        forEachPlayer {
-            it.kick(buildText {
-                error("Der Server wird neugestartet...")
-            }, PlayerKickEvent.Cause.RESTART_COMMAND)
-        }
-
-        server.worlds.forEach(World::save)
-
-        Bukkit.shutdown()
+        beginRestartShutdown()
     }
 
     durationArgument("delay") {
@@ -92,6 +93,9 @@ fun restartCommand() = commandTree("restart") {
             restartTask?.cancel()
             restartTask = Bukkit.getAsyncScheduler().runAtFixedRate(plugin, {
                 if (remaining.seconds <= 0) {
+                    restartTask?.cancel()
+                    restartTask = null
+
                     Bukkit.broadcast(buildText {
                         appendSuccessPrefix()
                         success("Der Server wird ")
@@ -99,17 +103,7 @@ fun restartCommand() = commandTree("restart") {
                         success(" neu gestartet...")
                     })
 
-                    forEachPlayer {
-                        it.kick(buildText {
-                            error("Der Server wird neugestartet...")
-                        }, PlayerKickEvent.Cause.RESTART_COMMAND)
-                    }
-
-                    Bukkit.getGlobalRegionScheduler().run(plugin, {
-                        server.worlds.forEach(World::save)
-                    })
-
-                    Bukkit.shutdown()
+                    beginRestartShutdown()
                     return@runAtFixedRate
                 }
 
@@ -157,6 +151,9 @@ fun restartCommand() = commandTree("restart") {
                 restartTask?.cancel()
                 restartTask = Bukkit.getAsyncScheduler().runAtFixedRate(plugin, {
                     if (remaining.seconds <= 0) {
+                        restartTask?.cancel()
+                        restartTask = null
+
                         Bukkit.broadcast(buildText {
                             appendSuccessPrefix()
                             success("Der Server wird ")
@@ -164,21 +161,7 @@ fun restartCommand() = commandTree("restart") {
                             success(" neu gestartet...")
                         })
 
-                        forEachPlayer {
-                            it.kick(buildText {
-                                error("Der Server wird neugestartet...")
-                            }, PlayerKickEvent.Cause.RESTART_COMMAND)
-                        }
-
-                        Bukkit.getGlobalRegionScheduler().run(
-                            plugin, {
-                                server.worlds.forEach(World::save)
-                            }
-                        )
-
-
-
-                        Bukkit.shutdown()
+                        beginRestartShutdown()
                         return@runAtFixedRate
                     }
 
@@ -212,6 +195,56 @@ fun restartCommand() = commandTree("restart") {
                 }, 0L, 1L, TimeUnit.SECONDS)
             }
         }
+    }
+}
+
+private fun beginRestartShutdown() {
+    blockRestartJoins = true
+
+    Bukkit.getGlobalRegionScheduler().run(plugin) {
+        saveAndKickOnlinePlayers()
+        saveServerState()
+
+        shutdownTask?.cancel()
+        shutdownTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(plugin, { task ->
+            val onlinePlayers = Bukkit.getOnlinePlayers()
+            if (onlinePlayers.isNotEmpty()) {
+                saveAndKickOnlinePlayers()
+                return@runAtFixedRate
+            }
+
+            saveServerState()
+            shutdownTask = null
+            task.cancel()
+            Bukkit.shutdown()
+        }, 1L, 1L)
+    }
+}
+
+private fun saveAndKickOnlinePlayers() {
+    Bukkit.getOnlinePlayers().forEach { player ->
+        player.saveData()
+        player.kick(buildText {
+            error("Der Server wird neugestartet...")
+        }, PlayerKickEvent.Cause.RESTART_COMMAND)
+    }
+}
+
+private fun saveServerState() {
+    val saveAllSucceeded = runCatching {
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-all")
+    }.onFailure { throwable ->
+        plugin.logger.log(Level.WARNING, "Could not execute save-all before restart shutdown.", throwable)
+    }.getOrDefault(false)
+
+    if (saveAllSucceeded) {
+        return
+    }
+
+    runCatching {
+        server.worlds.forEach(World::save)
+    }.onFailure { throwable ->
+        plugin.logger.log(Level.WARNING, "Could not save worlds before restart shutdown.", throwable)
     }
 }
 
