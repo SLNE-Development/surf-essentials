@@ -25,7 +25,7 @@ fun renameCommand() = commandTree("rename") {
                 return@playerExecutor
             }
 
-            if (content.length > 256) {
+            if (content.length > 256 && !player.hasPermission(EssentialsPermissionRegistry.RENAME_COMMAND_BYPASS)) {
                 player.sendText {
                     appendErrorPrefix()
                     error("Der Name darf nicht länger als 256 Zeichen sein.")
