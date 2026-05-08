@@ -7,7 +7,7 @@ import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 
-fun cartographyTableCommand() = commandTree("cartographyTable") {
+fun cartographyTableCommand() = commandTree("cartographytable") {
     withPermission(EssentialsPermissionRegistry.CARTOGRAPY_TABLE_COMMAND)
     playerExecutor { player, _ ->
         player.openCartographyTable(null, true)
