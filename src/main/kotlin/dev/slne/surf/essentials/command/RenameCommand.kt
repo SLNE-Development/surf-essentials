@@ -25,6 +25,14 @@ fun renameCommand() = commandTree("rename") {
                 return@playerExecutor
             }
 
+            if (content.length > 32 && !player.hasPermission(EssentialsPermissionRegistry.RENAME_COMMAND_BYPASS)) {
+                player.sendText {
+                    appendErrorPrefix()
+                    error("Der Name darf nicht länger als 32 Zeichen sein.")
+                }
+                return@playerExecutor
+            }
+
             val displayName =
                 if (player.hasPermission(EssentialsPermissionRegistry.RENAME_COMMAND_MINIMESSAGE)) miniMessage.deserialize(
                     content
