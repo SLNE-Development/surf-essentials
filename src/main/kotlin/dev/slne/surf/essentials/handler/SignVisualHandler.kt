@@ -61,16 +61,27 @@ object SignVisualHandler : SurfPaperPacketLoreHandler {
                 text("Beschreibung:".toSmallCaps(), Colors.WHITE)
             }.decoration(TextDecoration.ITALIC, false))
 
-            signedText.split("<br>").forEach { line ->
-                if (line.isBlank()) {
-                    loreToDisplay.add(Component.empty())
-                    return@forEach
+            signedText
+                .split("<br>")
+                .flatMap { rawLine ->
+                    if (rawLine.isBlank()) {
+                        listOf("")
+                    } else {
+                        rawLine.chunked(50)
+                    }
                 }
+                .forEach { line ->
+                    if (line.isBlank()) {
+                        loreToDisplay.add(Component.empty())
+                        return@forEach
+                    }
 
-                loreToDisplay.add(buildText {
-                    append(MiniMessage.miniMessage().deserialize(line)).colorIfAbsent(Colors.WHITE)
-                }.decoration(TextDecoration.ITALIC, false))
-            }
+                    loreToDisplay.add(buildText {
+                        append(
+                            MiniMessage.miniMessage().deserialize(line)
+                        ).colorIfAbsent(Colors.WHITE)
+                    }.decoration(TextDecoration.ITALIC, false))
+                }
 
             loreToDisplay.add(Component.empty())
         }
