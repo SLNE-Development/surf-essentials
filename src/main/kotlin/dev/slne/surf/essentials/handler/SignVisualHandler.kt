@@ -12,6 +12,7 @@ import io.papermc.paper.persistence.PersistentDataContainerView
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.apache.commons.text.WordUtils
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.time.Instant
@@ -64,11 +65,8 @@ object SignVisualHandler : SurfPaperPacketLoreHandler {
             signedText
                 .split("<br>")
                 .flatMap { rawLine ->
-                    if (rawLine.isBlank()) {
-                        listOf("")
-                    } else {
-                        rawLine.chunked(50)
-                    }
+                    WordUtils.wrap(rawLine, 50)
+                        .split('\n')
                 }
                 .forEach { line ->
                     if (line.isBlank()) {
@@ -87,4 +85,3 @@ object SignVisualHandler : SurfPaperPacketLoreHandler {
         }
     }
 }
-
