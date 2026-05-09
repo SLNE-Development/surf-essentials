@@ -11,7 +11,7 @@ import dev.slne.surf.essentials.service.SignService
 import io.papermc.paper.persistence.PersistentDataContainerView
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.minimessage.MiniMessage
+import org.apache.commons.text.WordUtils
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.time.Instant
@@ -61,19 +61,24 @@ object SignVisualHandler : SurfPaperPacketLoreHandler {
                 text("Beschreibung:".toSmallCaps(), Colors.WHITE)
             }.decoration(TextDecoration.ITALIC, false))
 
-            signedText.split("<br>").forEach { line ->
-                if (line.isBlank()) {
-                    loreToDisplay.add(Component.empty())
-                    return@forEach
+            signedText
+                .split("<br>")
+                .flatMap { rawLine ->
+                    WordUtils.wrap(rawLine, 50)
+                        .split('\n')
                 }
+                .forEach { line ->
+                    if (line.isBlank()) {
+                        loreToDisplay.add(Component.empty())
+                        return@forEach
+                    }
 
-                loreToDisplay.add(buildText {
-                    append(MiniMessage.miniMessage().deserialize(line)).colorIfAbsent(Colors.WHITE)
-                }.decoration(TextDecoration.ITALIC, false))
-            }
+                    loreToDisplay.add(buildText {
+                        white(line)
+                    }.decoration(TextDecoration.ITALIC, false))
+                }
 
             loreToDisplay.add(Component.empty())
         }
     }
 }
-
