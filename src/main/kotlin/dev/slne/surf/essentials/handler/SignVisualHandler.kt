@@ -74,9 +74,7 @@ object SignVisualHandler : SurfPaperPacketLoreHandler {
                     }
 
                     loreToDisplay.add(buildText {
-                        append(
-                            miniMessage.deserialize(line)
-                        ).colorIfAbsent(Colors.WHITE)
+                        white(line)
                     }.decoration(TextDecoration.ITALIC, false))
                 }
 
