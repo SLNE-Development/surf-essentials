@@ -11,7 +11,6 @@ import dev.slne.surf.essentials.service.SignService
 import io.papermc.paper.persistence.PersistentDataContainerView
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.apache.commons.text.WordUtils
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -76,7 +75,7 @@ object SignVisualHandler : SurfPaperPacketLoreHandler {
 
                     loreToDisplay.add(buildText {
                         append(
-                            MiniMessage.miniMessage().deserialize(line)
+                            miniMessage.deserialize(line)
                         ).colorIfAbsent(Colors.WHITE)
                     }.decoration(TextDecoration.ITALIC, false))
                 }
