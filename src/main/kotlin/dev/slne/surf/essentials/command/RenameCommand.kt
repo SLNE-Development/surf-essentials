@@ -8,6 +8,7 @@ import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.core.minimessage.miniMessage
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 
 fun renameCommand() = commandTree("rename") {
     withPermission(EssentialsPermissionRegistry.RENAME_COMMAND)
@@ -39,7 +40,7 @@ fun renameCommand() = commandTree("rename") {
                 ) else Component.text(content)
 
             item.editMeta {
-                it.displayName(displayName)
+                it.displayName(displayName.decoration(TextDecoration.ITALIC, false))
             }
 
             player.sendText {
