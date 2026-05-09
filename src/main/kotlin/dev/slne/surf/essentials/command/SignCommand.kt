@@ -51,6 +51,8 @@ fun signCommand() = commandTree("sign") {
                 appendSuccessPrefix()
                 success("Das Item wurde signiert.")
             }
+
+            cooldown.put(player.uniqueId, Unit)
         }
     }
 }
