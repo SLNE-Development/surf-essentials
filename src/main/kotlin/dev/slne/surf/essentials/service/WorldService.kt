@@ -83,7 +83,6 @@ object WorldService {
         world.setGameRule(GameRules.LOCATOR_BAR, false)
         world.setGameRule(GameRules.ADVANCE_TIME, false)
         world.setGameRule(GameRules.ADVANCE_WEATHER, false)
-        world.setGameRule(GameRules.LOCATOR_BAR, false)
 
         sender.sendText {
             appendSuccessPrefix()
