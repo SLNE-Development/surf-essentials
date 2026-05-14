@@ -80,6 +80,11 @@ object WorldService {
             return
         }
 
+        world.setGameRule(GameRules.LOCATOR_BAR, false)
+        world.setGameRule(GameRules.ADVANCE_TIME, false)
+        world.setGameRule(GameRules.ADVANCE_WEATHER, false)
+        world.setGameRule(GameRules.LOCATOR_BAR, false)
+
         sender.sendText {
             appendSuccessPrefix()
             success("Die Welt ")
@@ -136,7 +141,8 @@ object WorldService {
     }
 
     suspend fun unload(sender: CommandSender, world: World) {
-        val overworld = Bukkit.getWorlds().firstOrNull() ?: throw CommandAPI.failWithString("Es gibt keine Overworld")
+        val overworld = Bukkit.getWorlds().firstOrNull()
+            ?: throw CommandAPI.failWithString("Es gibt keine Overworld")
         val overworldSpawn = withContext(plugin.globalRegionDispatcher) { overworld.spawnLocation }
 
         sender.sendText {
@@ -185,7 +191,8 @@ object WorldService {
 
     @OptIn(ExperimentalPathApi::class)
     suspend fun delete(sender: CommandSender, world: World) {
-        val overworld = Bukkit.getWorlds().firstOrNull() ?: throw CommandAPI.failWithString("Es gibt keine Overworld")
+        val overworld = Bukkit.getWorlds().firstOrNull()
+            ?: throw CommandAPI.failWithString("Es gibt keine Overworld")
         val spawnLocation = withContext(plugin.globalRegionDispatcher) { overworld.spawnLocation }
 
         val semaphore = Semaphore(64)
