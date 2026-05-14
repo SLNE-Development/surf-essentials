@@ -5,10 +5,10 @@ import dev.jorel.commandapi.arguments.Argument
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.CustomArgument
 import dev.jorel.commandapi.arguments.StringArgument
-import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import org.bukkit.GameMode
-import org.bukkit.command.CommandSender
+import org.bukkit.permissions.Permissible
 
 class GameModeArgument(nodeName: String) :
     CustomArgument<GameMode, String>(StringArgument(nodeName), { info ->
@@ -23,13 +23,7 @@ class GameModeArgument(nodeName: String) :
 
         val sender = info.sender
         if (sender != null) {
-            val base = EssentialsPermissionRegistry.GAME_MODE_COMMAND
-            val specific = "$base.${gameMode.name.lowercase()}"
-            val wildcard = "$base.*"
-
-            if (!sender.hasPermission(specific) &&
-                !sender.hasPermission(wildcard)
-            ) {
+            if (!hasPermissionForGameMode(sender, gameMode)) {
                 throw CustomArgumentException.fromAdventureComponent {
                     buildText {
                         appendErrorPrefix()
@@ -44,20 +38,21 @@ class GameModeArgument(nodeName: String) :
 
     init {
         replaceSuggestions(
-            ArgumentSuggestions.stringCollection<CommandSender> { sender ->
-                val base = EssentialsPermissionRegistry.GAME_MODE_COMMAND
-                val wildcard = "$base.*"
-
+            ArgumentSuggestions.stringCollection { sender ->
                 GameMode.entries
-                    .filter {
-                        sender.sender.hasPermission(wildcard) ||
-                                sender.sender.hasPermission("$base.${it.name.lowercase()}")
-                    }
+                    .filter { hasPermissionForGameMode(sender.sender, it) }
                     .map { it.name.lowercase() }
             }
         )
     }
 }
+
+fun hasPermissionForGameMode(permissible: Permissible, gameMode: GameMode) =
+    permissible.hasPermission(EssentialsPermissionRegistry.GAME_MODE_WILDCARD) ||
+            permissible.hasPermission(permissionForGameMode(gameMode))
+
+fun permissionForGameMode(gameMode: GameMode) =
+    "${EssentialsPermissionRegistry.GAME_MODE_BASE}.${gameMode.name.lowercase()}"
 
 private fun getGameMode(gameModeValue: String) = when (gameModeValue) {
     "survival", "s", "0" -> GameMode.SURVIVAL
