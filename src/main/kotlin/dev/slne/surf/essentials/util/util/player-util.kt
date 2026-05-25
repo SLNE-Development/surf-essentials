@@ -17,7 +17,7 @@ private const val PLAYER_GAME_MODE_FILE = "playerGameType"
 
 private fun getPlayerFile(uuid: UUID): File? {
     for (world in Bukkit.getWorlds()) {
-        val worldFolder = world.worldFolder
+        val worldFolder = File(File(File(world.worldFolder.parent).parent).parent)
         if (!worldFolder.isDirectory()) {
             continue
         }
