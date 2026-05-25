@@ -12,7 +12,7 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
-private const val PLAYER_DATA_FOLDER = "playerdata"
+private const val PLAYER_DATA_FOLDER = "players/data"
 private const val PLAYER_GAME_MODE_FILE = "playerGameType"
 
 private fun getPlayerFile(uuid: UUID): File? {

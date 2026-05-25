@@ -17,7 +17,7 @@ fun knightCommand() = commandTree("knight") {
     withPermission(EssentialsPermissionRegistry.KNIGHT_COMMAND)
     playerExecutor { player, _ ->
         plugin.launch(plugin.entityDispatcher(player)) {
-            player.inventory.helmet = buildItem(Material.GOLDEN_HELMET) {
+            player.inventory.setHelmet(buildItem(Material.GOLDEN_HELMET) {
                 meta {
                     addEnchant(Enchantment.AQUA_AFFINITY, 10, true)
                     addEnchant(Enchantment.RESPIRATION, 10, true)
@@ -28,9 +28,9 @@ fun knightCommand() = commandTree("knight") {
                 displayName {
                     variableValue("Ritterhelm")
                 }
-            }
+            })
 
-            player.inventory.chestplate = buildItem(Material.GOLDEN_CHESTPLATE) {
+            player.inventory.setChestplate(buildItem(Material.GOLDEN_CHESTPLATE) {
                 meta {
                     addEnchant(Enchantment.PROTECTION, 10, true)
                     isUnbreakable = true
@@ -39,9 +39,9 @@ fun knightCommand() = commandTree("knight") {
                 displayName {
                     variableValue("Ritterbrustplatte")
                 }
-            }
+            })
 
-            player.inventory.leggings = buildItem(Material.GOLDEN_LEGGINGS) {
+            player.inventory.setLeggings(buildItem(Material.GOLDEN_LEGGINGS) {
                 meta {
                     addEnchant(Enchantment.SWIFT_SNEAK, 10, true)
                     addEnchant(Enchantment.PROTECTION, 10, true)
@@ -51,9 +51,9 @@ fun knightCommand() = commandTree("knight") {
                 displayName {
                     variableValue("Ritterhose")
                 }
-            }
+            })
 
-            player.inventory.boots = buildItem(Material.GOLDEN_BOOTS) {
+            player.inventory.setBoots(buildItem(Material.GOLDEN_BOOTS) {
                 meta {
                     addEnchant(Enchantment.DEPTH_STRIDER, 10, true)
                     addEnchant(Enchantment.PROTECTION, 10, true)
@@ -63,7 +63,7 @@ fun knightCommand() = commandTree("knight") {
                 displayName {
                     variableValue("Ritterschuhe")
                 }
-            }
+            })
 
             player.inventory.setItem(0, buildItem(Material.GOLDEN_SWORD) {
                 meta {
