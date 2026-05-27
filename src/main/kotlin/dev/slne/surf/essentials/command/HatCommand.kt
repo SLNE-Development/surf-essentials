@@ -13,7 +13,7 @@ fun hatCommand() = commandTree("hat") {
     playerExecutor { player, _ ->
         val itemInHand = player.inventory.itemInMainHand
         val helmet = player.inventory.helmet
-        player.inventory.helmet = itemInHand
+        player.inventory.setHelmet(itemInHand)
         player.inventory.setItemInMainHand(helmet)
 
         if (itemInHand.type.isAir) {
@@ -34,7 +34,7 @@ fun hatCommand() = commandTree("hat") {
             val player: Player by args
             val itemInHand = executor.inventory.itemInMainHand
             val helmet = player.inventory.helmet
-            player.inventory.helmet = itemInHand
+            player.inventory.setHelmet(itemInHand)
             player.inventory.setItemInMainHand(helmet)
 
             if (itemInHand.type.isAir) {
