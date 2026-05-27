@@ -1,5 +1,7 @@
 package dev.slne.surf.essentials.util.util
 
+import dev.slne.surf.api.paper.nms.NmsUseWithCaution
+import dev.slne.surf.api.paper.nms.bridges.SurfPaperNmsPlayerBridge
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.kyori.adventure.nbt.*
@@ -15,22 +17,11 @@ import java.util.*
 private const val PLAYER_DATA_FOLDER = "players/data"
 private const val PLAYER_GAME_MODE_FILE = "playerGameType"
 
+@OptIn(NmsUseWithCaution::class)
 private fun getPlayerFile(uuid: UUID): File? {
-    for (world in Bukkit.getWorlds()) {
-        val worldFolder = File(File(File(world.worldFolder.parent).parent).parent)
-        if (!worldFolder.isDirectory()) {
-            continue
-        }
-
-        val playerDataFolder = File(worldFolder, PLAYER_DATA_FOLDER)
-        if (!playerDataFolder.isDirectory()) {
-            continue
-        }
-
-        val playerFile = File(playerDataFolder, "$uuid.dat")
-        if (playerFile.exists()) {
-            return playerFile
-        }
+    val playerFile = File(SurfPaperNmsPlayerBridge.getPlayerDataDir(), "$uuid.dat")
+    if (playerFile.exists()) {
+        return playerFile
     }
     return null
 }
