@@ -1,4 +1,5 @@
 import dev.slne.surf.api.gradle.util.registerRequired
+import dev.slne.surf.api.gradle.util.withSurfApiBukkit
 
 plugins {
     id("dev.slne.surf.api.gradle.paper-plugin")
@@ -19,6 +20,14 @@ surfPaperPluginApi {
     }
 
     authors.addAll("twisti", "red", "mikey")
+
+    runServer {
+        withSurfApiBukkit()
+    }
+}
+
+runPaper {
+    folia.registerTask()
 }
 
 dependencies {
