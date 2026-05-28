@@ -4,6 +4,7 @@ import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
 import dev.jorel.commandapi.CommandAPI
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.SurfApiPaper
+import dev.slne.surf.essentials.command.argument.world.worldPath
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.util.isFolia
 import dev.slne.surf.essentials.util.world.unloadCanvasWorld
@@ -97,7 +98,7 @@ object WorldService {
             return
         }
 
-        val file = Bukkit.getWorldContainer().resolve(name)
+        val file = worldPath.resolve(name)
         if (!file.exists() || !file.isDirectory) {
             sender.sendText {
                 appendErrorPrefix()
@@ -119,13 +120,15 @@ object WorldService {
             info("Die Welt wird geladen...")
         }
 
-        val world = WorldCreator(name).createWorld() ?: run {
-            sender.sendText {
-                appendErrorPrefix()
-                error("Die Welt konnte nicht geladen werden.")
+        val world = runCatching {
+            WorldCreator(name).createWorld() ?: run {
+                sender.sendText {
+                    appendErrorPrefix()
+                    error("Die Welt konnte nicht geladen werden.")
+                }
+                return
             }
-            return
-        }
+        }.getOrNull() ?: return
 
         sender.sendText {
             appendSuccessPrefix()
@@ -136,7 +139,8 @@ object WorldService {
     }
 
     suspend fun unload(sender: CommandSender, world: World) {
-        val overworld = Bukkit.getWorlds().firstOrNull() ?: throw CommandAPI.failWithString("Es gibt keine Overworld")
+        val overworld = Bukkit.getWorlds().firstOrNull()
+            ?: throw CommandAPI.failWithString("Es gibt keine Overworld")
         val overworldSpawn = withContext(plugin.globalRegionDispatcher) { overworld.spawnLocation }
 
         sender.sendText {
@@ -185,7 +189,8 @@ object WorldService {
 
     @OptIn(ExperimentalPathApi::class)
     suspend fun delete(sender: CommandSender, world: World) {
-        val overworld = Bukkit.getWorlds().firstOrNull() ?: throw CommandAPI.failWithString("Es gibt keine Overworld")
+        val overworld = Bukkit.getWorlds().firstOrNull()
+            ?: throw CommandAPI.failWithString("Es gibt keine Overworld")
         val spawnLocation = withContext(plugin.globalRegionDispatcher) { overworld.spawnLocation }
 
         val semaphore = Semaphore(64)
