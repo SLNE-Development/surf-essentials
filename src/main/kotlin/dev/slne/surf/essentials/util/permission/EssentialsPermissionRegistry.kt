@@ -22,6 +22,7 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val HEAL_COMMAND_OTHERS = create("$PREFIX.heal.command.others")
     val HAT_COMMAND = create("$PREFIX.hat.command")
     val HAT_COMMAND_OTHERS = create("$PREFIX.hat.command.others")
+    val HAT_COMMAND_BYPASS = create("$PREFIX.hat.command.bypass")
     val LIST_COMMAND = create("$PREFIX.list.command")
     val LIST_COMMAND_WORLD = create("$PREFIX.list.command.world")
     val TRASH_COMMAND = create("$PREFIX.trash.command")
