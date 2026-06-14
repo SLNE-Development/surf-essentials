@@ -73,11 +73,6 @@ object WorldService {
         hardcore?.let { creator.hardcore(it) }
         seed?.let { creator.seed(it) }
 
-        if (type == WorldTypeArgument.WorldType.VOID) {
-            creator.generator(VoidWorldGenerator)
-            VoidWorldGenerator.addGeneratorToBukkitYml(name)
-        }
-
         sender.sendText {
             appendInfoPrefix()
             info("Die Welt wird erstellt...")
@@ -89,6 +84,11 @@ object WorldService {
                 error("Die Welt konnte nicht erstellt werden.")
             }
             return
+        }
+
+        if (type == WorldTypeArgument.WorldType.VOID) {
+            creator.generator(VoidWorldGenerator)
+            VoidWorldGenerator.addGeneratorToBukkitYml(name)
         }
 
         sender.sendText {
