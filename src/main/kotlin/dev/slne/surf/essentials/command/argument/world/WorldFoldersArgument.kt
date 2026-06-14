@@ -42,9 +42,9 @@ class WorldFoldersArgument(nodeName: String) :
 private fun isMinecraftWorldFolder(folder: File): Boolean {
     if (!folder.isDirectory) return false
 
-    val regionFolder = File(folder, "region")
+    val dataFolder = File(folder, "data")
 
-    return regionFolder.exists() && regionFolder.isDirectory
+    return dataFolder.exists() && dataFolder.isDirectory
 }
 
 
