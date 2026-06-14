@@ -4,9 +4,11 @@ import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
 import dev.jorel.commandapi.CommandAPI
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.SurfApiPaper
+import dev.slne.surf.essentials.command.argument.world.WorldTypeArgument
 import dev.slne.surf.essentials.command.argument.world.worldPath
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.util.isFolia
+import dev.slne.surf.essentials.util.world.generator.VoidWorldGenerator
 import dev.slne.surf.essentials.util.world.unloadCanvasWorld
 import io.canvasmc.canvas.WorldUnloadResult
 import kotlinx.coroutines.coroutineScope
@@ -15,7 +17,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
-import org.bukkit.*
+import org.bukkit.Bukkit
+import org.bukkit.NamespacedKey
+import org.bukkit.World
+import org.bukkit.WorldCreator
 import org.bukkit.command.CommandSender
 import org.bukkit.persistence.PersistentDataType
 import kotlin.io.path.ExperimentalPathApi
@@ -39,10 +44,10 @@ object WorldService {
         sender: CommandSender,
         name: String,
         environment: World.Environment?,
-        type: WorldType?,
+        type: WorldTypeArgument.WorldType?,
         generateStructures: Boolean?,
         hardcore: Boolean?,
-        seed: Long?
+        seed: Long?,
     ) {
         if (Bukkit.getServer().isFolia()) {
             sender.sendText {
@@ -63,10 +68,15 @@ object WorldService {
         val creator = WorldCreator(name)
 
         environment?.let { creator.environment(it) }
-        type?.let { creator.type(it) }
+        type?.let { creator.type(it.vanilla()) }
         generateStructures?.let { creator.generateStructures(it) }
         hardcore?.let { creator.hardcore(it) }
         seed?.let { creator.seed(it) }
+
+        if (type == WorldTypeArgument.WorldType.VOID) {
+            creator.generator(VoidWorldGenerator)
+            VoidWorldGenerator.addGeneratorToBukkitYml(name)
+        }
 
         sender.sendText {
             appendInfoPrefix()
@@ -228,6 +238,7 @@ object WorldService {
             }
 
             path.deleteRecursively()
+            VoidWorldGenerator.removeGeneratorFromBukkitYml(world.name)
 
             sender.sendText {
                 appendSuccessPrefix()

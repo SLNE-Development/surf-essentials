@@ -7,10 +7,7 @@ import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.core.messages.pagination.Pagination
 import dev.slne.surf.api.paper.SurfApiPaper
 import dev.slne.surf.api.paper.command.executors.anyExecutorSuspend
-import dev.slne.surf.essentials.command.argument.world.worldEnvironmentArgument
-import dev.slne.surf.essentials.command.argument.world.worldFoldersArgument
-import dev.slne.surf.essentials.command.argument.world.worldTypeArgument
-import dev.slne.surf.essentials.command.argument.world.worldsArgument
+import dev.slne.surf.essentials.command.argument.world.*
 import dev.slne.surf.essentials.service.WorldService
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import dev.slne.surf.essentials.util.util.isFolia
@@ -18,7 +15,6 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.World
-import org.bukkit.WorldType
 import org.bukkit.entity.Player
 
 fun worldCommand() = commandTree("world") {
@@ -152,7 +148,7 @@ fun worldCommand() = commandTree("world") {
                     anyExecutor { executor, args ->
                         val name: String by args
                         val environment: World.Environment by args
-                        val type: WorldType by args
+                        val type: WorldTypeArgument.WorldType by args
 
                         if (Bukkit.getServer().isFolia()) {
                             executor.sendText {
@@ -169,7 +165,7 @@ fun worldCommand() = commandTree("world") {
                         anyExecutor { executor, args ->
                             val name: String by args
                             val environment: World.Environment by args
-                            val type: WorldType by args
+                            val type: WorldTypeArgument.WorldType by args
                             val generateStructures: Boolean by args
 
                             if (Bukkit.getServer().isFolia()) {
@@ -194,7 +190,7 @@ fun worldCommand() = commandTree("world") {
                             anyExecutor { executor, args ->
                                 val name: String by args
                                 val environment: World.Environment by args
-                                val type: WorldType by args
+                                val type: WorldTypeArgument.WorldType by args
                                 val generateStructures: Boolean by args
                                 val hardcore: Boolean by args
 
@@ -221,7 +217,7 @@ fun worldCommand() = commandTree("world") {
                                 anyExecutor { executor, args ->
                                     val name: String by args
                                     val environment: World.Environment by args
-                                    val type: WorldType by args
+                                    val type: WorldTypeArgument.WorldType by args
                                     val generateStructures: Boolean by args
                                     val hardcore: Boolean by args
                                     val seed: Long by args
