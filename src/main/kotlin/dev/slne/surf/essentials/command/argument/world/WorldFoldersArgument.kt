@@ -10,10 +10,9 @@ import org.bukkit.Bukkit
 import java.io.File
 
 
-val worldPath by lazy {
-    Bukkit.getWorldContainer().listFiles().first { it.isDirectory }.resolve("dimensions")
-        .resolve("minecraft")
-}
+val worldPath: File
+    get() = Bukkit.getServer().levelDirectory.resolve("dimensions")
+        .resolve("minecraft").toFile()
 
 class WorldFoldersArgument(nodeName: String) :
     CustomArgument<String, String>(StringArgument(nodeName), { info ->
@@ -31,8 +30,10 @@ class WorldFoldersArgument(nodeName: String) :
     init {
         this.replaceSuggestions(
             ArgumentSuggestions.stringCollection {
-                worldPath.listFiles().filter { isMinecraftWorldFolder(it) }
-                    .map { it.name }
+                worldPath.listFiles()
+                    ?.filter(::isMinecraftWorldFolder)
+                    ?.map(File::getName)
+                    ?: emptyList()
             }
         )
     }
