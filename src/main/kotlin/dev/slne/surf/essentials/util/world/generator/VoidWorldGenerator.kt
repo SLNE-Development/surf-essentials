@@ -18,7 +18,7 @@ object VoidWorldGenerator : ChunkGenerator() {
     fun addGeneratorToBukkitYml(worldName: String) {
         val worldContainer = plugin.server.worldContainer
         val bukkitYmlFile = worldContainer.parentFile?.let { File(it, "bukkit.yml") }
-            ?: File(worldContainer.absolutePath, "../bukkit.yml").canonicalFile
+            ?: File(worldContainer, "bukkit.yml")
 
         if (!bukkitYmlFile.exists()) {
             bukkitYmlFile.createNewFile()
@@ -33,7 +33,7 @@ object VoidWorldGenerator : ChunkGenerator() {
     fun removeGeneratorFromBukkitYml(worldName: String) {
         val worldContainer = plugin.server.worldContainer
         val bukkitYmlFile = worldContainer.parentFile?.let { File(it, "bukkit.yml") }
-            ?: File(worldContainer.absolutePath, "../bukkit.yml").canonicalFile
+            ?: File(worldContainer, "bukkit.yml")
 
         if (!bukkitYmlFile.exists()) {
             return
@@ -43,10 +43,6 @@ object VoidWorldGenerator : ChunkGenerator() {
 
         if (config.contains("worlds.$worldName")) {
             config.set("worlds.$worldName", null)
-
-            if (config.getConfigurationSection("worlds")?.getKeys(false)?.isEmpty() == true) {
-                config.set("worlds", null)
-            }
 
             config.save(bukkitYmlFile)
         }

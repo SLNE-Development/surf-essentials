@@ -134,11 +134,17 @@ object WorldService {
             WorldCreator(name).createWorld() ?: run {
                 sender.sendText {
                     appendErrorPrefix()
-                    error("Die Welt konnte nicht geladen werden.")
+                    error("Die Welt konnte nicht geladen werden. (LOAD_ERR_NULL)")
                 }
                 return
             }
-        }.getOrNull() ?: return
+        }.getOrNull() ?: run {
+            sender.sendText {
+                appendErrorPrefix()
+                error("Die Welt konnte nicht geladen werden. (LOAD_ERR_CATCH)")
+            }
+            return
+        }
 
         sender.sendText {
             appendSuccessPrefix()
