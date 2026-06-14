@@ -4,8 +4,11 @@ import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
 import dev.jorel.commandapi.CommandAPI
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.SurfApiPaper
+import dev.slne.surf.essentials.command.argument.world.WorldTypeArgument
+import dev.slne.surf.essentials.command.argument.world.worldPath
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.util.isFolia
+import dev.slne.surf.essentials.util.world.generator.VoidWorldGenerator
 import dev.slne.surf.essentials.util.world.unloadCanvasWorld
 import io.canvasmc.canvas.WorldUnloadResult
 import kotlinx.coroutines.coroutineScope
@@ -14,7 +17,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
-import org.bukkit.*
+import org.bukkit.Bukkit
+import org.bukkit.NamespacedKey
+import org.bukkit.World
+import org.bukkit.WorldCreator
 import org.bukkit.command.CommandSender
 import org.bukkit.persistence.PersistentDataType
 import kotlin.io.path.ExperimentalPathApi
@@ -38,10 +44,10 @@ object WorldService {
         sender: CommandSender,
         name: String,
         environment: World.Environment?,
-        type: WorldType?,
+        type: WorldTypeArgument.WorldType?,
         generateStructures: Boolean?,
         hardcore: Boolean?,
-        seed: Long?
+        seed: Long?,
     ) {
         if (Bukkit.getServer().isFolia()) {
             sender.sendText {
@@ -62,7 +68,7 @@ object WorldService {
         val creator = WorldCreator(name)
 
         environment?.let { creator.environment(it) }
-        type?.let { creator.type(it) }
+        type?.let { creator.type(it.vanilla()) }
         generateStructures?.let { creator.generateStructures(it) }
         hardcore?.let { creator.hardcore(it) }
         seed?.let { creator.seed(it) }
@@ -78,6 +84,11 @@ object WorldService {
                 error("Die Welt konnte nicht erstellt werden.")
             }
             return
+        }
+
+        if (type == WorldTypeArgument.WorldType.VOID) {
+            creator.generator(VoidWorldGenerator)
+            VoidWorldGenerator.addGeneratorToBukkitYml(name)
         }
 
         sender.sendText {
@@ -97,7 +108,7 @@ object WorldService {
             return
         }
 
-        val file = Bukkit.getWorldContainer().resolve(name)
+        val file = worldPath.resolve(name)
         if (!file.exists() || !file.isDirectory) {
             sender.sendText {
                 appendErrorPrefix()
@@ -119,10 +130,18 @@ object WorldService {
             info("Die Welt wird geladen...")
         }
 
-        val world = WorldCreator(name).createWorld() ?: run {
+        val world = runCatching {
+            WorldCreator(name).createWorld() ?: run {
+                sender.sendText {
+                    appendErrorPrefix()
+                    error("Die Welt konnte nicht geladen werden. (LOAD_ERR_NULL)")
+                }
+                return
+            }
+        }.getOrNull() ?: run {
             sender.sendText {
                 appendErrorPrefix()
-                error("Die Welt konnte nicht geladen werden.")
+                error("Die Welt konnte nicht geladen werden. (LOAD_ERR_CATCH)")
             }
             return
         }
@@ -136,7 +155,8 @@ object WorldService {
     }
 
     suspend fun unload(sender: CommandSender, world: World) {
-        val overworld = Bukkit.getWorlds().firstOrNull() ?: throw CommandAPI.failWithString("Es gibt keine Overworld")
+        val overworld = Bukkit.getWorlds().firstOrNull()
+            ?: throw CommandAPI.failWithString("Es gibt keine Overworld")
         val overworldSpawn = withContext(plugin.globalRegionDispatcher) { overworld.spawnLocation }
 
         sender.sendText {
@@ -185,7 +205,8 @@ object WorldService {
 
     @OptIn(ExperimentalPathApi::class)
     suspend fun delete(sender: CommandSender, world: World) {
-        val overworld = Bukkit.getWorlds().firstOrNull() ?: throw CommandAPI.failWithString("Es gibt keine Overworld")
+        val overworld = Bukkit.getWorlds().firstOrNull()
+            ?: throw CommandAPI.failWithString("Es gibt keine Overworld")
         val spawnLocation = withContext(plugin.globalRegionDispatcher) { overworld.spawnLocation }
 
         val semaphore = Semaphore(64)
@@ -223,6 +244,7 @@ object WorldService {
             }
 
             path.deleteRecursively()
+            VoidWorldGenerator.removeGeneratorFromBukkitYml(world.name)
 
             sender.sendText {
                 appendSuccessPrefix()

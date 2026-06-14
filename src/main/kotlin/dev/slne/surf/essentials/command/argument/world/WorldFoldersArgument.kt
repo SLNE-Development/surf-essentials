@@ -7,12 +7,16 @@ import dev.jorel.commandapi.arguments.CustomArgument
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.slne.surf.api.core.messages.adventure.buildText
 import org.bukkit.Bukkit
-import org.bukkit.command.CommandSender
 import java.io.File
+
+
+val worldPath: File
+    get() = Bukkit.getServer().levelDirectory.resolve("dimensions")
+        .resolve("minecraft").toFile()
 
 class WorldFoldersArgument(nodeName: String) :
     CustomArgument<String, String>(StringArgument(nodeName), { info ->
-        if (File(Bukkit.getWorldContainer(), info.input).exists()) {
+        if (File(worldPath, info.input).exists()) {
             info.input
         } else {
             throw CustomArgumentException.fromAdventureComponent {
@@ -25,9 +29,11 @@ class WorldFoldersArgument(nodeName: String) :
     }) {
     init {
         this.replaceSuggestions(
-            ArgumentSuggestions.stringCollection<CommandSender> {
-                Bukkit.getWorldContainer().listFiles().filter { isMinecraftWorldFolder(it) }
-                    .map { it.name }
+            ArgumentSuggestions.stringCollection {
+                worldPath.listFiles()
+                    ?.filter(::isMinecraftWorldFolder)
+                    ?.map(File::getName)
+                    ?: emptyList()
             }
         )
     }
@@ -36,10 +42,9 @@ class WorldFoldersArgument(nodeName: String) :
 private fun isMinecraftWorldFolder(folder: File): Boolean {
     if (!folder.isDirectory) return false
 
-    val levelDat = File(folder, "level.dat")
-    val regionFolder = File(folder, "region")
+    val dataFolder = File(folder, "data")
 
-    return levelDat.exists() && regionFolder.exists() && regionFolder.isDirectory
+    return dataFolder.exists() && dataFolder.isDirectory
 }
 
 

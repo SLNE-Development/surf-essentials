@@ -8,6 +8,7 @@ import dev.slne.surf.api.paper.packet.SurfPaperPacketApi
 import dev.slne.surf.essentials.handler.SignVisualHandler
 import dev.slne.surf.essentials.listener.CanvasListener
 import dev.slne.surf.essentials.service.SignService
+import dev.slne.surf.essentials.util.world.generator.VoidWorldGenerator
 import org.bukkit.plugin.java.JavaPlugin
 
 val plugin get() = JavaPlugin.getPlugin(PaperMain::class.java)
@@ -34,6 +35,8 @@ class PaperMain : SuspendingJavaPlugin() {
     override fun onDisable() {
         super.onDisable()
     }
+
+    override fun getDefaultWorldGenerator(worldName: String, id: String?) = VoidWorldGenerator
 
     fun isSurvivalServer() = pluginManager.isPluginEnabled("surf-freebuild-paper")
 }
