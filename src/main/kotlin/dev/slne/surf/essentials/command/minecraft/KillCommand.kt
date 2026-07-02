@@ -22,6 +22,37 @@ fun killCommand() = commandTree("kill") {
         }
     }
 
+    entitySelectorArgumentManyEntities("targets") {
+        withPermission(EssentialsPermissionRegistry.KILL_COMMAND_OTHERS)
+        anyExecutor { executor, args ->
+            val targets: Collection<Entity> by args
+
+            targets.forEach {
+                if (it is LivingEntity) {
+                    it.health = 0.0
+                    if (it is Player) {
+                        it.sendHealthUpdate()
+                        it.sendText {
+                            appendSuccessPrefix()
+                            success("Du wurdest von ")
+                            variableValue(executor.name)
+                            success(" getötet.")
+                        }
+                    }
+                } else {
+                    it.remove()
+                }
+            }
+
+            executor.sendText {
+                appendSuccessPrefix()
+                success("Du hast ")
+                variableValue(targets.size.toString())
+                success(" Entität(en) getötet.")
+            }
+        }
+    }
+
     hashTagEntityTypeArgument("entityType") {
         withPermission(EssentialsPermissionRegistry.KILL_COMMAND_HASHTAG)
         anyExecutor { sender, arguments ->
@@ -74,37 +105,6 @@ fun killCommand() = commandTree("kill") {
                     translatable(entityType.translationKey())
                     error(" gefunden.")
                 }
-            }
-        }
-    }
-
-    entitySelectorArgumentManyEntities("targets") {
-        withPermission(EssentialsPermissionRegistry.KILL_COMMAND_OTHERS)
-        anyExecutor { executor, args ->
-            val targets: Collection<Entity> by args
-
-            targets.forEach {
-                if (it is LivingEntity) {
-                    it.health = 0.0
-                    if (it is Player) {
-                        it.sendHealthUpdate()
-                        it.sendText {
-                            appendSuccessPrefix()
-                            success("Du wurdest von ")
-                            variableValue(executor.name)
-                            success(" getötet.")
-                        }
-                    }
-                } else {
-                    it.remove()
-                }
-            }
-
-            executor.sendText {
-                appendSuccessPrefix()
-                success("Du hast ")
-                variableValue(targets.size.toString())
-                success(" Entität(en) getötet.")
             }
         }
     }
