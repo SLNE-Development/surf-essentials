@@ -2,8 +2,11 @@ package dev.slne.surf.essentials.command.minecraft
 
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.extensions.server
+import dev.slne.surf.essentials.command.argument.hashTagEntityTypeArgument
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import org.bukkit.entity.Entity
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 
@@ -16,6 +19,53 @@ fun killCommand() = commandTree("kill") {
         player.sendText {
             appendSuccessPrefix()
             success("Du wurdest getötet.")
+        }
+    }
+
+    hashTagEntityTypeArgument("entityType") {
+        anyExecutor { sender, arguments ->
+            val entityType: EntityType by arguments
+
+            var amount = 0
+
+            server.worlds.forEach { world ->
+                world.entities.filter { it.type == entityType }.forEach { entity ->
+                    if (entity is LivingEntity) {
+                        entity.health = 0.0
+                        if (entity is Player) {
+                            entity.sendHealthUpdate()
+                            entity.sendText {
+                                appendSuccessPrefix()
+                                success("Du wurdest von ")
+                                variableValue(sender.name)
+                                success(" getötet.")
+                            }
+                        }
+                    } else {
+                        entity.remove()
+                    }
+
+                    amount += 1
+                }
+            }
+
+            if (amount > 0) {
+                sender.sendText {
+                    appendSuccessPrefix()
+                    success("Du hast ")
+                    variableValue(amount.toString())
+                    success(" Entität(en) vom Typ ")
+                    translatable(entityType.translationKey())
+                    success(" getötet.")
+                }
+            } else {
+                sender.sendText {
+                    appendErrorPrefix()
+                    error("Es wurden keine Entitäten vom Typ ")
+                    translatable(entityType.translationKey())
+                    error(" gefunden.")
+                }
+            }
         }
     }
 
