@@ -23,8 +23,17 @@ fun killCommand() = commandTree("kill") {
     }
 
     hashTagEntityTypeArgument("entityType") {
+        withPermission(EssentialsPermissionRegistry.KILL_COMMAND_HASHTAG)
         anyExecutor { sender, arguments ->
             val entityType: EntityType by arguments
+
+            if (entityType == EntityType.PLAYER) {
+                sender.sendText {
+                    appendErrorPrefix()
+                    error("Du kannst keine Spieler mit diesem Befehl töten. Verwende stattdessen /kill @a.")
+                }
+                return@anyExecutor
+            }
 
             var amount = 0
 
