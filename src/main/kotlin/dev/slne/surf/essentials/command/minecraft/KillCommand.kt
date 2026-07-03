@@ -9,6 +9,11 @@ import dev.slne.surf.api.paper.extensions.server
 import dev.slne.surf.essentials.command.argument.hashTagEntityTypeArgument
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
@@ -104,11 +109,19 @@ fun killCommand() = commandTree("kill") {
                     return@launch
                 }
 
-                entities.forEach { entity ->
-                    withContext(plugin.entityDispatcher(entity)) {
-                        entity.remove()
-                        amount += 1
-                    }
+                val semaphore = Semaphore(25)
+
+                amount = coroutineScope {
+                    entities.map { entity ->
+                        async {
+                            semaphore.withPermit {
+                                withContext(plugin.entityDispatcher(entity)) {
+                                    entity.remove()
+                                    1
+                                }
+                            }
+                        }
+                    }.awaitAll().sum()
                 }
 
                 if (amount > 0) {
