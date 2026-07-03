@@ -15,6 +15,8 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 
+private const val MAX_KILL_ENTITIES = 100
+
 fun killCommand() = commandTree("kill") {
     withPermission(EssentialsPermissionRegistry.KILL_COMMAND)
     playerExecutor { player, _ ->
@@ -31,6 +33,18 @@ fun killCommand() = commandTree("kill") {
         withPermission(EssentialsPermissionRegistry.KILL_COMMAND_OTHERS)
         anyExecutor { executor, args ->
             val targets: Collection<Entity> by args
+
+            if (targets.size > MAX_KILL_ENTITIES && !executor.hasPermission(
+                    EssentialsPermissionRegistry.TELEPORT_COMMAND_MANY
+                )
+            ) {
+                executor.sendText {
+                    appendErrorPrefix()
+                    error("Du kannst maximal $MAX_KILL_ENTITIES Entitäten auf einmal töten.")
+                    spacer(" (${targets.size})")
+                }
+                return@anyExecutor
+            }
 
             targets.forEach {
                 if (it is LivingEntity) {
@@ -74,12 +88,26 @@ fun killCommand() = commandTree("kill") {
             var amount = 0
 
             plugin.launch(plugin.globalRegionDispatcher) {
-                server.worlds.forEach { world ->
-                    world.entities.filter { it.type == entityType }.forEach { entity ->
-                        withContext(plugin.entityDispatcher(entity)) {
-                            entity.remove()
-                            amount += 1
-                        }
+                val entities = server.worlds.flatMap { world ->
+                    world.entities.filter { it.type == entityType }
+                }
+
+                if (entities.size > MAX_KILL_ENTITIES && !sender.hasPermission(
+                        EssentialsPermissionRegistry.TELEPORT_COMMAND_MANY
+                    )
+                ) {
+                    sender.sendText {
+                        appendErrorPrefix()
+                        error("Du kannst maximal $MAX_KILL_ENTITIES Entitäten auf einmal töten.")
+                        spacer(" (${entities.size})")
+                    }
+                    return@launch
+                }
+
+                entities.forEach { entity ->
+                    withContext(plugin.entityDispatcher(entity)) {
+                        entity.remove()
+                        amount += 1
                     }
                 }
             }
