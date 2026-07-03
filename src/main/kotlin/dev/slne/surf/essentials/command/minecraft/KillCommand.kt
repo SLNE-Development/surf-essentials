@@ -109,7 +109,7 @@ fun killCommand() = commandTree("kill") {
                     return@launch
                 }
 
-                val semaphore = Semaphore(25)
+                val semaphore = Semaphore(100)
 
                 amount = coroutineScope {
                     entities.map { entity ->
