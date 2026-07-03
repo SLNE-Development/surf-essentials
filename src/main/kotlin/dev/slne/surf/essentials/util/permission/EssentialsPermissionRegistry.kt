@@ -70,7 +70,7 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val KILL_COMMAND = create("$PREFIX.kill.command")
     val KILL_COMMAND_HASHTAG = create("$PREFIX.kill.command.hashtag")
     val KILL_COMMAND_OTHERS = create("$PREFIX.kill.command.others")
-    val KILL_COMMAND_MANY = create("$PREFIX.kill.command.others")
+    val KILL_COMMAND_MANY = create("$PREFIX.kill.command.many")
     val SPEED_COMMAND = create("$PREFIX.speed.command")
     val SPEED_COMMAND_WALK = create("$PREFIX.speed.command.walk")
     val SPEED_COMMAND_WALK_OTHERS = create("$PREFIX.speed.command.walk.others")

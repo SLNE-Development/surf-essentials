@@ -35,7 +35,7 @@ fun killCommand() = commandTree("kill") {
             val targets: Collection<Entity> by args
 
             if (targets.size > MAX_KILL_ENTITIES && !executor.hasPermission(
-                    EssentialsPermissionRegistry.TELEPORT_COMMAND_MANY
+                    EssentialsPermissionRegistry.KILL_COMMAND_MANY
                 )
             ) {
                 executor.sendText {
@@ -93,7 +93,7 @@ fun killCommand() = commandTree("kill") {
                 }
 
                 if (entities.size > MAX_KILL_ENTITIES && !sender.hasPermission(
-                        EssentialsPermissionRegistry.TELEPORT_COMMAND_MANY
+                        EssentialsPermissionRegistry.KILL_COMMAND_MANY
                     )
                 ) {
                     sender.sendText {
