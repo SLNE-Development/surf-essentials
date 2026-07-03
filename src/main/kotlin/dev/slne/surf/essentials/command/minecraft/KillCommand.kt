@@ -1,5 +1,7 @@
 package dev.slne.surf.essentials.command.minecraft
 
+import com.github.shynixn.mccoroutine.folia.entityDispatcher
+import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.api.core.messages.adventure.sendText
@@ -7,6 +9,7 @@ import dev.slne.surf.api.paper.extensions.server
 import dev.slne.surf.essentials.command.argument.hashTagEntityTypeArgument
 import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
+import kotlinx.coroutines.withContext
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
@@ -70,16 +73,16 @@ fun killCommand() = commandTree("kill") {
 
             var amount = 0
 
-            plugin.launch {
+            plugin.launch(plugin.globalRegionDispatcher) {
                 server.worlds.forEach { world ->
                     world.entities.filter { it.type == entityType }.forEach { entity ->
-                        entity.remove()
-                        amount += 1
+                        withContext(plugin.entityDispatcher(entity)) {
+                            entity.remove()
+                            amount += 1
+                        }
                     }
                 }
             }
-
-
 
             if (amount > 0) {
                 sender.sendText {
