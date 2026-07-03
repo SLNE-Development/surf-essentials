@@ -110,23 +110,23 @@ fun killCommand() = commandTree("kill") {
                         amount += 1
                     }
                 }
-            }
 
-            if (amount > 0) {
-                sender.sendText {
-                    appendSuccessPrefix()
-                    success("Du hast ")
-                    variableValue(amount.toString())
-                    success(" Entität(en) vom Typ ")
-                    translatable(entityType.translationKey())
-                    success(" getötet.")
-                }
-            } else {
-                sender.sendText {
-                    appendErrorPrefix()
-                    error("Es wurden keine Entitäten vom Typ ")
-                    translatable(entityType.translationKey())
-                    error(" gefunden.")
+                if (amount > 0) {
+                    sender.sendText {
+                        appendSuccessPrefix()
+                        success("Du hast ")
+                        variableValue(amount.toString())
+                        success(" Entität(en) vom Typ ")
+                        translatable(entityType.translationKey())
+                        success(" getötet.")
+                    }
+                } else {
+                    sender.sendText {
+                        appendErrorPrefix()
+                        error("Es wurden keine Entitäten vom Typ ")
+                        translatable(entityType.translationKey())
+                        error(" gefunden.")
+                    }
                 }
             }
         }
