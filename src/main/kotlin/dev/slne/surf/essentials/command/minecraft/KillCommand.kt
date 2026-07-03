@@ -1,9 +1,11 @@
 package dev.slne.surf.essentials.command.minecraft
 
+import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.extensions.server
 import dev.slne.surf.essentials.command.argument.hashTagEntityTypeArgument
+import dev.slne.surf.essentials.plugin
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
@@ -68,26 +70,16 @@ fun killCommand() = commandTree("kill") {
 
             var amount = 0
 
-            server.worlds.forEach { world ->
-                world.entities.filter { it.type == entityType }.forEach { entity ->
-                    if (entity is LivingEntity) {
-                        entity.health = 0.0
-                        if (entity is Player) {
-                            entity.sendHealthUpdate()
-                            entity.sendText {
-                                appendSuccessPrefix()
-                                success("Du wurdest von ")
-                                variableValue(sender.name)
-                                success(" getötet.")
-                            }
-                        }
-                    } else {
+            plugin.launch {
+                server.worlds.forEach { world ->
+                    world.entities.filter { it.type == entityType }.forEach { entity ->
                         entity.remove()
+                        amount += 1
                     }
-
-                    amount += 1
                 }
             }
+
+
 
             if (amount > 0) {
                 sender.sendText {

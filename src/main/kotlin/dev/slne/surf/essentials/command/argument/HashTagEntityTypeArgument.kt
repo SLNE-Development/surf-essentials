@@ -27,7 +27,8 @@ class HashTagEntityTypeArgument(nodeName: String) :
         this.replaceSuggestions(
             ArgumentSuggestions.stringCollectionAsync {
                 plugin.scope.future {
-                    EntityType.entries.map { "#${it.name.lowercase()}" }
+                    EntityType.entries.filterNot { it == EntityType.PLAYER }
+                        .map { "#${it.name.lowercase()}" }
                 }
             }
         )
