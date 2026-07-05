@@ -13,8 +13,8 @@ object SpectatorFlyListener : Listener {
     private val allowFlightPlayers = mutableObjectSetOf<UUID>()
     private val flyingPlayers = mutableObjectSetOf<UUID>()
 
-    @EventHandler
-    fun onGameModeChange(event: PlayerGameModeChangeEvent) {
+@EventHandler(ignoreCancelled = true)
+fun onGameModeChange(event: PlayerGameModeChangeEvent) {
         val player = event.player
         val previousGameMode = player.gameMode
         val newGameMode = event.newGameMode
