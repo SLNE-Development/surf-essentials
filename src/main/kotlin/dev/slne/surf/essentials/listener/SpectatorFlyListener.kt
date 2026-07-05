@@ -1,6 +1,5 @@
 package dev.slne.surf.essentials.listener
 
-import dev.slne.surf.api.core.util.mutableObjectSetOf
 import dev.slne.surf.essentials.plugin
 import org.bukkit.GameMode
 import org.bukkit.event.EventHandler
@@ -8,10 +7,11 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerGameModeChangeEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 object SpectatorFlyListener : Listener {
-    private val allowFlightPlayers = mutableObjectSetOf<UUID>()
-    private val flyingPlayers = mutableObjectSetOf<UUID>()
+    private val allowFlightPlayers = ConcurrentHashMap.newKeySet<UUID>()
+    private val flyingPlayers = ConcurrentHashMap.newKeySet<UUID>()
 
     @EventHandler
     fun onGameModeChange(event: PlayerGameModeChangeEvent) {
