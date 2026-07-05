@@ -14,5 +14,6 @@ object PaperListenerManager {
         SpecialItemListener.register()
         HungerListener.register()
         RestartListener.register()
+        SpectatorFlyListener.register()
     }
 }
