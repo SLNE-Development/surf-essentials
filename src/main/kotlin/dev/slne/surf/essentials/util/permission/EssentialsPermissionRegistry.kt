@@ -124,5 +124,7 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val RENAME_COMMAND_BYPASS = create("$PREFIX.rename.command.bypass")
     val RENAME_COMMAND_MINIMESSAGE = create("$PREFIX.rename.command.minimessage")
 
+    val SERIALIZE_ITEM_COMMAND = create("$PREFIX.serializeitem.command")
+
     val TEST_SOUND_COMMAND = create("$PREFIX.testsound.command")
 }

@@ -79,5 +79,6 @@ object PaperCommandManager {
         pingCommand()
         echestCommand()
         testSoundCommand()
+        serializeItemCommand()
     }
 }
