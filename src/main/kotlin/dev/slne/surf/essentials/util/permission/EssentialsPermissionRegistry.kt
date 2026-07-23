@@ -127,4 +127,5 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val SERIALIZE_ITEM_COMMAND = create("$PREFIX.serializeitem.command")
 
     val TEST_SOUND_COMMAND = create("$PREFIX.testsound.command")
+    val SEND_RANKS_COMMAND = create("$PREFIX.sendranks.command")
 }

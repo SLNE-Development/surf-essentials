@@ -80,5 +80,6 @@ object PaperCommandManager {
         echestCommand()
         testSoundCommand()
         serializeItemCommand()
+        sendRanksCommand()
     }
 }
