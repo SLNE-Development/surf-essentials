@@ -9,6 +9,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPl
 import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.literalArgument
 import dev.slne.surf.api.core.luckperms.LuckPermsAccess
+import dev.slne.surf.api.core.util.random
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import kotlinx.coroutines.future.await
@@ -20,7 +21,6 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -70,7 +70,7 @@ private fun RankInfo.displayName(playerName: String) =
     miniMessage.deserialize("$prefix $playerName")
 
 private fun randomName(): String =
-    RANDOM_NAMES[ThreadLocalRandom.current().nextInt(RANDOM_NAMES.size)]
+    RANDOM_NAMES[random.nextInt(RANDOM_NAMES.size)]
 
 private suspend fun loadRanks(): List<RankInfo> {
     val lp = LuckPermsAccess.luckperms
