@@ -7,8 +7,9 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @Suppress("SuspendCoroutineLacksCancellationGuarantees")
-suspend fun World.unloadCanvasWorld(save: Boolean = true): WorldUnloadResult = suspendCoroutine { cont ->
-    Bukkit.unloadWorldAsync(this, save) {
-        cont.resume(it)
+suspend fun World.unloadCanvasWorld(save: Boolean = true): WorldUnloadResult =
+    suspendCoroutine { cont ->
+        Bukkit.getServer().unloadWorldAsync(this, save) {
+            cont.resume(it)
+        }
     }
-}
