@@ -9,13 +9,13 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPl
 import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.literalArgument
 import dev.slne.surf.api.core.luckperms.LuckPermsAccess
+import dev.slne.surf.api.core.minimessage.miniMessage
 import dev.slne.surf.api.core.util.random
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import kotlinx.coroutines.future.await
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
-import net.kyori.adventure.text.minimessage.MiniMessage
 import net.luckperms.api.model.group.Group
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -23,8 +23,6 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.pow
 import kotlin.math.roundToInt
-
-private val miniMessage = MiniMessage.miniMessage()
 
 private const val DEFAULT_GROUP = "default"
 private const val MULTI_TOTAL = 80

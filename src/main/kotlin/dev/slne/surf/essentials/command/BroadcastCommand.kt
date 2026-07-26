@@ -3,10 +3,10 @@ package dev.slne.surf.essentials.command
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.core.messages.adventure.showTitle
+import dev.slne.surf.api.core.minimessage.miniMessage
 import dev.slne.surf.api.paper.extensions.server
 import dev.slne.surf.api.paper.util.forEachPlayer
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
-import net.kyori.adventure.text.minimessage.MiniMessage
 
 fun broadcastCommand() = commandTree("broadcast") {
     withPermission(EssentialsPermissionRegistry.BROADCAST_COMAMND)
@@ -14,7 +14,7 @@ fun broadcastCommand() = commandTree("broadcast") {
         greedyStringArgument("message") {
             anyExecutor { executor, args ->
                 val message: String by args
-                val component = MiniMessage.miniMessage().deserialize(message)
+                val component = miniMessage.deserialize(message)
 
                 server.broadcast(component)
 
@@ -30,7 +30,7 @@ fun broadcastCommand() = commandTree("broadcast") {
         greedyStringArgument("message") {
             anyExecutor { executor, args ->
                 val message: String by args
-                val component = MiniMessage.miniMessage().deserialize(message)
+                val component = miniMessage.deserialize(message)
 
                 forEachPlayer { it.sendActionBar(component) }
 
@@ -48,8 +48,8 @@ fun broadcastCommand() = commandTree("broadcast") {
                 anyExecutor { executor, args ->
                     val title: String by args
                     val subtitle: String by args
-                    val titleComponent = MiniMessage.miniMessage().deserialize(title)
-                    val subtitleComponent = MiniMessage.miniMessage().deserialize(subtitle)
+                    val titleComponent = miniMessage.deserialize(title)
+                    val subtitleComponent = miniMessage.deserialize(subtitle)
 
                     forEachPlayer {
                         it.showTitle {
