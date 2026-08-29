@@ -81,5 +81,6 @@ object PaperCommandManager {
         testSoundCommand()
         serializeItemCommand()
         sendRanksCommand()
+        openEntityInventoryCommand()
     }
 }
