@@ -86,6 +86,10 @@ object WorldService {
             return
         }
 
+        world.setGameRule(GameRules.LOCATOR_BAR, false)
+        world.setGameRule(GameRules.ADVANCE_TIME, false)
+        world.setGameRule(GameRules.ADVANCE_WEATHER, false)
+        
         if (type == WorldTypeArgument.WorldType.VOID) {
             creator.generator(VoidWorldGenerator)
             VoidWorldGenerator.addGeneratorToBukkitYml(name)

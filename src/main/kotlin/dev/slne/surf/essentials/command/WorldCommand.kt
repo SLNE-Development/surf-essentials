@@ -298,6 +298,7 @@ fun worldCommand() = commandTree("world") {
     }
 
     literalArgument("list") {
+        withPermission(EssentialsPermissionRegistry.WORLD_COMMAND_LIST)
         anyExecutor { executor, _ ->
             val worlds = Bukkit.getWorlds()
 
@@ -318,7 +319,7 @@ fun worldCommand() = commandTree("world") {
                     primary("Geladene Welten".toSmallCaps(), TextDecoration.BOLD)
                 }
 
-                rowRenderer { row, index ->
+                rowRenderer { row, _ ->
                     listOf(
                         buildText {
                             darkSpacer(">")
