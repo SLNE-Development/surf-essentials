@@ -2,9 +2,9 @@ package dev.slne.surf.essentials.command
 
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.core.minimessage.miniMessage
 import dev.slne.surf.essentials.util.permission.EssentialsPermissionRegistry
 import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.meta.ItemMeta
 
@@ -15,7 +15,7 @@ fun itemEditCommand() = commandTree("itemedit") {
             withPermission(EssentialsPermissionRegistry.ITEM_EDIT_COMMAND_NAME)
             playerExecutor { player, args ->
                 val name: String by args
-                val displayName = MiniMessage.miniMessage().deserialize(name)
+                val displayName = miniMessage.deserialize(name)
                 val itemInHand = player.inventory.itemInMainHand
 
                 if (itemInHand.isEmpty) {
@@ -52,7 +52,7 @@ fun itemEditCommand() = commandTree("itemedit") {
                 playerExecutor { player, args ->
                     val line: Int by args
                     val loreContent: String by args
-                    val displayLoreContent = MiniMessage.miniMessage().deserialize(loreContent)
+                    val displayLoreContent = miniMessage.deserialize(loreContent)
                     val itemInHand = player.inventory.itemInMainHand
 
                     if (itemInHand.isEmpty) {

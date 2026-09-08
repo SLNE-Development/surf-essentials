@@ -6,11 +6,9 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.CustomArgument
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.slne.surf.api.core.messages.adventure.buildText
-import org.bukkit.WorldType
-import org.bukkit.command.CommandSender
 
 class WorldTypeArgument(nodeName: String) :
-    CustomArgument<WorldType, String>(StringArgument(nodeName), { info ->
+    CustomArgument<WorldTypeArgument.WorldType, String>(StringArgument(nodeName), { info ->
         WorldType.entries.firstOrNull { it.name == info.input.uppercase() }
             ?: throw CustomArgumentException.fromAdventureComponent {
                 buildText {
@@ -21,12 +19,28 @@ class WorldTypeArgument(nodeName: String) :
     }) {
     init {
         this.replaceSuggestions(
-            ArgumentSuggestions.stringCollection<CommandSender> {
+            ArgumentSuggestions.stringCollection {
                 WorldType.entries.map {
                     it.name.lowercase()
                 }
             }
         )
+    }
+
+    enum class WorldType {
+        NORMAL,
+        FLAT,
+        LARGE_BIOMES,
+        AMPLIFIED,
+        VOID;
+
+        fun vanilla(): org.bukkit.WorldType = when (this) {
+            NORMAL -> org.bukkit.WorldType.NORMAL
+            FLAT -> org.bukkit.WorldType.FLAT
+            LARGE_BIOMES -> org.bukkit.WorldType.LARGE_BIOMES
+            AMPLIFIED -> org.bukkit.WorldType.AMPLIFIED
+            VOID -> org.bukkit.WorldType.NORMAL
+        }
     }
 }
 

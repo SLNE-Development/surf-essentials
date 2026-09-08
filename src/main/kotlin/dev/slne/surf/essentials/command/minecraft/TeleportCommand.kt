@@ -7,6 +7,9 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Entity
 
+
+private const val MAX_TELEPORT_ENTITIES = 10
+
 fun teleportCommand() = commandTree("teleport") {
     withPermission(EssentialsPermissionRegistry.TELEPORT_COMMAND)
     withAliases("tp")
@@ -63,6 +66,17 @@ fun teleportCommand() = commandTree("teleport") {
                 val players: Collection<Entity> by args
                 val target: Entity by args
 
+                if (players.size > MAX_TELEPORT_ENTITIES && !executor.hasPermission(
+                        EssentialsPermissionRegistry.TELEPORT_COMMAND_MANY
+                    )
+                ) {
+                    executor.sendText {
+                        appendErrorPrefix()
+                        error("Du kannst maximal $MAX_TELEPORT_ENTITIES Entitäten auf einmal teleportieren.")
+                    }
+                    return@anyExecutor
+                }
+
                 players.forEach { it.teleportAsync(target.location) }
 
                 if (players.size == 1) {
@@ -88,6 +102,17 @@ fun teleportCommand() = commandTree("teleport") {
             anyExecutor { executor, args ->
                 val players: Collection<Entity> by args
                 val location: Location by args
+
+                if (players.size > MAX_TELEPORT_ENTITIES && !executor.hasPermission(
+                        EssentialsPermissionRegistry.TELEPORT_COMMAND_MANY
+                    )
+                ) {
+                    executor.sendText {
+                        appendErrorPrefix()
+                        error("Du kannst maximal $MAX_TELEPORT_ENTITIES Entitäten auf einmal teleportieren.")
+                    }
+                    return@anyExecutor
+                }
 
                 players.forEach { it.teleportAsync(location) }
 

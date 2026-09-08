@@ -22,6 +22,7 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val HEAL_COMMAND_OTHERS = create("$PREFIX.heal.command.others")
     val HAT_COMMAND = create("$PREFIX.hat.command")
     val HAT_COMMAND_OTHERS = create("$PREFIX.hat.command.others")
+    val HAT_COMMAND_BYPASS = create("$PREFIX.hat.command.bypass")
     val LIST_COMMAND = create("$PREFIX.list.command")
     val LIST_COMMAND_WORLD = create("$PREFIX.list.command.world")
     val TRASH_COMMAND = create("$PREFIX.trash.command")
@@ -41,6 +42,7 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val TELEPORT_RANDOM_BYPASS = create("$PREFIX.teleport.random.bypass")
     val TELEPORT_COMMAND = create("$PREFIX.teleport.command")
     val TELEPORT_COMMAND_OTHERS = create("$PREFIX.teleport.command.others")
+    val TELEPORT_COMMAND_MANY = create("$PREFIX.teleport.command.many")
     val TELEPORT_COMMAND_OFFLINE = create("$PREFIX.teleport.command.offline")
     val TELEPORT_COMMAND_OFFLINE_OTHERS = create("$PREFIX.teleport.command.offline.others")
     val TELEPORT_TOP_COMMAND = create("$PREFIX.teleport.top.command")
@@ -66,7 +68,9 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val GOD_COMMAND = create("$PREFIX.god.command")
     val GOD_COMMAND_OTHER = create("$PREFIX.god.command.other")
     val KILL_COMMAND = create("$PREFIX.kill.command")
+    val KILL_COMMAND_HASHTAG = create("$PREFIX.kill.command.hashtag")
     val KILL_COMMAND_OTHERS = create("$PREFIX.kill.command.others")
+    val KILL_COMMAND_MANY = create("$PREFIX.kill.command.many")
     val SPEED_COMMAND = create("$PREFIX.speed.command")
     val SPEED_COMMAND_WALK = create("$PREFIX.speed.command.walk")
     val SPEED_COMMAND_WALK_OTHERS = create("$PREFIX.speed.command.walk.others")
@@ -119,4 +123,9 @@ object EssentialsPermissionRegistry : PermissionRegistry() {
     val RENAME_COMMAND = create("$PREFIX.rename.command")
     val RENAME_COMMAND_BYPASS = create("$PREFIX.rename.command.bypass")
     val RENAME_COMMAND_MINIMESSAGE = create("$PREFIX.rename.command.minimessage")
+
+    val SERIALIZE_ITEM_COMMAND = create("$PREFIX.serializeitem.command")
+
+    val TEST_SOUND_COMMAND = create("$PREFIX.testsound.command")
+    val SEND_RANKS_COMMAND = create("$PREFIX.sendranks.command")
 }

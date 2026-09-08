@@ -78,5 +78,8 @@ object PaperCommandManager {
         worldCommand()
         pingCommand()
         echestCommand()
+        testSoundCommand()
+        serializeItemCommand()
+        sendRanksCommand()
     }
 }

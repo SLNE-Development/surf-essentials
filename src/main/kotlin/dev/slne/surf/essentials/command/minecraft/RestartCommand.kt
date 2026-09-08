@@ -21,13 +21,17 @@ import org.bukkit.Sound
 import org.bukkit.World
 import org.bukkit.event.player.PlayerKickEvent
 import java.time.Duration
+import java.util.UUID
 import java.util.logging.Level
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 private var restartTask: ScheduledTask? = null
 private var shutdownTask: ScheduledTask? = null
 @Volatile
 private var blockRestartJoins = false
+
+private val pendingShutdownKicks: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
 
 fun isRestartJoinBlocked() = blockRestartJoins
 
@@ -48,6 +52,7 @@ fun restartCommand() = commandTree("restart") {
             shutdownTask?.cancel()
             shutdownTask = null
             blockRestartJoins = false
+            pendingShutdownKicks.clear()
 
             executor.sendText {
                 appendSuccessPrefix()
@@ -200,6 +205,7 @@ fun restartCommand() = commandTree("restart") {
 
 private fun beginRestartShutdown() {
     blockRestartJoins = true
+    pendingShutdownKicks.clear()
 
     Bukkit.getGlobalRegionScheduler().run(plugin) {
         saveAndKickOnlinePlayers()
@@ -223,10 +229,31 @@ private fun beginRestartShutdown() {
 
 private fun saveAndKickOnlinePlayers() {
     Bukkit.getOnlinePlayers().forEach { player ->
-        player.saveData()
-        player.kick(buildText {
-            error("Der Server wird neugestartet...")
-        }, PlayerKickEvent.Cause.RESTART_COMMAND)
+        val uniqueId = player.uniqueId
+
+        if (!pendingShutdownKicks.add(uniqueId)) {
+            return@forEach
+        }
+
+        val scheduler = player.scheduler.run(plugin, {
+            runCatching {
+                player.saveData()
+            }.onFailure { throwable ->
+                plugin.logger.log(
+                    Level.WARNING,
+                    "Could not save player data of ${player.name} before restart shutdown.",
+                    throwable
+                )
+            }
+
+            player.kick(buildText {
+                error("Der Server wird neugestartet...")
+            }, PlayerKickEvent.Cause.RESTART_COMMAND)
+        }, { pendingShutdownKicks.remove(uniqueId) })
+
+        if (scheduler == null) {
+            pendingShutdownKicks.remove(uniqueId)
+        }
     }
 }
 
