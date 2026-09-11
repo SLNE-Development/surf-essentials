@@ -4,7 +4,9 @@ import com.github.shynixn.mccoroutine.folia.SuspendingJavaPlugin
 import dev.slne.surf.api.paper.SurfApiPaper
 import dev.slne.surf.api.paper.event.register
 import dev.slne.surf.api.paper.extensions.pluginManager
+import dev.slne.surf.api.paper.inventory.framework.register
 import dev.slne.surf.api.paper.packet.SurfPaperPacketApi
+import dev.slne.surf.essentials.command.entityInventoryView
 import dev.slne.surf.essentials.handler.SignVisualHandler
 import dev.slne.surf.essentials.listener.CanvasListener
 import dev.slne.surf.essentials.service.SignService
@@ -16,6 +18,8 @@ val plugin get() = JavaPlugin.getPlugin(PaperMain::class.java)
 class PaperMain : SuspendingJavaPlugin() {
     override fun onLoad() {
         super.onLoad()
+
+        entityInventoryView.register()
     }
 
     override fun onEnable() {
