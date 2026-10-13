@@ -18,7 +18,7 @@ private const val PLAYER_DATA_FOLDER = "players/data"
 private const val PLAYER_GAME_MODE_FILE = "playerGameType"
 
 @OptIn(NmsUseWithCaution::class)
-private fun getPlayerFile(uuid: UUID): File? {
+internal fun getPlayerFile(uuid: UUID): File? {
     val playerFile = File(SurfPaperNmsPlayerBridge.getPlayerDataDir(), "$uuid.dat")
     if (playerFile.exists()) {
         return playerFile

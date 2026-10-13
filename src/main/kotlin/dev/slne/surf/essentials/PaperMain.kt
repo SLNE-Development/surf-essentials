@@ -7,6 +7,7 @@ import dev.slne.surf.api.paper.extensions.pluginManager
 import dev.slne.surf.api.paper.packet.SurfPaperPacketApi
 import dev.slne.surf.essentials.handler.SignVisualHandler
 import dev.slne.surf.essentials.listener.CanvasListener
+import dev.slne.surf.essentials.service.inspect.InspectService
 import dev.slne.surf.essentials.service.SignService
 import dev.slne.surf.essentials.util.world.generator.VoidWorldGenerator
 import org.bukkit.plugin.java.JavaPlugin
@@ -33,6 +34,7 @@ class PaperMain : SuspendingJavaPlugin() {
     }
 
     override fun onDisable() {
+        InspectService.shutdown()
         super.onDisable()
     }
 

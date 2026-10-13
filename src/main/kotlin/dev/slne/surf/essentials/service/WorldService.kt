@@ -18,6 +18,7 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
+import org.bukkit.GameRules
 import org.bukkit.NamespacedKey
 import org.bukkit.World
 import org.bukkit.WorldCreator
