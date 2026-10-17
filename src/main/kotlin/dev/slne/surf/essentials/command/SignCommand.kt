@@ -13,6 +13,8 @@ import net.luckperms.api.LuckPermsProvider
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
 
+private const val MAX_TEXT_LENGTH = 50
+
 private val cooldown = Caffeine.newBuilder().expireAfterWrite(30.minutes).build<UUID, Unit>()
 
 fun signCommand() = commandTree("sign") {
@@ -26,6 +28,21 @@ fun signCommand() = commandTree("sign") {
                 player.sendText {
                     appendErrorPrefix()
                     error("Du musst ein Item in der Hand halten.")
+                }
+                return@playerExecutor
+            }
+
+            val textLength = text?.length ?: 0
+            if (textLength > MAX_TEXT_LENGTH
+                && !player.hasPermission(EssentialsPermissionRegistry.SIGN_COMMAND_BYPASS_LENGTH)
+            ) {
+                player.sendText {
+                    appendErrorPrefix()
+                    error("Der Text darf maximal ")
+                    variableValue(MAX_TEXT_LENGTH.toString())
+                    error(" Zeichen lang sein (aktuell: ")
+                    variableValue(textLength.toString())
+                    error(").")
                 }
                 return@playerExecutor
             }
