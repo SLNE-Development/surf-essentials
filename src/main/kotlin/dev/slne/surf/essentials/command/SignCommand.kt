@@ -33,7 +33,9 @@ fun signCommand() = commandTree("sign") {
             }
 
             val textLength = text?.length ?: 0
-            if (textLength > MAX_TEXT_LENGTH) {
+            if (textLength > MAX_TEXT_LENGTH
+                && !player.hasPermission(EssentialsPermissionRegistry.SIGN_COMMAND_BYPASS_LENGTH)
+            ) {
                 player.sendText {
                     appendErrorPrefix()
                     error("Der Text darf maximal ")
